@@ -25,6 +25,6 @@ public class FriendMenuProvider implements MenuProvider {
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return new FriendMenu(pContainerId, pPlayerInventory, friend.inventory, friend);
+        return new FriendMenu(pContainerId, pPlayerInventory, friend);
     }
 }

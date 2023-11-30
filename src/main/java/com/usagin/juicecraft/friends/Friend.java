@@ -358,20 +358,8 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
                 return InteractionResult.SUCCESS;
             } else {
                 if (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
-                    ObjectOutputStream oos;
-                    ByteArrayOutputStream bos = null;
-                    try {
-                        bos = new ByteArrayOutputStream();
-                        oos = new ObjectOutputStream(bos);
-                        oos.writeObject(this);
-                        oos.flush();
-                    } catch (Exception E) {
-                        //do nothing
-                    }
-                    assert bos != null;
-                    ByteArrayOutputStream finalBos = bos;
                     if (pPlayer instanceof ServerPlayer serverPlayer) {
-                        serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> finalBos.toByteArray());
+                        serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
                     }
                     return InteractionResult.SUCCESS;
                 } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer)) {
