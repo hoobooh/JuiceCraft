@@ -9,47 +9,40 @@ import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
-
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 
 import static com.usagin.juicecraft.Init.MenuInit.FRIEND_MENU;
 
 public class FriendMenu extends AbstractContainerMenu {
     private final Container friendContainer;
     private final Friend friend;
-    public static Friend decodeBuffer(FriendlyByteBuf buffer){
-        ObjectInputStream oos;
-        Friend a = null;
-        try{
-            oos= new ObjectInputStream(new ByteArrayInputStream(buffer.readByteArray()));
-            a= (Friend) oos.readObject();
-        }catch(Exception E){
-            //do nothing
-        }
-        return a;
+
+    public static Friend decodeBuffer(Level level, FriendlyByteBuf buffer){
+        int i = buffer.readVarInt();
+        return level.getEntity(i) instanceof Friend friend ? friend : null;
     }
 
     // Client menu constructor
     public FriendMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(containerId, playerInventory, decodeBuffer(buffer).inventory, decodeBuffer(buffer));
+        this(containerId, playerInventory, decodeBuffer(playerInventory.player.level(), buffer));
     }
     //Server menu constructor
     private static final Logger LOGGER = LogUtils.getLogger();
-    public FriendMenu(int pContainerId, Inventory pPlayerInventory, Container pContainer, Friend pFriend) {
+    public FriendMenu(int pContainerId, Inventory pPlayerInventory, Friend pFriend) {
         super(FRIEND_MENU.get(), pContainerId);
         LOGGER.info("working");
-        this.friendContainer = pContainer;
+        this.friendContainer = pFriend.inventory;
         this.friend = pFriend;
         int i = 3;
-        pContainer.startOpen(pPlayerInventory.player);
+        this.friendContainer .startOpen(pPlayerInventory.player);
         int j = -18;
         LOGGER.info("this one");
         /*Activator slot*/
-        this.addSlot(new Slot(pContainer, 3, 8, 81) {
+        this.addSlot(new Slot(this.friendContainer , 3, 8, 81) {
             public boolean mayPlace(ItemStack p_39677_) {
                 return p_39677_.is(ItemInit.ACTIVATOR.get()) && pFriend.isLivingTame();
             }
@@ -58,7 +51,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Armor slot
-        this.addSlot(new Slot(pContainer, 1, 8, 36) {
+        this.addSlot(new Slot(this.friendContainer, 1, 8, 36) {
             public boolean mayPlace(ItemStack p_39690_) {
                 return pFriend.isArmor(p_39690_);
             }
@@ -72,7 +65,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Weapon slot
-        this.addSlot(new Slot(pContainer, 0, 8, 18) {
+        this.addSlot(new Slot(this.friendContainer, 0, 8, 18) {
             public boolean mayPlace(ItemStack p_39690_) {
                 return pFriend.isArmor(p_39690_);
             }
@@ -86,7 +79,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Module slot
-        this.addSlot(new Slot(pContainer, 2, 8, 54) {
+        this.addSlot(new Slot(this.friendContainer, 2, 8, 54) {
             public boolean mayPlace(ItemStack p_39690_) {
                 return pFriend.isModule(p_39690_);
             }
@@ -101,7 +94,7 @@ public class FriendMenu extends AbstractContainerMenu {
         });
         for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < (pFriend.getInventoryColumns()); ++l) {
-                this.addSlot(new Slot(pContainer, 4 + l + k * pFriend.getInventoryColumns(), 80 + l * 18, 18 + k * 18));
+                this.addSlot(new Slot(this.friendContainer, 4 + l + k * pFriend.getInventoryColumns(), 80 + l * 18, 18 + k * 18));
             }
         }
         for (int i1 = 0; i1 < 3; ++i1) {

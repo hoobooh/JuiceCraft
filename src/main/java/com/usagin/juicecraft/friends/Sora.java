@@ -106,6 +106,6 @@ public class Sora extends Friend{
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return new FriendMenu(pContainerId, pPlayerInventory, this.inventory, this);
+        return new FriendMenu(pContainerId, pPlayerInventory, this);
     }
 }
