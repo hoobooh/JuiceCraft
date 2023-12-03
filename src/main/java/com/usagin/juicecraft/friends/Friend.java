@@ -5,6 +5,7 @@ import com.usagin.juicecraft.*;
 import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.data.*;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -35,16 +36,17 @@ import java.util.function.Predicate;
 public abstract class Friend extends Wolf implements ContainerListener, MenuProvider {
     int captureDifficulty;
     int aggression;
-    int mood;
+    public int mood;
     int time;
-    int invColumns;
+    public int blinkCounter=150;
+    int invRows;
     boolean isArmorable;
     boolean isModular;
     String name;
     boolean isShaking;
     float shakeAnim;
     float shakeAnimO;
-    public SimpleContainer inventory = new SimpleContainer(12);
+    public SimpleContainer inventory = new SimpleContainer(16);
     float[] home;
     Relationships relationships;
     DialogueTree dialogueTree;
@@ -73,7 +75,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         this.relationships = new Relationships();
         this.combatSettings = new CombatSettings();
         this.oldMemory = new SumikaMemory();
-        this.setInventoryColumns();
+        this.setInventoryRows();
         this.setArmorableModular();
         ((GroundPathNavigation) this.getNavigation()).setCanOpenDoors(true);
         this.createInventory();
@@ -83,7 +85,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     protected void createInventory() {
         SimpleContainer simplecontainer = this.inventory;
-        this.inventory = new SimpleContainer(4 + this.getInventoryColumns() * 3);
+        this.inventory = new SimpleContainer(7 + this.getInventoryRows() * 5);
         if (simplecontainer != null) {
             simplecontainer.removeListener(this);
             int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
@@ -117,7 +119,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         }
     }
 
-    abstract void setInventoryColumns();
+    abstract void setInventoryRows();
 
     abstract void setArmorableModular();
 
@@ -167,16 +169,12 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         return this.isAlive() && this.isTame();
     }
 
-    public boolean isArmor(ItemStack pStack) {
-        return pStack.getItem() instanceof ArmorItem;
-    }
-
     boolean testMood(LivingEntity a) {
         return this.mood < 15;
     }
 
-    public int getInventoryColumns() {
-        return this.invColumns;
+    public int getInventoryRows() {
+        return this.invRows;
     }
 
     void saveMemory() {
@@ -217,6 +215,18 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         pCompound.putInt("juicecraft.mood", this.mood);
         pCompound.putInt("juicecraft.existed", 1);
         pCompound.putBoolean("Tame", this.isTame());
+        ListTag listtag = new ListTag();
+
+        for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
+            ItemStack itemstack = this.inventory.getItem(i);
+            if (!itemstack.isEmpty()) {
+                CompoundTag compoundtag = new CompoundTag();
+                compoundtag.putByte("Slot", (byte) i);
+                itemstack.save(compoundtag);
+                listtag.add(compoundtag);
+            }
+        }
+        pCompound.put("juicecraft.inventory", listtag);
         if (this.getOwnerUUID() != null) {
             pCompound.putUUID("Owner", this.getOwnerUUID());
         }
@@ -239,6 +249,16 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         this.socialInteraction = (pCompound.getInt("juicecraft.social"));
         this.mood = (pCompound.getInt("juicecraft.mood"));
         this.setTame(pCompound.getBoolean("Tame"));
+        this.createInventory();
+        ListTag listtag = pCompound.getList("juicecraft.inventory", 10);
+        for (int i = 0; i < listtag.size(); ++i) {
+            LOGGER.info("1ajs");
+            CompoundTag compoundtag = listtag.getCompound(i);
+            int j = compoundtag.getByte("Slot") & 255;
+            if (j < this.inventory.getContainerSize()) {
+                this.inventory.setItem(j, ItemStack.of(compoundtag));
+            }
+        }
         UUID uuid;
         if (pCompound.hasUUID("Owner")) {
             uuid = pCompound.getUUID("Owner");
@@ -265,7 +285,9 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         super.defineSynchedData();
         this.entityData.define(DATA_ID_FLAGS, (byte) 0);
     }
+
     private static final EntityDataAccessor<Byte> DATA_ID_FLAGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BYTE);
+
     protected void setFlag(int pFlagId, boolean pValue) {
         byte b0 = this.entityData.get(DATA_ID_FLAGS);
 
@@ -276,6 +298,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         }
 
     }
+
     private SlotAccess createEquipmentSlotAccess(final int pSlot, final Predicate<ItemStack> pStackFilter) {
         return new SlotAccess() {
             public ItemStack get() {
@@ -293,6 +316,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
             }
         };
     }
+
     protected void updateContainerEquipment() {
         if (!this.level().isClientSide) {
             this.setFlag(4, !this.inventory.getItem(0).isEmpty());
@@ -308,7 +332,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         this.goalSelector.addGoal(4, new LeapAtTargetGoal(this, 0.4F));
         this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0D, true));
         //add Friend wandering/idle ai goal
-        this.goalSelector.addGoal(7, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
+        this.goalSelector.addGoal(7, new FollowOwnerGoal(this, 0.3D, 5.0F, 2.0F, false));
         //this.goalSelector.addGoal(7, new BreedGoal(this, 1.0D)); //...maybe in the future...
         this.goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(10, new BegGoal(this, 8.0F));
@@ -338,6 +362,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         } else if (this.isTame()) {
             if (itemstack.is(Items.COOKIE) && this.getHealth() < this.getMaxHealth()) {
                 this.heal(1);
+                this.mood++;
                 if (!pPlayer.getAbilities().instabuild) {
                     itemstack.shrink(1);
                 }
@@ -345,6 +370,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
                 this.socialInteraction++;
                 return InteractionResult.SUCCESS;
             } else if (itemstack.isEdible()) {
+                this.mood++;
                 this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, itemstack.getFoodProperties(this).getNutrition()));
                 if (!pPlayer.getAbilities().instabuild) {
                     itemstack.shrink(1);
@@ -464,5 +490,9 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
             this.updatePersistentAnger((ServerLevel) this.level(), true);
         }
         this.time++;
+        if(blinkCounter==0){
+            blinkCounter=150;
+        }
+        blinkCounter--;
     }
 }

@@ -11,7 +11,9 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 
@@ -21,7 +23,11 @@ public class FriendMenu extends AbstractContainerMenu {
     private final Container friendContainer;
     private final Friend friend;
 
-    public static Friend decodeBuffer(Level level, FriendlyByteBuf buffer){
+    public Friend getFriend() {
+        return this.friend;
+    }
+
+    public static Friend decodeBuffer(Level level, FriendlyByteBuf buffer) {
         int i = buffer.readVarInt();
         return level.getEntity(i) instanceof Friend friend ? friend : null;
     }
@@ -30,46 +36,32 @@ public class FriendMenu extends AbstractContainerMenu {
     public FriendMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(containerId, playerInventory, decodeBuffer(playerInventory.player.level(), buffer));
     }
+
     //Server menu constructor
     private static final Logger LOGGER = LogUtils.getLogger();
+
     public FriendMenu(int pContainerId, Inventory pPlayerInventory, Friend pFriend) {
         super(FRIEND_MENU.get(), pContainerId);
-        LOGGER.info("working");
         this.friendContainer = pFriend.inventory;
         this.friend = pFriend;
         int i = 3;
-        this.friendContainer .startOpen(pPlayerInventory.player);
+        this.friendContainer.startOpen(pPlayerInventory.player);
         int j = -18;
-        LOGGER.info("this one");
-        /*Activator slot*/
-        this.addSlot(new Slot(this.friendContainer , 3, 8, 81) {
+        //Activator slot
+        this.addSlot(new Slot(this.friendContainer, 0, 136, 133) {
             public boolean mayPlace(ItemStack p_39677_) {
                 return p_39677_.is(ItemInit.ACTIVATOR.get()) && pFriend.isLivingTame();
             }
+
             public boolean isActive() {
                 return pFriend.isLivingTame();
             }
         });
-        //Armor slot
-        this.addSlot(new Slot(this.friendContainer, 1, 8, 36) {
-            public boolean mayPlace(ItemStack p_39690_) {
-                return pFriend.isArmor(p_39690_);
-            }
-
-            public boolean isActive() {
-                return pFriend.isArmorable();
-            }
-
-            public int getMaxStackSize() {
-                return 1;
-            }
-        });
         //Weapon slot
-        this.addSlot(new Slot(this.friendContainer, 0, 8, 18) {
+        this.addSlot(new Slot(this.friendContainer, 1, 14, 205) {
             public boolean mayPlace(ItemStack p_39690_) {
-                return pFriend.isArmor(p_39690_);
+                return true;
             }
-
             public boolean isActive() {
                 return true;
             }
@@ -79,7 +71,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Module slot
-        this.addSlot(new Slot(this.friendContainer, 2, 8, 54) {
+        this.addSlot(new Slot(this.friendContainer, 2, 68, 205) {
             public boolean mayPlace(ItemStack p_39690_) {
                 return pFriend.isModule(p_39690_);
             }
@@ -92,19 +84,89 @@ public class FriendMenu extends AbstractContainerMenu {
                 return 1;
             }
         });
-        for (int k = 0; k < 3; ++k) {
-            for (int l = 0; l < (pFriend.getInventoryColumns()); ++l) {
-                this.addSlot(new Slot(this.friendContainer, 4 + l + k * pFriend.getInventoryColumns(), 80 + l * 18, 18 + k * 18));
+        //Helmet slot
+        this.addSlot(new Slot(this.friendContainer, 3, 14, 230) {
+            public boolean mayPlace(ItemStack p_39690_) {
+                if (p_39690_.getItem() instanceof ArmorItem pItem) {
+                    return pItem.getType() == ArmorItem.Type.HELMET;
+                }
+                return false;
+            }
+            public boolean isActive() {
+                return pFriend.isArmorable();
+            }
+
+            public int getMaxStackSize() {
+                return 1;
+            }
+        });
+        //Chest slot
+        this.addSlot(new Slot(this.friendContainer, 4, 32, 230) {
+            public boolean mayPlace(ItemStack p_39690_) {
+                if (p_39690_.getItem() instanceof ArmorItem pItem) {
+                    return pItem.getType() == ArmorItem.Type.CHESTPLATE;
+                }
+                return false;
+            }
+
+            public boolean isActive() {
+                return pFriend.isArmorable();
+            }
+
+            public int getMaxStackSize() {
+                return 1;
+            }
+        });
+        //Leggings slot
+        this.addSlot(new Slot(this.friendContainer, 5, 50, 230) {
+            public boolean mayPlace(ItemStack p_39690_) {
+                if (p_39690_.getItem() instanceof ArmorItem pItem) {
+                    return pItem.getType() == ArmorItem.Type.LEGGINGS;
+                }
+                return false;
+            }
+
+            public boolean isActive() {
+                return pFriend.isArmorable();
+            }
+
+            public int getMaxStackSize() {
+                return 1;
+            }
+        });
+        //Boots slot
+        this.addSlot(new Slot(this.friendContainer, 6, 68, 230) {
+            public boolean mayPlace(ItemStack p_39690_) {
+                if (p_39690_.getItem() instanceof ArmorItem pItem) {
+                    return pItem.getType() == ArmorItem.Type.BOOTS;
+                }
+                return false;
+            }
+
+            public boolean isActive() {
+                return pFriend.isArmorable();
+            }
+
+            public int getMaxStackSize() {
+                return 1;
+            }
+        });
+
+        //friend inventory
+        for (int k = 0; k < (pFriend.getInventoryRows()); ++k) {
+            for (int l = 0; l < 5; ++l) {
+                this.addSlot(new Slot(this.friendContainer, 7 + k + l * pFriend.getInventoryRows(), 183 + l * 18, 43 + k * 18));
             }
         }
+        //player inventory
         for (int i1 = 0; i1 < 3; ++i1) {
             for (int k1 = 0; k1 < 9; ++k1) {
-                this.addSlot(new Slot(pPlayerInventory, k1 + i1 * 9 + 9, 8 + k1 * 18, 102 + i1 * 18 + -18));
+                this.addSlot(new Slot(pPlayerInventory, k1 + i1 * 9 + 9, 111 + k1 * 18, 199 + i1 * 18 + -18));
             }
         }
 
         for (int j1 = 0; j1 < 9; ++j1) {
-            this.addSlot(new Slot(pPlayerInventory, j1, 8 + j1 * 18, 142));
+            this.addSlot(new Slot(pPlayerInventory, j1, 111 + j1 * 18, 239));
         }
         LOGGER.info("123");
     }
@@ -117,6 +179,7 @@ public class FriendMenu extends AbstractContainerMenu {
     private boolean hasChest(AbstractHorse pHorse) {
         return pHorse instanceof AbstractChestedHorse && ((AbstractChestedHorse) pHorse).hasChest();
     }
+
     @Override
     public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
         ItemStack itemstack = ItemStack.EMPTY;
@@ -129,23 +192,27 @@ public class FriendMenu extends AbstractContainerMenu {
                 if (!this.moveItemStackTo(itemstack1, i, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(1).mayPlace(itemstack1)) {
-                if (!this.moveItemStackTo(itemstack1, 1, 2, false)) {
+            } else if (this.getSlot(3).mayPlace(itemstack1) && !this.getSlot(3).hasItem()) {
+                if (!this.moveItemStackTo(itemstack1, 3, 4, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(2).mayPlace(itemstack1)) {
-                if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
+            } else if (this.getSlot(4).mayPlace(itemstack1) && !this.getSlot(4).hasItem()) {
+                if (!this.moveItemStackTo(itemstack1, 4, 5, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(3).mayPlace(itemstack1)) {
-                if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
+            } else if (this.getSlot(5).mayPlace(itemstack1) && !this.getSlot(5).hasItem()) {
+                if (!this.moveItemStackTo(itemstack1, 5, 6, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(0).mayPlace(itemstack1)) {
-                if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
+            } else if (this.getSlot(6).mayPlace(itemstack1) && !this.getSlot(6).hasItem()) {
+                if (!this.moveItemStackTo(itemstack1, 6, 7, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (i <= 2 || !this.moveItemStackTo(itemstack1, 2, i, false)) {
+            } else if (this.getSlot(2).mayPlace(itemstack1) && !this.getSlot(2).hasItem()) {
+                if (!this.moveItemStackTo(itemstack1, 2, 3, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!this.moveItemStackTo(itemstack1, 7, i, false)) {
                 int j = i + 27;
                 int k = j + 9;
                 if (pIndex >= j && pIndex < k) {
@@ -162,7 +229,6 @@ public class FriendMenu extends AbstractContainerMenu {
 
                 return ItemStack.EMPTY;
             }
-
             if (itemstack1.isEmpty()) {
                 slot.setByPlayer(ItemStack.EMPTY);
             } else {

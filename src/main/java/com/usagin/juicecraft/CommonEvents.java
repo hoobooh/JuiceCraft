@@ -1,15 +1,13 @@
 package com.usagin.juicecraft;
 
 import com.usagin.juicecraft.Init.EntityInit;
-import com.usagin.juicecraft.client.models.SoraEntityModel;
+import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.friends.Sora;
-import com.usagin.juicecraft.network.PacketHandler;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.usagin.juicecraft.client.renderer.SoraEntityRenderer;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber(modid = JuiceCraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CommonEvents {

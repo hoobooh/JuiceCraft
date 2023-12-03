@@ -10,5 +10,5 @@ import static com.usagin.juicecraft.JuiceCraft.MODID;
 
 public class EntityInit {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
-    public static final RegistryObject<EntityType<Sora>> SORA = ENTITIES.register("sora", () -> EntityType.Builder.of(Sora::new, MobCategory.CREATURE).sized(1,2).build("sora"));
+    public static final RegistryObject<EntityType<Sora>> SORA = ENTITIES.register("sora", () -> EntityType.Builder.of(Sora::new, MobCategory.CREATURE).sized(1,1.5F).build("sora"));
 }
