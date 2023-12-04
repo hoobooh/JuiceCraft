@@ -12,13 +12,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-
-import java.awt.*;
 
 import static com.usagin.juicecraft.FriendMenuTextureLocations.*;
 
@@ -55,7 +51,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         renderTransparentBackground(pGuiGraphics);
         pGuiGraphics.blit(TEXTURE, this.leftPos-1, this.topPos-1, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
-        InventoryScreen.renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos +13, this.topPos + 18, this.leftPos+88, this.topPos + 170, 55, 0.25F, pMouseX, pMouseY, this.friend);
+        //render friend
+        InventoryScreen.renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos +13, this.topPos + 18, this.leftPos+88, this.topPos + 170, 55, 0.20F, pMouseX, pMouseY, this.friend);
         //this part renders the locked slots on the inventory
         for(int n=0;n<7-friend.getInventoryRows();n++){
             for(int i=0;i<5;i++){

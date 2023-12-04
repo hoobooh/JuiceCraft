@@ -1,7 +1,7 @@
 package com.usagin.juicecraft;
-import static com.usagin.juicecraft.Init.ItemInit.ITEMS;
 
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.Init.SoraSoundInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -27,10 +27,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 
+import static com.usagin.juicecraft.Init.EntityInit.ENTITIES;
+import static com.usagin.juicecraft.Init.ItemInit.ITEMS;
 import static com.usagin.juicecraft.Init.JuiceCreativeTab.CREATIVE_MODE_TABS;
 import static com.usagin.juicecraft.Init.MenuInit.MENUS;
-import static com.usagin.juicecraft.Init.EntityInit.ENTITIES;
-import static net.minecraft.world.item.Items.registerItem;
+import static com.usagin.juicecraft.Init.ParticleInit.PARTICLES;
+import static com.usagin.juicecraft.Init.UniversalSoundInit.SOUNDS;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(JuiceCraft.MODID)
@@ -61,13 +63,15 @@ public class JuiceCraft
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
-
+        SoraSoundInit.SORA_SOUNDS.register(modEventBus);
+        SOUNDS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
         MENUS.register(modEventBus);
         ENTITIES.register(modEventBus);
+        PARTICLES.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
 

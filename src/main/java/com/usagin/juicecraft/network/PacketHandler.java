@@ -1,12 +1,5 @@
 package com.usagin.juicecraft.network;
 
-import com.usagin.juicecraft.JuiceCraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-
 public class PacketHandler {
     /*public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
             new ResourceLocation(JuiceCraft.MODID, "main")).simpleChannel();

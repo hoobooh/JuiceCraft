@@ -1,0 +1,347 @@
+{
+  "friend_death": {
+    "sounds": [
+      "juicecraft:friend_death"
+    ]
+  },
+  "friend_recovery": {
+    "sounds": [
+      "juicecraft:friend_recovery"
+    ]
+  },
+  "friend_hyper_use": {
+    "sounds": [
+      "juicecraft:friend_hyper_use"
+    ]
+  },
+  "friend_hyper_equip": {
+    "sounds": [
+      "juicecraft:sora_hyper_equip"
+    ]
+  },
+  "sora_injured1": {
+    "sounds": [
+      "juicecraft:sora_injured1"
+    ]
+  },
+  "sora_injured2": {
+    "sounds": [
+      "juicecraft:sora_injured2"
+    ]
+  },
+  "sora_injured3": {
+    "sounds": [
+      "juicecraft:sora_injured3"
+    ]
+  },
+  "sora_injured4": {
+    "sounds": [
+      "juicecraft:sora_injured4"
+    ]
+  },
+  "sora_idle1": {
+    "sounds": [
+      "juicecraft:sora_idle1"
+    ]
+  },
+  "sora_idle2": {
+    "sounds": [
+      "juicecraft:sora_idle2"
+    ]
+  },
+  "sora_idle3": {
+    "sounds": [
+      "juicecraft:sora_idle3"
+    ]
+  },
+  "sora_idle4": {
+    "sounds": [
+      "juicecraft:sora_idle4"
+    ]
+  },
+  "sora_idle_night1": {
+    "sounds": [
+      "juicecraft:sora_idle_night1"
+    ]
+  },
+  "sora_idle_night2": {
+    "sounds": [
+      "juicecraft:sora_idle_night2"
+    ]
+  },
+  "sora_heal1": {
+    "sounds": [
+      "juicecraft:sora_heal1"
+    ]
+  },
+  "sora_heal2": {
+    "sounds": [
+      "juicecraft:sora_heal2"
+    ]
+  },
+  "sora_heal3": {
+    "sounds": [
+      "juicecraft:sora_heal3"
+    ]
+  },
+  "sora_heal4": {
+    "sounds": [
+      "juicecraft:sora_heal4"
+    ]
+  },
+  "sora_recovery1": {
+    "sounds": [
+      "juicecraft:sora_recovery1"
+    ]
+  },
+  "sora_recovery2": {
+    "sounds": [
+      "juicecraft:sora_recovery2"
+    ]
+  },
+  "sora_recovery3": {
+    "sounds": [
+      "juicecraft:sora_recovery3"
+    ]
+  },
+  "sora_recovery4": {
+    "sounds": [
+      "juicecraft:sora_recovery4"
+    ]
+  },
+  "sora_battle1": {
+    "sounds": [
+      "juicecraft:sora_battle1"
+    ]
+  },
+  "sora_battle2": {
+    "sounds": [
+      "juicecraft:sora_battle2"
+    ]
+  },
+  "sora_battle3": {
+    "sounds": [
+      "juicecraft:sora_battle3"
+    ]
+  },
+  "sora_battle4": {
+    "sounds": [
+      "juicecraft:sora_battle4"
+    ]
+  },
+  "sora_battle5": {
+    "sounds": [
+      "juicecraft:sora_battle5"
+    ]
+  },
+  "sora_battle6": {
+    "sounds": [
+      "juicecraft:sora_battle6"
+    ]
+  },
+  "sora_battle7": {
+    "sounds": [
+      "juicecraft:sora_battle7"
+    ]
+  },
+  "sora_battle8": {
+    "sounds": [
+      "juicecraft:sora_battle8"
+    ]
+  },
+  "sora_attack1": {
+    "sounds": [
+      "juicecraft:sora_attack1"
+    ]
+  },
+  "sora_attack2": {
+    "sounds": [
+      "juicecraft:sora_attack2"
+    ]
+  },
+  "sora_attack3": {
+    "sounds": [
+      "juicecraft:sora_attack3"
+    ]
+  },
+  "sora_attack4": {
+    "sounds": [
+      "juicecraft:sora_attack4"
+    ]
+  },
+  "sora_hurt1": {
+    "sounds": [
+      "juicecraft:sora_hurt1"
+    ]
+  },
+  "sora_hurt2": {
+    "sounds": [
+      "juicecraft:sora_hurt2"
+    ]
+  },
+  "sora_hurt3": {
+    "sounds": [
+      "juicecraft:sora_hurt3"
+    ]
+  },
+  "sora_hurt4": {
+    "sounds": [
+      "juicecraft:sora_hurt4"
+    ]
+  },
+  "sora_greatlyhurt1": {
+    "sounds": [
+      "juicecraft:sora_greatlyhurt1"
+    ]
+  },
+  "sora_greatlyhurt2": {
+    "sounds": [
+      "juicecraft:sora_greatlyhurt2"
+    ]
+  },
+  "sora_greatlyhurt3": {
+    "sounds": [
+      "juicecraft:sora_greatlyhurt3"
+    ]
+  },
+  "sora_evade1": {
+    "sounds": [
+      "juicecraft:sora_evade1"
+    ]
+  },
+  "sora_evade2": {
+    "sounds": [
+      "juicecraft:sora_evade2"
+    ]
+  },
+  "sora_evade3": {
+    "sounds": [
+      "juicecraft:sora_evade3"
+    ]
+  },
+  "sora_evade4": {
+    "sounds": [
+      "juicecraft:sora_evade4"
+    ]
+  },
+  "sora_warning1": {
+    "sounds": [
+      "juicecraft:sora_warning1"
+    ]
+  },
+  "sora_warning2": {
+    "sounds": [
+      "juicecraft:sora_warning2"
+    ]
+  },
+  "sora_warning3": {
+    "sounds": [
+      "juicecraft:sora_warning3"
+    ]
+  },
+  "sora_warning4": {
+    "sounds": [
+      "juicecraft:sora_warning4"
+    ]
+  },
+  "sora_equip1": {
+    "sounds": [
+      "juicecraft:sora_equip1"
+    ]
+  },
+  "sora_equip2": {
+    "sounds": [
+      "juicecraft:sora_equip2"
+    ]
+  },
+  "sora_equip3": {
+    "sounds": [
+      "juicecraft:sora_equip3"
+    ]
+  },
+  "sora_equip4": {
+    "sounds": [
+      "juicecraft:sora_equip4"
+    ]
+  },
+  "sora_equip5": {
+    "sounds": [
+      "juicecraft:sora_equip5"
+    ]
+  },
+  "sora_interact1": {
+    "sounds": [
+      "juicecraft:sora_interact1"
+    ]
+  },
+  "sora_interact2": {
+    "sounds": [
+      "juicecraft:sora_interact2"
+    ]
+  },
+  "sora_interact3": {
+    "sounds": [
+      "juicecraft:sora_interact3"
+    ]
+  },
+  "sora_interact4": {
+    "sounds": [
+      "juicecraft:sora_interact4"
+    ]
+  },
+  "sora_interact5": {
+    "sounds": [
+      "juicecraft:sora_interact5"
+    ]
+  },
+  "sora_pat1": {
+    "sounds": [
+      "juicecraft:sora_pat1"
+    ]
+  },
+  "sora_pat2": {
+    "sounds": [
+      "juicecraft:sora_pat2"
+    ]
+  },
+  "sora_pat3": {
+    "sounds": [
+      "juicecraft:sora_pat3"
+    ]
+  },
+  "sora_recoveryfailed1": {
+    "sounds": [
+      "juicecraft:sora_recoveryfailed1"
+    ]
+  },
+  "sora_recoveryfailed2": {
+    "sounds": [
+      "juicecraft:sora_recoveryfailed2"
+    ]
+  },
+  "sora_recoveryfailed3": {
+    "sounds": [
+      "juicecraft:sora_recoveryfailed3"
+    ]
+  },
+  "sora_recoveryfailed4": {
+    "sounds": [
+      "juicecraft:sora_recoveryfailed4"
+    ]
+  },
+  "sora_hyper_equip": {
+    "sounds": [
+      "juicecraft:sora_hyper_equip"
+    ]
+  },
+  "sora_hyper_use": {
+    "sounds": [
+      "juicecraft:sora_hyper_use"
+    ]
+  },
+  "sora_moduleequip": {
+    "sounds": [
+      "juicecraft:sora_moduleequip"
+    ]
+  }
+}

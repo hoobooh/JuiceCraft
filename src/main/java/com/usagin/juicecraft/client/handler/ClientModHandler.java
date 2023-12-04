@@ -20,4 +20,5 @@ public class ClientModHandler {
             MenuScreens.register(MenuInit.FRIEND_MENU.get(), FriendMenuScreen::new);
         });
     }
+
 }

@@ -1,8 +1,6 @@
 package com.usagin.juicecraft.client.models.sora;
 
-import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.SpiderModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;

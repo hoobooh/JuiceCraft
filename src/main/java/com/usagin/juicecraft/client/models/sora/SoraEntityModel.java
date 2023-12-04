@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.usagin.juicecraft.client.animation.SoraAnimation;
 import com.usagin.juicecraft.friends.Sora;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -19,19 +18,20 @@ import org.jetbrains.annotations.NotNull;
 public class SoraEntityModel extends HierarchicalModel<Sora> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "soraentitymodel"), "main");
-	private final ModelPart Friend;
+	private final ModelPart customroom;
 	private final ModelParts parts;
-
 	public SoraEntityModel(ModelPart root) {
-		this.Friend = root.getChild("Friend");
-		this.parts=new ModelParts(this.Friend);
+		this.customroom = root.getChild("customroom");
+		this.parts=new ModelParts(this.customroom);
 	}
 
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition Friend = partdefinition.addOrReplaceChild("Friend", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition customroom = partdefinition.addOrReplaceChild("customroom", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
+
+		PartDefinition Friend = customroom.addOrReplaceChild("Friend", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
 
 		PartDefinition rightleg = Friend.addOrReplaceChild("rightleg", CubeListBuilder.create().texOffs(48, 156).addBox(-4.0F, 0.0F, -8.0F, 8.0F, 44.0F, 16.0F, new CubeDeformation(0.0F))
 		.texOffs(48, 216).addBox(-8.0F, 0.0F, -4.0F, 16.0F, 44.0F, 8.0F, new CubeDeformation(0.0F))
@@ -257,21 +257,22 @@ public class SoraEntityModel extends HierarchicalModel<Sora> {
 		return LayerDefinition.create(meshdefinition, 512, 512);
 	}
 
-
 	@Override
 	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		Friend.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+		customroom.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
 	}
 
 	@Override
-	public @NotNull ModelPart root() {
-		return this.parts.friend();
+	public ModelPart root() {
+		return this.parts.customroot();
 	}
 
 	@Override
 	public void setupAnim(@NotNull Sora pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 		root().getAllParts().forEach(ModelPart::resetPose);
-		animate(pEntity.idleAnimState, SoraAnimation.SORAENTITYMODEL_IDLEGROUNDED, pAgeInTicks);
+		animate(pEntity.idleAnimState, SoraAnimation.IDLEGROUNDED, pAgeInTicks);
+		animate(pEntity.idleAnimStartState, SoraAnimation.IDLETRANSITION, pAgeInTicks);
+		animate(pEntity.patAnimState, SoraAnimation.PATGROUNDED, pAgeInTicks);
 	}
-	private record ModelParts(ModelPart friend){}
+	private record ModelParts(ModelPart customroot){}
 }

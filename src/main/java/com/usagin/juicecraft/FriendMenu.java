@@ -13,7 +13,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 
@@ -168,7 +167,6 @@ public class FriendMenu extends AbstractContainerMenu {
         for (int j1 = 0; j1 < 9; ++j1) {
             this.addSlot(new Slot(pPlayerInventory, j1, 111 + j1 * 18, 239));
         }
-        LOGGER.info("123");
     }
 
     @Override
@@ -243,7 +241,6 @@ public class FriendMenu extends AbstractContainerMenu {
      * Called when the container is closed.
      */
     public void removed(Player pPlayer) {
-        LOGGER.info("removed");
         super.removed(pPlayer);
         this.friendContainer.stopOpen(pPlayer);
     }

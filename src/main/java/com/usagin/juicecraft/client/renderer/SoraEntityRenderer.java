@@ -7,7 +7,8 @@ import com.usagin.juicecraft.client.models.sora.SoraMediumEyeLayer;
 import com.usagin.juicecraft.client.models.sora.SoraOrbLayer;
 import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.*;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,17 +29,24 @@ public class SoraEntityRenderer extends MobRenderer<Sora, SoraEntityModel> {
     }
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull Sora pEntity) {
-        if(pEntity.blinkCounter<=6 && pEntity.blinkCounter!=4){
+        if(pEntity.patCounter!=0){
+            this.layers.clear();
+            this.addLayer(orb);
+            return SORA_CLOSED;
+        }
+        if(pEntity.blinkCounter<=6){
+            this.layers.clear();
+            this.addLayer(orb);
+            return SORA_CLOSED;
+        }
+
+        else if(pEntity.blinkCounter<=8){
             this.layers.clear();
             this.addLayer(eyemedium);
             this.addLayer(orb);
             return SORA_NARROW;
         }
-        else if(pEntity.blinkCounter<=4){
-            this.layers.clear();
-            this.addLayer(orb);
-            return SORA_CLOSED;
-        }
+
         this.layers.clear();
         this.addLayer(eyeopen);
         this.addLayer(orb);
@@ -47,7 +55,7 @@ public class SoraEntityRenderer extends MobRenderer<Sora, SoraEntityModel> {
     @Override
     public void render(@NotNull Sora pEntity, float pEntityYaw, float pPartialTicks, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight) {
         pPoseStack.scale(0.17F, 0.17F, 0.17F);
-        pPoseStack.translate(0F,2F,0F);
+        //pPoseStack.translate(0F,2F,0F);
         super.render(pEntity,pEntityYaw,pPartialTicks,pPoseStack,pBuffer,pPackedLight);
     }
 }
