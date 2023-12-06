@@ -7,22 +7,36 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.usagin.juicecraft.client.animation.SoraAnimation;
 import com.usagin.juicecraft.friends.Sora;
+import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.HumanoidArm;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 
-public class SoraEntityModel extends HierarchicalModel<Sora> {
+public class SoraEntityModel extends HierarchicalModel<Sora> implements ArmedModel {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "soraentitymodel"), "main");
 	private final ModelPart customroom;
+	private final ModelPart head;
+	private final ModelPart leftarm;
+	private final ModelPart rightarm;
+	private final ModelPart leftleg;
+	private final ModelPart rightleg;
 	private final ModelParts parts;
 	public SoraEntityModel(ModelPart root) {
 		this.customroom = root.getChild("customroom");
-		this.parts=new ModelParts(this.customroom);
+		this.head = root.getChild("customroom").getChild("Friend").getChild("head");
+		this.leftarm = root.getChild("customroom").getChild("Friend").getChild("leftarm");
+		this.rightarm = root.getChild("customroom").getChild("Friend").getChild("rightarm");
+		this.leftleg = root.getChild("customroom").getChild("Friend").getChild("leftleg");
+		this.rightleg = root.getChild("customroom").getChild("Friend").getChild("rightleg");
+
+		this.parts=new ModelParts(this.customroom, this.head, this.leftarm, this.rightarm, this.leftleg, this.rightleg);
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -273,6 +287,44 @@ public class SoraEntityModel extends HierarchicalModel<Sora> {
 		animate(pEntity.idleAnimState, SoraAnimation.IDLEGROUNDED, pAgeInTicks);
 		animate(pEntity.idleAnimStartState, SoraAnimation.IDLETRANSITION, pAgeInTicks);
 		animate(pEntity.patAnimState, SoraAnimation.PATGROUNDED, pAgeInTicks);
+		if(!pEntity.isSprinting()&&!pEntity.isSwimming()&&!pEntity.idleAnimState.isStarted()&&!pEntity.idleAnimStartState.isStarted()){
+			this.parts.leftarm().xRot= (float) (Math.cos(pLimbSwing*0.6662F) * 1.4F * pLimbSwingAmount);
+			this.parts.rightleg().xRot= (float) (Math.cos(pLimbSwing*0.6662F) * 1.4F * pLimbSwingAmount);
+
+				this.parts.leftarm().zRot= (float) -Math.toRadians(10);
+				this.parts.rightarm().zRot=(float) Math.toRadians(10);
+
+			this.parts.leftleg().xRot= (float) ((Math.cos(pLimbSwing*0.6662F+(float)Math.PI)) * 1.4F * pLimbSwingAmount);
+			this.parts.rightarm().xRot= (float) ((Math.cos(pLimbSwing*0.6662F+(float)Math.PI)) * 1.4F * pLimbSwingAmount);
+		}
+
+		this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI/180f);
+		this.parts.head().xRot = (pHeadPitch * (float) Math.PI/180f);
 	}
-	private record ModelParts(ModelPart customroot){}
+
+	@Override
+	public void translateToHand(HumanoidArm pSide, PoseStack pPoseStack) {
+		this.root().getChild("Friend").translateAndRotate(pPoseStack);
+		//this.root().getChild("Friend").getChild(pSide.name().toLowerCase()+"arm").translateAndRotate(pPoseStack);
+		float offset;
+		float scale=0.7F;
+		if(pSide.name().equals("LEFT")){
+			offset=(float) -Math.toRadians(15);
+		}else{
+			offset = (float) Math.toRadians(15);
+		}
+		pPoseStack.translate(this.root().getChild("Friend").getChild(pSide.name().toLowerCase()+"arm").x/16F,
+				this.root().getChild("Friend").getChild(pSide.name().toLowerCase()+"arm").y/16F,
+				this.root().getChild("Friend").getChild(pSide.name().toLowerCase()+"arm").z/16F);
+		pPoseStack.mulPose(new Quaternionf().rotationZYX(this.root().getChild("Friend").getChild(pSide.name().toLowerCase()+"arm").zRot*scale,
+				this.root().getChild("Friend").getChild(pSide.name().toLowerCase()+"arm").yRot*scale,
+				this.root().getChild("Friend").getChild(pSide.name().toLowerCase()+"arm").xRot*scale+offset
+		));
+		pPoseStack.translate(0,1.9,-0.5);
+		pPoseStack.scale(5F,5F,5F);
+
+
+	}
+
+	private record ModelParts(ModelPart customroot, ModelPart head, ModelPart leftarm, ModelPart rightarm, ModelPart leftleg, ModelPart rightleg){}
 }

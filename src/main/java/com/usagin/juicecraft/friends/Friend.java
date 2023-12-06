@@ -1,12 +1,24 @@
 package com.usagin.juicecraft.friends;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import com.usagin.juicecraft.FriendMenuProvider;
 import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.Seagull;
 import com.usagin.juicecraft.data.*;
+import com.usagin.juicecraft.goals.FriendFollowGoal;
+import com.usagin.juicecraft.goals.FriendLadderClimbGoal;
+import com.usagin.juicecraft.goals.FriendWanderGoal;
+import com.usagin.juicecraft.goals.navigation.FriendPathNavigation;
+import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -20,32 +32,55 @@ import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.behavior.BehaviorControl;
+import net.minecraft.world.entity.ai.behavior.InteractWithDoor;
+import net.minecraft.world.entity.ai.behavior.Swim;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.*;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.ai.sensing.Sensor;
+import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.animal.horse.Llama;
+import net.minecraft.world.entity.monster.AbstractSkeleton;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.item.AirItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LadderBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.usagin.juicecraft.Init.ParticleInit.SUGURIVERSE_LARGE;
 import static com.usagin.juicecraft.Init.UniversalSoundInit.*;
 import static net.minecraft.core.particles.ParticleTypes.HEART;
+import static net.minecraft.world.item.Items.AIR;
 
 public abstract class Friend extends Wolf implements ContainerListener, MenuProvider {
     int captureDifficulty;
@@ -54,6 +89,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     public final AnimationState idleAnimStartState = new AnimationState();
     int aggression;
     public int mood;
+
     public boolean isDying = false;
     public int recoveryDifficulty;
     public int deathCounter;
@@ -68,13 +104,13 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     boolean isModular;
     String name;
     boolean isShaking;
-    float volume = 0.5F;
+    public float volume = 0.5F;
     float shakeAnim;
     float shakeAnimO;
     public SimpleContainer inventory = new SimpleContainer(16);
     float[] home;
     Relationships relationships;
-    DialogueTree dialogueTree;
+    int[] dialogueTree = new int[300];
     CombatSettings combatSettings;
     SumikaMemory oldMemory;
 
@@ -85,8 +121,10 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     public Friend(EntityType<? extends Wolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         initializeNew();
+        if(!pLevel.isClientSide()){
+            registerCustomGoals();
+        }
     }
-
     void initializeNew() {
         this.setRecoveryDifficulty();
         this.setCaptureDifficulty();
@@ -105,10 +143,13 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         this.oldMemory = new SumikaMemory();
         this.setInventoryRows();
         this.setArmorableModular();
-        ((GroundPathNavigation) this.getNavigation()).setCanOpenDoors(true);
+        ((FriendPathNavigation) this.getNavigation()).setCanOpenDoors(true);
         this.createInventory();
     }
-
+    @Override
+    protected @NotNull PathNavigation createNavigation(Level pLevel){
+        return new FriendPathNavigation(this, pLevel);
+    }
     private net.minecraftforge.common.util.LazyOptional<?> itemHandler = null;
 
     protected void createInventory() {
@@ -184,7 +225,6 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     }
 
     void doRecoveryEvent() {
-        LOGGER.info("recovery event");
         this.setHealth(this.getMaxHealth() / 2);
         this.deathCounter = 7 - recoveryDifficulty;
         this.soundCounter = 0;
@@ -199,18 +239,13 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     void doDyingEvent() {
         this.soundCounter = 0;
         this.playSound(getRecoveryFail(), volume, 1);
-        LOGGER.info("dying event");
         if (this.deathCounter == 0) {
-            LOGGER.info("asddeath event");
             this.doDeathEvent();
-            LOGGER.info("dgdfgssgdfeath event");
         }
     }
 
     public void doDeathEvent(){
-        LOGGER.info("death event");
         this.spawnHorizontalParticles();
-        LOGGER.info("death event");
         this.playSound(FRIEND_DEATH.get(),volume,2);
         this.setRemoved(RemovalReason.KILLED);
     }
@@ -231,7 +266,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     abstract SoundEvent getBattle();
 
-    abstract SoundEvent getHyperEquip();
+    abstract public SoundEvent getHyperEquip();
 
     abstract SoundEvent getHyperUse();
 
@@ -247,13 +282,10 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     abstract SoundEvent getModuleEquip();
 
-    abstract DialogueTree parseDialogueTree(int[] dialogue);
 
     abstract Relationships parseRelationships(int[] relations);
 
     abstract CombatSettings parseCombatSettings(int[] combatSettings);
-
-    abstract int[] convertDialogueTree(DialogueTree dialogue);
 
     abstract int[] convertRelationships(Relationships relations);
 
@@ -277,11 +309,6 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     public boolean isLivingTame() {
         return this.isAlive() && this.isTame();
-    }
-
-    public boolean day() {
-        long time = this.level().getDayTime();
-        return time > 0 && time < 12300;
     }
 
     boolean testMood(LivingEntity a) {
@@ -323,7 +350,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putIntArray("juicecraft.home", new int[]{(int) this.home[0], (int) this.home[1], (int) this.home[2], (int) this.home[3]});
-        pCompound.putIntArray("juicecraft.dialogue", convertDialogueTree(this.dialogueTree));
+        pCompound.putIntArray("juicecraft.dialogue", this.dialogueTree);
         pCompound.putIntArray("juicecraft.relationships", convertRelationships(this.relationships));
         pCompound.putIntArray("juicecraft.csettings", convertCombatSettings(this.combatSettings));
         pCompound.putInt("juicecraft.social", this.socialInteraction);
@@ -361,7 +388,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         if (temp.length != 0) {
             this.home = new float[]{temp[0], temp[1], temp[2], temp[3]};
         }
-        this.dialogueTree = this.parseDialogueTree((pCompound.getIntArray("juicecraft.dialogue")));
+        this.dialogueTree = pCompound.getIntArray("juicecraft.dialogue");
         this.relationships = this.parseRelationships((pCompound.getIntArray("juicecraft.relationships")));
         this.combatSettings = this.parseCombatSettings((pCompound.getIntArray("juicecraft.csettings")));
         this.socialInteraction = (pCompound.getInt("juicecraft.social"));
@@ -385,7 +412,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
             uuid = pCompound.getUUID("Owner");
         } else {
             String s = pCompound.getString("Owner");
-            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+            uuid = OldUsersConverter.convertMobOwnerIfNecessary(Objects.requireNonNull(this.getServer()), s);
         }
 
         if (uuid != null) {
@@ -406,6 +433,40 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         super.defineSynchedData();
         this.entityData.define(DATA_ID_FLAGS, (byte) 0);
         this.entityData.define(FRIEND_ISDYING, isDying);
+    }
+
+    public void updateGear(){
+        if(!this.inventory.getItem(1).isEmpty()){
+            this.setItemSlot(EquipmentSlot.MAINHAND, this.inventory.getItem(1));
+        }
+        else{
+            this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(AIR));
+        }
+        if(!this.inventory.getItem(3).isEmpty()){
+            this.setItemSlot(EquipmentSlot.HEAD, this.inventory.getItem(1));
+        }
+        else{
+            this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(AIR));
+        }
+        if(!this.inventory.getItem(4).isEmpty()){
+            this.setItemSlot(EquipmentSlot.CHEST, this.inventory.getItem(1));
+        }
+        else{
+            this.setItemSlot(EquipmentSlot.CHEST, new ItemStack(AIR));
+        }
+        if(!this.inventory.getItem(5).isEmpty()){
+            this.setItemSlot(EquipmentSlot.LEGS, this.inventory.getItem(1));
+        }
+        else{
+            this.setItemSlot(EquipmentSlot.LEGS, new ItemStack(AIR));
+        }
+        if(!this.inventory.getItem(6).isEmpty()){
+            this.setItemSlot(EquipmentSlot.FEET, this.inventory.getItem(1));
+        }
+        else{
+            this.setItemSlot(EquipmentSlot.FEET, new ItemStack(AIR));
+        }
+
     }
 
     private static final EntityDataAccessor<Byte> DATA_ID_FLAGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BYTE);
@@ -448,17 +509,18 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     }
 
     int socialInteraction;
-
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new SitWhenOrderedToGoal(this));
         this.goalSelector.addGoal(4, new LeapAtTargetGoal(this, 0.4F));
+        this.goalSelector.addGoal(4, new OpenDoorGoal(this,true));
+        this.goalSelector.addGoal(4, new FriendLadderClimbGoal(this));
         this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0D, true));
         //add Friend wandering/idle ai goal
-        this.goalSelector.addGoal(7, new FollowOwnerGoal(this, 0.3D, 5.0F, 2.0F, false));
+        this.goalSelector.addGoal(7, new FriendFollowGoal(this, 1D, 10.0F, 2.0F, false));
         //this.goalSelector.addGoal(7, new BreedGoal(this, 1.0D)); //...maybe in the future...
-        this.goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(9, new FriendWanderGoal(this, 1.0D));
         this.goalSelector.addGoal(10, new BegGoal(this, 8.0F));
         this.goalSelector.addGoal(11, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(11, new RandomLookAroundGoal(this));
@@ -468,12 +530,25 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
         this.targetSelector.addGoal(8, new NearestAttackableTargetGoal<>(this, Seagull.class, true));
         this.targetSelector.addGoal(9, new ResetUniversalAngerTargetGoal<>(this, true));
-        if (this.aggression > 75) {
-            this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::testMood));
-        }
-
     }
-
+    void registerCustomGoals(){
+        if (this.aggression > 75) {
+            this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::testMood));
+            this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this,
+                    Mob.class, 5, false, false,
+                    (p_28879_) -> p_28879_ instanceof Enemy));
+        }
+        else if(this.aggression > 49) {
+            this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this,
+                    Mob.class, 5, false, false,
+                    (p_28879_) -> p_28879_ instanceof Enemy && !(p_28879_ instanceof Creeper)));
+        }
+        else{
+            this.targetSelector.addGoal(7, new AvoidEntityGoal<>(this,
+                    Mob.class, 5, 1, 1,
+                    (p_28879_) -> p_28879_ instanceof Enemy && !(p_28879_ instanceof Creeper)));
+        }
+    }
     private static final Logger LOGGER = LogUtils.getLogger();
 
     @Override
@@ -536,7 +611,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
                                 this.mood += 20;
                                 if (this.level() instanceof ServerLevel sLevel) {
                                     for (int i = 0; i < 5; i++) {
-                                        sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-4, 5), this.random.nextInt(-4, 5), 0.5);
+                                        sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), 0.5);
                                     }
 
                                 }
@@ -544,7 +619,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
                                 this.mood = 100;
                                 if (this.level() instanceof ServerLevel sLevel) {
                                     for (int i = 0; i < 5; i++) {
-                                        sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-4, 5), this.random.nextInt(-4, 5), 0.5);
+                                        sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), 0.5);
                                     }
                                 }
                             }
@@ -691,7 +766,6 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     public float getVoicePitch() {
         return 1F;
     }
-
     @Override
     public void tick() {
         if (level().isClientSide()) {

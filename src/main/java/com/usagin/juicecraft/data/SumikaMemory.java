@@ -3,7 +3,7 @@ package com.usagin.juicecraft.data;
 public class SumikaMemory{
     String name;
     Relationships relationships;
-    DialogueTree dialogue;
+    int[] dialogue;
     CombatSettings settings;
     float[] home;
     public SumikaMemory() {
@@ -13,7 +13,7 @@ public class SumikaMemory{
     public void saveRelationships(Relationships a){
         this.relationships=a;
     }
-    public void saveDialogue(DialogueTree a){
+    public void saveDialogue(int[] a){
         this.dialogue=a;
     }
     public void saveCombatSettings(CombatSettings a){
@@ -25,7 +25,7 @@ public class SumikaMemory{
     public Relationships getRelationships(){
         return relationships;
     }
-    public DialogueTree getDialogueTree(){
+    public int[] getDialogueTree(){
         return dialogue;
     }
     public CombatSettings getCombatSettings(){

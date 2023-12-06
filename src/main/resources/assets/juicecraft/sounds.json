@@ -16,7 +16,7 @@
   },
   "friend_hyper_equip": {
     "sounds": [
-      "juicecraft:sora_hyper_equip"
+      "juicecraft:friend_hyper_equip"
     ]
   },
   "sora_injured1": {

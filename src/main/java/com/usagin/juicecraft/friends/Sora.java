@@ -3,8 +3,9 @@ package com.usagin.juicecraft.friends;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.FriendMenu;
 import com.usagin.juicecraft.data.CombatSettings;
-import com.usagin.juicecraft.data.DialogueTree;
 import com.usagin.juicecraft.data.Relationships;
+import com.usagin.juicecraft.goals.SoraHyperGoal;
+import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.AnimationState;
@@ -12,11 +13,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -25,12 +29,12 @@ import static com.usagin.juicecraft.Init.SoraSoundInit.*;
 
 
 public class Sora extends Friend{
+    private static final Logger LOGGER = LogUtils.getLogger();
     public Sora(EntityType<? extends Wolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.setNoGravity(true);
     }
     public static AttributeSupplier.Builder getSoraAttributes(){
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,100).add(Attributes.MOVEMENT_SPEED,0.1).add(Attributes.ATTACK_DAMAGE, 2).add(ForgeMod.ENTITY_GRAVITY.get(),0);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,100).add(Attributes.MOVEMENT_SPEED,0.3).add(Attributes.ATTACK_DAMAGE, 2);
     }
     @Override
     void setInventoryRows() {
@@ -42,7 +46,11 @@ public class Sora extends Friend{
         this.isArmorable=false;
         this.isModular=false;
     }
-
+    @Override
+    void registerCustomGoals(){
+        super.registerCustomGoals();
+        this.goalSelector.addGoal(2,new SoraHyperGoal(!this.inventory.getItem(0).isEmpty(),this.combatSettings));
+    }
     @Override
     void initializeDialogueSettings() {
 
@@ -72,9 +80,6 @@ public class Sora extends Friend{
     void indicateTamed() {
 
     }
-
-
-    Logger LOGGER = LogUtils.getLogger();
     @Override
     SoundEvent getIdle() {
         if(this.isAggressive()){
@@ -84,10 +89,10 @@ public class Sora extends Friend{
             return getInjured();
         }
         int a=this.random.nextInt(10);
-        if(a==5&&!this.day()){
+        if(a==5&&!this.level().isDay()){
             return SORA_IDLE_NIGHT1.get();
         }
-        if(a==4&&!this.day()){
+        if(a==4&&!this.level().isDay()){
             return SORA_IDLE_NIGHT2.get();
         }
         a=this.random.nextInt(4);
@@ -112,6 +117,9 @@ public class Sora extends Friend{
 
     @Override
     SoundEvent getInteract() {
+        if(this.getNavigation() instanceof GroundPathNavigation gn){
+            LOGGER.info(gn.canOpenDoors() +"");
+        }
         int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_INTERACT2.get();
@@ -188,7 +196,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getHyperEquip() {
+    public SoundEvent getHyperEquip() {
         return SORA_HYPEREQUIP.get();
     }
 
@@ -259,11 +267,6 @@ public class Sora extends Friend{
     }
 
     @Override
-    DialogueTree parseDialogueTree(int[] dialogue) {
-        return null;
-    }
-
-    @Override
     Relationships parseRelationships(int[] relations) {
         return null;
     }
@@ -273,10 +276,6 @@ public class Sora extends Friend{
         return null;
     }
 
-    @Override
-    int[] convertDialogueTree(DialogueTree dialogue) {
-        return new int[0];
-    }
     @Override
     int[] convertRelationships(Relationships relations) {
         return new int[0];

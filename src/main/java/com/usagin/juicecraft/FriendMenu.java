@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.Init.MenuInit.FRIEND_MENU;
+import static com.usagin.juicecraft.Init.UniversalSoundInit.HYPER_EQUIP;
 
 public class FriendMenu extends AbstractContainerMenu {
     private final Container friendContainer;
@@ -54,6 +56,15 @@ public class FriendMenu extends AbstractContainerMenu {
 
             public boolean isActive() {
                 return pFriend.isLivingTame();
+            }
+            public void set(ItemStack pStack) {
+                this.container.setItem(0, pStack);
+                pFriend.playSound(pFriend.getHyperEquip(), pFriend.volume, 1);
+                pFriend.playSound(HYPER_EQUIP.get(),0.3F,1);
+                this.setChanged();
+            }
+            public boolean mayPickup(Player player){
+                return !this.hasItem();
             }
         });
         //Weapon slot
@@ -190,23 +201,23 @@ public class FriendMenu extends AbstractContainerMenu {
                 if (!this.moveItemStackTo(itemstack1, i, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(3).mayPlace(itemstack1) && !this.getSlot(3).hasItem()) {
+            } else if (this.getSlot(3).mayPlace(itemstack1) && !this.getSlot(3).hasItem() && this.getSlot(3).isActive()) {
                 if (!this.moveItemStackTo(itemstack1, 3, 4, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(4).mayPlace(itemstack1) && !this.getSlot(4).hasItem()) {
+            } else if (this.getSlot(4).mayPlace(itemstack1) && !this.getSlot(4).hasItem()&& this.getSlot(4).isActive()) {
                 if (!this.moveItemStackTo(itemstack1, 4, 5, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(5).mayPlace(itemstack1) && !this.getSlot(5).hasItem()) {
+            } else if (this.getSlot(5).mayPlace(itemstack1) && !this.getSlot(5).hasItem()&& this.getSlot(5).isActive()) {
                 if (!this.moveItemStackTo(itemstack1, 5, 6, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(6).mayPlace(itemstack1) && !this.getSlot(6).hasItem()) {
+            } else if (this.getSlot(6).mayPlace(itemstack1) && !this.getSlot(6).hasItem()&& this.getSlot(6).isActive()) {
                 if (!this.moveItemStackTo(itemstack1, 6, 7, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(2).mayPlace(itemstack1) && !this.getSlot(2).hasItem()) {
+            } else if (this.getSlot(2).mayPlace(itemstack1) && !this.getSlot(2).hasItem()&& this.getSlot(2).isActive()) {
                 if (!this.moveItemStackTo(itemstack1, 2, 3, false)) {
                     return ItemStack.EMPTY;
                 }
@@ -242,6 +253,7 @@ public class FriendMenu extends AbstractContainerMenu {
      */
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
+        this.friend.updateGear();
         this.friendContainer.stopOpen(pPlayer);
     }
 }
