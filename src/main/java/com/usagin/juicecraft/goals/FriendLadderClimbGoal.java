@@ -28,7 +28,7 @@ public class FriendLadderClimbGoal extends Goal {
         double yMotion;
         if(canUse()){
             try{if(this.friend.level().getBlockState(new BlockPos(this.friend.getBlockX(), this.friend.getBlockY(), this.friend.getBlockZ())).getBlock() instanceof LadderBlock){
-                if(Objects.requireNonNull(this.friend.getNavigation().getPath()).getNextNodePos().getY() > this.friend.getBlockY()){
+                if(Objects.requireNonNull(this.friend.getNavigation().getPath()).getNextNodePos().getY() > this.friend.getY()){
                     yMotion = 0.15;
                 }
                 else{
@@ -45,7 +45,7 @@ public class FriendLadderClimbGoal extends Goal {
                     zOffset=0-zOffset;
                 }
 
-                this.friend.setDeltaMovement(this.friend.getDeltaMovement().add(0, yMotion, 0));
+                this.friend.setDeltaMovement(this.friend.getDeltaMovement().add(xOffset, yMotion, zOffset));
             }}catch(Exception E){
                 //do nothing
             }

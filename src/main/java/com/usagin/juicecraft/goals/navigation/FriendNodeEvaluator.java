@@ -116,6 +116,22 @@ public class FriendNodeEvaluator extends NodeEvaluator {
     }
 
     private static final Logger LOGGER = LogUtils.getLogger();
+    boolean isLadder(Node pNode){
+        return this.tempmob.level().getBlockState(
+                        new BlockPos(pNode.x, pNode.y, pNode.z))
+                .getBlock()
+                .isLadder(tempmob.level().getBlockState
+                                (new BlockPos(pNode.x, pNode.y, pNode.z)),
+                        this.tempmob.level(),
+                        new BlockPos(pNode.x, pNode.y, pNode.z),
+                        this.tempmob);
+    }
+    Block getBelowBlock(Node pNode){
+        return this.tempmob.level().getBlockState(
+                        new BlockPos(pNode.x, pNode.y-1, pNode.z))
+                .getBlock();
+    }
+
     public int getNeighbors(Node[] pOutputArray, Node pNode) {
         int i = 0;
         int j = 0;
@@ -126,6 +142,9 @@ public class FriendNodeEvaluator extends NodeEvaluator {
         }
 
         double d0 = this.getFloorLevel(new BlockPos(pNode.x, pNode.y, pNode.z));
+        if(isLadder(getNode(pNode.x,pNode.y-1, pNode.z))){
+            pOutputArray[i++] = getNode(pNode.x,pNode.y-1, pNode.z);
+        }
         Node node = this.findAcceptedNode(pNode.x, pNode.y, pNode.z + 1, j, d0, Direction.SOUTH, blockpathtypes1);
         if (this.isNeighborValid(node, pNode)) {
             pOutputArray[i++] = node;
@@ -165,22 +184,11 @@ public class FriendNodeEvaluator extends NodeEvaluator {
         if (this.isDiagonalValid(pNode, node2, node, node7)) {
             pOutputArray[i++] = node7;
         }
-        if(this.tempmob.level().getBlockState(
-                        new BlockPos(pNode.x, pNode.y, pNode.z))
-                .getBlock()
-                .isLadder(tempmob.level().getBlockState
-                                (new BlockPos(pNode.x, pNode.y, pNode.z)),
-                        this.tempmob.level(),
-                        new BlockPos(pNode.x, pNode.y, pNode.z),
-                        this.tempmob)){
-            Node node8 = getNode(pNode.x, pNode.y+1, pNode.z);
-            Node node9 = getNode(pNode.x, pNode.y-1, pNode.z);
-            LOGGER.info("ladder");
-            if(node8.type!=BlockPathTypes.BLOCKED){
-                pOutputArray[i++] = node8;
-            }
-            if(node9.type!=BlockPathTypes.BLOCKED){
-                pOutputArray[i++] = node9;
+        if(isLadder(pNode)){
+            if(isLadder(getNode(pNode.x, pNode.y+1, pNode.z))){
+                pOutputArray[i++] = this.getNode(pNode.x, pNode.y+1, pNode.z);
+            }else if(isLadder(getNode(pNode.x, pNode.y-1, pNode.z))){
+                pOutputArray[i++] = this.getNode(pNode.x, pNode.y-1, pNode.z);
             }
         }
 
@@ -188,15 +196,6 @@ public class FriendNodeEvaluator extends NodeEvaluator {
             if(a!=null){
                 if(tempmob.level() instanceof ServerLevel sLevel){
                     sLevel.sendParticles(ParticleTypes.HEART,a.x,a.y,a.z, 1, 0,0,0,0);
-                    if(this.tempmob.level().getBlockState(
-                                    new BlockPos(a.x, a.y, a.z))
-                            .getBlock()
-                            .isLadder(tempmob.level().getBlockState
-                                            (new BlockPos(a.x, a.y, a.z)),
-                                    this.tempmob.level(),
-                                    new BlockPos(a.x, a.y, a.z),
-                                    this.tempmob)){
-                    }
                 }
             }
         }
@@ -204,20 +203,7 @@ public class FriendNodeEvaluator extends NodeEvaluator {
     }
 
     protected boolean isNeighborValid(@Nullable Node pNeighbor, Node pNode) {
-        if(pNeighbor==null){
-            return false;
-        }
-        if(this.tempmob.level().getBlockState(
-                        new BlockPos(pNeighbor.x, pNeighbor.y, pNeighbor.z))
-                .getBlock()
-                .isLadder(tempmob.level().getBlockState
-                                (new BlockPos(pNeighbor.x, pNeighbor.y, pNeighbor.z)),
-                        this.tempmob.level(),
-                        new BlockPos(pNeighbor.x, pNeighbor.y, pNeighbor.z),
-                        this.tempmob)){
-            return true;
-        }
-        return !pNeighbor.closed && (pNeighbor.costMalus >= 0.0F || pNode.costMalus < 0.0F);
+        return pNeighbor!=null&&!pNeighbor.closed && (pNeighbor.costMalus >= 0.0F || pNode.costMalus < 0.0F);
     }
 
     protected boolean isDiagonalValid(Node pRoot, @Nullable Node pXNode, @Nullable Node pZNode, @Nullable Node pDiagonal) {
@@ -275,19 +261,15 @@ public class FriendNodeEvaluator extends NodeEvaluator {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
         double d0 = this.getFloorLevel(blockpos$mutableblockpos.set(pX, pY, pZ));
         if (d0 - pNodeFloorLevel > this.getMobJumpHeight()) {
-            if(this.tempmob.level().getBlockState(
-                    new BlockPos(pX, pY, pZ))
-                    .getBlock()
-                    .isLadder(tempmob.level().getBlockState
-                            (new BlockPos(pX, pY, pZ)),
-                            this.tempmob.level(),
-                            new BlockPos(pX, pY, pZ),
-                            this.tempmob)){
-                            LOGGER.info("ladder");
+            if(isLadder(getNode(pX,pY,pZ))){
                             return this.getNode(pX, pY, pZ);
             }
             return null;
         } else {
+            if(isLadder(getNode(pX,pY,pZ))){
+                LOGGER.info("ladder");
+                return this.getNode(pX, pY, pZ);
+            }
             BlockPathTypes blockpathtypes = this.getCachedBlockType(this.mob, pX, pY, pZ);
             float f = this.mob.getPathfindingMalus(blockpathtypes);
             double d1 = (double)this.mob.getBbWidth() / 2.0D;
