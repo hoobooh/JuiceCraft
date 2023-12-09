@@ -43,7 +43,7 @@ public class Sora extends Friend{
 
     @Override
     void setArmorableModular() {
-        this.isArmorable=false;
+        this.isArmorable=true;
         this.isModular=false;
     }
     @Override
@@ -250,7 +250,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getEquip() {
+    public SoundEvent getEquip() {
         int a=this.random.nextInt(5);
         return switch (a) {
             case 0 -> SORA_EQUIP1.get();

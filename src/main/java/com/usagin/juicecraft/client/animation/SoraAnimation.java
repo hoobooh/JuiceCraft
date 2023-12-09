@@ -6,8 +6,6 @@ import net.minecraft.client.animation.Keyframe;
 import net.minecraft.client.animation.KeyframeAnimations;
 
 public class SoraAnimation {
-
-
     public static final AnimationDefinition IDLEGROUNDED = AnimationDefinition.Builder.withLength(2.125f).looping()
             .addAnimation("rightleg",
                     new AnimationChannel(AnimationChannel.Targets.POSITION,
@@ -751,4 +749,101 @@ public class SoraAnimation {
                     new AnimationChannel(AnimationChannel.Targets.SCALE,
                             new Keyframe(0.5f, KeyframeAnimations.scaleVec(1f, 1f, 1f),
                                     AnimationChannel.Interpolations.CATMULLROM))).build();
-}
+    public static final AnimationDefinition SIT = AnimationDefinition.Builder.withLength(0f).looping()
+            .addAnimation("Friend",
+                    new AnimationChannel(AnimationChannel.Targets.POSITION,
+                            new Keyframe(0f, KeyframeAnimations.posVec(0f, -50f, 0f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("rightleg",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(-90f, 7.5f, 0f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("leftarm",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(0.53f, -3.27f, -12.07f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("rightarm",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(0.17f, 3.3f, 12.06f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("chest",
+                    new AnimationChannel(AnimationChannel.Targets.POSITION,
+                            new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, 3f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("chest",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(4.99f, -0.29f, -0.02f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("collar",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(-7.5f, 0f, 0f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("waist",
+                    new AnimationChannel(AnimationChannel.Targets.POSITION,
+                            new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, 3f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("hip",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(-7.51f, 0.27f, -0.31f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("leftleg",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(-90f, -7.5f, 0f),
+                                    AnimationChannel.Interpolations.LINEAR))).build();
+    public static final AnimationDefinition SITPAT = AnimationDefinition.Builder.withLength(0f).looping()
+            .addAnimation("rightleg",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(-90f, 7.5f, 0f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("leftarm",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(0.53f, -3.27f, -12.07f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("rightarm",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(0.17f, 3.3f, 12.06f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("chest",
+                    new AnimationChannel(AnimationChannel.Targets.POSITION,
+                            new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, 3f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("chest",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(4.99f, -0.29f, -0.02f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("collar",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(-7.5f, 0f, 0f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("waist",
+                    new AnimationChannel(AnimationChannel.Targets.POSITION,
+                            new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, 3f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("hip",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(-7.51f, 0.27f, -0.31f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("leftleg",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(-90f, -7.5f, 0f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("Friend",
+                    new AnimationChannel(AnimationChannel.Targets.POSITION,
+                            new Keyframe(0f, KeyframeAnimations.posVec(0f, -50f, 0f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("head",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(8.25f, 1.43f, 4.74f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("rightahoge",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(-0.02f, -2.06f, -4.56f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("leftahoge2",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(1.03f, 6.07f, 13.74f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("leftahoge",
+                    new AnimationChannel(AnimationChannel.Targets.ROTATION,
+                            new Keyframe(0f, KeyframeAnimations.degreeVec(0.33f, 3.06f, 6.85f),
+                                    AnimationChannel.Interpolations.LINEAR))).build();}

@@ -15,6 +15,7 @@ public class FriendPathNavigation extends GroundPathNavigation {
     protected PathFinder createPathFinder(int pMaxVisitedNodes) {
         this.nodeEvaluator = new FriendNodeEvaluator();
         this.nodeEvaluator.setCanPassDoors(true);
-        return new PathFinder(this.nodeEvaluator, pMaxVisitedNodes);
+        return new FriendPathfinder(this.nodeEvaluator, pMaxVisitedNodes);
     }
+
 }

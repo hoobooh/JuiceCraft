@@ -17,7 +17,7 @@ public class FriendWanderGoal extends WaterAvoidingRandomStrollGoal {
     private static final Logger LOGGER = LogUtils.getLogger();
     @Override
     public void start(){
-        if(friend.patCounter==0){
+        if(friend.patCounter==0 && !friend.getInSittingPose()){
             super.start();
         }
     }

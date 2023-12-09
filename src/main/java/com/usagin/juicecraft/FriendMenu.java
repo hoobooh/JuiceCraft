@@ -5,6 +5,7 @@ import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.animal.horse.AbstractChestedHorse;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
@@ -75,7 +76,14 @@ public class FriendMenu extends AbstractContainerMenu {
             public boolean isActive() {
                 return true;
             }
-
+            public void set(ItemStack pStack) {
+                this.container.setItem(1, pStack);
+                if(this.hasItem()){
+                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                }
+                this.setChanged();
+            }
             public int getMaxStackSize() {
                 return 1;
             }
@@ -89,7 +97,14 @@ public class FriendMenu extends AbstractContainerMenu {
             public boolean isActive() {
                 return pFriend.isModular();
             }
-
+            public void set(ItemStack pStack) {
+                this.container.setItem(2, pStack);
+                if(this.hasItem()){
+                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                }
+                this.setChanged();
+            }
             public int getMaxStackSize() {
                 return 1;
             }
@@ -105,7 +120,14 @@ public class FriendMenu extends AbstractContainerMenu {
             public boolean isActive() {
                 return pFriend.isArmorable();
             }
-
+            public void set(ItemStack pStack) {
+                this.container.setItem(3, pStack);
+                if(this.hasItem()){
+                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                }
+                this.setChanged();
+            }
             public int getMaxStackSize() {
                 return 1;
             }
@@ -122,7 +144,14 @@ public class FriendMenu extends AbstractContainerMenu {
             public boolean isActive() {
                 return pFriend.isArmorable();
             }
-
+            public void set(ItemStack pStack) {
+                this.container.setItem(4, pStack);
+                if(this.hasItem()){
+                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                }
+                this.setChanged();
+            }
             public int getMaxStackSize() {
                 return 1;
             }
@@ -139,7 +168,14 @@ public class FriendMenu extends AbstractContainerMenu {
             public boolean isActive() {
                 return pFriend.isArmorable();
             }
-
+            public void set(ItemStack pStack) {
+                this.container.setItem(5, pStack);
+                if(this.hasItem()){
+                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                }
+                this.setChanged();
+            }
             public int getMaxStackSize() {
                 return 1;
             }
@@ -156,7 +192,14 @@ public class FriendMenu extends AbstractContainerMenu {
             public boolean isActive() {
                 return pFriend.isArmorable();
             }
-
+            public void set(ItemStack pStack) {
+                this.container.setItem(6, pStack);
+                if(this.hasItem()){
+                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                }
+                this.setChanged();
+            }
             public int getMaxStackSize() {
                 return 1;
             }

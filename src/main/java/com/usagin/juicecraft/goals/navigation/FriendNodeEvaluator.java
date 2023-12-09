@@ -24,9 +24,11 @@ import net.minecraft.world.level.pathfinder.*;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 public class FriendNodeEvaluator extends NodeEvaluator {
@@ -35,7 +37,7 @@ public class FriendNodeEvaluator extends NodeEvaluator {
     }
     public static final double SPACE_BETWEEN_WALL_POSTS = 0.5D;
     private static final double DEFAULT_MOB_JUMP_HEIGHT = 1.125D;
-    Mob tempmob;
+    static Mob tempmob;
     private final Long2ObjectMap<BlockPathTypes> pathTypesByPosCache = new Long2ObjectOpenHashMap<>();
     private final Object2BooleanMap<AABB> collisionCache = new Object2BooleanOpenHashMap<>();
 
@@ -132,7 +134,7 @@ public class FriendNodeEvaluator extends NodeEvaluator {
                 .getBlock();
     }
 
-    public int getNeighbors(Node[] pOutputArray, Node pNode) {
+    public int getNeighbors(Node @NotNull [] pOutputArray, Node pNode) {
         int i = 0;
         int j = 0;
         BlockPathTypes blockpathtypes = this.getCachedBlockType(this.mob, pNode.x, pNode.y + 1, pNode.z);
@@ -142,9 +144,6 @@ public class FriendNodeEvaluator extends NodeEvaluator {
         }
 
         double d0 = this.getFloorLevel(new BlockPos(pNode.x, pNode.y, pNode.z));
-        if(isLadder(getNode(pNode.x,pNode.y-1, pNode.z))){
-            pOutputArray[i++] = getNode(pNode.x,pNode.y-1, pNode.z);
-        }
         Node node = this.findAcceptedNode(pNode.x, pNode.y, pNode.z + 1, j, d0, Direction.SOUTH, blockpathtypes1);
         if (this.isNeighborValid(node, pNode)) {
             pOutputArray[i++] = node;
@@ -184,14 +183,37 @@ public class FriendNodeEvaluator extends NodeEvaluator {
         if (this.isDiagonalValid(pNode, node2, node, node7)) {
             pOutputArray[i++] = node7;
         }
-        if(isLadder(pNode)){
-            if(isLadder(getNode(pNode.x, pNode.y+1, pNode.z))){
-                pOutputArray[i++] = this.getNode(pNode.x, pNode.y+1, pNode.z);
-            }else if(isLadder(getNode(pNode.x, pNode.y-1, pNode.z))){
-                pOutputArray[i++] = this.getNode(pNode.x, pNode.y-1, pNode.z);
+
+        if(isLadder(getNode(pNode.x,pNode.y+1,pNode.z))){
+            Node node8 = getNode(pNode.x,pNode.y+1,pNode.z);
+            if(isNeighborValid(node8, pNode)){
+                boolean exists=false;
+                for(int n=0; n<i;n++){
+                    if(pOutputArray[n].equals(node8)){
+                        exists=true;
+                        break;
+                    }
+                }
+                if(!exists){
+                    pOutputArray[i++] = node8;
+                }
             }
         }
-
+        if(isLadder(getNode(pNode.x,pNode.y-1,pNode.z))){
+            Node node9 = getNode(pNode.x,pNode.y-1,pNode.z);
+            if(isNeighborValid(node9, pNode)){
+                boolean exists=false;
+                for(int n=0; n<i;n++){
+                    if(pOutputArray[n].equals(node9)){
+                        exists=true;
+                        break;
+                    }
+                }
+                if(!exists){
+                    pOutputArray[i++] = node9;
+                }
+            }
+        }
         for(Node a: pOutputArray){
             if(a!=null){
                 if(tempmob.level() instanceof ServerLevel sLevel){
@@ -203,7 +225,7 @@ public class FriendNodeEvaluator extends NodeEvaluator {
     }
 
     protected boolean isNeighborValid(@Nullable Node pNeighbor, Node pNode) {
-        return pNeighbor!=null&&!pNeighbor.closed && (pNeighbor.costMalus >= 0.0F || pNode.costMalus < 0.0F);
+        return pNeighbor!=null && ((!pNeighbor.closed && (pNeighbor.costMalus >= 0.0F || pNode.costMalus < 0.0F)));
     }
 
     protected boolean isDiagonalValid(Node pRoot, @Nullable Node pXNode, @Nullable Node pZNode, @Nullable Node pDiagonal) {
@@ -261,15 +283,8 @@ public class FriendNodeEvaluator extends NodeEvaluator {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
         double d0 = this.getFloorLevel(blockpos$mutableblockpos.set(pX, pY, pZ));
         if (d0 - pNodeFloorLevel > this.getMobJumpHeight()) {
-            if(isLadder(getNode(pX,pY,pZ))){
-                            return this.getNode(pX, pY, pZ);
-            }
             return null;
         } else {
-            if(isLadder(getNode(pX,pY,pZ))){
-                LOGGER.info("ladder");
-                return this.getNode(pX, pY, pZ);
-            }
             BlockPathTypes blockpathtypes = this.getCachedBlockType(this.mob, pX, pY, pZ);
             float f = this.mob.getPathfindingMalus(blockpathtypes);
             double d1 = (double)this.mob.getBbWidth() / 2.0D;
@@ -339,7 +354,7 @@ public class FriendNodeEvaluator extends NodeEvaluator {
 
                 if (doesBlockHavePartialCollision(blockpathtypes) && node == null) {
                     node = this.getNode(pX, pY, pZ);
-                        node.closed = true;
+                    node.closed = true;
                     node.type = blockpathtypes;
                     node.costMalus = blockpathtypes.getMalus();
                 }
@@ -379,6 +394,9 @@ public class FriendNodeEvaluator extends NodeEvaluator {
         EnumSet<BlockPathTypes> enumset = EnumSet.noneOf(BlockPathTypes.class);
         BlockPathTypes blockpathtypes = BlockPathTypes.BLOCKED;
         blockpathtypes = this.getBlockPathTypes(pLevel, pX, pY, pZ, enumset, blockpathtypes, pMob.blockPosition());
+        if(isLadder(getNode(pX,pY,pZ))){
+            return BlockPathTypes.WALKABLE;
+        }
         if (enumset.contains(BlockPathTypes.FENCE)) {
             return BlockPathTypes.FENCE;
         } else if (enumset.contains(BlockPathTypes.UNPASSABLE_RAIL)) {
@@ -547,6 +565,9 @@ public class FriendNodeEvaluator extends NodeEvaluator {
         BlockPathTypes type = blockstate.getBlockPathType(pLevel, pPos, null);
         if (type != null) return type;
         Block block = blockstate.getBlock();
+        if(block.isLadder(blockstate, tempmob.level(), pPos, tempmob)){
+            return BlockPathTypes.WALKABLE;
+        }
         if (blockstate.isAir()) {
             return BlockPathTypes.OPEN;
         } else if (!blockstate.is(BlockTags.TRAPDOORS) && !blockstate.is(Blocks.LILY_PAD) && !blockstate.is(Blocks.BIG_DRIPLEAF)) {

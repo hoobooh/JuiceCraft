@@ -287,19 +287,24 @@ public class SoraEntityModel extends HierarchicalModel<Sora> implements ArmedMod
 		animate(pEntity.idleAnimState, SoraAnimation.IDLEGROUNDED, pAgeInTicks);
 		animate(pEntity.idleAnimStartState, SoraAnimation.IDLETRANSITION, pAgeInTicks);
 		animate(pEntity.patAnimState, SoraAnimation.PATGROUNDED, pAgeInTicks);
-		if(!pEntity.isSprinting()&&!pEntity.isSwimming()&&!pEntity.idleAnimState.isStarted()&&!pEntity.idleAnimStartState.isStarted()){
-			this.parts.leftarm().xRot= (float) (Math.cos(pLimbSwing*0.6662F) * 1.4F * pLimbSwingAmount);
-			this.parts.rightleg().xRot= (float) (Math.cos(pLimbSwing*0.6662F) * 1.4F * pLimbSwingAmount);
+		animate(pEntity.sitPatAnimState, SoraAnimation.SITPAT, pAgeInTicks);
+		animate(pEntity.sitAnimState, SoraAnimation.SIT, pAgeInTicks);
+
+		if(!pEntity.getInSittingPose()){
+			if(!pEntity.isSprinting()&&!pEntity.isSwimming()&&!pEntity.idleAnimState.isStarted()&&!pEntity.idleAnimStartState.isStarted()){
+				this.parts.leftarm().xRot= (float) (Math.cos(pLimbSwing*0.6662F) * 1.4F * pLimbSwingAmount);
+				this.parts.rightleg().xRot= (float) (Math.cos(pLimbSwing*0.6662F) * 1.4F * pLimbSwingAmount);
 
 				this.parts.leftarm().zRot= (float) -Math.toRadians(10);
 				this.parts.rightarm().zRot=(float) Math.toRadians(10);
 
-			this.parts.leftleg().xRot= (float) ((Math.cos(pLimbSwing*0.6662F+(float)Math.PI)) * 1.4F * pLimbSwingAmount);
-			this.parts.rightarm().xRot= (float) ((Math.cos(pLimbSwing*0.6662F+(float)Math.PI)) * 1.4F * pLimbSwingAmount);
+				this.parts.leftleg().xRot= (float) ((Math.cos(pLimbSwing*0.6662F+(float)Math.PI)) * 1.4F * pLimbSwingAmount);
+				this.parts.rightarm().xRot= (float) ((Math.cos(pLimbSwing*0.6662F+(float)Math.PI)) * 1.4F * pLimbSwingAmount);
+			}
 		}
-
 		this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI/180f);
 		this.parts.head().xRot = (pHeadPitch * (float) Math.PI/180f);
+
 	}
 
 	@Override
