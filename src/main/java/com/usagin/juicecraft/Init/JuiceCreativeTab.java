@@ -4,6 +4,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -17,10 +18,9 @@ public class JuiceCreativeTab extends CreativeModeTab {
             .title(Component.translatable("itemGroup.juicetab"))
             .icon(() -> ORANGE.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(ORANGE.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
-                output.accept(ACTIVATOR.get());
-                output.accept(SUMIKA_MEMORY.get());
-                output.accept(GOLDEN_ORANGE.get());
+                for(RegistryObject<Item> reg: ITEMS.getEntries()){
+                    output.accept(reg.get());
+                }
             }).build());
 
     protected JuiceCreativeTab(Builder builder) {

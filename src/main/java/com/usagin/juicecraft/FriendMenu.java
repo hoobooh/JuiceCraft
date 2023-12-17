@@ -16,6 +16,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.Init.MenuInit.FRIEND_MENU;
@@ -60,7 +61,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
             public void set(ItemStack pStack) {
                 this.container.setItem(0, pStack);
-                pFriend.playSound(pFriend.getHyperEquip(), pFriend.volume, 1);
+                pFriend.playVoice(pFriend.getHyperEquip());
                 pFriend.playSound(HYPER_EQUIP.get(),0.3F,1);
                 this.setChanged();
             }
@@ -76,12 +77,13 @@ public class FriendMenu extends AbstractContainerMenu {
             public boolean isActive() {
                 return true;
             }
-            public void set(ItemStack pStack) {
+            public void set(@NotNull ItemStack pStack) {
                 this.container.setItem(1, pStack);
                 if(this.hasItem()){
-                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playVoice(pFriend.getEquip());
                     pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
                 }
+                pFriend.setFriendWeapon(pStack);
                 this.setChanged();
             }
             public int getMaxStackSize() {
@@ -100,7 +102,7 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(2, pStack);
                 if(this.hasItem()){
-                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playVoice(pFriend.getEquip());
                     pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
                 }
                 this.setChanged();
@@ -123,7 +125,7 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(3, pStack);
                 if(this.hasItem()){
-                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playVoice(pFriend.getEquip());
                     pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
                 }
                 this.setChanged();
@@ -147,7 +149,7 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(4, pStack);
                 if(this.hasItem()){
-                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playVoice(pFriend.getEquip());
                     pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
                 }
                 this.setChanged();
@@ -171,7 +173,7 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(5, pStack);
                 if(this.hasItem()){
-                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playVoice(pFriend.getEquip());
                     pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
                 }
                 this.setChanged();
@@ -195,7 +197,7 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(6, pStack);
                 if(this.hasItem()){
-                    pFriend.playSound(pFriend.getEquip(), pFriend.volume, 1);
+                    pFriend.playVoice(pFriend.getEquip());
                     pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
                 }
                 this.setChanged();

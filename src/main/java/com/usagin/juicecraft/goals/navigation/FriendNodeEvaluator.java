@@ -214,13 +214,6 @@ public class FriendNodeEvaluator extends NodeEvaluator {
                 }
             }
         }
-        for(Node a: pOutputArray){
-            if(a!=null){
-                if(tempmob.level() instanceof ServerLevel sLevel){
-                    sLevel.sendParticles(ParticleTypes.HEART,a.x,a.y,a.z, 1, 0,0,0,0);
-                }
-            }
-        }
         return i;
     }
 

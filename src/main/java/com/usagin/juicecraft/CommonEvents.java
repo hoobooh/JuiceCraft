@@ -6,6 +6,7 @@ import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.SoraEntityRenderer;
 import com.usagin.juicecraft.friends.Friend;
 import com.usagin.juicecraft.friends.Sora;
+import com.usagin.juicecraft.particles.SleepyParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -19,7 +20,7 @@ import com.usagin.juicecraft.particles.SuguriverseParticleLarge;
 public class CommonEvents {
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event){
-        event.put(EntityInit.SORA.get(), Sora.getSoraAttributes().build());
+        event.put(EntityInit.SORA.get(), Sora.getFriendAttributes().build());
     }
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event){
@@ -32,5 +33,13 @@ public class CommonEvents {
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event){
         Minecraft.getInstance().particleEngine.register(ParticleInit.SUGURIVERSE_LARGE.get(), SuguriverseParticleLarge.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.SLEEPY.get(), SleepyParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.DICEONE.get(), SleepyParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.DICETWO.get(), SleepyParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.DICETHREE.get(), SleepyParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.DICEFOUR.get(), SleepyParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.DICEFIVE.get(), SleepyParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.DICESIX    .get(), SleepyParticle.Provider::new);
+
     }
 }

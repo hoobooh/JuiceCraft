@@ -52,6 +52,7 @@ public class FriendFollowGoal extends Goal {
      * method as well.
      */
     public boolean canUse() {
+        if(this.tamable.getInSittingPose()||this.tamable.isDying){return false;}else{
         LivingEntity livingentity = this.tamable.getOwner();
         if (livingentity == null) {
             return false;
@@ -64,7 +65,7 @@ public class FriendFollowGoal extends Goal {
         } else {
             this.owner = livingentity;
             return !this.tamable.getInSittingPose();
-        }
+        }}
     }
 
     /**
@@ -76,7 +77,7 @@ public class FriendFollowGoal extends Goal {
         } else if (this.unableToMove()) {
             return false;
         } else {
-            return !(this.tamable.distanceToSqr(this.owner) <= (double)(this.stopDistance * this.stopDistance));
+            return !this.tamable.isDying || !this.tamable.getInSittingPose() || !(this.tamable.distanceToSqr(this.owner) <= (double)(this.stopDistance * this.stopDistance));
         }
     }
 
@@ -88,9 +89,10 @@ public class FriendFollowGoal extends Goal {
      * Execute a one shot task or start executing a continuous task
      */
     public void start() {
+        if(!this.tamable.isDying){
         this.timeToRecalcPath = 0;
         this.oldWaterCost = this.tamable.getPathfindingMalus(BlockPathTypes.WATER);
-        this.tamable.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+        this.tamable.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);}
     }
 
     /**

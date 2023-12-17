@@ -20,12 +20,14 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.Init.SoraSoundInit.*;
+import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
 
 public class Sora extends Friend{
@@ -33,9 +35,7 @@ public class Sora extends Friend{
     public Sora(EntityType<? extends Wolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
-    public static AttributeSupplier.Builder getSoraAttributes(){
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,100).add(Attributes.MOVEMENT_SPEED,0.3).add(Attributes.ATTACK_DAMAGE, 2);
-    }
+
     @Override
     void setInventoryRows() {
         this.invRows=5;
@@ -82,6 +82,9 @@ public class Sora extends Friend{
     }
     @Override
     SoundEvent getIdle() {
+        if(this.sleeping() && this.animateSleep() && !this.getInSittingPose()){
+            return null;
+        }
         if(this.isAggressive()){
             return getBattle();
         }
@@ -98,8 +101,11 @@ public class Sora extends Friend{
         a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_IDLE2.get();
+
             case 1 -> SORA_IDLE3.get();
+
             case 2 -> SORA_IDLE4.get();
+
             default -> SORA_IDLE1.get();
         };
     }
@@ -117,9 +123,6 @@ public class Sora extends Friend{
 
     @Override
     SoundEvent getInteract() {
-        if(this.getNavigation() instanceof GroundPathNavigation gn){
-            LOGGER.info(gn.canOpenDoors() +"");
-        }
         int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_INTERACT2.get();
@@ -181,7 +184,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getBattle() {
+    public SoundEvent getBattle() {
         int a=this.random.nextInt(8);
         return switch (a) {
             case 0 -> SORA_BATTLE1.get();
@@ -260,11 +263,18 @@ public class Sora extends Friend{
             default -> SORA_EQUIP5.get();
         };
     }
-
     @Override
     SoundEvent getModuleEquip() {
         return SORA_MODULEEQUIP.get();
     }
+
+    @Override
+    void setInitialHealthSpeedAtk() {
+        this.maxhealth=25;
+        this.mvspeed=0.3F;
+        this.atkdmg=2;
+    }
+
 
     @Override
     Relationships parseRelationships(int[] relations) {
