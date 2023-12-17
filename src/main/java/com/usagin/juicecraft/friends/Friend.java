@@ -70,8 +70,7 @@ import static com.usagin.juicecraft.Init.ParticleInit.SUGURIVERSE_LARGE;
 import static com.usagin.juicecraft.Init.UniversalSoundInit.*;
 import static net.minecraft.core.particles.ParticleTypes.HEART;
 import static net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK;
-import static net.minecraft.world.entity.Pose.SITTING;
-import static net.minecraft.world.entity.Pose.STANDING;
+import static net.minecraft.world.entity.Pose.*;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 import static net.minecraft.world.item.Items.AIR;
 
@@ -93,7 +92,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     public int deathAnimCounter;
     int aggression;
     public int mood;
-    public boolean canDoThings=true;
+    public boolean canDoThings = true;
     public boolean isDying = false;
     public boolean isSitting;
     public int recoveryDifficulty;
@@ -131,11 +130,11 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         if (!pLevel.isClientSide()) {
             registerCustomGoals();
         }
-        if(this.level().isClientSide()){
+        if (this.level().isClientSide()) {
             this.inventory.setItem(1, this.getFriendWeapon());
         }
         this.setInitialHealthSpeedAtk();
-        this.updateAttributes(this.maxhealth,this.mvspeed,this.atkdmg);
+        this.updateAttributes(this.maxhealth, this.mvspeed, this.atkdmg);
     }
 
     void initializeNew() {
@@ -161,7 +160,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
         this.createInventory();
         this.setInitialHealthSpeedAtk();
-        this.updateAttributes(this.maxhealth,this.mvspeed,this.atkdmg);
+        this.updateAttributes(this.maxhealth, this.mvspeed, this.atkdmg);
     }
 
     @Override
@@ -210,15 +209,13 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     void doMeleeAttack() {
         int rand = this.random.nextInt(3);
 
-        if(rand==0){ //heavy
+        if (rand == 0) { //heavy
             this.setAttackCounter(40);
             this.setAttackType(40);
-        }
-        else if(rand==1){ //med
+        } else if (rand == 1) { //med
             this.setAttackCounter(20);
             this.setAttackType(20);
-        }
-        else{ //light
+        } else { //light
             this.setAttackCounter(10);
             this.setAttackType(10);
         }
@@ -232,45 +229,45 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     public int getAttackType() {
         return this.getEntityData().get(FRIEND_ATTACKTYPE);
     }
-    public void doHurtTarget(){
-        AABB hitTracer = new AABB(this.getX()-1.5, this.getY(), this.getZ()-1.5, this.getX()+1.5, this.getY()+1, this.getZ()+1.5);
-        List<Entity> entityList = this.level().getEntities(this,hitTracer);
-        if(this.getTarget()!=null){
-            this.lookAt(this.getTarget(),360,360);
+
+    public void doHurtTarget() {
+        AABB hitTracer = new AABB(this.getX() - 1.5, this.getY(), this.getZ() - 1.5, this.getX() + 1.5, this.getY() + 1, this.getZ() + 1.5);
+        List<Entity> entityList = this.level().getEntities(this, hitTracer);
+        if (this.getTarget() != null) {
+            this.lookAt(this.getTarget(), 360, 360);
         }
-        double angle = Math.atan2(this.getLookAngle().z,this.getLookAngle().x);
-        angle=Math.toDegrees(angle);
+        double angle = Math.atan2(this.getLookAngle().z, this.getLookAngle().x);
+        angle = Math.toDegrees(angle);
         double maxFov;
-        if(this.attackType==40){
-            maxFov=50;
+        if (this.attackType == 40) {
+            maxFov = 50;
+        } else if (this.attackType == 20) {
+            maxFov = 40;
+        } else {
+            maxFov = 30;
         }
-        else if(this.attackType==20){
-            maxFov=40;
-        }
-        else{
-            maxFov=30;
-        }
-        for(Entity e: entityList){
-            if(e instanceof LivingEntity lEntity){
-                if(this.isOwnedBy(lEntity)){
+        for (Entity e : entityList) {
+            if (e instanceof LivingEntity lEntity) {
+                if (this.isOwnedBy(lEntity)) {
                     continue;
                 }
             }
-            double entityAngle = -Math.atan2(e.position().z-this.position().z,e.position().x-this.position().x);
-            entityAngle=Math.toDegrees(entityAngle);
-            if(Math.abs(Math.abs(angle)-Math.abs(entityAngle))<maxFov){
+            double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
+            entityAngle = Math.toDegrees(entityAngle);
+            if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
                 this.doHurtTarget(e);
             }
         }
         this.playVoice(this.getAttack());
-        this.inventory.getItem(1).hurtAndBreak(1, this,(a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+        this.inventory.getItem(1).hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
 
         this.updateGear();
     }
+
     @Override
     public boolean doHurtTarget(Entity pEntity) {
         boolean flag = false;
-        if(pEntity!=null){
+        if (pEntity != null) {
             if (this.distanceTo(pEntity) < 3) {
                 float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getAttackType() / 20;
                 float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
@@ -298,15 +295,17 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         }
         return flag;
     }
-    public void broadcastVoiceToNearby(String string){
-        AABB nearby = new AABB(this.getX()-5, this.getY()-5, this.getZ()-5, this.getX()+5, this.getY()+5, this.getZ()+5);
-        List<Entity> entityList = this.level().getEntities(this,nearby);
-        for(Entity e: entityList){
-            if(e instanceof Player pPlayer){
-                pPlayer.displayClientMessage(Component.literal(this.getName().getString() +": "+ Component.translatable(string).getString()), true);
+
+    public void broadcastVoiceToNearby(String string) {
+        AABB nearby = new AABB(this.getX() - 5, this.getY() - 5, this.getZ() - 5, this.getX() + 5, this.getY() + 5, this.getZ() + 5);
+        List<Entity> entityList = this.level().getEntities(this, nearby);
+        for (Entity e : entityList) {
+            if (e instanceof Player pPlayer) {
+                pPlayer.displayClientMessage(Component.literal(this.getName().getString() + ": " + Component.translatable(string).getString()), true);
             }
         }
     }
+
     abstract void setInventoryRows();
 
     abstract void setArmorableModular();
@@ -320,7 +319,8 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     abstract void setCaptureDifficulty();
 
     abstract void setRecoveryDifficulty();
-    public int getRecoveryDifficulty(){
+
+    public int getRecoveryDifficulty() {
         this.setRecoveryDifficulty();
         return this.recoveryDifficulty;
     }
@@ -329,22 +329,24 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     public void spawnHorizontalParticles() {
         if (this.level() instanceof ServerLevel pLevel) {
-            pLevel.sendParticles(SUGURIVERSE_LARGE.get(), this.getX(), this.getY()+1, this.getZ(), 1, 0.0D, 0, 0.0D, 1);
+            pLevel.sendParticles(SUGURIVERSE_LARGE.get(), this.getX(), this.getY() + 1, this.getZ(), 1, 0.0D, 0, 0.0D, 1);
         }
     }
 
     void petEvent() {
-        LOGGER.info(this.getAttributeBaseValue(MAX_HEALTH) +"");
+        LOGGER.info(this.getAttributeBaseValue(MAX_HEALTH) + "");
         if (this.soundCounter >= 150) {
             this.playVoice(this.getPat());
         }
         patCounter = 20;
     }
-    public void playVoice(SoundEvent sound){
-        this.soundCounter=0;
-        this.broadcastVoiceToNearby(sound.getLocation().getNamespace() + "." + sound.getLocation().getPath());
 
-        this.playSound(sound, this.volume, 1);
+    public void playVoice(SoundEvent sound) {
+        this.soundCounter = 0;
+        if(sound!=null){
+            this.broadcastVoiceToNearby(sound.getLocation().getNamespace() + "." + sound.getLocation().getPath());
+            this.playSound(sound, this.volume, 1);
+        }
     }
 
     void doRecoveryEvent() {
@@ -362,7 +364,9 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
             this.doDeathEvent();
         }
     }
+
     public DamageSource deathSource;
+
     public void doDeathEvent() {
         this.spawnHorizontalParticles();
         this.playVoice(FRIEND_DEATH.get());
@@ -371,13 +375,16 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
         this.setRemoved(RemovalReason.KILLED);
     }
+
     FriendCombatTracker combatTracker = new FriendCombatTracker(this);
+
     @Override
     public @NotNull CombatTracker getCombatTracker() {
         return this.combatTracker;
     }
-    public static AttributeSupplier.Builder getFriendAttributes(){
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,100).add(Attributes.MOVEMENT_SPEED,0.3).add(Attributes.ATTACK_DAMAGE, 2);
+
+    public static AttributeSupplier.Builder getFriendAttributes() {
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 100).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.ATTACK_DAMAGE, 2);
     }
 
     abstract SoundEvent getIdle();
@@ -410,19 +417,23 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     public abstract SoundEvent getEquip();
 
-    abstract SoundEvent getModuleEquip();
+    public abstract SoundEvent getModuleEquip();
+
     float maxhealth;
     float mvspeed;
     float atkdmg;
+
     abstract void setInitialHealthSpeedAtk();
-    void updateAttributes(float health, float speed, float atk){
-        this.maxhealth=health;
+
+    void updateAttributes(float health, float speed, float atk) {
+        this.maxhealth = health;
         Objects.requireNonNull(this.getAttribute(MAX_HEALTH)).setBaseValue(health);
-        this.mvspeed=speed;
+        this.mvspeed = speed;
         Objects.requireNonNull(this.getAttribute(MOVEMENT_SPEED)).setBaseValue(speed);
-        this.atkdmg=atk;
+        this.atkdmg = atk;
         Objects.requireNonNull(this.getAttribute(ATTACK_DAMAGE)).setBaseValue(atk);
     }
+
     abstract Relationships parseRelationships(int[] relations);
 
     abstract CombatSettings parseCombatSettings(int[] combatSettings);
@@ -585,7 +596,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         this.mvspeed = pCompound.getFloat("juicecraft.mvspeed");
         this.atkdmg = pCompound.getFloat("juicecraft.atkdmg");
 
-        this.updateAttributes(this.maxhealth,this.mvspeed,this.atkdmg);
+        this.updateAttributes(this.maxhealth, this.mvspeed, this.atkdmg);
 
     }
 
@@ -618,27 +629,34 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         }
 
     }
-    public void setDeathAnimCounter(int c){
-        this.deathAnimCounter=c;
+
+    public void setDeathAnimCounter(int c) {
+        this.deathAnimCounter = c;
         this.getEntityData().set(FRIEND_DEATHCOUNTER, c);
     }
-    public int getDeathAnimCounter(){
+
+    public int getDeathAnimCounter() {
         return this.getEntityData().get(FRIEND_DEATHCOUNTER);
     }
-    public void setIsDying(boolean b){
-        this.isDying=b;
-        this.getEntityData().set(FRIEND_ISDYING,b);
+
+    public void setIsDying(boolean b) {
+        this.isDying = b;
+        this.getEntityData().set(FRIEND_ISDYING, b);
     }
-    public void setHungerMeter(int hun){
-        this.hungerMeter=hun;
+
+    public void setHungerMeter(int hun) {
+        this.hungerMeter = hun;
         this.getEntityData().set(FRIEND_HUNGERMETER, hun);
     }
-    public int getHungerMeter(){
+
+    public int getHungerMeter() {
         return this.getEntityData().get(FRIEND_HUNGERMETER);
     }
-    public boolean getIsDying(){
+
+    public boolean getIsDying() {
         return this.getEntityData().get(FRIEND_ISDYING);
     }
+
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_ID_FLAGS, (byte) 0);
@@ -647,17 +665,20 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         this.entityData.define(FRIEND_ATTACKCOUNTER, this.attackCounter);
         this.entityData.define(FRIEND_DEATHCOUNTER, this.deathAnimCounter);
         this.entityData.define(FRIEND_ATTACKTYPE, this.attackType);
-        this.inventory=new SimpleContainer(16);
+        this.inventory = new SimpleContainer(16);
         this.entityData.define(FRIEND_WEAPON, this.inventory.getItem(1));
         this.entityData.define(SLEEPING_POS_ID, Optional.empty());
         this.entityData.define(FRIEND_HUNGERMETER, this.hungerMeter);
     }
-    public void setFriendWeapon(ItemStack wep){
+
+    public void setFriendWeapon(ItemStack wep) {
         this.getEntityData().set(FRIEND_WEAPON, wep);
     }
-    public ItemStack getFriendWeapon(){
+
+    public ItemStack getFriendWeapon() {
         return this.getEntityData().get(FRIEND_WEAPON);
     }
+
     private static final EntityDataAccessor<Byte> DATA_ID_FLAGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BYTE);
     public static final EntityDataAccessor<Boolean> FRIEND_ISDYING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> FRIEND_ISSITTING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
@@ -764,107 +785,115 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         return this.entityData.get(FRIEND_ISSITTING);
     }
 
-    public boolean isEdible(ItemStack pStack){
+    public boolean isEdible(ItemStack pStack) {
         return pStack.is(ItemInit.ORANGE.get()) || pStack.is(ItemInit.GOLDEN_ORANGE.get()) || pStack.getItem() instanceof Sweet;
     }
 
     @Override
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        Item item = itemstack.getItem();
-        if (this.level().isClientSide) {
-            boolean flag = this.isOwnedBy(pPlayer) || this.isTame() || this.isEdible(itemstack);
-            if (this.isOwnedBy(pPlayer) || this.isTame()) {
-                if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
-                    this.patCounter = 20;
-                } else if (itemstack.isEmpty()) {
-                    this.idleCounter = 0;
-                }
-            }
-            return flag ? InteractionResult.CONSUME : InteractionResult.PASS;
-        } else if (this.isTame()) {
-            if (this.isEdible(itemstack)) {
-                SweetHandler.doSweetEffect(this,itemstack);
-                this.socialInteraction+=1;
-                if (!pPlayer.getAbilities().instabuild) {
-                    itemstack.shrink(1);
-                }
-                this.gameEvent(GameEvent.EAT);
-                return InteractionResult.SUCCESS;
-            }
-            else if (itemstack.is(ItemInit.SUMIKA_MEMORY.get())) {
-                this.loadMemory();
-                this.doRecoveryEvent(); //recovery animation
-                return InteractionResult.SUCCESS;
-            } else {
-                if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
-                    if (pPlayer instanceof ServerPlayer serverPlayer) {
-                        this.playVoice(this.getInteract());
+        double totalZ = this.getZ() - pPlayer.getZ();
+        double totalX = this.getX() - pPlayer.getX();
+        double totalY = this.getY() + this.getBbHeight()-0.4- pPlayer.getBbHeight() - pPlayer.getY();
+        double lookRot = pPlayer.getXRot();
 
-                        serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
+        double worstRot = Math.atan2(totalY, Math.sqrt(totalX*totalX + totalZ*totalZ));
+        worstRot = -Math.toDegrees(worstRot);
+        if (lookRot<worstRot) {
+            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            Item item = itemstack.getItem();
+            if (this.level().isClientSide) {
+                boolean flag = this.isOwnedBy(pPlayer) || this.isTame() || this.isEdible(itemstack);
+                if (this.isOwnedBy(pPlayer) || this.isTame()) {
+                    if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
+                        this.patCounter = 20;
+                    } else if (itemstack.isEmpty()) {
+                        this.idleCounter = 0;
                     }
+                }
+                return flag ? InteractionResult.CONSUME : InteractionResult.PASS;
+            } else if (this.isTame()) {
+                if (this.isEdible(itemstack)) {
+                    SweetHandler.doSweetEffect(this, itemstack);
+                    this.socialInteraction += 1;
+                    if (!pPlayer.getAbilities().instabuild) {
+                        itemstack.shrink(1);
+                    }
+                    this.gameEvent(GameEvent.EAT);
                     return InteractionResult.SUCCESS;
-                } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
-                    this.setFriendInSittingPose(!this.getInSittingPose());
-                    if(sleeping()&&animateSleep()){
-                        this.setPose(Pose.SLEEPING);
-                    }else{
-                        this.setPose(STANDING);
-                    }
-                } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer)) {
-                    if (this.mood > 50) {
-                        petEvent();
-                        if (this.random.nextInt(20) == 6) {
-                            if (this.mood <= 80) {
-                                this.mood += 20;
-                                if (this.level() instanceof ServerLevel sLevel) {
-                                    for (int i = 0; i < 5; i++) {
-                                        sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), 0.5);
-                                    }
+                } else if (itemstack.is(ItemInit.SUMIKA_MEMORY.get())) {
+                    this.loadMemory();
+                    this.doRecoveryEvent(); //recovery animation
+                    return InteractionResult.SUCCESS;
+                } else {
+                    if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
+                        if (pPlayer instanceof ServerPlayer serverPlayer) {
+                            this.playVoice(this.getInteract());
 
-                                }
-                            } else {
-                                this.mood = 100;
-                                if (this.level() instanceof ServerLevel sLevel) {
-                                    for (int i = 0; i < 5; i++) {
-                                        sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), 0.5);
+                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
+                        }
+                        return InteractionResult.SUCCESS;
+                    } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
+                        this.setFriendInSittingPose(!this.getInSittingPose());
+                        if (sleeping() && animateSleep()) {
+                            this.setPose(Pose.SLEEPING);
+                        } else {
+                            this.setPose(STANDING);
+                        }
+                    } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer)) {
+                        if (this.mood > 50) {
+                            petEvent();
+                            if (this.random.nextInt(20) == 6) {
+                                if (this.mood <= 80) {
+                                    this.mood += 20;
+                                    if (this.level() instanceof ServerLevel sLevel) {
+                                        for (int i = 0; i < 5; i++) {
+                                            sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), 0.5);
+                                        }
+
+                                    }
+                                } else {
+                                    this.mood = 100;
+                                    if (this.level() instanceof ServerLevel sLevel) {
+                                        for (int i = 0; i < 5; i++) {
+                                            sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), 0.5);
+                                        }
                                     }
                                 }
                             }
+                        } else {
+                            this.level().broadcastEntityEvent(this, (byte) 6);
+                            this.mood--;
                         }
-                    } else {
-                        this.level().broadcastEntityEvent(this, (byte) 6);
-                        this.mood--;
+                        this.socialInteraction++;
+                        return InteractionResult.SUCCESS;
                     }
-                    this.socialInteraction++;
-                    return InteractionResult.SUCCESS;
                 }
-            }
-        } else if ((itemstack.is(ItemInit.ORANGE.get()) || itemstack.is(GOLDEN_ORANGE.get())) && !this.isAngry() && this.mood == 100) {
-            if (!pPlayer.getAbilities().instabuild) {
-                itemstack.shrink(1);
-            }
-            if (captureDifficulty > 1 && itemstack.is(GOLDEN_ORANGE.get())) {
-                captureDifficulty--;
-            }
-            if (this.random.nextInt(captureDifficulty) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, pPlayer)) {
-                this.tame(pPlayer);
-                this.navigation.stop();
-                this.setTarget((LivingEntity) null);
-                this.indicateTamed();
-                this.level().broadcastEntityEvent(this, (byte) 7);
-            } else {
-                this.level().broadcastEntityEvent(this, (byte) 6);
-                if (aggression < 50) {
-                    this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Player.class, 50, 1, 1));
-                } else if (aggression > 75) {
-                    this.setRemainingPersistentAngerTime(24000);
+            } else if ((itemstack.is(ItemInit.ORANGE.get()) || itemstack.is(GOLDEN_ORANGE.get())) && !this.isAngry() && this.mood == 100) {
+                if (!pPlayer.getAbilities().instabuild) {
+                    itemstack.shrink(1);
                 }
-                this.mood = 0;
+                if (captureDifficulty > 1 && itemstack.is(GOLDEN_ORANGE.get())) {
+                    captureDifficulty--;
+                }
+                if (this.random.nextInt(captureDifficulty) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, pPlayer)) {
+                    this.tame(pPlayer);
+                    this.navigation.stop();
+                    this.setTarget((LivingEntity) null);
+                    this.indicateTamed();
+                    this.level().broadcastEntityEvent(this, (byte) 7);
+                } else {
+                    this.level().broadcastEntityEvent(this, (byte) 6);
+                    if (aggression < 50) {
+                        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Player.class, 50, 1, 1));
+                    } else if (aggression > 75) {
+                        this.setRemainingPersistentAngerTime(24000);
+                    }
+                    this.mood = 0;
+                }
+                return InteractionResult.SUCCESS;
             }
             return InteractionResult.SUCCESS;
-        }
-        return InteractionResult.SUCCESS;
+        } else return InteractionResult.PASS;
     }
 
     @Override
@@ -877,9 +906,9 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
             this.shakeAnimO = 0.0F;
             this.level().broadcastEntityEvent(this, (byte) 8);
         }
-        if(!this.level().isClientSide()){
-            if(this.tickCount%80==0){
-                if(this.random.nextInt(3)==2){
+        if (!this.level().isClientSide()) {
+            if (this.tickCount % 80 == 0) {
+                if (this.random.nextInt(3) == 2 && this.getPose()!=SLEEPING && !this.getIsDying()) {
                     this.playVoice(this.getIdle());
                 }
             }
@@ -942,12 +971,12 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
             soundCounter++;
         }
         blinkCounter--;
-        if (this.getAttackCounter() == 23 && this.getAttackType()==40) {
+        if (this.getAttackCounter() == 23 && this.getAttackType() == 40) {
             this.doHurtTarget();
         }
-        if (this.getAttackCounter() == 8 && this.getAttackType()==20) {
+        if (this.getAttackCounter() == 8 && this.getAttackType() == 20) {
             this.doHurtTarget();
-        }else if(this.getAttackCounter()==6 && this.getAttackType() == 10){
+        } else if (this.getAttackCounter() == 6 && this.getAttackType() == 10) {
             this.doHurtTarget();
         }
         if (this.getAttackCounter() != -1) {
@@ -959,10 +988,12 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     protected SoundEvent getAmbientSound() {
         return this.getIdle();
     }
+
     @Override
     public void playAmbientSound() {
         //do nothing
     }
+
     @Override
     protected float getSoundVolume() {
         return this.volume;
@@ -972,25 +1003,33 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     public float getVoicePitch() {
         return 1F;
     }
+
     public boolean day() {
         long time = this.level().getDayTime();
 
         return time < 12300 || time > 23850;
     }
-    int clientSecondTimer=20;
-    public boolean idle(){
-        return this.walkAnimation.speed()<0.2 && !this.isDescending() && !this.isAggressive();
+
+    int clientSecondTimer = 20;
+
+    public boolean idle() {
+        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive();
     }
-    public boolean sleeping(){
+
+    public boolean sleeping() {
         return idle() && !this.day();
     }
-    public boolean animateSleep(){
-        return this.getFeetBlockState().isBed(this.level(),new BlockPos(this.getBlockX(), this.getBlockY()-1, this.getBlockZ()),null);}
-    int n=5;
+
+    public boolean animateSleep() {
+        return this.getFeetBlockState().isBed(this.level(), new BlockPos(this.getBlockX(), this.getBlockY() - 1, this.getBlockZ()), null);
+    }
+
+    int n = 5;
+
     @Override
     public void tick() {
         if (level().isClientSide()) {
-            if (this.getPose()==STANDING &&!idle() && idleCounter > 0) {
+            if (this.getPose() == STANDING && !idle() && idleCounter > 0) {
                 this.idleCounter = 0;
             }
             if (this.level().getGameTime() % 150 == 0 && this.getInSittingPose()) {
@@ -998,35 +1037,35 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
             } else if (!this.getInSittingPose() || this.patCounter != 0) {
                 this.impatientCounter = 0;
             }
-            if(clientSecondTimer==0){
-                clientSecondTimer=20;
+            if (clientSecondTimer == 0) {
+                clientSecondTimer = 20;
                 this.updateGear();
             }
             boolean sit = this.getInSittingPose();
-            this.deathStartAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter()!=0, this.tickCount);
-            this.deathAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter()==0,this.tickCount);
+            this.deathStartAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() != 0, this.tickCount);
+            this.deathAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() == 0, this.tickCount);
             this.idleAnimState.animateWhen(!sit && idle() && this.idleCounter == 20 && this.patCounter == 0, this.tickCount);
             this.idleAnimStartState.animateWhen(!sit && idle() && this.idleCounter < 20 && this.patCounter == 0, this.tickCount);
             this.patAnimState.animateWhen(this.patCounter > 0 && !this.walkAnimation.isMoving() && !this.isDescending(), this.tickCount);
-            this.sitPatAnimState.animateWhen(this.getPose()== SITTING && this.patCounter != 0, this.tickCount);
-            this.sitAnimState.animateWhen(this.getPose()== SITTING && this.patCounter == 0 && this.impatientCounter == 0, this.tickCount);
-            this.sitImpatientAnimState.animateWhen(this.getPose()== SITTING && this.patCounter == 0 && this.impatientCounter != 0, this.tickCount);
-            this.attackAnimState.animateWhen(this.getAttackCounter()!=-1, this.tickCount);
-            this.sleepAnimState.animateWhen(true,this.tickCount);
-            if (this.getPose()==STANDING && this.idle() && idleCounter < 20) {
+            this.sitPatAnimState.animateWhen(this.getPose() == SITTING && this.patCounter != 0, this.tickCount);
+            this.sitAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter == 0, this.tickCount);
+            this.sitImpatientAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter != 0, this.tickCount);
+            this.attackAnimState.animateWhen(this.getAttackCounter() != -1, this.tickCount);
+            this.sleepAnimState.animateWhen(true, this.tickCount);
+            if (this.getPose() == STANDING && this.idle() && idleCounter < 20) {
                 this.idleCounter++;
             }
             clientSecondTimer--;
         } else {
-            if(this.deathAnimCounter!=0){
-                setDeathAnimCounter(this.deathAnimCounter-1);
+            if (this.deathAnimCounter != 0) {
+                setDeathAnimCounter(this.deathAnimCounter - 1);
             }
             if (isDying) {
                 this.setTarget(null);
-                if(deathTimer==100){
-                     n= this.random.nextInt(1,7);
+                if (deathTimer == 100) {
+                    n = this.random.nextInt(1, 7);
                     ServerLevel sLevel = (ServerLevel) this.level();
-                    sLevel.sendParticles(DiceHandler.getDice(n),this.getX(), this.getY()+2.5, this.getZ(), 1, 0,0,0,0.1);
+                    sLevel.sendParticles(DiceHandler.getDice(n), this.getX(), this.getY() + 2.5, this.getZ(), 1, 0, 0, 0, 0.1);
                 }
                 if (deathTimer == 80 && n >= this.getRecoveryDifficulty()) {
                     doRecoveryEvent();
@@ -1040,17 +1079,16 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
                     deathTimer = 100;
                 }
 
-            }else{
-                deathTimer=200;
+            } else {
+                deathTimer = 200;
             }
-            if(this.hungerMeter>0){
-                if(this.tickCount%200==0){
-                    this.setHungerMeter(this.hungerMeter-1);
+            if (this.hungerMeter > 0) {
+                if (this.tickCount % 200 == 0) {
+                    this.setHungerMeter(this.hungerMeter - 1);
                 }
-            }
-            else{
-                if(this.tickCount%200==0){
-                    this.mood-=20;
+            } else {
+                if (this.tickCount % 200 == 0) {
+                    this.mood -= 20;
                 }
             }
         }
@@ -1078,9 +1116,9 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
             if (!this.level().isClientSide) {
                 this.setOrderedToSit(false);
             }
-            b= super.hurt(pSource, pAmount);
+            b = super.hurt(pSource, pAmount);
         }
-        if(this.isDying){
+        if (this.isDying) {
             this.setPersistentAngerTarget(null);
         }
         return b;
@@ -1129,21 +1167,25 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         ItemStack stack = this.getItemInHand(pHand);
         if (!stack.isEmpty()) {
             this.doMeleeAttack();
-        }else{
+        } else {
             this.setAttackCounter(10);
             this.setAttackType(10);
         }
     }
+
     @Override
     public boolean isSleeping() {
-        return this.getPose()==Pose.SLEEPING;
+        return this.getPose() == Pose.SLEEPING;
     }
-    @Nullable @Override
+
+    @Nullable
+    @Override
     public Direction getBedOrientation() {
         BlockPos blockpos = this.getOnPos();
         BlockState state = this.getFeetBlockState();
         return !state.isBed(level(), blockpos, this) ? Direction.UP : state.getBedDirection(level(), blockpos);
     }
+
     @Override
     public void stopSleeping() {/*yucky method*/}
 

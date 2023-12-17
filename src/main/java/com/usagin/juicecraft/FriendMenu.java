@@ -61,8 +61,9 @@ public class FriendMenu extends AbstractContainerMenu {
             }
             public void set(ItemStack pStack) {
                 this.container.setItem(0, pStack);
+                if(!pPlayerInventory.player.level().isClientSide()){
                 pFriend.playVoice(pFriend.getHyperEquip());
-                pFriend.playSound(HYPER_EQUIP.get(),0.3F,1);
+                pFriend.playSound(HYPER_EQUIP.get(),0.3F,1);}
                 this.setChanged();
             }
             public boolean mayPickup(Player player){
@@ -80,8 +81,9 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(@NotNull ItemStack pStack) {
                 this.container.setItem(1, pStack);
                 if(this.hasItem()){
+                    if(!pPlayerInventory.player.level().isClientSide()){
                     pFriend.playVoice(pFriend.getEquip());
-                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 pFriend.setFriendWeapon(pStack);
                 this.setChanged();
@@ -102,8 +104,9 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(2, pStack);
                 if(this.hasItem()){
-                    pFriend.playVoice(pFriend.getEquip());
-                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                    if(!pPlayerInventory.player.level().isClientSide()){
+                    pFriend.playVoice(pFriend.getModuleEquip());
+                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 this.setChanged();
             }
@@ -125,8 +128,9 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(3, pStack);
                 if(this.hasItem()){
+                    if(!pPlayerInventory.player.level().isClientSide()){
                     pFriend.playVoice(pFriend.getEquip());
-                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 this.setChanged();
             }
@@ -149,8 +153,9 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(4, pStack);
                 if(this.hasItem()){
-                    pFriend.playVoice(pFriend.getEquip());
-                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                    if(!pPlayerInventory.player.level().isClientSide()){
+                        pFriend.playVoice(pFriend.getEquip());
+                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 this.setChanged();
             }
@@ -173,8 +178,9 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(5, pStack);
                 if(this.hasItem()){
-                    pFriend.playVoice(pFriend.getEquip());
-                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                    if(!pPlayerInventory.player.level().isClientSide()){
+                        pFriend.playVoice(pFriend.getEquip());
+                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 this.setChanged();
             }
@@ -197,8 +203,9 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(6, pStack);
                 if(this.hasItem()){
-                    pFriend.playVoice(pFriend.getEquip());
-                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);
+                    if(!pPlayerInventory.player.level().isClientSide()){
+                        pFriend.playVoice(pFriend.getEquip());
+                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 this.setChanged();
             }

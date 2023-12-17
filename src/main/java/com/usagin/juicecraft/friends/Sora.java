@@ -264,7 +264,7 @@ public class Sora extends Friend{
         };
     }
     @Override
-    SoundEvent getModuleEquip() {
+    public SoundEvent getModuleEquip() {
         return SORA_MODULEEQUIP.get();
     }
 
