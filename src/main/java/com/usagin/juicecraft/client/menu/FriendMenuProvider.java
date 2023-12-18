@@ -1,4 +1,4 @@
-package com.usagin.juicecraft;
+package com.usagin.juicecraft.client.menu;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.friends.Friend;
@@ -19,7 +19,7 @@ public class FriendMenuProvider implements MenuProvider {
     }
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.literal(friend.getFriendName());
+        return Component.literal("");
     }
 
     @Nullable

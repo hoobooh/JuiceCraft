@@ -20,7 +20,7 @@ import com.usagin.juicecraft.particles.SuguriverseParticleLarge;
 public class CommonEvents {
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event){
-        event.put(EntityInit.SORA.get(), Sora.getFriendAttributes().build());
+        event.put(EntityInit.SORA.get(), Sora.getSoraAttributes().build());
     }
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event){

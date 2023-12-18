@@ -7,6 +7,7 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -25,6 +26,7 @@ public class SweetHandler {
         ServerLevel sLevel = (ServerLevel) friend.level();
         if(pStack.is(PUDDING.get())){
             friend.addEffect(new MobEffectInstance(MobEffects.REGENERATION,2000,1));
+            playVoice(friend,friend.getOnHeal());
             friend.setHungerMeter(Mth.clamp(friend.getHungerMeter()+5,0,100));
             friend.playSound(SoundEvents.GENERIC_EAT,1,1);
             sLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,friend.getX(),friend.getY()+2,friend.getZ(),6,0.3,0.3,0.3,0.4);
@@ -34,6 +36,7 @@ public class SweetHandler {
         else if(pStack.is(REDBEANICECREAM.get())){
             friend.setHealth(friend.getMaxHealth());
             friend.setHungerMeter(100);
+            playVoice(friend,friend.getOnHeal());
             friend.mood=100;
             friend.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST,2000,3));
             friend.addEffect(new MobEffectInstance(MobEffects.REGENERATION,2000,3));
@@ -59,6 +62,7 @@ public class SweetHandler {
         }
         else if(pStack.is(SAKISCOOKIE.get())){
             friend.setHealth(friend.getHealth()+10);
+            playVoice(friend,friend.getOnHeal());
             friend.setHungerMeter(Mth.clamp(friend.getHungerMeter()+10,0,100));
             friend.playSound(SoundEvents.GENERIC_EAT,1,1);
             sLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,friend.getX(),friend.getY()+2,friend.getZ(),6,0.3,0.3,0.3,0.4);
@@ -79,6 +83,7 @@ public class SweetHandler {
             friend.setHungerMeter(Mth.clamp(friend.getHungerMeter()+6,0,100));
         }
         else if(pStack.is(Items.COOKIE)){
+            playVoice(friend,friend.getOnHeal());
             friend.setHealth(friend.getHealth()+1);
             friend.playSound(SoundEvents.GENERIC_EAT,1,1);
             sendParticles(sLevel, friend, pStack);
@@ -107,5 +112,9 @@ public class SweetHandler {
             sLevel.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, pStack), vec31.x, vec31.y-0.7, vec31.z, 1, vec3.x, vec3.y, vec3.z, 0.0D);
         }
 
+    }
+    static void playVoice(Friend friend, SoundEvent sound){
+        if(friend.soundCounter>=150){
+        friend.playVoice(sound);}
     }
 }

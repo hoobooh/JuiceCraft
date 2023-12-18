@@ -1,39 +1,34 @@
 package com.usagin.juicecraft.friends;
 
 import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.FriendMenu;
+import com.usagin.juicecraft.client.menu.FriendMenu;
 import com.usagin.juicecraft.data.CombatSettings;
 import com.usagin.juicecraft.data.Relationships;
 import com.usagin.juicecraft.goals.SoraHyperGoal;
-import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BedBlock;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.Init.SoraSoundInit.*;
-import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
 
 public class Sora extends Friend{
     private static final Logger LOGGER = LogUtils.getLogger();
     public Sora(EntityType<? extends Wolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+    }
+    public static AttributeSupplier.Builder getSoraAttributes() {
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 25).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.ATTACK_DAMAGE, 2);
     }
 
     @Override
@@ -220,7 +215,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getOnHeal() {
+    public SoundEvent getOnHeal() {
         int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_HEAL2.get();
@@ -268,12 +263,6 @@ public class Sora extends Friend{
         return SORA_MODULEEQUIP.get();
     }
 
-    @Override
-    void setInitialHealthSpeedAtk() {
-        this.maxhealth=25;
-        this.mvspeed=0.3F;
-        this.atkdmg=2;
-    }
 
 
     @Override

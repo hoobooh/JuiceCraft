@@ -1,6 +1,6 @@
 package com.usagin.juicecraft.Init;
 
-import com.usagin.juicecraft.FriendMenu;
+import com.usagin.juicecraft.client.menu.FriendMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.registries.DeferredRegister;

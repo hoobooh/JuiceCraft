@@ -2,7 +2,7 @@ package com.usagin.juicecraft.friends;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.FriendMenuProvider;
+import com.usagin.juicecraft.client.menu.FriendMenuProvider;
 import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.Seagull;
 import com.usagin.juicecraft.data.*;
@@ -16,11 +16,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.OldUsersConverter;
@@ -30,8 +28,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -41,23 +37,15 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.food.Foods;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.SweepingEdgeEnchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -133,8 +121,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         if (this.level().isClientSide()) {
             this.inventory.setItem(1, this.getFriendWeapon());
         }
-        this.setInitialHealthSpeedAtk();
-        this.updateAttributes(this.maxhealth, this.mvspeed, this.atkdmg);
+        LOGGER.info("HIT");
     }
 
     void initializeNew() {
@@ -159,8 +146,6 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         ((FriendPathNavigation) this.getNavigation()).setCanOpenDoors(true);
 
         this.createInventory();
-        this.setInitialHealthSpeedAtk();
-        this.updateAttributes(this.maxhealth, this.mvspeed, this.atkdmg);
     }
 
     @Override
@@ -266,6 +251,9 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     @Override
     public boolean doHurtTarget(Entity pEntity) {
+        if(pEntity.level() instanceof ServerLevel t){
+            t.sendParticles(SWEEP_ATTACK,pEntity.getX(),pEntity.getY()+1,pEntity.getZ(),1,0.2,0.2,0.2, 0.3);
+        }
         boolean flag = false;
         if (pEntity != null) {
             if (this.distanceTo(pEntity) < 3) {
@@ -334,7 +322,6 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     }
 
     void petEvent() {
-        LOGGER.info(this.getAttributeBaseValue(MAX_HEALTH) + "");
         if (this.soundCounter >= 150) {
             this.playVoice(this.getPat());
         }
@@ -343,7 +330,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     public void playVoice(SoundEvent sound) {
         this.soundCounter = 0;
-        if(sound!=null){
+        if (sound != null) {
             this.broadcastVoiceToNearby(sound.getLocation().getNamespace() + "." + sound.getLocation().getPath());
             this.playSound(sound, this.volume, 1);
         }
@@ -354,7 +341,8 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         this.deathCounter = 7 - recoveryDifficulty;
         this.getEntityData().set(FRIEND_ISDYING, false);
         this.isDying = false;
-        this.playVoice(RECOVERY.get());
+        this.playSound(RECOVERY.get(),1,1);
+        this.playVoice(this.getRecovery());
         this.spawnHorizontalParticles();
     }
 
@@ -383,10 +371,6 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         return this.combatTracker;
     }
 
-    public static AttributeSupplier.Builder getFriendAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 100).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.ATTACK_DAMAGE, 2);
-    }
-
     abstract SoundEvent getIdle();
 
     abstract SoundEvent getInjured();
@@ -409,7 +393,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     abstract SoundEvent getRecovery();
 
-    abstract SoundEvent getOnHeal();
+    public abstract SoundEvent getOnHeal();
 
     abstract SoundEvent getRecoveryFail();
 
@@ -423,16 +407,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     float mvspeed;
     float atkdmg;
 
-    abstract void setInitialHealthSpeedAtk();
 
-    void updateAttributes(float health, float speed, float atk) {
-        this.maxhealth = health;
-        Objects.requireNonNull(this.getAttribute(MAX_HEALTH)).setBaseValue(health);
-        this.mvspeed = speed;
-        Objects.requireNonNull(this.getAttribute(MOVEMENT_SPEED)).setBaseValue(speed);
-        this.atkdmg = atk;
-        Objects.requireNonNull(this.getAttribute(ATTACK_DAMAGE)).setBaseValue(atk);
-    }
 
     abstract Relationships parseRelationships(int[] relations);
 
@@ -509,11 +484,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         pCompound.putInt("juicecraft.existed", 1);
         pCompound.putBoolean("Tame", this.isTame());
         pCompound.putBoolean("juicecraft.isdying", this.isDying);
-        pCompound.putFloat("Health", this.getHealth());
         pCompound.putInt("juicecraft.deathcounter", this.deathCounter);
-        pCompound.putFloat("juicecraft.maxhealth", this.maxhealth);
-        pCompound.putFloat("juicecraft.mvspeed", this.mvspeed);
-        pCompound.putFloat("juicecraft.atkdmg", this.atkdmg);
         pCompound.putInt("juicecraft.hungermeter", this.hungerMeter);
         ListTag listtag = new ListTag();
 
@@ -545,6 +516,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
             return;
         }
         super.readAdditionalSaveData(pCompound);
+        this.initializeNew();
         int[] temp = pCompound.getIntArray("juicecraft.home");
         if (temp.length != 0) {
             this.home = new float[]{temp[0], temp[1], temp[2], temp[3]};
@@ -595,8 +567,6 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         this.maxhealth = pCompound.getFloat("juicecraft.maxhealth");
         this.mvspeed = pCompound.getFloat("juicecraft.mvspeed");
         this.atkdmg = pCompound.getFloat("juicecraft.atkdmg");
-
-        this.updateAttributes(this.maxhealth, this.mvspeed, this.atkdmg);
 
     }
 
@@ -793,16 +763,15 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         double totalZ = this.getZ() - pPlayer.getZ();
         double totalX = this.getX() - pPlayer.getX();
-        double totalY = this.getY() + this.getBbHeight()-0.4- pPlayer.getBbHeight() - pPlayer.getY();
+        double totalY = this.getY() + this.getBbHeight() - 0.4 - pPlayer.getBbHeight() - pPlayer.getY();
         double lookRot = pPlayer.getXRot();
 
-        double worstRot = Math.atan2(totalY, Math.sqrt(totalX*totalX + totalZ*totalZ));
+        double worstRot = Math.atan2(totalY, Math.sqrt(totalX * totalX + totalZ * totalZ));
         worstRot = -Math.toDegrees(worstRot);
-        if (lookRot<worstRot) {
+        if (lookRot < worstRot) {
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
-            Item item = itemstack.getItem();
             if (this.level().isClientSide) {
-                boolean flag = this.isOwnedBy(pPlayer) || this.isTame() || this.isEdible(itemstack);
+                boolean flag = (this.isOwnedBy(pPlayer) && this.isTame()) || this.isEdible(itemstack);
                 if (this.isOwnedBy(pPlayer) || this.isTame()) {
                     if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
                         this.patCounter = 20;
@@ -811,7 +780,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
                     }
                 }
                 return flag ? InteractionResult.CONSUME : InteractionResult.PASS;
-            } else if (this.isTame()) {
+            } else if (this.isTame() && this.isOwnedBy(pPlayer)) {
                 if (this.isEdible(itemstack)) {
                     SweetHandler.doSweetEffect(this, itemstack);
                     this.socialInteraction += 1;
@@ -824,12 +793,15 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
                     this.loadMemory();
                     this.doRecoveryEvent(); //recovery animation
                     return InteractionResult.SUCCESS;
-                } else {
-                    if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
-                        if (pPlayer instanceof ServerPlayer serverPlayer) {
-                            this.playVoice(this.getInteract());
+                }else{
 
+                    if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
+
+                        if (pPlayer instanceof ServerPlayer serverPlayer) {
+
+                            this.playVoice(this.getInteract());
                             serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
+
                         }
                         return InteractionResult.SUCCESS;
                     } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
@@ -893,7 +865,42 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
                 return InteractionResult.SUCCESS;
             }
             return InteractionResult.SUCCESS;
-        } else return InteractionResult.PASS;
+        }
+        else {
+            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            if(!this.level().isClientSide()){
+            if (this.isTame() && this.isOwnedBy(pPlayer)) {
+
+                if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
+
+                    if (pPlayer instanceof ServerPlayer serverPlayer) {
+
+                        this.playVoice(this.getInteract());
+                        serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
+
+                    }
+                    return InteractionResult.SUCCESS;
+                } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
+                    this.setFriendInSittingPose(!this.getInSittingPose());
+                    if (sleeping() && animateSleep()) {
+                        this.setPose(Pose.SLEEPING);
+                    } else {
+                        this.setPose(STANDING);
+                    }
+                }
+            }}else{
+                boolean flag = (this.isOwnedBy(pPlayer) && this.isTame()) || this.isEdible(itemstack);
+                if (this.isOwnedBy(pPlayer) || this.isTame()) {
+                    if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
+                        this.patCounter = 20;
+                    } else if (itemstack.isEmpty()) {
+                        this.idleCounter = 0;
+                    }
+                }
+                return flag ? InteractionResult.CONSUME : InteractionResult.PASS;
+            }
+            return InteractionResult.PASS;
+        }
     }
 
     @Override
@@ -908,7 +915,7 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
         }
         if (!this.level().isClientSide()) {
             if (this.tickCount % 80 == 0) {
-                if (this.random.nextInt(3) == 2 && this.getPose()!=SLEEPING && !this.getIsDying()) {
+                if (this.random.nextInt(3) == 2 && this.getPose() != SLEEPING && !this.getIsDying()) {
                     this.playVoice(this.getIdle());
                 }
             }
@@ -1188,5 +1195,15 @@ public abstract class Friend extends Wolf implements ContainerListener, MenuProv
 
     @Override
     public void stopSleeping() {/*yucky method*/}
+    @Override
+    public void setTame(boolean pTamed) {
+        byte b0 = this.entityData.get(DATA_FLAGS_ID);
+        if (pTamed) {
+            this.entityData.set(DATA_FLAGS_ID, (byte)(b0 | 4));
+        } else {
+            this.entityData.set(DATA_FLAGS_ID, (byte)(b0 & -5));
+        }
 
+        this.reassessTameGoals();
+    }
 }

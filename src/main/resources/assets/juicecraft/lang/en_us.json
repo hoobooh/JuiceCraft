@@ -16,8 +16,27 @@
   "juicecraft.skills": "Skills",
   "juicecraft.stats": "Stats",
   "juicecraft.gear": "Gear",
+  "juicecraft.talk": "Talk",
+  "juicecraft.menu.name":"Name: ",
+  "juicecraft.menu.origin":"Origin: ",
+  "juicecraft.menu.disposition":"Disposition: ",
+  "juicecraft.menu.specialties":"Specialties: ",
+  "juicecraft.menu.weaknesses":"Weaknesses: ",
+  "juicecraft.menu.level":"Level: ",
+  "juicecraft.menu.health":"Health: ",
+  "juicecraft.menu.hunger":"Hunger: ",
+  "juicecraft.menu.hostilekilled":"Enemies Killed: ",
+  "juicecraft.menu.age": "Time Since First Meeting: ",
+  "juicecraft.menu.blockstravelled":"Blocks Travelled: ",
+  "juicecraft.menu.home":"Home: ",
 
   "entity.juicecraft.sora": "Sora",
+
+  "juicecraft.menu.sora.origin": "Sora™",
+  "juicecraft.menu.sora.disposition": "Kind",
+  "juicecraft.menu.sora.specialties": "Attacking, Defending, Idol Activities",
+  "juicecraft.menu.sora.weaknesses": "Prone to Violence",
+
 
   "juicecraft.sora_idle_night1": "The stars are pretty, aren't they? I like them.",
   "juicecraft.sora_idle_night2": "Stars...",

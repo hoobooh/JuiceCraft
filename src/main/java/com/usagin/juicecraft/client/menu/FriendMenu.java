@@ -1,4 +1,4 @@
-package com.usagin.juicecraft;
+package com.usagin.juicecraft.client.menu;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.Init.ItemInit;
@@ -25,7 +25,6 @@ import static com.usagin.juicecraft.Init.UniversalSoundInit.HYPER_EQUIP;
 public class FriendMenu extends AbstractContainerMenu {
     private final Container friendContainer;
     private final Friend friend;
-
     public Friend getFriend() {
         return this.friend;
     }
@@ -51,7 +50,7 @@ public class FriendMenu extends AbstractContainerMenu {
         this.friendContainer.startOpen(pPlayerInventory.player);
         int j = -18;
         //Activator slot
-        this.addSlot(new Slot(this.friendContainer, 0, 136, 133) {
+        this.addSlot(new FriendSlot(this.friendContainer, 0, 136, 133) {
             public boolean mayPlace(ItemStack p_39677_) {
                 return p_39677_.is(ItemInit.ACTIVATOR.get()) && pFriend.isLivingTame();
             }
@@ -71,7 +70,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Weapon slot
-        this.addSlot(new Slot(this.friendContainer, 1, 14, 205) {
+        this.addSlot(new FriendSlot(this.friendContainer, 1, 14, 205) {
             public boolean mayPlace(ItemStack p_39690_) {
                 return true;
             }
@@ -93,7 +92,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Module slot
-        this.addSlot(new Slot(this.friendContainer, 2, 68, 205) {
+        this.addSlot(new FriendSlot(this.friendContainer, 2, 68, 205) {
             public boolean mayPlace(ItemStack p_39690_) {
                 return pFriend.isModule(p_39690_);
             }
@@ -115,7 +114,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Helmet slot
-        this.addSlot(new Slot(this.friendContainer, 3, 14, 230) {
+        this.addSlot(new FriendSlot(this.friendContainer, 3, 14, 230) {
             public boolean mayPlace(ItemStack p_39690_) {
                 if (p_39690_.getItem() instanceof ArmorItem pItem) {
                     return pItem.getType() == ArmorItem.Type.HELMET;
@@ -139,7 +138,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Chest slot
-        this.addSlot(new Slot(this.friendContainer, 4, 32, 230) {
+        this.addSlot(new FriendSlot(this.friendContainer, 4, 32, 230) {
             public boolean mayPlace(ItemStack p_39690_) {
                 if (p_39690_.getItem() instanceof ArmorItem pItem) {
                     return pItem.getType() == ArmorItem.Type.CHESTPLATE;
@@ -164,7 +163,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Leggings slot
-        this.addSlot(new Slot(this.friendContainer, 5, 50, 230) {
+        this.addSlot(new FriendSlot(this.friendContainer, 5, 50, 230) {
             public boolean mayPlace(ItemStack p_39690_) {
                 if (p_39690_.getItem() instanceof ArmorItem pItem) {
                     return pItem.getType() == ArmorItem.Type.LEGGINGS;
@@ -189,7 +188,7 @@ public class FriendMenu extends AbstractContainerMenu {
             }
         });
         //Boots slot
-        this.addSlot(new Slot(this.friendContainer, 6, 68, 230) {
+        this.addSlot(new FriendSlot(this.friendContainer, 6, 68, 230) {
             public boolean mayPlace(ItemStack p_39690_) {
                 if (p_39690_.getItem() instanceof ArmorItem pItem) {
                     return pItem.getType() == ArmorItem.Type.BOOTS;
@@ -217,18 +216,18 @@ public class FriendMenu extends AbstractContainerMenu {
         //friend inventory
         for (int k = 0; k < (pFriend.getInventoryRows()); ++k) {
             for (int l = 0; l < 5; ++l) {
-                this.addSlot(new Slot(this.friendContainer, 7 + k + l * pFriend.getInventoryRows(), 183 + l * 18, 43 + k * 18));
+                this.addSlot(new FriendSlot(this.friendContainer, 7 + k + l * pFriend.getInventoryRows(), 183 + l * 18, 43 + k * 18));
             }
         }
         //player inventory
         for (int i1 = 0; i1 < 3; ++i1) {
             for (int k1 = 0; k1 < 9; ++k1) {
-                this.addSlot(new Slot(pPlayerInventory, k1 + i1 * 9 + 9, 111 + k1 * 18, 199 + i1 * 18 + -18));
+                this.addSlot(new FriendSlot(pPlayerInventory, k1 + i1 * 9 + 9, 111 + k1 * 18, 199 + i1 * 18 + -18));
             }
         }
 
         for (int j1 = 0; j1 < 9; ++j1) {
-            this.addSlot(new Slot(pPlayerInventory, j1, 111 + j1 * 18, 239));
+            this.addSlot(new FriendSlot(pPlayerInventory, j1, 111 + j1 * 18, 239));
         }
     }
 
