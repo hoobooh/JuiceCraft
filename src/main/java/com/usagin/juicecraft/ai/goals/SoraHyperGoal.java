@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.goals;
+package com.usagin.juicecraft.ai.goals;
 
 import com.usagin.juicecraft.data.CombatSettings;
 import net.minecraft.world.entity.ai.goal.Goal;

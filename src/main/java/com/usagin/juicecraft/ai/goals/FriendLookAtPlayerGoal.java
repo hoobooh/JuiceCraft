@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.goals;
+package com.usagin.juicecraft.ai.goals;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.friends.Friend;

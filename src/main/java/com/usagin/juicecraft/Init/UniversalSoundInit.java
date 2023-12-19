@@ -16,6 +16,9 @@ public class UniversalSoundInit {
     public static final RegistryObject<SoundEvent> RECOVERY = registerFriendSoundEvent("friend_recovery");
     public static final RegistryObject<SoundEvent> FRIEND_DEATH = registerFriendSoundEvent("friend_death");
     public static final RegistryObject<SoundEvent> HYPER_EQUIP = registerFriendSoundEvent("friend_hyper_equip");
+    public static final RegistryObject<SoundEvent> LIGHT_ATTACK = registerFriendSoundEvent("light_attack");
+    public static final RegistryObject<SoundEvent> MEDIUM_ATTACK = registerFriendSoundEvent("medium_attack");
+    public static final RegistryObject<SoundEvent> HEAVY_ATTACK = registerFriendSoundEvent("heavy_attack");
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
         LOGGER.info("sounds/"+name);
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, name)));

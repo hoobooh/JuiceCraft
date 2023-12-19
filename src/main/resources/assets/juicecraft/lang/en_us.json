@@ -26,8 +26,7 @@
   "juicecraft.menu.health":"Health: ",
   "juicecraft.menu.hunger":"Hunger: ",
   "juicecraft.menu.hostilekilled":"Enemies Killed: ",
-  "juicecraft.menu.age": "Time Since First Meeting: ",
-  "juicecraft.menu.blockstravelled":"Blocks Travelled: ",
+  "juicecraft.menu.itemscollected": "Items Collected: ",
   "juicecraft.menu.home":"Home: ",
 
   "entity.juicecraft.sora": "Sora",

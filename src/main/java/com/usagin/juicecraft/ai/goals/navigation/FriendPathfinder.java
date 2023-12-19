@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.goals.navigation;
+package com.usagin.juicecraft.ai.goals.navigation;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;

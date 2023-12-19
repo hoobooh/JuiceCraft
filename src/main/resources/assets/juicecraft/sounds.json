@@ -1,4 +1,19 @@
 {
+  "light_attack": {
+    "sounds": [
+      "juicecraft:light_attack"
+    ]
+  },
+  "medium_attack": {
+    "sounds": [
+      "juicecraft:medium_attack"
+    ]
+  },
+  "heavy_attack": {
+    "sounds": [
+      "juicecraft:heavy_attack"
+    ]
+  },
   "friend_death": {
     "sounds": [
       "juicecraft:friend_death"

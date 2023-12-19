@@ -368,7 +368,7 @@ public class SoraEntityModel extends FriendEntityModel<Friend> {
 		}
 
 	}
-
+	Logger LOGGER = LogUtils.getLogger();
 	@Override
 	public void setupAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 		root().getAllParts().forEach(ModelPart::resetPose);
@@ -409,7 +409,7 @@ public class SoraEntityModel extends FriendEntityModel<Friend> {
 					}
 				}
 			}
-			if(pEntity.impatientCounter == 0 && !pEntity.sleepAnimState.isStarted()){
+			if(!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose()!=SLEEPING){
 				this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI/180f);
 				this.parts.head().xRot = (pHeadPitch * (float) Math.PI/180f);
 			}

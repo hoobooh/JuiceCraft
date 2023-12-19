@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.goals.navigation;
+package com.usagin.juicecraft.ai.goals.navigation;
 
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
