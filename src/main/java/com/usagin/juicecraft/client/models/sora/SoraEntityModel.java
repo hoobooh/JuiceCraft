@@ -9,6 +9,7 @@ import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.client.animation.SoraAnimation;
 import com.usagin.juicecraft.client.models.FriendEntityModel;
 import com.usagin.juicecraft.friends.Friend;
+import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -29,23 +30,22 @@ import static net.minecraft.world.entity.Pose.SLEEPING;
 public class SoraEntityModel extends FriendEntityModel<Friend> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "soraentitymodel"), "main");
-	private final ModelPart customroom;
-	private final ModelPart head;
-	private final ModelPart leftarm;
-	private final ModelPart rightarm;
-	private final ModelPart leftleg;
-	private final ModelPart rightleg;
-	private final ModelPart chest;
-	private final ModelParts parts;
 	public SoraEntityModel(ModelPart root) {
-		this.customroom = root.getChild("customroom");
-		this.head = root.getChild("customroom").getChild("Friend").getChild("head");
-		this.leftarm = root.getChild("customroom").getChild("Friend").getChild("leftarm");
-		this.rightarm = root.getChild("customroom").getChild("Friend").getChild("rightarm");
-		this.leftleg = root.getChild("customroom").getChild("Friend").getChild("leftleg");
-		this.rightleg = root.getChild("customroom").getChild("Friend").getChild("rightleg");
-		this.chest = root.getChild("customroom").getChild("Friend").getChild("chest");
-		this.parts=new ModelParts(this.customroom, this.head, this.leftarm, this.rightarm, this.leftleg, this.rightleg, this.chest);
+		defineParts(root);
+		defineAnimations();
+	}
+	public void defineParts(ModelPart root){
+		ModelPart customroom = root.getChild("customroom");
+		ModelPart head = root.getChild("customroom").getChild("Friend").getChild("head");
+		ModelPart leftarm = root.getChild("customroom").getChild("Friend").getChild("leftarm");
+		ModelPart rightarm = root.getChild("customroom").getChild("Friend").getChild("rightarm");
+		ModelPart leftleg = root.getChild("customroom").getChild("Friend").getChild("leftleg");
+		ModelPart rightleg = root.getChild("customroom").getChild("Friend").getChild("rightleg");
+		ModelPart chest = root.getChild("customroom").getChild("Friend").getChild("chest");
+		this.parts=new ModelParts(customroom, head, leftarm, rightarm, leftleg, rightleg, chest);
+	}
+	public void defineAnimations(){
+		this.animations=new Animations(IDLEGROUNDED,IDLETRANSITION,PATGROUNDED,SIT,SITIMPATIENT,SITPAT,SLEEPINGPOSE,DEATHANIM,DEATHANIMSTART,ATTACKONE,ATTACKTWO,ATTACKTHREE,COUNTERANIM);
 	}
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
@@ -234,7 +234,8 @@ public class SoraEntityModel extends FriendEntityModel<Friend> {
 				.texOffs(264, 264).addBox(-28.0F, -113.0F, 4.0F, 4.0F, 24.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(212, 192).addBox(-24.0F, -117.0F, 0.0F, 4.0F, 28.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offset(16.0F, 114.0F, -6.0F));
 
-		PartDefinition neck = Friend.addOrReplaceChild("neck", CubeListBuilder.create().texOffs(84, 256).addBox(-6.0F, -16.0F, -6.0F, 12.0F, 16.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -112.0F, 4.0F));
+		PartDefinition neck = Friend.addOrReplaceChild("neck", CubeListBuilder.create().texOffs(84, 256).addBox(-6.0F, -19.0F, -6.0F, 12.0F, 19.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -112.0F, 4.0F));
+
 
 		PartDefinition chest = Friend.addOrReplaceChild("chest", CubeListBuilder.create(), PartPose.offset(0.0F, -92.0F, 4.0F));
 
@@ -307,118 +308,4 @@ public class SoraEntityModel extends FriendEntityModel<Friend> {
 
 		return LayerDefinition.create(meshdefinition, 512, 512);
 	}
-	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		customroom.offsetScale(new Vector3f(-0.83F,-0.83F,-0.83F));
-		customroom.offsetPos(new Vector3f(0,24,0));
-		customroom.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-	}
-
-	@Override
-	public ModelPart root() {
-		return this.parts.customroot();
-	}
-
-
-	public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
-		String limbName;
-		String grabberName;
-		if(pSide.name().equals("LEFT")){
-			limbName="lowerarm2";
-			grabberName="grabber2";
-		}else{
-			limbName="lowerarm";
-			grabberName="grabber";
-		}
-		Logger LOGGER = LogUtils.getLogger();
-		String armName=pSide.name().toLowerCase()+"arm";
-		ModelPart root = this.root().getChild("Friend");
-		ModelPart limb = this.root().getChild("Friend").getChild(armName).getChild(limbName);
-		ModelPart arm = this.root().getChild("Friend").getChild(armName);
-		ModelPart hand = limb.getChild(grabberName);
-		pPoseStack.translate(0,1.5,0);
-		translateAndRotate(pPoseStack,root);
-		translateAndRotate(pPoseStack,arm);
-		translateAndRotate(pPoseStack,limb);
-		translateAndRotate(pPoseStack,hand);
-
-		pPoseStack.scale(0.883F,0.883F,0.883F);
-
-	}
-	public void translateToBack(@NotNull PoseStack pPoseStack){
-		ModelPart root = this.root().getChild("Friend");
-		ModelPart hip = root.getChild("hip");
-		ModelPart holster = hip.getChild("weaponholster");
-		pPoseStack.translate(0,1.5,0);
-		translateAndRotate(pPoseStack,root);
-		translateAndRotate(pPoseStack,hip);
-		translateAndRotate(pPoseStack,holster);
-		pPoseStack.rotateAround(new Quaternionf().rotationZYX((float) -Math.toRadians(60),(float) -Math.toRadians(90), 0), holster.x*0.17F/16, holster.y*0.17F/16, holster.z*0.17F/16);
-
-		pPoseStack.scale(0.883F,0.883F,0.883F);
-	}
-	public void translateAndRotate(PoseStack pPoseStack, ModelPart part) {
-		pPoseStack.translate(part.x*0.17 / 16.0F, part.y*0.17 / 16.0F, part.z*0.17 / 16.0F);
-		if (part.xRot != 0.0F || part.yRot != 0.0F || part.zRot != 0.0F) {
-			pPoseStack.mulPose((new Quaternionf()).rotationZYX(part.zRot, part.yRot, part.xRot));
-		}
-
-		if (part.xScale != 1.0F || part.yScale != 1.0F || part.zScale != 1.0F) {
-			pPoseStack.scale(part.xScale, part.yScale, part.zScale);
-		}
-
-	}
-	Logger LOGGER = LogUtils.getLogger();
-	@Override
-	public void setupAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-		root().getAllParts().forEach(ModelPart::resetPose);
-		if(!pEntity.getIsDying()){
-			if(pEntity.getPose()!=SITTING){
-				if(pEntity.getPose()==SLEEPING){
-					animate(pEntity.sleepAnimState, SLEEPINGPOSE, pAgeInTicks);
-				}
-				else{
-					animate(pEntity.idleAnimState, IDLEGROUNDED, pAgeInTicks);
-					animate(pEntity.idleAnimStartState, SoraAnimation.IDLETRANSITION, pAgeInTicks);}
-				animate(pEntity.patAnimState, SoraAnimation.PATGROUNDED, pAgeInTicks);
-			}else{
-				animate(pEntity.sitPatAnimState, SoraAnimation.SITPAT, pAgeInTicks);
-				animate(pEntity.sitAnimState, SoraAnimation.SIT, pAgeInTicks);
-				animate(pEntity.sitImpatientAnimState, SoraAnimation.SITIMPATIENT, pAgeInTicks);
-			}
-
-			if(pEntity.getAttackType()==40){
-				animate(pEntity.attackAnimState, ATTACKONE, pAgeInTicks);
-			}
-			else if(pEntity.getAttackType()==20){
-				animate(pEntity.attackAnimState, ATTACKTWO, pAgeInTicks);
-			}
-			else if(pEntity.getAttackType()==10){
-				animate(pEntity.attackAnimState, ATTACKTHREE, pAgeInTicks);
-			}
-
-			if(!pEntity.getInSittingPose()){
-				if(!pEntity.isSprinting()&&!pEntity.isSwimming()&&!pEntity.idle()){
-					this.parts.rightleg().xRot= (float) (Math.cos(pLimbSwing*0.6662F) * 1.4F * pLimbSwingAmount);
-					this.parts.leftleg().xRot= (float) ((Math.cos(pLimbSwing*0.6662F+(float)Math.PI)) * 1.4F * pLimbSwingAmount);
-					if(pEntity.getAttackCounter()==-1){
-						this.parts.leftarm().xRot= (float) (Math.cos(pLimbSwing*0.6662F) * 1.4F * pLimbSwingAmount);
-						this.parts.leftarm().zRot= (float) -Math.toRadians(10);
-						this.parts.rightarm().zRot=(float) Math.toRadians(10);
-						this.parts.rightarm().xRot= (float) ((Math.cos(pLimbSwing*0.6662F+(float)Math.PI)) * 1.4F * pLimbSwingAmount);
-					}
-				}
-			}
-			if(!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose()!=SLEEPING){
-				this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI/180f);
-				this.parts.head().xRot = (pHeadPitch * (float) Math.PI/180f);
-			}
-		}else{
-			animate(pEntity.deathStartAnimState, DEATHANIMSTART, pAgeInTicks);
-			animate(pEntity.deathAnimState, DEATHANIM, pAgeInTicks);
-		}
-
-	}
-
-	private record ModelParts(ModelPart customroot, ModelPart head, ModelPart leftarm, ModelPart rightarm, ModelPart leftleg, ModelPart rightleg, ModelPart chest){}
 }

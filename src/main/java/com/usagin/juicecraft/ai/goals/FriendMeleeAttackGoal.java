@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.ai.goals;
 
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +27,7 @@ public class FriendMeleeAttackGoal extends MeleeAttackGoal {
     protected void checkAndPerformAttack(@NotNull LivingEntity pTarget) {
         Logger LOGGER = LogUtils.getLogger();
         if (this.canPerformAttack(pTarget) && this.mob instanceof Friend pFriend) {
-            if(pFriend.getAttackCounter()==-1){
+            if(pFriend.getAttackCounter()==0){
                 this.resetAttackCooldown();
                 pFriend.swing(InteractionHand.MAIN_HAND);
             }

@@ -1,20 +1,31 @@
 package com.usagin.juicecraft.data;
 
+import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.friends.Friend;
+import org.slf4j.Logger;
+
+import static com.usagin.juicecraft.friends.Friend.FRIEND_COMBATSETTINGS;
 
 public class CombatSettings {
-    int hyperCondition;
-    int aggression;
-    int willFlee;
-    int attackCreepers;
-    int defense;
+    public int hyperCondition=4;
+    public int aggression=3;
+    public int willFlee=1;
+    public int attackCreepers=0;
+    public int defense=0;
+    public int hash=43100;
 
-    public CombatSettings(){
-        this.hyperCondition=4;
-        this.aggression=2;
-        this.willFlee=1;
-        this.attackCreepers=0;
-        this.defense=0;
+    //aggression key
+    //0: never attack
+    //1: attack if owner is attacked
+    //2: attack if owner attacks
+    //3: always attack
+
+    public CombatSettings(int a, int b, int c, int d, int e){
+        this.hyperCondition=a;
+        this.aggression=b;
+        this.willFlee=c;
+        this.attackCreepers=d;
+        this.defense=e;
     }
     public boolean getHyperCondition(Friend pFriend){
         switch(this.hyperCondition){
@@ -26,15 +37,6 @@ public class CombatSettings {
             case 5: //use based on enemy number
             case 6: //use based on enemy difficulty rating (health * damage * familiarity (kill count of said entity type))
             case 7: //use whenever possible.
-        }
-        return false;
-    }
-    public boolean shouldAggro(Friend pFriend){
-        switch(this.aggression){
-            case 0: //never engage
-            case 1: //engage if player is attacked
-            case 2: //engage if player attacks
-            case 3: //engage on sight
         }
         return false;
     }
@@ -66,5 +68,27 @@ public class CombatSettings {
             case 5: //never play defensively
         }
         return true;
+    }
+    private static final Logger LOGGER = LogUtils.getLogger();
+    public int makeHash(){
+        int temp=0;
+        temp+=this.hyperCondition;
+        temp*=10;
+        temp+=this.aggression;
+        temp*=10;
+        temp+=this.willFlee;
+        temp*=10;
+        temp+=this.attackCreepers;
+        temp*=10;
+        temp+=this.defense;
+        this.hash=temp;
+        return this.hash;
+    }
+    public static CombatSettings decodeHash(int h){
+        String temp = String.valueOf(h);
+        for(int n=0;n<5-temp.length();n++){
+            temp="0"+temp;
+        }
+        return new CombatSettings(temp.charAt(0)-'0',temp.charAt(1)-'0',temp.charAt(2)-'0',temp.charAt(3)-'0',temp.charAt(4)-'0');
     }
 }

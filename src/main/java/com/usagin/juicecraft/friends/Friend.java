@@ -2,6 +2,7 @@ package com.usagin.juicecraft.friends;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.ai.awareness.FriendDefense;
 import com.usagin.juicecraft.ai.goals.*;
 import com.usagin.juicecraft.client.menu.FriendMenuProvider;
 import com.usagin.juicecraft.Init.ItemInit;
@@ -105,7 +106,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     float[] home;
     Relationships relationships;
     int[] dialogueTree = new int[300];
-    CombatSettings combatSettings;
+    public CombatSettings combatSettings;
     SumikaMemory oldMemory;
 
     public String getFriendName() {
@@ -138,7 +139,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.home = new float[4];
         this.initializeDialogueSettings();
         this.relationships = new Relationships();
-        this.combatSettings = new CombatSettings();
+        this.combatSettings = new CombatSettings(4,3,1,0,0);
         this.oldMemory = new SumikaMemory();
         this.setInventoryRows();
         this.setArmorableModular();
@@ -204,6 +205,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.setAttackType(10);
         }
     }
+    public void playTimedVoice(SoundEvent sound){
+        if(this.soundCounter>=50){
+            this.playVoice(sound);
+        }
+    }
 
     public void setAttackType(int attackType) {
         this.attackType = attackType;
@@ -223,7 +229,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         double angle = Math.atan2(this.getLookAngle().z, this.getLookAngle().x);
         angle = Math.toDegrees(angle);
         double maxFov;
-        if (this.attackType == 40) {
+        if (this.attackType == 40 || this.attackType==50) {
             maxFov = 50;
         } else if (this.attackType == 20) {
             maxFov = 40;
@@ -247,7 +253,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.playSound(this.getHitSound(),0.5F,1);
         }
         this.inventory.getItem(1).hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
-
+        LOGGER.info("c");
         this.updateGear();
     }
     SoundEvent getHitSound(){
@@ -257,8 +263,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         else if(this.attackType==20){
             return MEDIUM_ATTACK.get();
         }
-        else{
+        else if(this.attackType==40){
             return HEAVY_ATTACK.get();
+        }else{
+            return COUNTER_ATTACK.get();
         }
     }
     @Override
@@ -334,9 +342,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     void petEvent() {
-        if (this.soundCounter >= 150) {
-            this.playVoice(this.getPat());
-        }
+        this.playTimedVoice(this.getPat());
         patCounter = 20;
     }
 
@@ -370,6 +376,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public void doDeathEvent() {
         this.spawnHorizontalParticles();
+        this.playSound(FRIEND_DEATH.get(),1,1);
         this.playVoice(this.getDeathSound());
         if(deathSource==null){
             deathSource= new DamageSources(this.level().registryAccess()).generic();
@@ -398,7 +405,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public abstract SoundEvent getAttack();
 
-    abstract SoundEvent getEvade();
+    public abstract SoundEvent getEvade();
 
     public abstract SoundEvent getBattle();
 
@@ -426,11 +433,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     abstract Relationships parseRelationships(int[] relations);
 
-    abstract CombatSettings parseCombatSettings(int[] combatSettings);
-
     abstract int[] convertRelationships(Relationships relations);
-
-    abstract int[] convertCombatSettings(CombatSettings combatSettings);
 
     public boolean isArmorable() {
         return this.isArmorable;
@@ -493,7 +496,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         pCompound.putIntArray("juicecraft.home", new int[]{(int) this.home[0], (int) this.home[1], (int) this.home[2], (int) this.home[3]});
         pCompound.putIntArray("juicecraft.dialogue", this.dialogueTree);
         pCompound.putIntArray("juicecraft.relationships", convertRelationships(this.relationships));
-        pCompound.putIntArray("juicecraft.csettings", convertCombatSettings(this.combatSettings));
+        pCompound.putInt("juicecraft.csettings", this.getCombatSettings().makeHash());
         pCompound.putInt("juicecraft.social", this.socialInteraction);
         pCompound.putInt("juicecraft.mood", this.mood);
         pCompound.putInt("juicecraft.existed", 1);
@@ -542,7 +545,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
         this.dialogueTree = pCompound.getIntArray("juicecraft.dialogue");
         this.relationships = this.parseRelationships((pCompound.getIntArray("juicecraft.relationships")));
-        this.combatSettings = this.parseCombatSettings((pCompound.getIntArray("juicecraft.csettings")));
+        this.combatSettings = CombatSettings.decodeHash((pCompound.getInt("juicecraft.csettings")));
+        this.updateCombatSettings();
         this.socialInteraction = (pCompound.getInt("juicecraft.social"));
         this.mood = (pCompound.getInt("juicecraft.mood"));
         this.setHealth(pCompound.getFloat("Health"));
@@ -595,6 +599,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
 
     public void updateGear() {
+        LOGGER.info(this.getFriendWeapon().getDisplayName().getString());
         if (!this.getFriendWeapon().isEmpty()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, this.getFriendWeapon());
         } else {
@@ -665,25 +670,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int getFriendEnemiesKilled() {
         return this.getEntityData().get(FRIEND_ENEMIESKILLED);
     }
-
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ID_FLAGS, (byte) 0);
-        this.entityData.define(FRIEND_ISDYING, this.isDying);
-        this.entityData.define(FRIEND_ISSITTING, this.isSitting);
-        this.entityData.define(FRIEND_ATTACKCOUNTER, this.attackCounter);
-        this.entityData.define(FRIEND_DEATHCOUNTER, this.deathAnimCounter);
-        this.entityData.define(FRIEND_ATTACKTYPE, this.attackType);
-        this.inventory = new SimpleContainer(16);
-        this.entityData.define(FRIEND_WEAPON, this.inventory.getItem(1));
-        this.entityData.define(SLEEPING_POS_ID, Optional.empty());
-        this.entityData.define(FRIEND_HUNGERMETER, this.hungerMeter);
-        this.entityData.define(FRIEND_NORMA, this.norma);
-        this.entityData.define(FRIEND_LEVEL, this.experience);
-        this.entityData.define(FRIEND_ITEMSCOLLECTED, this.itemsCollected);
-        this.entityData.define(FRIEND_ENEMIESKILLED, this.enemiesKilled);
+    public void updateCombatSettings(){
+        this.getEntityData().set(FRIEND_COMBATSETTINGS,this.combatSettings.makeHash());
     }
-
+    public CombatSettings getCombatSettings(){
+        return CombatSettings.decodeHash(this.getEntityData().get(FRIEND_COMBATSETTINGS));
+    }
     public void setFriendWeapon(ItemStack wep) {
         this.getEntityData().set(FRIEND_WEAPON, wep);
     }
@@ -705,6 +697,27 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public float getFriendExperience(){
         return this.getEntityData().get(FRIEND_LEVEL);
     }
+
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_ID_FLAGS, (byte) 0);
+        this.entityData.define(FRIEND_ISDYING, this.isDying);
+        this.entityData.define(FRIEND_ISSITTING, this.isSitting);
+        this.entityData.define(FRIEND_ATTACKCOUNTER, this.attackCounter);
+        this.entityData.define(FRIEND_DEATHCOUNTER, this.deathAnimCounter);
+        this.entityData.define(FRIEND_ATTACKTYPE, this.attackType);
+        this.inventory = new SimpleContainer(16);
+        this.entityData.define(FRIEND_WEAPON, this.inventory.getItem(1));
+        this.entityData.define(SLEEPING_POS_ID, Optional.empty());
+        this.combatSettings=new CombatSettings(4,3,1,0,0);
+        this.entityData.define(FRIEND_COMBATSETTINGS, this.combatSettings.hash);
+        this.entityData.define(FRIEND_HUNGERMETER, this.hungerMeter);
+        this.entityData.define(FRIEND_NORMA, this.norma);
+        this.entityData.define(FRIEND_LEVEL, this.experience);
+        this.entityData.define(FRIEND_ITEMSCOLLECTED, this.itemsCollected);
+        this.entityData.define(FRIEND_ENEMIESKILLED, this.enemiesKilled);
+    }
+    public static final EntityDataAccessor<Integer> FRIEND_COMBATSETTINGS = SynchedEntityData.defineId(Friend.class,EntityDataSerializers.INT);
     private static final EntityDataAccessor<Byte> DATA_ID_FLAGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BYTE);
     public static final EntityDataAccessor<Boolean> FRIEND_ISDYING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> FRIEND_ISSITTING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
@@ -1034,21 +1047,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (blinkCounter == 0) {
             blinkCounter = 150;
         }
-        if (soundCounter < 150) {
+        if (soundCounter < 50) {
             soundCounter++;
         }
         blinkCounter--;
-        if (this.getAttackCounter() == 23 && this.getAttackType() == 40) {
-            this.doHurtTarget();
-        }
-        if (this.getAttackCounter() == 8 && this.getAttackType() == 20) {
-            this.doHurtTarget();
-        } else if (this.getAttackCounter() == 6 && this.getAttackType() == 10) {
-            this.doHurtTarget();
-        }
-        if (this.getAttackCounter() != -1) {
-            this.setAttackCounter(this.getAttackCounter() - 1);
-        }
     }
 
     @Override
@@ -1094,6 +1096,34 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     @Override
     public void tick() {
+        if (this.patCounter > 0) {
+            this.idleCounter = 0;
+            this.patCounter--;
+        }
+        if (this.mood > 100) {
+            this.mood = 100;
+        }
+        if (this.impatientCounter > 0) {
+            impatientCounter--;
+        }
+        if (this.getAttackCounter() == 22 && this.getAttackType() == 40) {
+            this.doHurtTarget();
+        } else if (this.getAttackCounter() == 8 && this.getAttackType() == 20) {
+            this.doHurtTarget();
+        } else if (this.getAttackCounter() == 8 && this.getAttackType() == 10) {
+            this.doHurtTarget();
+        } else if (this.getAttackCounter() == 24 && this.getAttackType() == 50) {
+            this.doHurtTarget();
+        }
+        if (this.getAttackCounter() != 0) {
+            this.setAttackCounter(this.getAttackCounter() - 1);
+        }
+        if(this.isAggressive()){
+            this.aggroCounter=20;
+        }
+        else if(this.aggroCounter>0){
+            this.aggroCounter--;
+        }
         if (level().isClientSide()) {
             if (this.getPose() == STANDING && !idle() && idleCounter > 0) {
                 this.idleCounter = 0;
@@ -1104,6 +1134,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.impatientCounter = 0;
             }
             if (this.tickCount%20==0){
+                LOGGER.info("d");
                 this.updateGear();
             }
             boolean sit = this.getInSittingPose();
@@ -1115,7 +1146,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.sitPatAnimState.animateWhen(this.getPose() == SITTING && this.patCounter != 0, this.tickCount);
             this.sitAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter == 0, this.tickCount);
             this.sitImpatientAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter != 0, this.tickCount);
-            this.attackAnimState.animateWhen(this.getAttackCounter() != -1, this.tickCount);
+            this.attackAnimState.animateWhen(this.getAttackCounter() != 0, this.tickCount);
             this.sleepAnimState.animateWhen(true, this.tickCount);
             if (this.getPose() == STANDING && this.idle() && idleCounter < 20) {
                 this.idleCounter++;
@@ -1156,19 +1187,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
             }
         }
-        if (this.patCounter > 0) {
-            this.idleCounter = 0;
-            this.patCounter--;
-        }
-        if (this.mood > 100) {
-            this.mood = 100;
-        }
-        if (this.impatientCounter > 0) {
-            impatientCounter--;
-        }
         super.tick();
     }
-
+    public int aggroCounter=0;
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
         boolean b;
@@ -1229,11 +1250,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     @Override
     public void swing(InteractionHand pHand, boolean pUpdateSelf) {
         ItemStack stack = this.getItemInHand(pHand);
-        if (!stack.isEmpty()) {
-            this.doMeleeAttack();
-        } else {
-            this.setAttackCounter(10);
-            this.setAttackType(10);
+        if(this.getAttackCounter()==0 && !this.getIsDying()){
+            if (!stack.isEmpty()) {
+                this.doMeleeAttack();
+            } else {
+                this.setAttackCounter(10);
+                this.setAttackType(10);
+            }
         }
     }
 
@@ -1262,5 +1285,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
 
         this.reassessTameGoals();
+    }
+    @Override
+    public SoundEvent getDeathSound(){
+        return this.getRecoveryFail();
     }
 }

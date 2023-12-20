@@ -114,7 +114,7 @@ public class SweetHandler {
 
     }
     static void playVoice(Friend friend, SoundEvent sound){
-        if(friend.soundCounter>=150){
+        if(friend.soundCounter>=50){
         friend.playVoice(sound);}
     }
 }

@@ -1,5 +1,6 @@
 package com.usagin.juicecraft.ai.goals;
 
+import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
@@ -17,6 +18,6 @@ public class FriendOwnerHurtTargetGoal extends OwnerHurtTargetGoal {
     }
     @Override
     public boolean canUse(){
-        if(this.friend.getInSittingPose()||this.friend.isDying){return false;}else{return super.canUse();}
+        if(this.friend.getInSittingPose()||this.friend.isDying||this.friend.getCombatSettings().aggression<2){return false;}else{return super.canUse();}
     }
 }

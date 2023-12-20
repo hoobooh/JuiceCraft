@@ -81,7 +81,7 @@ public class FriendMenu extends AbstractContainerMenu {
                 this.container.setItem(1, pStack);
                 if(this.hasItem()){
                     if(!pPlayerInventory.player.level().isClientSide()){
-                    pFriend.playVoice(pFriend.getEquip());
+                    pFriend.playTimedVoice(pFriend.getEquip());
                     pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 pFriend.setFriendWeapon(pStack);
@@ -128,7 +128,7 @@ public class FriendMenu extends AbstractContainerMenu {
                 this.container.setItem(3, pStack);
                 if(this.hasItem()){
                     if(!pPlayerInventory.player.level().isClientSide()){
-                    pFriend.playVoice(pFriend.getEquip());
+                    pFriend.playTimedVoice(pFriend.getEquip());
                     pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 this.setChanged();
@@ -153,7 +153,7 @@ public class FriendMenu extends AbstractContainerMenu {
                 this.container.setItem(4, pStack);
                 if(this.hasItem()){
                     if(!pPlayerInventory.player.level().isClientSide()){
-                        pFriend.playVoice(pFriend.getEquip());
+                        pFriend.playTimedVoice(pFriend.getEquip());
                         pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 this.setChanged();
@@ -178,7 +178,7 @@ public class FriendMenu extends AbstractContainerMenu {
                 this.container.setItem(5, pStack);
                 if(this.hasItem()){
                     if(!pPlayerInventory.player.level().isClientSide()){
-                        pFriend.playVoice(pFriend.getEquip());
+                        pFriend.playTimedVoice(pFriend.getEquip());
                         pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 this.setChanged();
@@ -203,7 +203,7 @@ public class FriendMenu extends AbstractContainerMenu {
                 this.container.setItem(6, pStack);
                 if(this.hasItem()){
                     if(!pPlayerInventory.player.level().isClientSide()){
-                        pFriend.playVoice(pFriend.getEquip());
+                        pFriend.playTimedVoice(pFriend.getEquip());
                         pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
                 this.setChanged();
@@ -303,8 +303,9 @@ public class FriendMenu extends AbstractContainerMenu {
      * Called when the container is closed.
      */
     public void removed(Player pPlayer) {
-        super.removed(pPlayer);
+        super.removed(pPlayer); LOGGER.info("b");
         this.friend.updateGear();
+
         this.friendContainer.stopOpen(pPlayer);
     }
 }

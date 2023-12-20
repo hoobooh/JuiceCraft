@@ -1,4 +1,14 @@
 {
+  "counter_attack": {
+    "sounds": [
+      "juicecraft:counter_attack"
+    ]
+  },
+  "counter_block": {
+    "sounds": [
+      "juicecraft:counter_block"
+    ]
+  },
   "light_attack": {
     "sounds": [
       "juicecraft:light_attack"

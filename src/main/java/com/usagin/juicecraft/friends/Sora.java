@@ -167,7 +167,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getEvade() {
+    public SoundEvent getEvade() {
         int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_EVADE1.get();
@@ -270,17 +270,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    CombatSettings parseCombatSettings(int[] combatSettings) {
-        return null;
-    }
-
-    @Override
     int[] convertRelationships(Relationships relations) {
-        return new int[0];
-    }
-
-    @Override
-    int[] convertCombatSettings(CombatSettings combatSettings) {
         return new int[0];
     }
 

@@ -142,6 +142,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void handleSkillButton(Button btn) {
+        this.friend.combatSettings.aggression=3;
+        this.friend.updateCombatSettings();
         this.hideMiddleScreen();
         this.skillActive=true;
         this.statsActive=false;
@@ -165,6 +167,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void handleTalkButton(Button btn) {
+        this.friend.combatSettings.aggression=0;
+        this.friend.updateCombatSettings();
         this.hideFullScreen();
         this.bagButton.setFocused(false);
         //logic
@@ -229,7 +233,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         return Component.translatable("juicecraft.menu."+this.friend.getFriendName().toLowerCase()+"."+s);
     }
     String getFloatResource(String s, float val){
-        return Component.translatable("juicecraft.menu."+s).getString()+val;
+        return Component.translatable("juicecraft.menu."+s).getString()+String.format("%.1f",val);
     }
     String getIntResource(String s, int val){
         return Component.translatable("juicecraft.menu."+s).getString()+val;

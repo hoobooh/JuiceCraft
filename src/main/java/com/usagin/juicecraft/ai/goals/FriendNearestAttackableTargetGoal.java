@@ -1,5 +1,6 @@
 package com.usagin.juicecraft.ai.goals;
 
+import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -41,6 +42,6 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
     }
     @Override
     public boolean canUse(){
-        if(this.friend.getInSittingPose()||this.friend.isDying){return false;}else{return super.canUse();}
+        if(this.friend.getInSittingPose()||this.friend.isDying||this.friend.getCombatSettings().aggression!=3){return false;}else{return super.canUse();}
     }
 }
