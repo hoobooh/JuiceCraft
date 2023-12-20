@@ -35,7 +35,7 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
     }
 
     public void start() {
-        if(!this.friend.getInSittingPose() && !this.friend.isDying){
+        if(!this.friend.getInSittingPose() && !this.friend.isDying && this.friend.getCombatSettings().aggression==3){
             this.mob.setTarget(this.target);
             super.start();
         }

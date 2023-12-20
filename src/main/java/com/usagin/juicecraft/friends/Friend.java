@@ -253,7 +253,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.playSound(this.getHitSound(),0.5F,1);
         }
         this.inventory.getItem(1).hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
-        LOGGER.info("c");
         this.updateGear();
     }
     SoundEvent getHitSound(){
@@ -599,7 +598,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
 
     public void updateGear() {
-        LOGGER.info(this.getFriendWeapon().getDisplayName().getString());
         if (!this.getFriendWeapon().isEmpty()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, this.getFriendWeapon());
         } else {
@@ -741,6 +739,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.entityData.set(DATA_ID_FLAGS, (byte) (b0 & ~pFlagId));
         }
 
+    }
+    @Override
+    public boolean isLeftHanded(){
+        return false;
     }
 
     public void setAttackCounter(int time) {
@@ -1134,7 +1136,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.impatientCounter = 0;
             }
             if (this.tickCount%20==0){
-                LOGGER.info("d");
                 this.updateGear();
             }
             boolean sit = this.getInSittingPose();

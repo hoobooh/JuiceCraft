@@ -6,6 +6,8 @@ import com.usagin.juicecraft.client.menu.FriendMenu;
 import com.usagin.juicecraft.JuiceCraft;
 import com.usagin.juicecraft.client.menu.FriendSlot;
 import com.usagin.juicecraft.friends.Friend;
+import com.usagin.juicecraft.network.PacketHandler;
+import com.usagin.juicecraft.network.ToServerPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -15,6 +17,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -38,6 +41,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.event.ContainerScreenEvent;
 import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
@@ -45,6 +49,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 
+import java.awt.event.ContainerEvent;
 import java.util.List;
 
 import static com.usagin.juicecraft.client.menu.FriendMenuTextureLocations.*;
@@ -142,8 +147,6 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void handleSkillButton(Button btn) {
-        this.friend.combatSettings.aggression=3;
-        this.friend.updateCombatSettings();
         this.hideMiddleScreen();
         this.skillActive=true;
         this.statsActive=false;
@@ -167,8 +170,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void handleTalkButton(Button btn) {
-        this.friend.combatSettings.aggression=0;
-        this.friend.updateCombatSettings();
+        //this.friend.combatSettings.aggression=0;
+        //PacketHandler.sendToServer(new ToServerPacket(this.friend.combatSettings.makeHash(),this.friend.getId()));
         this.hideFullScreen();
         this.bagButton.setFocused(false);
         //logic

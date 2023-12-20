@@ -6,6 +6,7 @@ import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.SoraEntityRenderer;
 import com.usagin.juicecraft.friends.Friend;
 import com.usagin.juicecraft.friends.Sora;
+import com.usagin.juicecraft.network.PacketHandler;
 import com.usagin.juicecraft.particles.SleepyParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -15,6 +16,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.usagin.juicecraft.particles.SuguriverseParticleLarge;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber(modid = JuiceCraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CommonEvents {
@@ -41,5 +43,11 @@ public class CommonEvents {
         Minecraft.getInstance().particleEngine.register(ParticleInit.DICEFIVE.get(), SleepyParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.DICESIX    .get(), SleepyParticle.Provider::new);
 
+    }
+    @SubscribeEvent
+    public static void registerPacketHandler(FMLCommonSetupEvent event){
+        event.enqueueWork(()->{
+            PacketHandler.register();
+        });
     }
 }

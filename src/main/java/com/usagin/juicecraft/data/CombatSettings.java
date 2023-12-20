@@ -86,7 +86,8 @@ public class CombatSettings {
     }
     public static CombatSettings decodeHash(int h){
         String temp = String.valueOf(h);
-        for(int n=0;n<5-temp.length();n++){
+        int i=5-temp.length();
+        for(int n=0;n<i;n++){
             temp="0"+temp;
         }
         return new CombatSettings(temp.charAt(0)-'0',temp.charAt(1)-'0',temp.charAt(2)-'0',temp.charAt(3)-'0',temp.charAt(4)-'0');

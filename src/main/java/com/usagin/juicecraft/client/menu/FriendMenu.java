@@ -2,6 +2,7 @@ package com.usagin.juicecraft.client.menu;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.Init.ItemInit;
+import com.usagin.juicecraft.data.CombatSettings;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -12,12 +13,16 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+
+import javax.xml.crypto.Data;
 
 import static com.usagin.juicecraft.Init.MenuInit.FRIEND_MENU;
 import static com.usagin.juicecraft.Init.UniversalSoundInit.HYPER_EQUIP;
@@ -303,7 +308,7 @@ public class FriendMenu extends AbstractContainerMenu {
      * Called when the container is closed.
      */
     public void removed(Player pPlayer) {
-        super.removed(pPlayer); LOGGER.info("b");
+        super.removed(pPlayer);
         this.friend.updateGear();
 
         this.friendContainer.stopOpen(pPlayer);

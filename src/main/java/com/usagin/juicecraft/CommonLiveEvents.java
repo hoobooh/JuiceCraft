@@ -77,7 +77,6 @@ public class CommonLiveEvents {
                     }
                 }
             }
-            LOGGER.info("a");
             friend.updateGear();
         }
     }
