@@ -1,10 +1,12 @@
 package com.usagin.juicecraft;
 
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.FriendDefense;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
@@ -34,12 +36,12 @@ public class CommonLiveEvents {
                         friend.deathSource = event.getSource();
                     }
                     friend.deathTimer = 200;
-                    friend.setDeathAnimCounter(60);
+                    if(!friend.level().isClientSide){
+                    friend.setDeathAnimCounter(60);}
                     friend.setIsDying(true);
                 }
                 friend.setHealth(0.1F);
                 if (friend.deathCounter != 7 - friend.getRecoveryDifficulty()) {
-                    LOGGER.info(friend.deathCounter + "");
                     friend.deathCounter--;
                 }
                 if (friend.deathCounter >= 0) {
@@ -95,7 +97,9 @@ public class CommonLiveEvents {
                 if (event.getEntity() instanceof Enemy) {
                     pFriend.setFriendEnemiesKilled(pFriend.getFriendEnemiesKilled() + 1);
                 }
-                //make enemy evaluation code
+
+                //XP CALC EVENT
+                pFriend.increaseEXP(EnemyEvaluator.calculateNetGain(pFriend,event.getEntity()));
             }
         }
     }

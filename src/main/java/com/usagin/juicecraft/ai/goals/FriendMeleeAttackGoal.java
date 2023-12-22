@@ -43,7 +43,7 @@ public class FriendMeleeAttackGoal extends MeleeAttackGoal {
     }
     @Override
     public void tick(){
-        if(!this.friend.getInSittingPose()&&!this.friend.isDying){
+        if(this.friend.canDoThings()&&this.friend.runTimer<=0){
             super.tick();
         }
     }

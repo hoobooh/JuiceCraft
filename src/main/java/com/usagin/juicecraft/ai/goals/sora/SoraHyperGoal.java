@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.ai.goals;
+package com.usagin.juicecraft.ai.goals.sora;
 
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import net.minecraft.world.entity.ai.goal.Goal;

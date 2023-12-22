@@ -18,6 +18,6 @@ public class FriendOwnerHurtTargetGoal extends OwnerHurtTargetGoal {
     }
     @Override
     public boolean canUse(){
-        if(this.friend.getInSittingPose()||this.friend.isDying||this.friend.getCombatSettings().aggression<2){return false;}else{return super.canUse();}
+        if(!this.friend.canDoThings()||this.friend.getCombatSettings().aggression<2){return false;}else{return super.canUse();}
     }
 }

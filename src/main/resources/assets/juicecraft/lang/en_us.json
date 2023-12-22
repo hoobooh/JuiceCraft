@@ -28,6 +28,7 @@
   "juicecraft.menu.hostilekilled":"Enemies Killed: ",
   "juicecraft.menu.itemscollected": "Items Collected: ",
   "juicecraft.menu.home":"Home: ",
+  "juicecraft.menu.skillpoints": "SP: ",
 
   "entity.juicecraft.sora": "Sora",
 
@@ -100,5 +101,5 @@
   "juicecraft.sora_recoveryfailed4": "Not yet... just a bit more...",
   "juicecraft.sora_hyper_use": "I'll use everything I have...!",
   "juicecraft.sora_hyper_equip": "I'm powering myself up.",
-  "juicecraft.sora_module_equip": "With this power..."
+  "juicecraft.sora_moduleequip": "With this power..."
 }

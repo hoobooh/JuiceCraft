@@ -37,7 +37,7 @@ public class FriendSleepGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return !friend.isAggressive() && !friend.getInSittingPose() && !friend.day() && !friend.isDying;
+        return !friend.isAggressive() && friend.canDoThings()&& !friend.day();
     }
 
     public boolean isInterruptable() {

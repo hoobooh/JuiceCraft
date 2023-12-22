@@ -25,7 +25,7 @@ public class FriendRandomLookAroundGoal extends RandomLookAroundGoal
     }
     @Override
     public boolean canUse(){
-        if(this.friend.getInSittingPose()||this.friend.isDying){return false;}else{return super.canUse();}
+        if(this.friend.isDying){return false;}else{return super.canUse();}
     }
     public void tick() {
         if(!this.friend.sleeping() || !this.friend.getFeetBlockState().isBed(this.friend.level(),new BlockPos(this.friend.getBlockX(),this.friend.getBlockY()-1, this.friend.getBlockZ()),null)){

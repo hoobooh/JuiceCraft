@@ -28,7 +28,7 @@ public class FriendLadderClimbGoal extends Goal {
     }
     @Override
     public boolean canUse(){
-        if(this.friend.getInSittingPose()||this.friend.isDying){return false;}else{return !this.friend.getNavigation().isDone();}
+        if(!this.friend.canDoThings()){return false;}else{return !this.friend.getNavigation().isDone();}
     }
     @Override
     public void tick() {

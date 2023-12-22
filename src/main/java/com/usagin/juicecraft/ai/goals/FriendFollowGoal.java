@@ -52,7 +52,7 @@ public class FriendFollowGoal extends Goal {
      * method as well.
      */
     public boolean canUse() {
-        if(this.tamable.getInSittingPose()||this.tamable.isDying){return false;}else{
+        if(!this.tamable.canDoThings()||this.tamable.wandering){return false;}else{
         LivingEntity livingentity = this.tamable.getOwner();
         if (livingentity == null) {
             return false;

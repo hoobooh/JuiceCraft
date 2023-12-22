@@ -35,13 +35,13 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
     }
 
     public void start() {
-        if(!this.friend.getInSittingPose() && !this.friend.isDying && this.friend.getCombatSettings().aggression==3){
+        if(this.friend.canDoThings() && this.friend.getCombatSettings().aggression==3){
             this.mob.setTarget(this.target);
             super.start();
         }
     }
     @Override
     public boolean canUse(){
-        if(this.friend.getInSittingPose()||this.friend.isDying||this.friend.getCombatSettings().aggression!=3){return false;}else{return super.canUse();}
+        if(!this.friend.canDoThings()||this.friend.getCombatSettings().aggression!=3){return false;}else{return super.canUse();}
     }
 }

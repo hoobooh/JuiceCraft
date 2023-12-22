@@ -347,6 +347,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         //render level
         pGuiGraphics.drawCenteredString(this.font, Integer.toString((int) this.friend.getFriendExperience() / 100), this.leftPos + 144, this.topPos + 46, ChatFormatting.WHITE.getColor());
+        pGuiGraphics.drawString(this.font, Component.translatable("juicecraft.menu.skillpoints").getString() + this.friend.getSkillPoints(),this.leftPos+157,this.topPos+52,ChatFormatting.WHITE.getColor());
         RenderSystem.disableDepthTest();
 
 
@@ -417,7 +418,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         renderScrollingString(pGuiGraphics, this.font, this.getFriendResource("weaknesses"), this.leftPos - 1 + 124 + this.getMinecraft().font.width(comp), this.topPos - 1 + 120, this.leftPos - 1 + 260, this.topPos - 1 + 130, ChatFormatting.BLACK.getColor());
 
 
-        pGuiGraphics.drawString(this.font, this.getIntResource("level", (int) this.friend.getFriendExperience()), this.leftPos - 1 + 124, this.topPos - 1 + 135, ChatFormatting.BLACK.getColor(), false);
+        pGuiGraphics.drawString(this.font, this.getIntResource("level", (int) this.friend.getFriendExperience()/100), this.leftPos - 1 + 124, this.topPos - 1 + 135, ChatFormatting.BLACK.getColor(), false);
         pGuiGraphics.drawString(this.font, this.getFloatResource("health", this.friend.getHealth()), this.leftPos - 1 + 124, this.topPos - 1 + 150, ChatFormatting.BLACK.getColor(), false);
         pGuiGraphics.drawString(this.font, this.getFloatResource("hunger", this.friend.getHungerMeter()), this.leftPos - 1 + 195, this.topPos - 1 + 150, ChatFormatting.BLACK.getColor(), false);
         pGuiGraphics.drawString(this.font, this.getIntResource("itemscollected", this.friend.getFriendItemsCollected()), this.leftPos - 1 + 124, this.topPos - 1 + 165, ChatFormatting.BLACK.getColor(), false);

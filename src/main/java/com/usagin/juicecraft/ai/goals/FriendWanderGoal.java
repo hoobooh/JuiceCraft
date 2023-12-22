@@ -17,16 +17,16 @@ public class FriendWanderGoal extends WaterAvoidingRandomStrollGoal {
     private static final Logger LOGGER = LogUtils.getLogger();
     @Override
     public void start(){
-        if(friend.patCounter==0 && !friend.getInSittingPose() && !friend.sleeping() && friend.day()){
+        if(friend.patCounter==0 && this.friend.canDoThings() && !friend.sleeping() && friend.day()){
             super.start();
         }
     }
     @Override
     public boolean canUse(){
-        if(this.friend.getInSittingPose()||this.friend.isDying){return false;}else{return super.canUse();}
+        if(!this.friend.canDoThings()){return false;}else{return super.canUse();}
     }
     @Override
     public boolean canContinueToUse() {
-        return !this.mob.getNavigation().isDone() && !this.mob.hasControllingPassenger() && !this.friend.getInSittingPose() && !this.friend.isDying;
+        return !this.mob.getNavigation().isDone() && !this.mob.hasControllingPassenger() && this.friend.canDoThings();
     }
 }

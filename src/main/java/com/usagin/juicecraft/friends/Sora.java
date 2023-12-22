@@ -1,9 +1,10 @@
 package com.usagin.juicecraft.friends;
 
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.ai.goals.FriendHitAndRunGoal;
 import com.usagin.juicecraft.client.menu.FriendMenu;
 import com.usagin.juicecraft.data.Relationships;
-import com.usagin.juicecraft.ai.goals.SoraHyperGoal;
+import com.usagin.juicecraft.ai.goals.sora.SoraHyperGoal;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
@@ -44,6 +45,12 @@ public class Sora extends Friend{
         super.registerCustomGoals();
         this.goalSelector.addGoal(2,new SoraHyperGoal(!this.inventory.getItem(0).isEmpty(),this.combatSettings));
     }
+
+    @Override
+    void registerAdditionalGoals() {
+        this.goalSelector.addGoal(2,new FriendHitAndRunGoal(this));
+    }
+
     @Override
     void initializeDialogueSettings() {
 

@@ -28,6 +28,6 @@ public class FriendLookAtPlayerGoal extends LookAtPlayerGoal {
     }
     @Override
     public boolean canUse(){
-        if(!this.friend.getInSittingPose()&&!this.friend.isDying){return false;}else{return super.canUse();}
+        if(this.friend.isDying){return false;}else{return super.canUse();}
     }
 }
