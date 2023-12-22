@@ -1,10 +1,8 @@
 package com.usagin.juicecraft.network;
 
-import com.usagin.juicecraft.data.CombatSettings;
+import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.friends.Friend;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.VarInt;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.network.CustomPayloadEvent;

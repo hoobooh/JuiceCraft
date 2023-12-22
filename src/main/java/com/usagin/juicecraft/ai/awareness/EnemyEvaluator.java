@@ -34,10 +34,19 @@ public class EnemyEvaluator {
     public static int evaluateAreaDanger(Friend friend){
         AABB detect = new AABB(friend.getX()-20,friend.getY()-20,friend.getZ()-20,friend.getX()+20,friend.getY()+20,friend.getZ()+20);
         int danger=0;
-        for(LivingEntity entity: friend.level().getNearbyEntities(Friend.class,TargetingConditions.forCombat(),friend,detect)){
+        for(LivingEntity entity: friend.level().getNearbyEntities(LivingEntity.class,TargetingConditions.forCombat(),friend,detect)){
             danger+=evaluate(entity);
         }
         LOGGER.info("Evaluated Area Danger Level: " + danger);
+        return danger;
+    }
+    public static int evaluateEnemyAreaDanger(LivingEntity friend){
+        AABB detect = new AABB(friend.getX()-20,friend.getY()-20,friend.getZ()-20,friend.getX()+20,friend.getY()+20,friend.getZ()+20);
+        int danger=0;
+        for(LivingEntity entity: friend.level().getNearbyEntities(LivingEntity.class,TargetingConditions.forCombat(),friend,detect)){
+            danger+=evaluate(entity);
+        }
+        LOGGER.info("Evaluated Target Area Danger Level: " + danger);
         return danger;
     }
 }

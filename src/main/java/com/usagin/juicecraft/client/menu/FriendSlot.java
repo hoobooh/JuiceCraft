@@ -16,10 +16,6 @@ public class FriendSlot extends Slot {
     public FriendSlot(Container pContainer, int pSlot, int pX, int pY) {
         super(pContainer, pSlot, pX, pY);
     }
-    @Override
-    public boolean allowModification(Player pPlayer) {
-        return this.mayPickup(pPlayer) && this.mayPlace(this.getItem());
-    }
     public boolean isHighlightable() {
         return highlight;
     }

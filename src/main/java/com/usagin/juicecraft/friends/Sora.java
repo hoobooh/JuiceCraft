@@ -2,7 +2,6 @@ package com.usagin.juicecraft.friends;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.client.menu.FriendMenu;
-import com.usagin.juicecraft.data.CombatSettings;
 import com.usagin.juicecraft.data.Relationships;
 import com.usagin.juicecraft.ai.goals.SoraHyperGoal;
 import net.minecraft.sounds.SoundEvent;

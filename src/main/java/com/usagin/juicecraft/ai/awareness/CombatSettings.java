@@ -1,10 +1,8 @@
-package com.usagin.juicecraft.data;
+package com.usagin.juicecraft.ai.awareness;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.friends.Friend;
 import org.slf4j.Logger;
-
-import static com.usagin.juicecraft.friends.Friend.FRIEND_COMBATSETTINGS;
 
 public class CombatSettings {
     public int hyperCondition=4;

@@ -1,5 +1,7 @@
 package com.usagin.juicecraft.data;
 
+import com.usagin.juicecraft.ai.awareness.CombatSettings;
+
 public class SumikaMemory{
     String name;
     Relationships relationships;

@@ -103,13 +103,10 @@ public class FriendSleepGoal extends Goal {
 
             if (snoozeCounter-- == 0) {
                 if (friend.level() instanceof ServerLevel serverLevel) {
-                    int n=this.friend.getRandom().nextInt(5);
-                    for(int i=0;i<n;i++){
-                        serverLevel.sendParticles(SLEEPY.get(), this.friend.getX() + (float) this.friend.getRandom().nextInt(-1,2)/2,
+                    serverLevel.sendParticles(SLEEPY.get(), this.friend.getX() + (float) this.friend.getRandom().nextInt(-1,2)/2,
                                 this.friend.getY()+this.friend.getBbHeight() + (float) this.friend.getRandom().nextInt(-1,2)/7,
                                 this.friend.getZ() + (float) this.friend.getRandom().nextInt(-1,2)/2,
                                 1, 0, 0, 0, 0.1);
-                    }
                 }
                 snoozeCounter = 40;
             }

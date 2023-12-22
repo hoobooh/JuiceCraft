@@ -11,6 +11,8 @@ public class FriendMenuTextureLocations {
     public static final ResourceLocation MAINFLUIDTEXTURE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenufluids.png");
     public static final ResourceLocation HEALTHBAR = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenuhealthbar.png");
     public static final ResourceLocation HUNGERBAR = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenuhungerbar.png");
+    public static final ResourceLocation EXPBAR = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenuexpbar.png");
+    public static final ResourceLocation EXPBAREMPTY = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenuexpempty.png");
 
     public static final ResourceLocation NORMA1 = new ResourceLocation(JuiceCraft.MODID, "textures/gui/norma1.png");
     public static final ResourceLocation NORMA2 = new ResourceLocation(JuiceCraft.MODID, "textures/gui/norma2.png");
@@ -23,4 +25,12 @@ public class FriendMenuTextureLocations {
 
     public static final ResourceLocation BUTTON_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/buttondefault");
     public static final ResourceLocation BUTTON_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/buttonlocked");
+
+    public static final ResourceLocation UPGRADE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/upgrade");
+    public static final ResourceLocation ENABLE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/enable");
+    public static final ResourceLocation DISABLE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/disable");
+    public static final ResourceLocation UPGRADE_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/upgradedown");
+    public static final ResourceLocation ENABLE_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/enabledown");
+    public static final ResourceLocation DISABLE_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/disabledown");
+
 }

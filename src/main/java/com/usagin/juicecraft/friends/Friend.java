@@ -2,7 +2,8 @@ package com.usagin.juicecraft.friends;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.ai.awareness.FriendDefense;
+import com.usagin.juicecraft.ai.awareness.CombatSettings;
+import com.usagin.juicecraft.ai.awareness.SkillManager;
 import com.usagin.juicecraft.ai.goals.*;
 import com.usagin.juicecraft.client.menu.FriendMenuProvider;
 import com.usagin.juicecraft.Init.ItemInit;
@@ -35,6 +36,7 @@ import net.minecraft.world.entity.ai.goal.target.*;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -72,8 +74,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public final AnimationState attackAnimState = new AnimationState();
     public final AnimationState deathAnimState = new AnimationState();
     public final AnimationState deathStartAnimState = new AnimationState();
+    public int[] skillLevels=new int[6];
+    public boolean[] skillEnabled = new boolean[]{false,false,false,false,false,false};
     public static final Map<Pose, EntityDimensions> POSES = ImmutableMap.<Pose, EntityDimensions>builder().put(STANDING, EntityDimensions.scalable(0.6F, 1.8F)).put(SITTING, EntityDimensions.scalable(0.6F, 1.1F)).put(Pose.SLEEPING, EntityDimensions.scalable(0.6F, 0.5F)).build();
     public int impatientCounter = 0;
+    public int skillPoints = 0;
     public int deathAnimCounter;
     private int enemiesKilled=0;
     private int itemsCollected=0;
@@ -88,7 +93,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int deathCounter;
     public int attackCounter;
     public int attackType;
-    int time;
     public int blinkCounter = 150;
     public int soundCounter = 40;
     public int patCounter = 20;
@@ -132,7 +136,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.deathCounter = 7 - this.recoveryDifficulty;
         this.setAggression();
         this.mood = 100;
-        this.time = 0;
         this.socialInteraction = 100;
         this.setPersistenceRequired();
         this.setName();
@@ -507,6 +510,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         pCompound.putFloat("juicecraft.experience", this.experience);
         pCompound.putInt("juicecraft.itemscollected", this.itemsCollected);
         pCompound.putInt("juicecraft.enemieskilled", this.enemiesKilled);
+        pCompound.putInt("juicecraft.skilllevels", SkillManager.makeHash(this.getSkillLevels()));
+        pCompound.putInt("juicecraft.skillenabled", SkillManager.makeBooleanHash(this.getSkillEnabled()));
+        pCompound.putInt("juicecraft.skillpoints", this.getSkillPoints());
         ListTag listtag = new ListTag();
 
         for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
@@ -556,6 +562,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.setFriendExperience(pCompound.getFloat("juicecraft.experience"));
         this.setFriendItemsCollected(pCompound.getInt("juicecraft.itemscollected"));
         this.setFriendEnemiesKilled(pCompound.getInt("juicecraft.enemieskilled"));
+        this.setSkillLevels(SkillManager.decodeHash(pCompound.getInt("juicecraft.skilllevels")));
+        this.setSkillEnabled(SkillManager.decodeBooleanHash(pCompound.getInt("juicecraft.skillenabled")));
+        this.setSkillPoints(pCompound.getInt("juicecraft.skillpoints"));
 
         this.setTame(pCompound.getBoolean("Tame"));
         this.createInventory();
@@ -695,6 +704,27 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public float getFriendExperience(){
         return this.getEntityData().get(FRIEND_LEVEL);
     }
+    public int[] getSkillLevels(){
+        return SkillManager.decodeHash(this.getEntityData().get(FRIEND_SKILLLEVELS));
+    }
+    public void setSkillLevels(int[] a){
+        this.skillLevels=a;
+        this.getEntityData().set(FRIEND_SKILLLEVELS,SkillManager.makeHash(a));
+    }
+    public boolean[] getSkillEnabled(){
+        return SkillManager.decodeBooleanHash(this.getEntityData().get(FRIEND_SKILLENABLED));
+    }
+    public void setSkillEnabled(boolean[] b){
+        this.skillEnabled=b;
+        this.getEntityData().set(FRIEND_SKILLENABLED,SkillManager.makeBooleanHash(b));
+    }
+    public int getSkillPoints(){
+        return this.getEntityData().get(FRIEND_SKILLPOINTS);
+    }
+    public void setSkillPoints(int a){
+        this.skillPoints=a;
+        this.getEntityData().set(FRIEND_SKILLPOINTS,a);
+    }
 
     protected void defineSynchedData() {
         super.defineSynchedData();
@@ -714,7 +744,16 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.entityData.define(FRIEND_LEVEL, this.experience);
         this.entityData.define(FRIEND_ITEMSCOLLECTED, this.itemsCollected);
         this.entityData.define(FRIEND_ENEMIESKILLED, this.enemiesKilled);
+        this.skillEnabled=new boolean[6];
+        this.skillLevels=new int[6];
+        this.entityData.define(FRIEND_SKILLENABLED, SkillManager.makeBooleanHash(this.skillEnabled));
+        this.entityData.define(FRIEND_SKILLLEVELS, SkillManager.makeHash(this.skillLevels));
+        this.entityData.define(FRIEND_SKILLPOINTS, this.skillPoints);
+
     }
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLPOINTS = SynchedEntityData.defineId(Friend.class,EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS = SynchedEntityData.defineId(Friend.class,EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_COMBATSETTINGS = SynchedEntityData.defineId(Friend.class,EntityDataSerializers.INT);
     private static final EntityDataAccessor<Byte> DATA_ID_FLAGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BYTE);
     public static final EntityDataAccessor<Boolean> FRIEND_ISDYING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
@@ -870,7 +909,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     return InteractionResult.SUCCESS;
                 }else{
 
-                    if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
+                    if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching() || (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching())) {
 
                         if (pPlayer instanceof ServerPlayer serverPlayer) {
 
@@ -879,7 +918,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
                         }
                         return InteractionResult.SUCCESS;
-                    } else if ((itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching())||(!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && !pPlayer.isCrouching())) {
+                    } else if ((!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && !pPlayer.isCrouching())) {
                         this.setFriendInSittingPose(!this.getInSittingPose());
                         if (sleeping() && animateSleep()) {
                             this.setPose(Pose.SLEEPING);
@@ -996,12 +1035,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
         }
         if (this.aggression < 50) {
-            if (this.time % 100 == 0) {
-                this.time = 0;
-                if (mood != 100) {
+            if (this.tickCount % 100 == 0) {
+                if (mood < 100) {
                     this.mood++;
                 }
-                if (mood != 1) {
+                if (mood >1) {
                     if (this.isTame()) {
                         this.socialInteraction--;
                         mood -= 2;
@@ -1009,12 +1047,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
             }
         } else if (this.aggression < 75) {
-            if (this.time % 200 == 0) {
-                this.time = 0;
-                if (this.mood != 100) {
+            if (this.tickCount % 200 == 0) {
+                if (this.mood < 100) {
                     this.mood++;
                 }
-                if (mood != 1) {
+                if (mood >1) {
                     if (this.isTame()) {
                         this.socialInteraction--;
                         mood -= 2;
@@ -1022,12 +1059,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
             }
         } else {
-            if (this.time % 300 == 0) {
-                this.time = 0;
-                if (this.mood != 100) {
+            if (this.tickCount % 300 == 0) {
+                if (this.mood < 100) {
                     this.mood++;
                 }
-                if (mood != 1) {
+                if (mood >1) {
                     if (this.isTame()) {
                         this.socialInteraction--;
                         mood -= 2;
@@ -1035,7 +1071,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
             }
         }
-        if (socialInteraction == 0) {
+        if (socialInteraction <= 0) {
             this.setTame(false);
             this.setOwnerUUID(null);
             this.socialInteraction = 100;
@@ -1045,7 +1081,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (!this.level().isClientSide) {
             this.updatePersistentAnger((ServerLevel) this.level(), true);
         }
-        this.time++;
         if (blinkCounter == 0) {
             blinkCounter = 150;
         }

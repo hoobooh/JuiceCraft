@@ -1,6 +1,6 @@
 package com.usagin.juicecraft.ai.goals;
 
-import com.usagin.juicecraft.data.CombatSettings;
+import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 public class SoraHyperGoal extends Goal {
