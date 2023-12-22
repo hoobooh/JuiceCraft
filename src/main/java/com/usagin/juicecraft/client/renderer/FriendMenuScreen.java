@@ -57,6 +57,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 
 import java.awt.event.ContainerEvent;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,10 +76,17 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private FriendButton bagButton;
     private FriendButton statButton;
     private FriendButton talkButton;
+    private FriendButton dialogueOne;
+    private FriendButton dialogueTwo;
+    private FriendButton dialogueThree;
+    private FriendButton dialogueFour;
+    private FriendButton exitDialogue;
     ArrayList<FriendButton> bt = new ArrayList<>();
+    ArrayList<FriendButton> talkBt = new ArrayList<>();
     boolean skillActive = false;
     boolean statsActive = false;
     boolean hidePartial = false;
+    boolean talkActive=false;
     boolean hideFull = false;
     WidgetSprites buttonSprite = new WidgetSprites(BUTTON_BEFORE, BUTTON_AFTER);
     WidgetSprites upgradeSprite = new WidgetSprites(UPGRADE_BEFORE, UPGRADE_AFTER);
@@ -188,10 +196,28 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         //this.friend.combatSettings.aggression=0;
         //PacketHandler.sendToServer(new ToServerPacket(this.friend.combatSettings.makeHash(),this.friend.getId()));
         this.hideFullScreen();
-        this.bagButton.setFocus(false);
+        this.talkActive=true;
         //logic
     }
+    private void handleDialogueOne(Button btn){
 
+    }
+    private void handleDialogueTwo(Button btn){
+
+    }
+    private void handleDialogueThree(Button btn){
+
+    }
+    private void handleDialogueFour(Button btn){
+
+    }
+    private void exitTalkButton(Button btn){
+        this.showFullScreen();
+        if(this.statsActive || this.skillActive){
+            this.hideMiddleScreen();
+        }
+        this.talkActive=false;
+    }
     private void doSkillOneUpgrade(Button btn) {
 
     }
@@ -263,6 +289,51 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void doSkillSixDisable(Button btn) {
 
     }
+    void renderTalkMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick){
+        for (Slot slot : this.menu.slots) {
+            ((FriendSlot) slot).tempBypass = true;
+                List<BakedQuad> bakedmodel = this.getMinecraft().getItemRenderer().getModel(slot.getItem(), this.friend.level(), this.friend, 0).getQuads(null, null, this.friend.getRandom());
+                if (!bakedmodel.isEmpty()) {
+                    TextureAtlasSprite sprite = bakedmodel.get(0).getSprite();
+                    for (BakedQuad quad : bakedmodel) {
+                        int i = -1;
+                        float f,f1,f2;
+                        if (bakedmodel.get(0).isTinted()) {
+                            sprite = quad.getSprite();
+                            i = this.getMinecraft().getItemColors().getColor(slot.getItem(), quad.getTintIndex());
+                        }
+                        f = (float) (i >> 16 & 255) / 255.0F;
+                        f1 = (float) (i >> 8 & 255) / 255.0F;
+                        f2 = (float) (i & 255) / 255.0F;
+                        pGuiGraphics.blit(this.leftPos + slot.x, this.topPos + slot.y, -900, sprite.contents().width(), sprite.contents().height(), sprite, f, f1, f2, 1);
+                    }
+                    if (slot.getItem().getCount() != 1) {
+                        String s = Integer.toString(slot.getItem().getCount());
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
+                    }
+                    if(slot.getItem().isDamaged()){
+                        pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
+                        int color = slot.getItem().getBarColor();
+                        int offset=0;
+                        for(int n=0;n<8-Integer.toHexString(color).length();n++){
+                            offset=offset/16;
+                            offset+=0xF0000000;
+                        }
+                        color+=offset;
+                        pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 2 + slot.getItem().getBarWidth(), this.topPos + slot.y + 14, color);
+                    }
+                } else {
+                    pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
+                    String s = Integer.toString(slot.getItem().getCount());
+                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
+                }
+             ((FriendSlot) slot).tempBypass = false;
+        } pGuiGraphics.flush();
+
+        //ACTUAL STUFF
+
+
+    }
 
     void renderSkillMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
 
@@ -301,6 +372,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     }
                 } else {
                     pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
+                    String s = Integer.toString(slot.getItem().getCount());
+                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
                 }
             } ((FriendSlot) slot).tempBypass = false;
         } pGuiGraphics.flush();
@@ -332,13 +405,20 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                 }
                 bt.get(i + 2).setFocus(enabled[i - 4] || levels[i-4]==0);
                 bt.get(i + 4).setFocus(!enabled[i - 4]);
-            } else if (i == 12 || i == 13) {
+            } else if (i == 12) {
                 if (this.friend.getSkillPoints() > 2) {
                     bt.get(i).visible = true;
                 }
                 bt.get(i + 2).setFocus(enabled[i - 8] || levels[i-8]==0);
                 bt.get(i + 4).setFocus(!enabled[i - 8]);
-            } else {
+            } else if (i==13){
+                if (this.friend.getSkillPoints() > 2) {
+                    if(!this.friend.inventory.getItem(0).isEmpty()){
+                    bt.get(i).visible = true;}
+                }
+                bt.get(i + 2).setFocus(enabled[i - 8] || levels[i-8]==0);
+                bt.get(i + 4).setFocus(!enabled[i - 8]);
+            }else {
                 bt.get(i).visible = true;
             }
             bt.get(i).render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
@@ -393,6 +473,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     }
                 } else {
                     pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
+                    String s = Integer.toString(slot.getItem().getCount());
+                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
                 }
             } ((FriendSlot) slot).tempBypass = false;
         }
@@ -534,9 +616,16 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             this.renderSkillMenu(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         } else if (this.statsActive) {
             this.renderStatsMenu(pGuiGraphics);
+        } else if(this.talkActive){
+            this.renderTalkMenu(pGuiGraphics,pMouseX,pMouseY,pPartialTick);
         }
         if (!this.skillActive) {
             for (Button i : bt) {
+                i.visible = false;
+            }
+        }
+        if(!this.talkActive){
+            for(Button i: talkBt){
                 i.visible = false;
             }
         }
@@ -579,6 +668,18 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::doSkillFiveDisable)));
         bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 183, 27, 12, disableSprite, this::doSkillSixDisable)));
+
+        this.dialogueOne=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueOne));
+        this.dialogueTwo=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueTwo));
+        this.dialogueThree=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueThree));
+        this.dialogueFour=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueFour));
+        this.exitDialogue=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::exitTalkButton));
+        this.talkBt.add(dialogueOne);
+        this.talkBt.add(dialogueTwo);
+        this.talkBt.add(dialogueThree);
+        this.talkBt.add(dialogueFour);
+        this.talkBt.add(exitDialogue);
+
     }
 
     protected static void renderScrollingString(GuiGraphics pGuiGraphics, Font pFont, Component pText, int pMinX, int pMinY, int pMaxX, int pMaxY, int pColor) {
