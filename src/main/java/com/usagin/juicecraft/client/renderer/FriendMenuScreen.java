@@ -117,6 +117,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     void hideFullScreen() {
+        this.showFullScreen();
         this.hideFull = true;
         for (Slot slot : this.menu.slots) {
             ((FriendSlot) slot).highlight = false;
@@ -196,6 +197,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         //this.friend.combatSettings.aggression=0;
         //PacketHandler.sendToServer(new ToServerPacket(this.friend.combatSettings.makeHash(),this.friend.getId()));
         this.hideFullScreen();
+        this.statsActive=false;
+        this.skillActive=false;
         this.talkActive=true;
         //logic
     }
@@ -292,41 +295,45 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     void renderTalkMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick){
         for (Slot slot : this.menu.slots) {
             ((FriendSlot) slot).tempBypass = true;
-                List<BakedQuad> bakedmodel = this.getMinecraft().getItemRenderer().getModel(slot.getItem(), this.friend.level(), this.friend, 0).getQuads(null, null, this.friend.getRandom());
-                if (!bakedmodel.isEmpty()) {
-                    TextureAtlasSprite sprite = bakedmodel.get(0).getSprite();
-                    for (BakedQuad quad : bakedmodel) {
-                        int i = -1;
-                        float f,f1,f2;
-                        if (bakedmodel.get(0).isTinted()) {
-                            sprite = quad.getSprite();
-                            i = this.getMinecraft().getItemColors().getColor(slot.getItem(), quad.getTintIndex());
-                        }
-                        f = (float) (i >> 16 & 255) / 255.0F;
-                        f1 = (float) (i >> 8 & 255) / 255.0F;
-                        f2 = (float) (i & 255) / 255.0F;
-                        pGuiGraphics.blit(this.leftPos + slot.x, this.topPos + slot.y, -900, sprite.contents().width(), sprite.contents().height(), sprite, f, f1, f2, 1);
+            List<BakedQuad> bakedmodel = this.getMinecraft().getItemRenderer().getModel(slot.getItem(), this.friend.level(), this.friend, 0).getQuads(null, null, this.friend.getRandom());
+            if (!bakedmodel.isEmpty()) {
+                TextureAtlasSprite sprite = bakedmodel.get(0).getSprite();
+                for (BakedQuad quad : bakedmodel) {
+                    int i = -1;
+                    float f,f1,f2;
+                    if (bakedmodel.get(0).isTinted()) {
+                        sprite = quad.getSprite();
+                        i = this.getMinecraft().getItemColors().getColor(slot.getItem(), quad.getTintIndex());
                     }
-                    if (slot.getItem().getCount() != 1) {
-                        String s = Integer.toString(slot.getItem().getCount());
-                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
-                    }
-                    if(slot.getItem().isDamaged()){
-                        pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
-                        int color = slot.getItem().getBarColor();
-                        int offset=0;
-                        for(int n=0;n<8-Integer.toHexString(color).length();n++){
-                            offset=offset/16;
-                            offset+=0xF0000000;
-                        }
-                        color+=offset;
-                        pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 2 + slot.getItem().getBarWidth(), this.topPos + slot.y + 14, color);
-                    }
-                } else {
-                    pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
-                    String s = Integer.toString(slot.getItem().getCount());
-                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
+                    f = (float) (i >> 16 & 255) / 255.0F;
+                    f1 = (float) (i >> 8 & 255) / 255.0F;
+                    f2 = (float) (i & 255) / 255.0F;
+                    pGuiGraphics.blit(this.leftPos + slot.x, this.topPos + slot.y, -900, sprite.contents().width(), sprite.contents().height(), sprite, f, f1, f2, 1);
                 }
+                if (slot.getItem().getCount() != 1) {
+                    String s = Integer.toString(slot.getItem().getCount());
+                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
+                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
+                }
+                if(slot.getItem().isDamaged()){
+                    pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
+                    int color = slot.getItem().getBarColor();
+                    int offset=0;
+                    for(int n=0;n<8-Integer.toHexString(color).length();n++){
+                        offset=offset/16;
+                        offset+=0xF0000000;
+                    }
+                    color+=offset;
+                    pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 2 + slot.getItem().getBarWidth(), this.topPos + slot.y + 14, color);
+                }
+            } else {
+                pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
+                if (slot.getItem().getCount() > 1) {
+                    String s = Integer.toString(slot.getItem().getCount());
+                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
+                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
+                }
+            }
              ((FriendSlot) slot).tempBypass = false;
         } pGuiGraphics.flush();
 
@@ -357,7 +364,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     }
                     if (slot.getItem().getCount() != 1) {
                         String s = Integer.toString(slot.getItem().getCount());
-                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
                     }
                     if(slot.getItem().isDamaged()){
                         pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
@@ -372,8 +380,11 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     }
                 } else {
                     pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
-                    String s = Integer.toString(slot.getItem().getCount());
-                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
+                    if (slot.getItem().getCount() > 1) {
+                        String s = Integer.toString(slot.getItem().getCount());
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
+                    }
                 }
             } ((FriendSlot) slot).tempBypass = false;
         } pGuiGraphics.flush();
@@ -437,7 +448,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     void renderStatsMenu(GuiGraphics pGuiGraphics) {
-
+        pGuiGraphics.pose().pushPose();
         for (Slot slot : this.menu.slots) {
             ((FriendSlot) slot).tempBypass = true;
             if (((slot.getSlotIndex() > 6 || slot.getSlotIndex() == 0) && !(slot.container instanceof Inventory)) || (slot.getSlotIndex() > 8 && slot.container instanceof Inventory)) {
@@ -458,7 +469,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     }
                     if (slot.getItem().getCount() != 1) {
                         String s = Integer.toString(slot.getItem().getCount());
-                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
                     }
                     if(slot.getItem().isDamaged()){
                         pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
@@ -473,11 +485,16 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     }
                 } else {
                     pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
-                    String s = Integer.toString(slot.getItem().getCount());
-                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, 16777215, true);
+                    if (slot.getItem().getCount() > 1) {
+                        String s = Integer.toString(slot.getItem().getCount());
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
+                    }
                 }
             } ((FriendSlot) slot).tempBypass = false;
         }
+        pGuiGraphics.pose().translate(0,0,500);
+        pGuiGraphics.pose().popPose();
         pGuiGraphics.flush();
         RenderSystem.disableDepthTest();
         GL11.glEnable(GL11.GL_BLEND);
@@ -508,7 +525,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         pGuiGraphics.pose().popPose();
         GL11.glDisable(GL11.GL_BLEND);
-        RenderSystem.enableDepthTest();
+        //RenderSystem.enableDepthTest();
     }
 
     String getResource(String s) {

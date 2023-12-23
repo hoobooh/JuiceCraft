@@ -96,6 +96,7 @@ public class FriendFarmGoal extends Goal {
                                         //change later if it becomes an issue
                                         this.friend.inventory.getItem(i).setCount(this.friend.inventory.getItem(i).getCount()-1);
                                         sLevel.setBlockAndUpdate(this.targetPos,cropBlock.defaultBlockState());
+                                        this.friend.increaseEXP(2*this.friend.getPeaceAffinityModifier());
                                     }
                                 }
                             }
