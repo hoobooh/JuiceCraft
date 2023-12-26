@@ -121,11 +121,13 @@
   "juicecraft.menu.sora.prompts.comment_area_danger_high": "I’m sensing some powerful readings around us. We’d better be on our guard.",
   "juicecraft.menu.sora.prompts.comment_area_danger_medium": "There are some concerning readings near us. Let’s be careful.",
   "juicecraft.menu.sora.prompts.comment_area_danger_low": "My readings show nothing around us. It looks like this area is safe.",
+  "juicecraft.menu.sora.reactions.combatsettings": "My fighting style?",
   "juicecraft.menu.sora.reactions.generic_accept": "Understood.",
   "juicecraft.menu.sora.reactions.generic_reject": "I can't do that.",
   "juicecraft.menu.sora.reactions.disapproval": "That's…",
   "juicecraft.menu.sora.reactions.neutral": "Mm.",
   "juicecraft.menu.sora.reactions.approval": "Fufu.",
+
 
   "juicecraft.sora_idle_night1": "The stars are pretty, aren't they? I like them.",
   "juicecraft.sora_idle_night2": "Stars...",
