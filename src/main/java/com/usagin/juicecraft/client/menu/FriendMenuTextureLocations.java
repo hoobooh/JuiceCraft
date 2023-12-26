@@ -7,6 +7,7 @@ public class FriendMenuTextureLocations {
     public static final ResourceLocation STATMENU = new ResourceLocation(JuiceCraft.MODID, "textures/gui/statmenu.png");
     public static final ResourceLocation SKILLMENU = new ResourceLocation(JuiceCraft.MODID, "textures/gui/skillmenu.png");
     public static final ResourceLocation MAINTEXTURE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenu.png");
+    public static final ResourceLocation DIALOGUEBOX = new ResourceLocation(JuiceCraft.MODID, "textures/gui/dialoguebox.png");
 
     public static final ResourceLocation MAINFLUIDTEXTURE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenufluids.png");
     public static final ResourceLocation HEALTHBAR = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenuhealthbar.png");

@@ -4,15 +4,13 @@ import com.usagin.juicecraft.Init.EntityInit;
 import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.SoraEntityRenderer;
-import com.usagin.juicecraft.friends.Friend;
 import com.usagin.juicecraft.friends.Sora;
-import com.usagin.juicecraft.network.PacketHandler;
+import com.usagin.juicecraft.network.*;
 import com.usagin.juicecraft.particles.SleepyParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.usagin.juicecraft.particles.SuguriverseParticleLarge;
@@ -47,7 +45,12 @@ public class CommonEvents {
     @SubscribeEvent
     public static void registerPacketHandler(FMLCommonSetupEvent event){
         event.enqueueWork(()->{
-            PacketHandler.register();
+            CombatSettingsPacketHandler.register();
+            DialogueResultPacketHandler.register();
+            SpecialDialoguePacketHandler.register();
+            SetFarmingPacketHandler.register();
+            SetWanderingPacketHandler.register();
         });
     }
+
 }

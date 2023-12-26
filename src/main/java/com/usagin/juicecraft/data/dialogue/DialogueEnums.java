@@ -1,6 +1,11 @@
 package com.usagin.juicecraft.data.dialogue;
 
 public enum DialogueEnums {
+    COMBATSETTINGS,
+    GETCOMBATSETTINGS,
+    FARMING,
+    WANDERING,
+    GENERAL,
     NORMAL1,
     NORMAL2,
     NORMAL3,

@@ -28,58 +28,59 @@ public class CommonLiveEvents {
     @SubscribeEvent
     public static void onFriendHurt(LivingAttackEvent event) {
         if (event.getEntity() instanceof Friend friend) {
-            Logger LOGGER = LogUtils.getLogger();
-            if (event.getAmount() >= friend.getHealth()) {
-                friend.setTarget(null);
-                if (!friend.isDying) {
-                    if (event.getSource() != null) {
-                        friend.deathSource = event.getSource();
+            if (!friend.level().isClientSide()) {
+                if (event.getSource().getEntity() != null && !friend.isDying) {
+                    if (friend.getAttackType() == 50 && friend.getAttackCounter() > 26) {
+                        event.setCanceled(true);
+                    } else if (FriendDefense.shouldDefendAgainst(friend)) {
+                        friend.setAttackCounter(34);
+                        friend.setAttackType(50);
+                        friend.playTimedVoice(friend.getEvade());
+                        friend.playSound(COUNTER_BLOCK.get());
+                        event.setCanceled(true);
                     }
-                    friend.deathTimer = 200;
-                    if(!friend.level().isClientSide){
-                    friend.setDeathAnimCounter(60);}
-                    friend.setIsDying(true);
                 }
-                friend.setHealth(0.1F);
-                if (friend.deathCounter != 7 - friend.getRecoveryDifficulty()) {
-                    friend.deathCounter--;
-                }
-                if (friend.deathCounter >= 0) {
-                    event.setCanceled(true);
-                } else {
-                    friend.doDeathEvent();
-                }
-            }
-            else if (!friend.level().isClientSide()) {
-                if(event.getSource().getEntity()!=null){
-                if (friend.getAttackType() == 50 && friend.getAttackCounter() > 26) {
-                    event.setCanceled(true);
-                }
-                else if (FriendDefense.shouldDefendAgainst(friend)) {
-                    friend.setAttackCounter(34);
-                    friend.setAttackType(50);
-                    friend.playTimedVoice(friend.getEvade());
-                    friend.playSound(COUNTER_BLOCK.get());
-                    event.setCanceled(true);
-                }}
-            }
-            if (!event.isCanceled()) {
-                friend.playVoice(friend.getHurt(event.getAmount()));
-                for (int i = 3; i < 7; i++) {
-                    if (!friend.inventory.getItem(i).isEmpty()) {
-                        if (i == 3) {
-                            friend.inventory.getItem(i).hurtAndBreak((int) event.getAmount(), friend, (a) -> friend.broadcastBreakEvent(EquipmentSlot.HEAD));
-                        } else if (i == 4) {
-                            friend.inventory.getItem(i).hurtAndBreak((int) event.getAmount(), friend, (a) -> friend.broadcastBreakEvent(EquipmentSlot.CHEST));
-                        } else if (i == 5) {
-                            friend.inventory.getItem(i).hurtAndBreak((int) event.getAmount(), friend, (a) -> friend.broadcastBreakEvent(EquipmentSlot.LEGS));
+                if (!event.isCanceled()) {
+                    if (event.getAmount() >= friend.getHealth()) {
+                        friend.setTarget(null);
+                        if (!friend.isDying) {
+                            if (event.getSource() != null) {
+                                friend.deathSource = event.getSource();
+                            }
+                            friend.deathTimer = 200;
+                            if (!friend.level().isClientSide) {
+                                friend.setDeathAnimCounter(60);
+                            }
+                            friend.setIsDying(true);
+                        }
+                        friend.setHealth(0.1F);
+                        if (friend.deathCounter != 7 - friend.getRecoveryDifficulty()) {
+                            friend.deathCounter--;
+                        }
+                        if (friend.deathCounter >= 0) {
+                            event.setCanceled(true);
+                            return;
                         } else {
-                            friend.inventory.getItem(i).hurtAndBreak((int) event.getAmount(), friend, (a) -> friend.broadcastBreakEvent(EquipmentSlot.FEET));
+                            friend.doDeathEvent();
+                        }
+                    }
+                    friend.playVoice(friend.getHurt(event.getAmount()));
+                    for (int i = 3; i < 7; i++) {
+                        if (!friend.inventory.getItem(i).isEmpty()) {
+                            if (i == 3) {
+                                friend.inventory.getItem(i).hurtAndBreak((int) event.getAmount(), friend, (a) -> friend.broadcastBreakEvent(EquipmentSlot.HEAD));
+                            } else if (i == 4) {
+                                friend.inventory.getItem(i).hurtAndBreak((int) event.getAmount(), friend, (a) -> friend.broadcastBreakEvent(EquipmentSlot.CHEST));
+                            } else if (i == 5) {
+                                friend.inventory.getItem(i).hurtAndBreak((int) event.getAmount(), friend, (a) -> friend.broadcastBreakEvent(EquipmentSlot.LEGS));
+                            } else {
+                                friend.inventory.getItem(i).hurtAndBreak((int) event.getAmount(), friend, (a) -> friend.broadcastBreakEvent(EquipmentSlot.FEET));
+                            }
                         }
                     }
                 }
+                friend.updateGear();
             }
-            friend.updateGear();
         }
     }
 
@@ -99,7 +100,7 @@ public class CommonLiveEvents {
                 }
 
                 //XP CALC EVENT
-                pFriend.increaseEXP(EnemyEvaluator.calculateNetGain(pFriend,event.getEntity()));
+                pFriend.increaseEXP(EnemyEvaluator.calculateNetGain(pFriend, event.getEntity()));
             }
         }
     }

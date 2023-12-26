@@ -1,6 +1,5 @@
 package com.usagin.juicecraft.network;
 
-import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -9,31 +8,30 @@ import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.Objects;
 
-public class ToServerPacket {
-    private final int combatSettings;
+public class ToServerSetWanderingPacket {
+    private final boolean set;
     private Friend friend;
     private final int id;
-    public ToServerPacket(int settings, int id){
-        this.combatSettings=settings;
+    public ToServerSetWanderingPacket(boolean set, int id){
+        this.set=set;
         this.id=id;
 
     }
     public void encode(FriendlyByteBuf buffer){
-        buffer.writeInt(this.combatSettings);
+        buffer.writeBoolean(this.set);
         buffer.writeVarInt(this.id);
     }
 
     //should be same order as write apparently
-    public ToServerPacket(FriendlyByteBuf buffer){
-        this(buffer.readInt(), buffer.readVarInt());
+    public ToServerSetWanderingPacket(FriendlyByteBuf buffer){
+        this(buffer.readBoolean(), buffer.readVarInt());
     }
     //menu should close in time in case of level change, shouldnt be any sync issues
     public void handle(CustomPayloadEvent.Context context){
         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
         this.friend=decodeBuffer(level, this.id);
         if(friend!=null){
-            this.friend.combatSettings= CombatSettings.decodeHash(this.combatSettings);
-            this.friend.updateCombatSettings();
+            this.friend.setIsWandering(this.set);
             context.setPacketHandled(true);
         }
     }

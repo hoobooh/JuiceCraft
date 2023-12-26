@@ -10,6 +10,7 @@ import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.Seagull;
 import com.usagin.juicecraft.data.*;
 import com.usagin.juicecraft.ai.goals.navigation.FriendPathNavigation;
+import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.items.Sweet;
 import com.usagin.juicecraft.items.SweetHandler;
 import com.usagin.juicecraft.particles.DiceHandler;
@@ -66,6 +67,7 @@ import static net.minecraft.world.item.Items.WHEAT_SEEDS;
 public abstract class Friend extends FakeWolf implements ContainerListener, MenuProvider {
     int captureDifficulty;
     int hungerMeter;
+    int[] specialDialogueEnabled = {0,0,0};
     public final AnimationState idleAnimState = new AnimationState();
     public final AnimationState patAnimState = new AnimationState();
     public final AnimationState idleAnimStartState = new AnimationState();
@@ -87,7 +89,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     private int enemiesKilled = 0;
     private int itemsCollected = 0;
     private float experience = 0;
-    private int norma = 1;
+    private float norma = 1;
     int aggression;
     public int mood;
     public boolean isDying = false;
@@ -497,6 +499,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int getInventoryRows() {
         return this.invRows;
     }
+    public abstract AbstractDialogueManager getDialogueManager();
+
 
     void saveMemory() {
         this.oldMemory.saveDialogue(dialogueTree);
@@ -528,6 +532,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         super.addAdditionalSaveData(pCompound);
         pCompound.putIntArray("juicecraft.dialogue", this.dialogueTree);
         pCompound.putIntArray("juicecraft.relationships", convertRelationships(this.relationships));
+        pCompound.putIntArray("juicecraft.specialsenabled", this.specialDialogueEnabled);
         pCompound.putInt("juicecraft.csettings", this.getCombatSettings().makeHash());
         pCompound.putInt("juicecraft.social", this.socialInteraction);
         pCompound.putInt("juicecraft.mood", this.mood);
@@ -536,7 +541,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         pCompound.putBoolean("juicecraft.isdying", this.isDying);
         pCompound.putInt("juicecraft.deathcounter", this.deathCounter);
         pCompound.putInt("juicecraft.hungermeter", this.hungerMeter);
-        pCompound.putInt("juicecraft.norma", this.norma);
+        pCompound.putFloat("juicecraft.norma", this.norma);
         pCompound.putFloat("juicecraft.experience", this.experience);
         pCompound.putInt("juicecraft.itemscollected", this.itemsCollected);
         pCompound.putInt("juicecraft.enemieskilled", this.enemiesKilled);
@@ -577,6 +582,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         super.readAdditionalSaveData(pCompound);
         this.initializeNew();
         this.dialogueTree = pCompound.getIntArray("juicecraft.dialogue");
+        this.setSpecialDialogueEnabled(pCompound.getIntArray("juicecraft.specialsenabled"));
         this.relationships = this.parseRelationships((pCompound.getIntArray("juicecraft.relationships")));
         this.combatSettings = CombatSettings.decodeHash((pCompound.getInt("juicecraft.csettings")));
         this.updateCombatSettings();
@@ -586,15 +592,15 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.isDying = (pCompound.getBoolean("juicecraft.isdying"));
         this.deathCounter = (pCompound.getInt("juicecraft.deathcounter"));
         this.setHungerMeter(pCompound.getInt("juicecraft.hungermeter"));
-        this.setFriendNorma(pCompound.getInt("juicecraft.norma"));
+        this.setFriendNorma(pCompound.getFloat("juicecraft.norma"));
         this.setFriendExperience(pCompound.getFloat("juicecraft.experience"));
         this.setFriendItemsCollected(pCompound.getInt("juicecraft.itemscollected"));
         this.setFriendEnemiesKilled(pCompound.getInt("juicecraft.enemieskilled"));
         this.setSkillLevels(SkillManager.decodeHash(pCompound.getInt("juicecraft.skilllevels")));
         this.setSkillEnabled(SkillManager.decodeBooleanHash(pCompound.getInt("juicecraft.skillenabled")));
         this.setSkillPoints(pCompound.getInt("juicecraft.skillpoints"));
-        this.wandering = pCompound.getBoolean("juicecraft.iswandering");
-        this.doFarming = pCompound.getBoolean("juicecraft.dofarming");
+        this.setIsWandering(pCompound.getBoolean("juicecraft.iswandering"));
+        this.setIsFarming(pCompound.getBoolean("juicecraft.dofarming"));
 
         this.setTame(pCompound.getBoolean("Tame"));
         this.createInventory();
@@ -726,12 +732,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return this.getEntityData().get(FRIEND_WEAPON);
     }
 
-    public void setFriendNorma(int n) {
+    public void setFriendNorma(float n) {
         this.norma = n;
         this.getEntityData().set(FRIEND_NORMA, n);
     }
 
-    public int getFriendNorma() {
+    public float getFriendNorma() {
         return this.getEntityData().get(FRIEND_NORMA);
     }
 
@@ -770,7 +776,27 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.skillPoints = a;
         this.getEntityData().set(FRIEND_SKILLPOINTS, a);
     }
-
+    public int[] getSpecialDialogueEnabled(){
+        return AbstractDialogueManager.decodeSpecialHash(this.getEntityData().get(FRIEND_SPECIALSENABLED));
+    }
+    public void setSpecialDialogueEnabled(int[] n){
+        this.specialDialogueEnabled=n;
+        this.getEntityData().set(FRIEND_SPECIALSENABLED, AbstractDialogueManager.encodeSpecialHash(n));
+    }
+    public boolean getIsWandering(){
+        return this.getEntityData().get(FRIEND_ISWANDERING);
+    }
+    public boolean getIsFarming(){
+        return this.getEntityData().get(FRIEND_ISFARMING);
+    }
+    public void setIsWandering(boolean b){
+        this.wandering=b;
+        this.getEntityData().set(FRIEND_ISWANDERING,b);
+    }
+    public void setIsFarming(boolean b){
+        this.doFarming=b;
+        this.getEntityData().set(FRIEND_ISFARMING,b);
+    }
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_ID_FLAGS, (byte) 0);
@@ -793,10 +819,16 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.skillLevels = new int[6];
         this.entityData.define(FRIEND_SKILLENABLED, SkillManager.makeBooleanHash(this.skillEnabled));
         this.entityData.define(FRIEND_SKILLLEVELS, SkillManager.makeHash(this.skillLevels));
+        this.specialDialogueEnabled= new int[]{0,0,0};
+        this.entityData.define(FRIEND_SPECIALSENABLED, AbstractDialogueManager.encodeSpecialHash(this.specialDialogueEnabled));
         this.entityData.define(FRIEND_SKILLPOINTS, this.skillPoints);
+        this.entityData.define(FRIEND_ISWANDERING, this.wandering);
+        this.entityData.define(FRIEND_ISFARMING, this.doFarming);
 
     }
-
+    public static final EntityDataAccessor<Boolean> FRIEND_ISFARMING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> FRIEND_ISWANDERING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> FRIEND_SPECIALSENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SKILLPOINTS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SKILLENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
@@ -810,7 +842,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public static final EntityDataAccessor<Integer> FRIEND_ENEMIESKILLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_DEATHCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_ATTACKTYPE = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_NORMA = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Float> FRIEND_NORMA = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> FRIEND_LEVEL = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<ItemStack> FRIEND_WEAPON = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Optional<BlockPos>> SLEEPING_POS_ID = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);

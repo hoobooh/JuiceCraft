@@ -5,6 +5,8 @@ import com.usagin.juicecraft.ai.goals.FriendHitAndRunGoal;
 import com.usagin.juicecraft.client.menu.FriendMenu;
 import com.usagin.juicecraft.data.Relationships;
 import com.usagin.juicecraft.ai.goals.sora.SoraHyperGoal;
+import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
+import com.usagin.juicecraft.data.dialogue.SoraDialogueManager;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
@@ -278,6 +280,11 @@ public class Sora extends Friend{
     @Override
     int[] convertRelationships(Relationships relations) {
         return new int[0];
+    }
+
+    @Override
+    public AbstractDialogueManager getDialogueManager() {
+        return new SoraDialogueManager();
     }
 
     @Override

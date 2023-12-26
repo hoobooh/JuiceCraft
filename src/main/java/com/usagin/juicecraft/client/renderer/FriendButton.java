@@ -17,6 +17,7 @@ public class FriendButton extends ImageButton {
     protected final WidgetSprites sprites;
     public boolean focus = false;
     boolean imperm = false;
+    public boolean active=true;
 
     public void setFocus(boolean b) {
         this.focus = b;
@@ -31,6 +32,12 @@ public class FriendButton extends ImageButton {
         super(pX, pY, pWidth, pHeight, pSprites, pOnPress);
         this.sprites = pSprites;
         this.imperm = b;
+    }
+    public FriendButton(int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, boolean b, boolean c) {
+        super(pX, pY, pWidth, pHeight, pSprites, pOnPress);
+        this.sprites = pSprites;
+        this.imperm = b;
+        this.visible=c;
     }
 
     public FriendButton(int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, Component pMessage) {
@@ -65,7 +72,7 @@ public class FriendButton extends ImageButton {
             if (this.isValidClickButton(pButton)) {
                 boolean flag = this.clicked(pMouseX, pMouseY);
                 if (flag) {
-                    if (!this.focus || this.imperm) {
+                    if ((!this.focus || this.imperm) && this.active) {
                         this.focus = true;
                         this.playDownSound(Minecraft.getInstance().getSoundManager());
                         this.onClick(pMouseX, pMouseY);

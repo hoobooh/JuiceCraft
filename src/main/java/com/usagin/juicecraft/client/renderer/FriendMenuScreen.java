@@ -2,68 +2,39 @@ package com.usagin.juicecraft.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.client.menu.FriendMenu;
 import com.usagin.juicecraft.JuiceCraft;
 import com.usagin.juicecraft.client.menu.FriendSlot;
+import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
+import com.usagin.juicecraft.data.dialogue.DialogueEnums;
 import com.usagin.juicecraft.friends.Friend;
-import com.usagin.juicecraft.network.PacketHandler;
-import com.usagin.juicecraft.network.ToServerPacket;
+import com.usagin.juicecraft.network.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.WidgetSprites;
-import net.minecraft.client.gui.components.events.ContainerEventHandler;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.entity.DisplayRenderer;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.atlas.SpriteSourceList;
-import net.minecraft.client.renderer.texture.atlas.SpriteSources;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.event.ContainerScreenEvent;
-import net.minecraftforge.client.extensions.IForgeBakedModel;
-import net.minecraftforge.client.extensions.IForgeGuiGraphics;
-import net.minecraftforge.common.data.SpriteSourceProvider;
-import net.minecraftforge.common.extensions.IForgeItem;
-import net.minecraftforge.common.extensions.IForgeItemStack;
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
-
-import java.awt.event.ContainerEvent;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.usagin.juicecraft.client.menu.FriendMenuTextureLocations.*;
-import static net.minecraft.core.Direction.NORTH;
 
 public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     public ResourceLocation FRIEND_PORTRAIT;
@@ -71,23 +42,27 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     public ResourceLocation FRIEND_SOURCE;
     private static final Logger LOGGER = LogUtils.getLogger();
     final Friend friend;
+    public int answerstate;
+    public int[] answerstatus = new int[]{0, 0, 0, 0}; //0 is neutral, -1 is bad, 1 is good
     private final FriendMenu menu;
-    private FriendButton skillButton;
-    private FriendButton bagButton;
-    private FriendButton statButton;
-    private FriendButton talkButton;
-    private FriendButton dialogueOne;
-    private FriendButton dialogueTwo;
-    private FriendButton dialogueThree;
-    private FriendButton dialogueFour;
-    private FriendButton exitDialogue;
+    public FriendButton skillButton;
+    public FriendButton bagButton;
+    public FriendButton statButton;
+    public FriendButton talkButton;
+    public FriendButton dialogueOne;
+    public FriendButton dialogueTwo;
+    public FriendButton dialogueThree;
+    public FriendButton dialogueFour;
+    public FriendButton exitDialogue;
+    DialogueEnums currenttopic;
     ArrayList<FriendButton> bt = new ArrayList<>();
     ArrayList<FriendButton> talkBt = new ArrayList<>();
     boolean skillActive = false;
     boolean statsActive = false;
     boolean hidePartial = false;
-    boolean talkActive=false;
+    boolean talkActive = false;
     boolean hideFull = false;
+    public int dialogueProgress = 0;
     WidgetSprites buttonSprite = new WidgetSprites(BUTTON_BEFORE, BUTTON_AFTER);
     WidgetSprites upgradeSprite = new WidgetSprites(UPGRADE_BEFORE, UPGRADE_AFTER);
     WidgetSprites enableSprite = new WidgetSprites(ENABLE_BEFORE, ENABLE_AFTER);
@@ -137,6 +112,23 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if (this.talkActive) {
+            if (this.dialogueProgress == 2) {
+                this.dialogueProgress = 3;
+                this.currenttopic = DialogueEnums.GENERAL;
+            } else if (this.dialogueProgress == 51) {
+                this.dialogueProgress = 3;
+                this.currenttopic = DialogueEnums.GENERAL;
+            } else if (this.dialogueProgress == 62) {
+                this.dialogueProgress = 3;
+            } else if (this.dialogueProgress == 72) {
+                this.dialogueProgress = 3;
+            } else if (this.dialogueProgress == 82) {
+                this.dialogueProgress = 3;
+            } else if (!this.dialogueOne.visible) { //prompt player response
+                this.dialogueProgress++;
+            }
+        }
         if (isValidSpot(pMouseX, pMouseY)) {//findValidSlot determines that the click spot is not on a disabled slot
             return super.mouseClicked(pMouseX, pMouseY, pButton);
         } else { //it is on a disabled slot, ignore it
@@ -146,10 +138,9 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
     protected void slotClicked(Slot pSlot, int pSlotId, int pMouseButton, ClickType pType) {
         FriendSlot sl = (FriendSlot) pSlot;
-        if(sl==null){
+        if (sl == null) {
             this.minecraft.gameMode.handleInventoryMouseClick(this.menu.containerId, pSlotId, pMouseButton, pType, this.minecraft.player);
-        }
-        else if (sl.highlight) {
+        } else if (sl.highlight) {
             if (pSlot != null) {
                 pSlotId = pSlot.index;
             }
@@ -197,30 +188,161 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         //this.friend.combatSettings.aggression=0;
         //PacketHandler.sendToServer(new ToServerPacket(this.friend.combatSettings.makeHash(),this.friend.getId()));
         this.hideFullScreen();
-        this.statsActive=false;
-        this.skillActive=false;
-        this.talkActive=true;
+        this.dialogueProgress = 0;
+        this.statsActive = false;
+        this.skillActive = false;
+        this.talkActive = true;
+        this.bagButton.active = false;
+        this.skillButton.active = false;
+        this.statButton.active = false;
+        this.talkButton.active = false;
+        this.currenttopic = AbstractDialogueManager.getRandomPrompt(this.friend);
         //logic
     }
-    private void handleDialogueOne(Button btn){
 
+    private void handleDialogueOne(Button btn) {
+        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[0], this.friend.getId()));
+        this.answerstate = this.answerstatus[0];
+        if (this.dialogueProgress == 3) { //general topics
+            this.currenttopic = DialogueEnums.GETCOMBATSETTINGS;
+            this.dialogueProgress = 50;
+        } else if (this.dialogueProgress == 61) { //change combat setting
+            this.dialogueProgress = 63;
+        } else if (this.dialogueProgress == 63) {//hyper
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.aggression*1000+settings.willFlee*100+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        } else if (this.dialogueProgress == 64) { //aggression
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+settings.willFlee*100+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 65) { //flee
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 66) { //defense
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.willFlee*100;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }
+        this.answerstatus = new int[]{0, 0, 0, 0};
     }
-    private void handleDialogueTwo(Button btn){
 
+    private void handleDialogueTwo(Button btn) {
+        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[1], this.friend.getId()));
+        this.answerstate = this.answerstatus[1];
+        if (this.dialogueProgress == 3) {
+            this.currenttopic = DialogueEnums.COMBATSETTINGS;
+            this.dialogueProgress = 60;
+        } else if (this.dialogueProgress == 61) { //change combat setting
+            this.dialogueProgress = 64;
+        } else if (this.dialogueProgress == 63) {//hyper
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = 10000+settings.aggression*1000+settings.willFlee*100+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        } else if (this.dialogueProgress == 64) { //aggression
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+1000+settings.willFlee*100+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 65) { //flee
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+settings.aggression*1000+100+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 66) { //defense
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.willFlee*100+1;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }
+        this.answerstatus = new int[]{0, 0, 0, 0};
     }
-    private void handleDialogueThree(Button btn){
 
+    private void handleDialogueThree(Button btn) {
+        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[2], this.friend.getId()));
+        this.answerstate = this.answerstatus[2];
+        if (this.dialogueProgress == 3) {
+            this.currenttopic = DialogueEnums.WANDERING;
+            SetWanderingPacketHandler.sendToServer(new ToServerSetWanderingPacket(!this.friend.getIsWandering(),this.friend.getId()));
+            this.dialogueProgress = 70;
+        } else if (this.dialogueProgress == 63) {//hyper
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = 20000+settings.aggression*1000+settings.willFlee*100+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        } else if (this.dialogueProgress == 64) { //aggression
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+2000+settings.willFlee*100+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 65) { //flee
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+settings.aggression*1000+200+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 66) { //defense
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.willFlee*100+2;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 61) { //change combat setting
+            this.dialogueProgress = 65;
+        }
+        this.answerstatus = new int[]{0, 0, 0, 0};
     }
-    private void handleDialogueFour(Button btn){
 
+    private void handleDialogueFour(Button btn) {
+        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[3], this.friend.getId()));
+        this.answerstate = this.answerstatus[3];
+        if (this.dialogueProgress == 3) {
+            this.currenttopic = DialogueEnums.FARMING;
+            SetFarmingPacketHandler.sendToServer(new ToServerSetFarmingPacket(!this.friend.getIsFarming(),this.friend.getId()));
+            this.dialogueProgress = 80;
+        } else if (this.dialogueProgress == 63) {//hyper
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = 30000+settings.aggression*1000+settings.willFlee*100+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        } else if (this.dialogueProgress == 64) { //aggression
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+3000+settings.willFlee*100+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 65) { //flee
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+settings.aggression*1000+300+settings.defense;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 66) { //defense
+            CombatSettings settings = this.friend.getCombatSettings();
+            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.willFlee*100+3;
+            CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
+            this.dialogueProgress=62;
+        }else if (this.dialogueProgress == 61) { //change combat setting
+            this.dialogueProgress = 66;
+        }
+        this.answerstatus = new int[]{0, 0, 0, 0};
     }
-    private void exitTalkButton(Button btn){
+
+    private void exitTalkButton(Button btn) {
         this.showFullScreen();
-        if(this.statsActive || this.skillActive){
+        if (this.statsActive || this.skillActive) {
             this.hideMiddleScreen();
         }
-        this.talkActive=false;
+        this.talkActive = false;
+        this.bagButton.active = true;
+        this.skillButton.active = true;
+        this.statButton.active = true;
+        this.talkButton.active = true;
+        this.currenttopic = null;
     }
+
     private void doSkillOneUpgrade(Button btn) {
 
     }
@@ -292,7 +414,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void doSkillSixDisable(Button btn) {
 
     }
-    void renderTalkMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick){
+
+    void renderTalkMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         for (Slot slot : this.menu.slots) {
             ((FriendSlot) slot).tempBypass = true;
             List<BakedQuad> bakedmodel = this.getMinecraft().getItemRenderer().getModel(slot.getItem(), this.friend.level(), this.friend, 0).getQuads(null, null, this.friend.getRandom());
@@ -300,7 +423,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                 TextureAtlasSprite sprite = bakedmodel.get(0).getSprite();
                 for (BakedQuad quad : bakedmodel) {
                     int i = -1;
-                    float f,f1,f2;
+                    float f, f1, f2;
                     if (bakedmodel.get(0).isTinted()) {
                         sprite = quad.getSprite();
                         i = this.getMinecraft().getItemColors().getColor(slot.getItem(), quad.getTintIndex());
@@ -315,16 +438,16 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
                     pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
                 }
-                if(slot.getItem().isDamaged()){
-                    pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
+                if (slot.getItem().isDamaged()) {
+                    pGuiGraphics.fill(this.leftPos + slot.x + 2, this.topPos + slot.y + 13, this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
                     int color = slot.getItem().getBarColor();
-                    int offset=0;
-                    for(int n=0;n<8-Integer.toHexString(color).length();n++){
-                        offset=offset/16;
-                        offset+=0xF0000000;
+                    int offset = 0;
+                    for (int n = 0; n < 8 - Integer.toHexString(color).length(); n++) {
+                        offset = offset / 16;
+                        offset += 0xF0000000;
                     }
-                    color+=offset;
-                    pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 2 + slot.getItem().getBarWidth(), this.topPos + slot.y + 14, color);
+                    color += offset;
+                    pGuiGraphics.fill(this.leftPos + slot.x + 2, this.topPos + slot.y + 13, this.leftPos + slot.x + 2 + slot.getItem().getBarWidth(), this.topPos + slot.y + 14, color);
                 }
             } else {
                 pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
@@ -334,12 +457,76 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
                 }
             }
-             ((FriendSlot) slot).tempBypass = false;
-        } pGuiGraphics.flush();
+            ((FriendSlot) slot).tempBypass = false;
+        }
+
+        pGuiGraphics.flush();
+        RenderSystem.disableDepthTest();
+        GL11.glEnable(GL11.GL_BLEND);
+        pGuiGraphics.pose().pushPose();
+
+        //dialogue codes:
+        //0: prompt
+        //1: player response
+        //2: friend reaction
+        //3: setting changes
+        //50: get combat settings friend reaction
+        //51: player confirm get combat settings -> j to 3
+        //60: change combat settings friend reaction
+        //61: select setting to change
+        //63: hyper menu
+        //64: aggression menu
+        //65: flee menu
+        //66: defense menu
+        //62: friend confirms any changes -> j to 3
+        //70: friend react to wander order
+        //71: player gives wander order
+        //72: friend reacts to actual order  -> j to 3
+        //80: friend react to farming order
+        //81: player gives farming order
+        //82: friend reacts to actual order -> j to 3
 
         //ACTUAL STUFF
 
+        pGuiGraphics.fillGradient(0, 0, this.width, this.height, -500, -1072689136, -804253680); //render background dim
+        pGuiGraphics.drawWordWrap(this.font, FormattedText.of(this.friend.getDialogueManager().sendToManage(this, pGuiGraphics, this.dialogueProgress, this.currenttopic)), this.leftPos + 20, this.topPos + 200, 200, ChatFormatting.WHITE.getColor());
+        pGuiGraphics.blit(DIALOGUEBOX, this.leftPos - 1, this.topPos - 1, -500,0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
 
+        //render buttons
+        this.exitDialogue.visible = true;
+        if (this.dialogueProgress == 1) {
+            this.dialogueOne.visible = true;
+            this.dialogueTwo.visible = true;
+            this.dialogueThree.visible = false;
+            this.dialogueFour.visible = false;
+        } else if (this.dialogueProgress == 3) {
+            this.dialogueOne.visible = true;
+            this.dialogueTwo.visible = true;
+            this.dialogueThree.visible = true;
+            this.dialogueFour.visible = true;
+        } else if (this.dialogueProgress == 51) {
+            this.dialogueOne.visible = true;
+            this.dialogueTwo.visible = false;
+            this.dialogueThree.visible = false;
+            this.dialogueFour.visible = false;
+        } else if (this.dialogueProgress == 61 || this.dialogueProgress == 63 || this.dialogueProgress == 64 || this.dialogueProgress == 65 || this.dialogueProgress == 66) {
+            this.dialogueOne.visible = true;
+            this.dialogueTwo.visible = true;
+            this.dialogueThree.visible = true;
+            this.dialogueFour.visible = true;
+        } else {
+            this.dialogueOne.visible = false;
+            this.dialogueTwo.visible = false;
+            this.dialogueThree.visible = false;
+            this.dialogueFour.visible = false;
+        }
+
+
+        //epilogue
+
+        pGuiGraphics.pose().popPose();
+        GL11.glDisable(GL11.GL_BLEND);
+        RenderSystem.enableDepthTest();
     }
 
     void renderSkillMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
@@ -352,7 +539,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     TextureAtlasSprite sprite = bakedmodel.get(0).getSprite();
                     for (BakedQuad quad : bakedmodel) {
                         int i = -1;
-                        float f,f1,f2;
+                        float f, f1, f2;
                         if (bakedmodel.get(0).isTinted()) {
                             sprite = quad.getSprite();
                             i = this.getMinecraft().getItemColors().getColor(slot.getItem(), quad.getTintIndex());
@@ -367,16 +554,16 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                         pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
                         pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
                     }
-                    if(slot.getItem().isDamaged()){
-                        pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
+                    if (slot.getItem().isDamaged()) {
+                        pGuiGraphics.fill(this.leftPos + slot.x + 2, this.topPos + slot.y + 13, this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
                         int color = slot.getItem().getBarColor();
-                        int offset=0;
-                        for(int n=0;n<8-Integer.toHexString(color).length();n++){
-                            offset=offset/16;
-                            offset+=0xF0000000;
+                        int offset = 0;
+                        for (int n = 0; n < 8 - Integer.toHexString(color).length(); n++) {
+                            offset = offset / 16;
+                            offset += 0xF0000000;
                         }
-                        color+=offset;
-                        pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 2 + slot.getItem().getBarWidth(), this.topPos + slot.y + 14, color);
+                        color += offset;
+                        pGuiGraphics.fill(this.leftPos + slot.x + 2, this.topPos + slot.y + 13, this.leftPos + slot.x + 2 + slot.getItem().getBarWidth(), this.topPos + slot.y + 14, color);
                     }
                 } else {
                     pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
@@ -386,8 +573,10 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                         pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
                     }
                 }
-            } ((FriendSlot) slot).tempBypass = false;
-        } pGuiGraphics.flush();
+            }
+            ((FriendSlot) slot).tempBypass = false;
+        }
+        pGuiGraphics.flush();
         RenderSystem.disableDepthTest();
         GL11.glEnable(GL11.GL_BLEND);
         pGuiGraphics.pose().pushPose();
@@ -408,28 +597,29 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                 if (this.friend.getSkillPoints() > 0) {
                     bt.get(i).visible = true;
                 }
-                bt.get(i + 2).setFocus(enabled[i] || levels[i]==0);
+                bt.get(i + 2).setFocus(enabled[i] || levels[i] == 0);
                 bt.get(i + 4).setFocus(!enabled[i]);
             } else if (i == 6 || i == 7) {
                 if (this.friend.getSkillPoints() > 0) {
                     bt.get(i).visible = true;
                 }
-                bt.get(i + 2).setFocus(enabled[i - 4] || levels[i-4]==0);
+                bt.get(i + 2).setFocus(enabled[i - 4] || levels[i - 4] == 0);
                 bt.get(i + 4).setFocus(!enabled[i - 4]);
             } else if (i == 12) {
                 if (this.friend.getSkillPoints() > 2) {
                     bt.get(i).visible = true;
                 }
-                bt.get(i + 2).setFocus(enabled[i - 8] || levels[i-8]==0);
+                bt.get(i + 2).setFocus(enabled[i - 8] || levels[i - 8] == 0);
                 bt.get(i + 4).setFocus(!enabled[i - 8]);
-            } else if (i==13){
+            } else if (i == 13) {
                 if (this.friend.getSkillPoints() > 2) {
-                    if(!this.friend.inventory.getItem(0).isEmpty()){
-                    bt.get(i).visible = true;}
+                    if (!this.friend.inventory.getItem(0).isEmpty()) {
+                        bt.get(i).visible = true;
+                    }
                 }
-                bt.get(i + 2).setFocus(enabled[i - 8] || levels[i-8]==0);
+                bt.get(i + 2).setFocus(enabled[i - 8] || levels[i - 8] == 0);
                 bt.get(i + 4).setFocus(!enabled[i - 8]);
-            }else {
+            } else {
                 bt.get(i).visible = true;
             }
             bt.get(i).render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
@@ -438,7 +628,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         //render level
         pGuiGraphics.drawCenteredString(this.font, Integer.toString((int) this.friend.getFriendExperience() / 100), this.leftPos + 144, this.topPos + 46, ChatFormatting.WHITE.getColor());
-        pGuiGraphics.drawString(this.font, Component.translatable("juicecraft.menu.skillpoints").getString() + this.friend.getSkillPoints(),this.leftPos+157,this.topPos+52,ChatFormatting.WHITE.getColor());
+        pGuiGraphics.drawString(this.font, Component.translatable("juicecraft.menu.skillpoints").getString() + this.friend.getSkillPoints(), this.leftPos + 157, this.topPos + 52, ChatFormatting.WHITE.getColor());
         RenderSystem.disableDepthTest();
 
 
@@ -457,7 +647,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                     TextureAtlasSprite sprite = bakedmodel.get(0).getSprite();
                     for (BakedQuad quad : bakedmodel) {
                         int i = -1;
-                        float f,f1,f2;
+                        float f, f1, f2;
                         if (bakedmodel.get(0).isTinted()) {
                             sprite = quad.getSprite();
                             i = this.getMinecraft().getItemColors().getColor(slot.getItem(), quad.getTintIndex());
@@ -472,16 +662,16 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                         pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
                         pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
                     }
-                    if(slot.getItem().isDamaged()){
-                        pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
+                    if (slot.getItem().isDamaged()) {
+                        pGuiGraphics.fill(this.leftPos + slot.x + 2, this.topPos + slot.y + 13, this.leftPos + slot.x + 15, this.topPos + slot.y + 15, 0xFF000000);
                         int color = slot.getItem().getBarColor();
-                        int offset=0;
-                        for(int n=0;n<8-Integer.toHexString(color).length();n++){
-                            offset=offset/16;
-                            offset+=0xF0000000;
+                        int offset = 0;
+                        for (int n = 0; n < 8 - Integer.toHexString(color).length(); n++) {
+                            offset = offset / 16;
+                            offset += 0xF0000000;
                         }
-                        color+=offset;
-                        pGuiGraphics.fill(this.leftPos + slot.x+2, this.topPos + slot.y+13,this.leftPos + slot.x + 2 + slot.getItem().getBarWidth(), this.topPos + slot.y + 14, color);
+                        color += offset;
+                        pGuiGraphics.fill(this.leftPos + slot.x + 2, this.topPos + slot.y + 13, this.leftPos + slot.x + 2 + slot.getItem().getBarWidth(), this.topPos + slot.y + 14, color);
                     }
                 } else {
                     pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
@@ -491,9 +681,10 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                         pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
                     }
                 }
-            } ((FriendSlot) slot).tempBypass = false;
+            }
+            ((FriendSlot) slot).tempBypass = false;
         }
-        pGuiGraphics.pose().translate(0,0,500);
+        pGuiGraphics.pose().translate(0, 0, 500);
         pGuiGraphics.pose().popPose();
         pGuiGraphics.flush();
         RenderSystem.disableDepthTest();
@@ -517,7 +708,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         renderScrollingString(pGuiGraphics, this.font, this.getFriendResource("weaknesses"), this.leftPos - 1 + 124 + this.getMinecraft().font.width(comp), this.topPos - 1 + 120, this.leftPos - 1 + 260, this.topPos - 1 + 130, ChatFormatting.BLACK.getColor());
 
 
-        pGuiGraphics.drawString(this.font, this.getIntResource("level", (int) this.friend.getFriendExperience()/100), this.leftPos - 1 + 124, this.topPos - 1 + 135, ChatFormatting.BLACK.getColor(), false);
+        pGuiGraphics.drawString(this.font, this.getIntResource("level", (int) this.friend.getFriendExperience() / 100), this.leftPos - 1 + 124, this.topPos - 1 + 135, ChatFormatting.BLACK.getColor(), false);
         pGuiGraphics.drawString(this.font, this.getFloatResource("health", this.friend.getHealth()), this.leftPos - 1 + 124, this.topPos - 1 + 150, ChatFormatting.BLACK.getColor(), false);
         pGuiGraphics.drawString(this.font, this.getFloatResource("hunger", this.friend.getHungerMeter()), this.leftPos - 1 + 195, this.topPos - 1 + 150, ChatFormatting.BLACK.getColor(), false);
         pGuiGraphics.drawString(this.font, this.getIntResource("itemscollected", this.friend.getFriendItemsCollected()), this.leftPos - 1 + 124, this.topPos - 1 + 165, ChatFormatting.BLACK.getColor(), false);
@@ -525,7 +716,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         pGuiGraphics.pose().popPose();
         GL11.glDisable(GL11.GL_BLEND);
-        //RenderSystem.enableDepthTest();
+        RenderSystem.enableDepthTest();
     }
 
     String getResource(String s) {
@@ -558,7 +749,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         pGuiGraphics.blit(HEALTHBAR, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, 7 + (int) (84 * this.friend.getHealth() / this.friend.getMaxHealth()), this.imageHeight, this.imageWidth, this.imageHeight);
 
         //norma level
-        int x = this.friend.getFriendNorma();
+        float x = this.friend.getFriendNorma();
         if (x == 0) {
             pGuiGraphics.blit(NORMA1, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
         } else if (x == 1) {
@@ -633,16 +824,16 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             this.renderSkillMenu(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         } else if (this.statsActive) {
             this.renderStatsMenu(pGuiGraphics);
-        } else if(this.talkActive){
-            this.renderTalkMenu(pGuiGraphics,pMouseX,pMouseY,pPartialTick);
+        } else if (this.talkActive) {
+            this.renderTalkMenu(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         }
         if (!this.skillActive) {
             for (Button i : bt) {
                 i.visible = false;
             }
         }
-        if(!this.talkActive){
-            for(Button i: talkBt){
+        if (!this.talkActive) {
+            for (Button i : talkBt) {
                 i.visible = false;
             }
         }
@@ -659,38 +850,39 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.talkButton = addRenderableWidget(new FriendButton(this.leftPos + 335, this.topPos + 179, 36, 18, buttonSprite, this::handleTalkButton, Component.translatable("juicecraft.talk")));
         this.bagButton.setFocus(true);
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 63, 11, 10, upgradeSprite, this::doSkillOneUpgrade, true)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 238, this.topPos + 63, 11, 10, upgradeSprite, this::doSkillTwoUpgrade, true)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 63, 11, 10, upgradeSprite, this::doSkillOneUpgrade, true, false)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 238, this.topPos + 63, 11, 10, upgradeSprite, this::doSkillTwoUpgrade, true, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 74, 27, 12, enableSprite, this::doSkillOneEnable)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 74, 27, 12, enableSprite, this::doSkillTwoEnable)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 74, 27, 12, enableSprite, this::doSkillOneEnable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 74, 27, 12, enableSprite, this::doSkillTwoEnable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 87, 27, 12, disableSprite, this::doSkillOneDisable)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 87, 27, 12, disableSprite, this::doSkillTwoDisable)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 87, 27, 12, disableSprite, this::doSkillOneDisable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 87, 27, 12, disableSprite, this::doSkillTwoDisable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 111, 11, 10, upgradeSprite, this::doSkillThreeUpgrade, true)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 238, this.topPos + 111, 11, 10, upgradeSprite, this::doSkillFourUpgrade, true)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 111, 11, 10, upgradeSprite, this::doSkillThreeUpgrade, true, false)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 238, this.topPos + 111, 11, 10, upgradeSprite, this::doSkillFourUpgrade, true, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 122, 27, 12, enableSprite, this::doSkillThreeEnable)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 122, 27, 12, enableSprite, this::doSkillFourEnable)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 122, 27, 12, enableSprite, this::doSkillThreeEnable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 122, 27, 12, enableSprite, this::doSkillFourEnable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 135, 27, 12, disableSprite, this::doSkillThreeDisable)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 135, 27, 12, disableSprite, this::doSkillFourDisable)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 135, 27, 12, disableSprite, this::doSkillThreeDisable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 135, 27, 12, disableSprite, this::doSkillFourDisable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 159, 11, 10, upgradeSprite, this::doSkillFiveUpgrade, true)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 238, this.topPos + 159, 11, 10, upgradeSprite, this::doSkillSixUpgrade, true)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 159, 11, 10, upgradeSprite, this::doSkillFiveUpgrade, true, false)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 238, this.topPos + 159, 11, 10, upgradeSprite, this::doSkillSixUpgrade, true, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 170, 27, 12, enableSprite, this::doSkillFiveEnable)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 170, 27, 12, enableSprite, this::doSkillSixEnable)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 170, 27, 12, enableSprite, this::doSkillFiveEnable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 170, 27, 12, enableSprite, this::doSkillSixEnable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::doSkillFiveDisable)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 183, 27, 12, disableSprite, this::doSkillSixDisable)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::doSkillFiveDisable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 183, 27, 12, disableSprite, this::doSkillSixDisable, false, false)));
 
-        this.dialogueOne=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueOne));
-        this.dialogueTwo=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueTwo));
-        this.dialogueThree=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueThree));
-        this.dialogueFour=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueFour));
-        this.exitDialogue=addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::exitTalkButton));
+        this.dialogueOne = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueOne, false, false));
+        this.dialogueTwo = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueTwo, false, false));
+        this.dialogueThree = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueThree, false, false));
+        this.dialogueFour = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueFour, false, false));
+        this.exitDialogue = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::exitTalkButton, false, false));
+
         this.talkBt.add(dialogueOne);
         this.talkBt.add(dialogueTwo);
         this.talkBt.add(dialogueThree);
