@@ -89,10 +89,10 @@ public class FriendButton extends ImageButton {
     }
     public void renderString(GuiGraphics pGuiGraphics, Font pFont, int pColor) {
         FormattedText text = FormattedText.of(this.getMessage().getString());
-        if(pFont.width(this.getMessage().getString())>=this.getWidth()){
+        if(pFont.width(this.getMessage().getString())>=this.getWidth()*0.9){
             this.extendamount=-1;
             int i=0;
-        for(FormattedCharSequence formattedcharsequence : pFont.split(text, (int) (this.getWidth()*0.95))) {
+        for(FormattedCharSequence formattedcharsequence : pFont.split(text, (int) (this.getWidth()*0.9))) {
             pGuiGraphics.drawString(pFont, formattedcharsequence, (int) (this.getX() + this.getWidth()/2 - pFont.width(formattedcharsequence) / 2), (int) (this.getY()+this.getHeight()/2-3) + i, pColor,this.rendershadow);
             i+=this.getHeight();
             this.extendamount+=1;

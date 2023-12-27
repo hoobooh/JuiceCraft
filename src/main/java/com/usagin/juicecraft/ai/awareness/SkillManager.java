@@ -40,7 +40,7 @@ public class SkillManager {
         for(int n=0;n<i;n++){
             temp="0"+temp;
         }
-        return new boolean[]{temp.charAt(5)-'0'==1,temp.charAt(4)-'0'==1,temp.charAt(3)-'0'==1,temp.charAt(2)-'0'==1,temp.charAt(1)-'0'==1,temp.charAt(0)-'0'==1};
+        return new boolean[]{temp.charAt(0)-'0'==1,temp.charAt(1)-'0'==1,temp.charAt(2)-'0'==1,temp.charAt(3)-'0'==1,temp.charAt(4)-'0'==1,temp.charAt(5)-'0'==1};
     }
     public static int[] decodeHash(int h){
         String temp = String.valueOf(h);
@@ -48,6 +48,6 @@ public class SkillManager {
         for(int n=0;n<i;n++){
             temp="0"+temp;
         }
-        return new int[]{temp.charAt(5)-'0',temp.charAt(4)-'0',temp.charAt(3)-'0',temp.charAt(2)-'0',temp.charAt(1)-'0',temp.charAt(0)-'0'};
+        return new int[]{temp.charAt(0)-'0',temp.charAt(1)-'0',temp.charAt(2)-'0',temp.charAt(3)-'0',temp.charAt(4)-'0',temp.charAt(5)-'0'};
     }
 }

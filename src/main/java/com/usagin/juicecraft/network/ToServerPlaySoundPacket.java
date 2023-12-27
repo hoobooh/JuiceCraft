@@ -1,46 +1,42 @@
 package com.usagin.juicecraft.network;
 
-import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.network.CustomPayloadEvent;
-import org.slf4j.Logger;
 
 import java.util.Objects;
 
-public class ToServerCombatSettingsPacket {
-    private final int combatSettings;
+public class ToServerPlaySoundPacket {
+    private final boolean set;
     private Friend friend;
     private final int id;
-    private static final Logger LOGGER = LogUtils.getLogger();
-    public ToServerCombatSettingsPacket(int settings, int id){
-        this.combatSettings=settings;
+    public ToServerPlaySoundPacket(boolean set, int id){
+        this.set=set;
         this.id=id;
 
     }
     public void encode(FriendlyByteBuf buffer){
-        buffer.writeInt(this.combatSettings);
+        buffer.writeBoolean(this.set);
         buffer.writeVarInt(this.id);
     }
 
     //should be same order as write apparently
-    public ToServerCombatSettingsPacket(FriendlyByteBuf buffer){
-        this(buffer.readInt(), buffer.readVarInt());
+    public ToServerPlaySoundPacket(FriendlyByteBuf buffer){
+        this(buffer.readBoolean(), buffer.readVarInt());
     }
     //menu should close in time in case of level change, shouldnt be any sync issues
     public void handle(CustomPayloadEvent.Context context){
         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
-        LOGGER.info(this.combatSettings +" received");
         this.friend=decodeBuffer(level, this.id);
         if(friend!=null){
-            this.friend.combatSettings= CombatSettings.decodeHash(this.combatSettings);
-            LOGGER.info(this.friend.combatSettings.makeHash() + " preconfirm");
-            this.friend.updateCombatSettings();
-            LOGGER.info(this.friend.getCombatSettings().makeHash() +" confirmed");
-            context.setPacketHandled(true);
+            if(this.set){
+                this.friend.playVoice(this.friend.getLaugh());
+            }
+            else{
+                this.friend.playVoice(this.friend.getAngry());
+            }
         }
     }
 

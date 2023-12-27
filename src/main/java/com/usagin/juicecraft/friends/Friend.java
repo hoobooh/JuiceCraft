@@ -430,6 +430,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public @NotNull CombatTracker getCombatTracker() {
         return this.combatTracker;
     }
+    public abstract SoundEvent getLaugh();
+    public abstract SoundEvent getAngry();
 
     abstract SoundEvent getIdle();
 

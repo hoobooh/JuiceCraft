@@ -23,9 +23,12 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -49,6 +52,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     public ResourceLocation FRIEND_PORTRAIT;
     public ResourceLocation FRIEND_THEME;
     public ResourceLocation FRIEND_SOURCE;
+    public boolean playedSound=false;
     private static final Logger LOGGER = LogUtils.getLogger();
     final Friend friend;
     public int answerstate;
@@ -63,6 +67,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     public FriendButton dialogueThree;
     public FriendButton dialogueFour;
     public FriendButton exitDialogue;
+    long timer = 0;
     DialogueEnums currenttopic;
     ArrayList<FriendButton> bt = new ArrayList<>();
     ArrayList<FriendButton> talkBt = new ArrayList<>();
@@ -121,23 +126,30 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private boolean isValidSpot(double pMouseX, double pMouseY) {
         return true;
     }
-
+    protected void containerTick() {
+        this.timer++;
+    }
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
         if (this.talkActive) {
             if (this.dialogueProgress == 2) {
                 this.dialogueProgress = 3;
                 this.currenttopic = DialogueEnums.GENERAL;
+                this.playDownSound(this.getMinecraft().getSoundManager());
             } else if (this.dialogueProgress == 62) {
                 this.dialogueProgress = 3;
                 this.currenttopic = DialogueEnums.GENERAL;
+                this.playDownSound(this.getMinecraft().getSoundManager());
             } else if (this.dialogueProgress == 70) {
                 this.dialogueProgress = 3;
                 this.currenttopic = DialogueEnums.GENERAL;
+                this.playDownSound(this.getMinecraft().getSoundManager());
             } else if (this.dialogueProgress == 80) {
                 this.dialogueProgress = 3;
                 this.currenttopic = DialogueEnums.GENERAL;
+                this.playDownSound(this.getMinecraft().getSoundManager());
             } else if (!this.dialogueOne.visible) { //prompt player response
                 this.dialogueProgress++;
+                this.playDownSound(this.getMinecraft().getSoundManager());
             }
         }
         if (isValidSpot(pMouseX, pMouseY)) {//findValidSlot determines that the click spot is not on a disabled slot
@@ -199,6 +211,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         //this.friend.combatSettings.aggression=0;
         //PacketHandler.sendToServer(new ToServerPacket(this.friend.combatSettings.makeHash(),this.friend.getId()));
         this.hideFullScreen();
+        this.playedSound=false;
         this.dialogueProgress = 0;
         this.talkActive = true;
         this.bagButton.active = false;
@@ -210,6 +223,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void handleDialogueOne(Button btn) {
+        this.playedSound=false;
         DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[0], this.friend.getId()));
         this.answerstate = this.answerstatus[0];
         if(this.dialogueProgress==1){
@@ -226,6 +240,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
             this.dialogueProgress = 62;
         } else if (this.dialogueProgress == 64) { //aggression
+
             CombatSettings settings = this.friend.getCombatSettings();
             int temp = settings.hyperCondition * 10000 + settings.willFlee * 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
@@ -248,6 +263,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void handleDialogueTwo(Button btn) {
+        this.playedSound=false;
         DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[1], this.friend.getId()));
         this.answerstate = this.answerstatus[1];
         if(this.dialogueProgress==1){
@@ -283,6 +299,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void handleDialogueThree(Button btn) {
+        this.playedSound=false;
         DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[2], this.friend.getId()));
         this.answerstate = this.answerstatus[2];
         if (this.dialogueProgress == 3) {
@@ -316,6 +333,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void handleDialogueFour(Button btn) {
+        this.playedSound=false;
         DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[3], this.friend.getId()));
         this.answerstate = this.answerstatus[3];
         if (this.dialogueProgress == 3) {
@@ -349,6 +367,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void exitTalkButton(Button btn) {
+        this.playedSound=false;
         this.showFullScreen();
         if (this.statsActive || this.skillActive) {
             this.hideMiddleScreen();
@@ -434,6 +453,9 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void doSkillSixDisable(Button btn) {
 
     }
+    public void playDownSound(SoundManager pHandler) {
+        pHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    }
 
     void renderTalkMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         for (Slot slot : this.menu.slots) {
@@ -479,7 +501,6 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             }
             ((FriendSlot) slot).tempBypass = false;
         }
-
         pGuiGraphics.flush();
         RenderSystem.disableDepthTest();
         GL11.glEnable(GL11.GL_BLEND);
@@ -537,12 +558,28 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             this.dialogueFour.visible = false;
         }
 
+        if(!this.dialogueOne.visible){
+            int time = (int) (this.timer%30);
+            if(time<9 || time > 21){
+                pGuiGraphics.blit(DIALOGUECLICK1, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            }
+            else if(time<12 || time > 18){
+                pGuiGraphics.blit(DIALOGUECLICK2, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            }
+            else if(time<14 || time > 16){
+                pGuiGraphics.blit(DIALOGUECLICK3, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            }
+            else{
+                pGuiGraphics.blit(DIALOGUECLICK4, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+            }
+        }
+
         for (Button b : talkBt) {
             if (b.visible) {
                 b.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
             }
         }
-
+        pGuiGraphics.drawCenteredString(this.font,this.friend.getFriendName(),this.leftPos + 52, this.topPos + 179,ChatFormatting.WHITE.getColor());
 
         //epilogue
 
@@ -975,7 +1012,6 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     protected static void renderScrollingString(GuiGraphics pGuiGraphics, Font pFont, Component pText, int pMinX, int pMinY, int pMaxX, int pMaxY, int pColor) {
         renderScrollingString(pGuiGraphics, pFont, pText, (pMinX + pMaxX) / 2, pMinX, pMinY, pMaxX, pMaxY, pColor);
     }
-
     protected static void renderScrollingString(GuiGraphics pGuiGraphics, Font pFont, Component pText, int p_300294_, int pMinX, int pMinY, int pMaxX, int pMaxY, int pColor) {
         int i = pFont.width(pText);
         int j = (pMinY + pMaxY - 9) / 2 + 1;

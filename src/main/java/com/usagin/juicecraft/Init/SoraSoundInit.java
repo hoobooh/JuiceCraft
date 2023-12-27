@@ -77,6 +77,7 @@ public class SoraSoundInit {
     public static final RegistryObject<SoundEvent> SORA_HYPEREQUIP = registerFriendSoundEvent("sora_hyper_equip");
     public static final RegistryObject<SoundEvent> SORA_HYPERUSE = registerFriendSoundEvent("sora_hyper_use");
     public static final RegistryObject<SoundEvent> SORA_MODULEEQUIP = registerFriendSoundEvent("sora_moduleequip");
+    public static final RegistryObject<SoundEvent> SORA_ANGRY = registerFriendSoundEvent("sora_angry");
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
         LOGGER.info("sounds/entity/sora/"+name);

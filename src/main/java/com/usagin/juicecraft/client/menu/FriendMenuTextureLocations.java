@@ -8,7 +8,10 @@ public class FriendMenuTextureLocations {
     public static final ResourceLocation SKILLMENU = new ResourceLocation(JuiceCraft.MODID, "textures/gui/skillmenu.png");
     public static final ResourceLocation MAINTEXTURE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenu.png");
     public static final ResourceLocation DIALOGUEBOX = new ResourceLocation(JuiceCraft.MODID, "textures/gui/dialoguebox.png");
-
+    public static final ResourceLocation DIALOGUECLICK1 = new ResourceLocation(JuiceCraft.MODID, "textures/gui/dialogueclick1.png");
+    public static final ResourceLocation DIALOGUECLICK2 = new ResourceLocation(JuiceCraft.MODID, "textures/gui/dialogueclick2.png");
+    public static final ResourceLocation DIALOGUECLICK3 = new ResourceLocation(JuiceCraft.MODID, "textures/gui/dialogueclick3.png");
+    public static final ResourceLocation DIALOGUECLICK4 = new ResourceLocation(JuiceCraft.MODID, "textures/gui/dialogueclick4.png");
     public static final ResourceLocation MAINFLUIDTEXTURE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenufluids.png");
     public static final ResourceLocation HEALTHBAR = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenuhealthbar.png");
     public static final ResourceLocation HUNGERBAR = new ResourceLocation(JuiceCraft.MODID, "textures/gui/friendmenuhungerbar.png");

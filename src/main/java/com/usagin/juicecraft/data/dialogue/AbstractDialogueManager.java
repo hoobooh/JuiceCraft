@@ -4,11 +4,14 @@ import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.client.renderer.FriendMenuScreen;
 import com.usagin.juicecraft.friends.Friend;
+import com.usagin.juicecraft.network.PlaySoundPacketHandler;
 import com.usagin.juicecraft.network.SpecialDialoguePacketHandler;
+import com.usagin.juicecraft.network.ToServerPlaySoundPacket;
 import com.usagin.juicecraft.network.ToServerSpecialDialogueUpdatePacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 
@@ -149,7 +152,7 @@ public abstract class AbstractDialogueManager {
             screen.dialogueFour.setMessage(Component.translatable("juicecraft.menu.responses.startfarming"));
         }
         screen.answerstatus = new int[]{0,0,0,0};
-        pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+        pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
         return "...";
     }
 
@@ -160,15 +163,15 @@ public abstract class AbstractDialogueManager {
         screen.answerstatus[0]=1;
         screen.answerstatus[1]=-1;
         if(progress==0||progress==1){
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.normal1").getString();
         }else{
             if(screen.answerstate==1){
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.approval").getString();
             }
             else{
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.disapproval").getString();
             }
         }
@@ -181,15 +184,15 @@ public abstract class AbstractDialogueManager {
         screen.answerstatus[0]=-1;
         screen.answerstatus[1]=1;
         if(progress==0||progress==1){
-            pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.normal2").getString();
         }else{
             if(screen.answerstate==1){
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.approval").getString();
             }
             else{
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.disapproval").getString();
             }
         }
@@ -202,15 +205,15 @@ public abstract class AbstractDialogueManager {
         screen.answerstatus[0]=1;
         screen.answerstatus[1]=-1;
         if(progress==0||progress==1){
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.normal3").getString();
         }else{
             if(screen.answerstate==1){
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.approval").getString();
             }
             else{
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.disapproval").getString();
             }
         }
@@ -223,15 +226,15 @@ public abstract class AbstractDialogueManager {
         screen.answerstatus[0]=-1;
         screen.answerstatus[1]=1;
         if(progress==0||progress==1){
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.special1").getString();
         }else{
             if(screen.answerstate==1){
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.approval").getString();
             }
             else{
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.disapproval").getString();
             }
         }
@@ -244,10 +247,10 @@ public abstract class AbstractDialogueManager {
         screen.answerstatus[0]=1;
         screen.answerstatus[1]=1;
         if(progress==0||progress==1){
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.special2").getString();
         }else{
-            pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.approval").getString();
         }
     }
@@ -259,15 +262,15 @@ public abstract class AbstractDialogueManager {
         screen.answerstatus[0]=-1;
         screen.answerstatus[1]=1;
         if(progress==0||progress==1){
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.special3").getString();
         }else{
             if(screen.answerstate==1){
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.approval").getString();
             }
             else{
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.disapproval").getString();
             }
         }
@@ -281,29 +284,29 @@ public abstract class AbstractDialogueManager {
             if(friend.getHealth()==friend.getMaxHealth()){
                 screen.answerstatus[0]=1;
                 screen.answerstatus[1]=0;
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.comment_health_high").getString();
             }else if(friend.getHealth()>friend.getMaxHealth()/2){
                 screen.answerstatus[0]=0;
                 screen.answerstatus[1]=0;
-                pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.comment_health_medium").getString();
             }else{
                 screen.answerstatus[0]=-1;
                 screen.answerstatus[1]=1;
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.comment_health_low").getString();
             }
         }else{
             if(screen.answerstate==1){
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.generic_accept").getString();
             }
             else if(screen.answerstate==0){
-                pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.neutral").getString();
             }else{
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.disapproval").getString();
             }
         }
@@ -316,14 +319,14 @@ public abstract class AbstractDialogueManager {
         if(progress==0||progress==1){
             screen.answerstatus[0]=1;
             screen.answerstatus[1]=-1;
-            pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.comment_hunger_low").getString();
         }else{
             if(screen.answerstate==1){
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.approval").getString();
             }else{
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.disapproval").getString();
             }
         }
@@ -337,29 +340,29 @@ public abstract class AbstractDialogueManager {
             if(EnemyEvaluator.evaluateAreaDanger(friend) > 500){
                 screen.answerstatus[0]=-1;
                 screen.answerstatus[1]=1;
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.comment_area_danger_high").getString();
             }else if(EnemyEvaluator.evaluateAreaDanger(friend) > 50){
                 screen.answerstatus[0]=0;
                 screen.answerstatus[1]=0;
-                pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.comment_area_danger_medium").getString();
             }else{
                 screen.answerstatus[0]=1;
                 screen.answerstatus[1]=0;
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".prompts.comment_area_danger_low").getString();
             }
         }else{
             if(screen.answerstate==1){
-                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitHappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.generic_accept").getString();
             }
             else if(screen.answerstate==0){
-                pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.neutral").getString();
             }else{
-                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+                pGuiGraphics.blit(getPortraitUnhappy(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
                 return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.disapproval").getString();
             }
         }
@@ -375,7 +378,7 @@ public abstract class AbstractDialogueManager {
         temp+=Component.translatable("juicecraft.menu.getsettings.aggression."+settings.aggression).getString();
         temp+=Component.translatable("juicecraft.menu.getsettings.flee."+settings.willFlee).getString();
         temp+=Component.translatable("juicecraft.menu.getsettings.defense."+settings.defense).getString();
-        pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+        pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
         screen.dialogueOne.setMessage(Component.translatable("juicecraft.menu.responses.generic_response"));
         return temp;
     }
@@ -384,28 +387,28 @@ public abstract class AbstractDialogueManager {
     String manageSetCombatSettingsPage(FriendMenuScreen screen, GuiGraphics pGuiGraphics, Friend friend, int progress) {
         screen.answerstatus=new int[]{0,0,0,0};
         if(progress==61){ //init settings menu
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             screen.dialogueOne.setMessage(Component.translatable("juicecraft.menu.responses.hyper"));
             screen.dialogueTwo.setMessage(Component.translatable("juicecraft.menu.responses.aggression"));
             screen.dialogueThree.setMessage(Component.translatable("juicecraft.menu.responses.flee"));
             screen.dialogueFour.setMessage(Component.translatable("juicecraft.menu.responses.defense"));
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.combatsettings").getString();
         }else if(progress==63){ //hyper
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             screen.dialogueOne.setMessage(Component.translatable("juicecraft.menu.responses.hyper.0"));
             screen.dialogueTwo.setMessage(Component.translatable("juicecraft.menu.responses.hyper.1"));
             screen.dialogueThree.setMessage(Component.translatable("juicecraft.menu.responses.hyper.2"));
             screen.dialogueFour.setMessage(Component.translatable("juicecraft.menu.responses.hyper.3"));
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.combatsettings").getString();
         }else if(progress==64){ //aggression
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             screen.dialogueOne.setMessage(Component.translatable("juicecraft.menu.responses.aggression.0"));
             screen.dialogueTwo.setMessage(Component.translatable("juicecraft.menu.responses.aggression.1"));
             screen.dialogueThree.setMessage(Component.translatable("juicecraft.menu.responses.aggression.2"));
             screen.dialogueFour.setMessage(Component.translatable("juicecraft.menu.responses.aggression.3"));
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.combatsettings").getString();
         }else if(progress==65){ //flee
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             screen.dialogueOne.setMessage(Component.translatable("juicecraft.menu.responses.flee.0"));
             screen.dialogueTwo.setMessage(Component.translatable("juicecraft.menu.responses.flee.1"));
             screen.dialogueThree.setMessage(Component.translatable("juicecraft.menu.responses.flee.2"));
@@ -413,14 +416,14 @@ public abstract class AbstractDialogueManager {
 
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.combatsettings").getString();
         }else if(progress==66){ //defense
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             screen.dialogueOne.setMessage(Component.translatable("juicecraft.menu.responses.defense.0"));
             screen.dialogueTwo.setMessage(Component.translatable("juicecraft.menu.responses.defense.1"));
             screen.dialogueThree.setMessage(Component.translatable("juicecraft.menu.responses.defense.2"));
             screen.dialogueFour.setMessage(Component.translatable("juicecraft.menu.responses.defense.3"));
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.combatsettings").getString();
         }else{ //response
-            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+            pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
             return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.generic_accept").getString();
         }
     }
@@ -428,25 +431,31 @@ public abstract class AbstractDialogueManager {
 
     String manageWandering(FriendMenuScreen screen, GuiGraphics pGuiGraphics, Friend friend, int progress) {
         screen.answerstatus=new int[]{0,0,0,0};
-        pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+        pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
         return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.generic_accept").getString();
     }
 
 
     String manageFarming(FriendMenuScreen screen, GuiGraphics pGuiGraphics, Friend friend, int progress) {
         screen.answerstatus=new int[]{0,0,0,0};
-        pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase()), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
+        pGuiGraphics.blit(getPortraitNeutral(friend.getFriendName().toLowerCase(),friend,screen), screen.getGuiLeft() - 1, screen.getGuiTop() - 1, -500, 0, 0, screen.getXSize(), screen.getYSize(), screen.getXSize(), screen.getYSize());
         return Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".reactions.generic_accept").getString();
     }
     
     
-    public static ResourceLocation getPortraitHappy(String name){
+    public static ResourceLocation getPortraitHappy(String name, Friend friend, FriendMenuScreen screen){
+       if(!screen.playedSound){
+           screen.playedSound=true;
+        PlaySoundPacketHandler.sendToServer(new ToServerPlaySoundPacket(true,friend.getId()));}
         return new ResourceLocation("juicecraft","textures/gui/"+name+"/portrait_happy.png");
     }
-    public static ResourceLocation getPortraitNeutral(String name){
+    public static ResourceLocation getPortraitNeutral(String name, Friend friend, FriendMenuScreen screen){
         return new ResourceLocation("juicecraft","textures/gui/"+name+"/portrait_neutral.png");
     }
-    public static ResourceLocation getPortraitUnhappy(String name){
+    public static ResourceLocation getPortraitUnhappy(String name, Friend friend, FriendMenuScreen screen){
+        if(!screen.playedSound){
+            screen.playedSound=true;
+            PlaySoundPacketHandler.sendToServer(new ToServerPlaySoundPacket(false,friend.getId()));}
         return new ResourceLocation("juicecraft","textures/gui/"+name+"/portrait_unhappy.png");
     }
 }

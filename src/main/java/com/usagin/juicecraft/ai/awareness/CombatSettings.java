@@ -5,7 +5,7 @@ import com.usagin.juicecraft.friends.Friend;
 import org.slf4j.Logger;
 
 public class CombatSettings {
-    public int hyperCondition=4;
+    public int hyperCondition=3;
     public int aggression=3;
     public int willFlee=1;
     public int defense=0;
@@ -65,10 +65,13 @@ public class CombatSettings {
     }
     public static CombatSettings decodeHash(int h){
         String temp = String.valueOf(h);
+
+
         int i=5-temp.length();
         for(int n=0;n<i;n++){
             temp="0"+temp;
         }
-        return new CombatSettings(temp.charAt(4)-'0',temp.charAt(3)-'0',temp.charAt(2)-'0',temp.charAt(1)-'0',temp.charAt(0)-'0');
+
+        return new CombatSettings(temp.charAt(0)-'0',temp.charAt(1)-'0',temp.charAt(2)-'0',temp.charAt(3)-'0',temp.charAt(4)-'0');
     }
 }

@@ -82,6 +82,17 @@ public class Sora extends Friend{
     void indicateTamed() {
 
     }
+
+    @Override
+    public SoundEvent getLaugh() {
+        return SORA_PAT1.get();
+    }
+
+    @Override
+    public SoundEvent getAngry() {
+        return SORA_ANGRY.get();
+    }
+
     @Override
     SoundEvent getIdle() {
         if(this.sleeping() && this.animateSleep() && !this.getInSittingPose()){

@@ -50,6 +50,7 @@ public class CommonEvents {
             SpecialDialoguePacketHandler.register();
             SetFarmingPacketHandler.register();
             SetWanderingPacketHandler.register();
+            PlaySoundPacketHandler.register();
         });
     }
 
