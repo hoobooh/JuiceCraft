@@ -1,5 +1,6 @@
 package com.usagin.juicecraft.client.renderer;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
@@ -12,6 +13,7 @@ import com.usagin.juicecraft.friends.Friend;
 import com.usagin.juicecraft.network.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -19,22 +21,29 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.usagin.juicecraft.client.menu.FriendMenuTextureLocations.*;
+import static net.minecraft.client.gui.screens.inventory.InventoryScreen.renderEntityInInventory;
 
 public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     public ResourceLocation FRIEND_PORTRAIT;
@@ -67,6 +76,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     WidgetSprites upgradeSprite = new WidgetSprites(UPGRADE_BEFORE, UPGRADE_AFTER);
     WidgetSprites enableSprite = new WidgetSprites(ENABLE_BEFORE, ENABLE_AFTER);
     WidgetSprites disableSprite = new WidgetSprites(DISABLE_BEFORE, DISABLE_AFTER);
+    WidgetSprites speechSprite = new WidgetSprites(SPEECH_BEFORE, SPEECH_AFTER);
+    WidgetSprites speechConnectorSprite = new WidgetSprites(SPEECH_CONNECTOR_BEFORE, SPEECH_CONNECTOR_AFTER);
 
     public FriendMenuScreen(FriendMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -116,15 +127,15 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             if (this.dialogueProgress == 2) {
                 this.dialogueProgress = 3;
                 this.currenttopic = DialogueEnums.GENERAL;
-            } else if (this.dialogueProgress == 51) {
-                this.dialogueProgress = 3;
-                this.currenttopic = DialogueEnums.GENERAL;
             } else if (this.dialogueProgress == 62) {
                 this.dialogueProgress = 3;
-            } else if (this.dialogueProgress == 72) {
+                this.currenttopic = DialogueEnums.GENERAL;
+            } else if (this.dialogueProgress == 70) {
                 this.dialogueProgress = 3;
-            } else if (this.dialogueProgress == 82) {
+                this.currenttopic = DialogueEnums.GENERAL;
+            } else if (this.dialogueProgress == 80) {
                 this.dialogueProgress = 3;
+                this.currenttopic = DialogueEnums.GENERAL;
             } else if (!this.dialogueOne.visible) { //prompt player response
                 this.dialogueProgress++;
             }
@@ -189,8 +200,6 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         //PacketHandler.sendToServer(new ToServerPacket(this.friend.combatSettings.makeHash(),this.friend.getId()));
         this.hideFullScreen();
         this.dialogueProgress = 0;
-        this.statsActive = false;
-        this.skillActive = false;
         this.talkActive = true;
         this.bagButton.active = false;
         this.skillButton.active = false;
@@ -203,31 +212,37 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void handleDialogueOne(Button btn) {
         DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[0], this.friend.getId()));
         this.answerstate = this.answerstatus[0];
-        if (this.dialogueProgress == 3) { //general topics
+        if(this.dialogueProgress==1){
+            this.dialogueProgress++;
+        }
+        else if (this.dialogueProgress == 3) { //general topics
             this.currenttopic = DialogueEnums.GETCOMBATSETTINGS;
             this.dialogueProgress = 50;
         } else if (this.dialogueProgress == 61) { //change combat setting
             this.dialogueProgress = 63;
         } else if (this.dialogueProgress == 63) {//hyper
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.aggression*1000+settings.willFlee*100+settings.defense;
+            int temp = settings.aggression * 1000 + settings.willFlee * 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
+            this.dialogueProgress = 62;
         } else if (this.dialogueProgress == 64) { //aggression
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+settings.willFlee*100+settings.defense;
+            int temp = settings.hyperCondition * 10000 + settings.willFlee * 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 65) { //flee
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 65) { //flee
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.defense;
+            int temp = settings.hyperCondition * 10000 + settings.aggression * 1000 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 66) { //defense
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 66) { //defense
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.willFlee*100;
+            int temp = settings.hyperCondition * 10000 + settings.aggression * 1000 + settings.willFlee * 100;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress ==51){
+            this.dialogueProgress=3;
+            this.currenttopic=DialogueEnums.GENERAL;
         }
         this.answerstatus = new int[]{0, 0, 0, 0};
     }
@@ -235,31 +250,34 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void handleDialogueTwo(Button btn) {
         DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[1], this.friend.getId()));
         this.answerstate = this.answerstatus[1];
-        if (this.dialogueProgress == 3) {
+        if(this.dialogueProgress==1){
+            this.dialogueProgress++;
+        }
+        else if (this.dialogueProgress == 3) {
             this.currenttopic = DialogueEnums.COMBATSETTINGS;
             this.dialogueProgress = 60;
         } else if (this.dialogueProgress == 61) { //change combat setting
             this.dialogueProgress = 64;
         } else if (this.dialogueProgress == 63) {//hyper
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = 10000+settings.aggression*1000+settings.willFlee*100+settings.defense;
+            int temp = 10000 + settings.aggression * 1000 + settings.willFlee * 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
+            this.dialogueProgress = 62;
         } else if (this.dialogueProgress == 64) { //aggression
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+1000+settings.willFlee*100+settings.defense;
+            int temp = settings.hyperCondition * 10000 + 1000 + settings.willFlee * 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 65) { //flee
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 65) { //flee
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+settings.aggression*1000+100+settings.defense;
+            int temp = settings.hyperCondition * 10000 + settings.aggression * 1000 + 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 66) { //defense
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 66) { //defense
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.willFlee*100+1;
+            int temp = settings.hyperCondition * 10000 + settings.aggression * 1000 + settings.willFlee * 100 + 1;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
+            this.dialogueProgress = 62;
         }
         this.answerstatus = new int[]{0, 0, 0, 0};
     }
@@ -269,29 +287,29 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.answerstate = this.answerstatus[2];
         if (this.dialogueProgress == 3) {
             this.currenttopic = DialogueEnums.WANDERING;
-            SetWanderingPacketHandler.sendToServer(new ToServerSetWanderingPacket(!this.friend.getIsWandering(),this.friend.getId()));
+            SetWanderingPacketHandler.sendToServer(new ToServerSetWanderingPacket(!this.friend.getIsWandering(), this.friend.getId()));
             this.dialogueProgress = 70;
         } else if (this.dialogueProgress == 63) {//hyper
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = 20000+settings.aggression*1000+settings.willFlee*100+settings.defense;
+            int temp = 20000 + settings.aggression * 1000 + settings.willFlee * 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
+            this.dialogueProgress = 62;
         } else if (this.dialogueProgress == 64) { //aggression
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+2000+settings.willFlee*100+settings.defense;
+            int temp = settings.hyperCondition * 10000 + 2000 + settings.willFlee * 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 65) { //flee
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 65) { //flee
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+settings.aggression*1000+200+settings.defense;
+            int temp = settings.hyperCondition * 10000 + settings.aggression * 1000 + 200 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 66) { //defense
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 66) { //defense
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.willFlee*100+2;
+            int temp = settings.hyperCondition * 10000 + settings.aggression * 1000 + settings.willFlee * 100 + 2;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 61) { //change combat setting
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 61) { //change combat setting
             this.dialogueProgress = 65;
         }
         this.answerstatus = new int[]{0, 0, 0, 0};
@@ -302,29 +320,29 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.answerstate = this.answerstatus[3];
         if (this.dialogueProgress == 3) {
             this.currenttopic = DialogueEnums.FARMING;
-            SetFarmingPacketHandler.sendToServer(new ToServerSetFarmingPacket(!this.friend.getIsFarming(),this.friend.getId()));
+            SetFarmingPacketHandler.sendToServer(new ToServerSetFarmingPacket(!this.friend.getIsFarming(), this.friend.getId()));
             this.dialogueProgress = 80;
         } else if (this.dialogueProgress == 63) {//hyper
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = 30000+settings.aggression*1000+settings.willFlee*100+settings.defense;
+            int temp = 30000 + settings.aggression * 1000 + settings.willFlee * 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
+            this.dialogueProgress = 62;
         } else if (this.dialogueProgress == 64) { //aggression
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+3000+settings.willFlee*100+settings.defense;
+            int temp = settings.hyperCondition * 10000 + 3000 + settings.willFlee * 100 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 65) { //flee
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 65) { //flee
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+settings.aggression*1000+300+settings.defense;
+            int temp = settings.hyperCondition * 10000 + settings.aggression * 1000 + 300 + settings.defense;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 66) { //defense
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 66) { //defense
             CombatSettings settings = this.friend.getCombatSettings();
-            int temp = settings.hyperCondition*10000+settings.aggression*1000+settings.willFlee*100+3;
+            int temp = settings.hyperCondition * 10000 + settings.aggression * 1000 + settings.willFlee * 100 + 3;
             CombatSettingsPacketHandler.sendToServer(new ToServerCombatSettingsPacket(temp, this.friend.getId()));
-            this.dialogueProgress=62;
-        }else if (this.dialogueProgress == 61) { //change combat setting
+            this.dialogueProgress = 62;
+        } else if (this.dialogueProgress == 61) { //change combat setting
             this.dialogueProgress = 66;
         }
         this.answerstatus = new int[]{0, 0, 0, 0};
@@ -335,11 +353,13 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         if (this.statsActive || this.skillActive) {
             this.hideMiddleScreen();
         }
+        this.exitDialogue.setFocus(false);
         this.talkActive = false;
         this.bagButton.active = true;
         this.skillButton.active = true;
         this.statButton.active = true;
         this.talkButton.active = true;
+        this.talkButton.setFocus(false);
         this.currenttopic = null;
     }
 
@@ -464,7 +484,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         RenderSystem.disableDepthTest();
         GL11.glEnable(GL11.GL_BLEND);
         pGuiGraphics.pose().pushPose();
-
+        pGuiGraphics.pose().translate(0,0,1000);
         //dialogue codes:
         //0: prompt
         //1: player response
@@ -479,18 +499,14 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         //65: flee menu
         //66: defense menu
         //62: friend confirms any changes -> j to 3
-        //70: friend react to wander order
-        //71: player gives wander order
+        //70: friend react to wander order -> j to 3
         //72: friend reacts to actual order  -> j to 3
-        //80: friend react to farming order
-        //81: player gives farming order
-        //82: friend reacts to actual order -> j to 3
+        //80: friend react to farming order -> j to 3
 
         //ACTUAL STUFF
-
         pGuiGraphics.fillGradient(0, 0, this.width, this.height, -500, -1072689136, -804253680); //render background dim
-        pGuiGraphics.drawWordWrap(this.font, FormattedText.of(this.friend.getDialogueManager().sendToManage(this, pGuiGraphics, this.dialogueProgress, this.currenttopic)), this.leftPos + 20, this.topPos + 200, 200, ChatFormatting.WHITE.getColor());
-        pGuiGraphics.blit(DIALOGUEBOX, this.leftPos - 1, this.topPos - 1, -500,0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+        pGuiGraphics.drawWordWrap(this.font, FormattedText.of(this.friend.getDialogueManager().sendToManage(this, pGuiGraphics, this.dialogueProgress, this.currenttopic)), this.leftPos + 20, this.topPos + 200, 350, ChatFormatting.BLACK.getColor());
+        pGuiGraphics.blit(DIALOGUEBOX, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
 
         //render buttons
         this.exitDialogue.visible = true;
@@ -519,6 +535,12 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             this.dialogueTwo.visible = false;
             this.dialogueThree.visible = false;
             this.dialogueFour.visible = false;
+        }
+
+        for (Button b : talkBt) {
+            if (b.visible) {
+                b.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+            }
         }
 
 
@@ -768,7 +790,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         pGuiGraphics.blit(MAINTEXTURE, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
 
         //render friend
-        InventoryScreen.renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos + 13, this.topPos + 18, this.leftPos + 88, this.topPos + 170, 55, 0.20F, pMouseX, pMouseY, this.friend);
+        renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos + 13, this.topPos + 18, this.leftPos + 88, this.topPos + 170, 55, 0.20F, pMouseX, pMouseY, this.friend);
 
         //hide gear icons if there is gear there
         for (int i = 0; i < 4; i++) {
@@ -803,6 +825,58 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         }
     }
 
+    public static void renderEntityInInventoryFollowsMouse(GuiGraphics pGuiGraphics, int pX1, int pY1, int pX2, int pY2, int pScale, float pYOffset, float pMouseX, float pMouseY, LivingEntity pEntity) {
+        float f = (float) (pX1 + pX2) / 2.0F;
+        float f1 = (float) (pY1 + pY2) / 2.0F;
+        pGuiGraphics.enableScissor(pX1, pY1, pX2, pY2);
+        float f2 = (float) Math.atan((double) ((f - pMouseX) / 40.0F));
+        float f3 = (float) Math.atan((double) ((f1 - pMouseY) / 40.0F));
+        Quaternionf quaternionf = (new Quaternionf()).rotateZ((float) Math.PI);
+        Quaternionf quaternionf1 = (new Quaternionf()).rotateX(f3 * 20.0F * ((float) Math.PI / 180F));
+        quaternionf.mul(quaternionf1);
+        float f4 = pEntity.yBodyRot;
+        float f5 = pEntity.getYRot();
+        float f6 = pEntity.getXRot();
+        float f7 = pEntity.yHeadRotO;
+        float f8 = pEntity.yHeadRot;
+        pEntity.yBodyRot = 180.0F + f2 * 20.0F;
+        pEntity.setYRot(180.0F + f2 * 40.0F);
+        pEntity.setXRot(-f3 * 20.0F);
+        pEntity.yHeadRot = pEntity.getYRot();
+        pEntity.yHeadRotO = pEntity.getYRot();
+        Vector3f vector3f = new Vector3f(0.0F, pEntity.getBbHeight() / 2.0F + pYOffset, 0.0F);
+        renderEntityInInventory(pGuiGraphics, f, f1, pScale, vector3f, quaternionf, quaternionf1, pEntity);
+        pEntity.yBodyRot = f4;
+        pEntity.setYRot(f5);
+        pEntity.setXRot(f6);
+        pEntity.yHeadRotO = f7;
+        pEntity.yHeadRot = f8;
+        pGuiGraphics.disableScissor();
+    }
+
+    public static void renderEntityInInventory(GuiGraphics pGuiGraphics, float pX, float pY, int pScale, Vector3f pTranslate, Quaternionf pPose, @Nullable Quaternionf pCameraOrientation, LivingEntity pEntity) {
+        pGuiGraphics.pose().pushPose();
+        pGuiGraphics.pose().translate((double) pX, (double) pY, -600.0D);
+        pGuiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));
+        pGuiGraphics.pose().translate(pTranslate.x, pTranslate.y, pTranslate.z);
+        pGuiGraphics.pose().mulPose(pPose);
+        Lighting.setupForEntityInInventory();
+        EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        if (pCameraOrientation != null) {
+            pCameraOrientation.conjugate();
+            entityrenderdispatcher.overrideCameraOrientation(pCameraOrientation);
+        }
+
+        entityrenderdispatcher.setRenderShadow(false);
+        RenderSystem.runAsFancy(() -> {
+            entityrenderdispatcher.render(pEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, pGuiGraphics.pose(), pGuiGraphics.bufferSource(), 15728880);
+        });
+        pGuiGraphics.flush();
+        entityrenderdispatcher.setRenderShadow(true);
+        pGuiGraphics.pose().popPose();
+        Lighting.setupFor3DItems();
+    }
+
     public void renderBackground(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (this.getMinecraft().level != null) {
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.ScreenEvent.BackgroundRendered(this, pGuiGraphics));
@@ -824,8 +898,14 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             this.renderSkillMenu(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         } else if (this.statsActive) {
             this.renderStatsMenu(pGuiGraphics);
-        } else if (this.talkActive) {
+        }
+        if (this.talkActive) {
             this.renderTalkMenu(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+            for(FriendButton i: talkBt){
+                if(!i.visible){
+                    i.setFocus(false);
+                }
+            }
         }
         if (!this.skillActive) {
             for (Button i : bt) {
@@ -876,12 +956,13 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::doSkillFiveDisable, false, false)));
         bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 183, 27, 12, disableSprite, this::doSkillSixDisable, false, false)));
+        int xoffset = this.leftPos + this.imageWidth / 2 - 110;
 
-        this.dialogueOne = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueOne, false, false));
-        this.dialogueTwo = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueTwo, false, false));
-        this.dialogueThree = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueThree, false, false));
-        this.dialogueFour = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::handleDialogueFour, false, false));
-        this.exitDialogue = addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::exitTalkButton, false, false));
+        this.dialogueOne = addWidget(new FriendButton(xoffset, this.topPos + 143, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueOne, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueTwo = addWidget(new FriendButton(xoffset, this.topPos + 108, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueTwo, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueThree = addWidget(new FriendButton(xoffset, this.topPos + 73, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueThree, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueFour = addWidget(new FriendButton(xoffset, this.topPos + 38, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueFour, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.exitDialogue = addRenderableWidget(new FriendButton(this.leftPos + 365, this.topPos + 13, 27, 27, disableSprite, this::exitTalkButton, true, false));
 
         this.talkBt.add(dialogueOne);
         this.talkBt.add(dialogueTwo);

@@ -30,7 +30,7 @@
   "juicecraft.menu.home":"Home: ",
   "juicecraft.menu.skillpoints": "SP: ",
 
-  "juicecraft.menu.responses.generic_response:": "I see.",
+  "juicecraft.menu.responses.generic_response": "I see.",
   "juicecraft.menu.responses.comment_health_response1": "Got it. We’ll keep pushing forward for now.",
   "juicecraft.menu.responses.comment_health_response2": "Got it. We’ll slow down a bit.",
   "juicecraft.menu.responses.comment_hunger_response1": "I have some food you can eat.",

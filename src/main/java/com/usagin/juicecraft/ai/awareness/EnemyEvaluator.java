@@ -45,7 +45,6 @@ public class EnemyEvaluator {
         for(LivingEntity entity: friend.level().getNearbyEntities(LivingEntity.class,TargetingConditions.forCombat(),friend,detect)){
             danger+=evaluate(entity);
         }
-        LOGGER.info("Evaluated Area Danger Level: " + danger);
         return danger;
     }
     public static int evaluateEnemyAreaDanger(LivingEntity friend){
@@ -54,7 +53,6 @@ public class EnemyEvaluator {
         for(LivingEntity entity: friend.level().getNearbyEntities(LivingEntity.class,TargetingConditions.forCombat(),friend,detect)){
             danger+=evaluate(entity);
         }
-        LOGGER.info("Evaluated Target Area Danger Level: " + danger);
         return danger;
     }
 
