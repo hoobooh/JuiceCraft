@@ -9,7 +9,7 @@ public class CombatSettings {
     public int aggression=3;
     public int willFlee=1;
     public int defense=0;
-    public int hash=43100;
+    public int hash=33100;
 
     //aggression key
     //0: never attack

@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.ai.goals;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
+import com.usagin.juicecraft.ai.awareness.FriendFlee;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;

@@ -2,6 +2,7 @@ package com.usagin.juicecraft.ai.goals;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
+import com.usagin.juicecraft.ai.awareness.FriendFlee;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,7 +40,7 @@ public class FriendMeleeAttackGoal extends MeleeAttackGoal {
     }
     @Override
     public boolean canUse(){
-        if(this.friend.getInSittingPose()||this.friend.isDying){return false;}else{return super.canUse();}
+        if(this.friend.getInSittingPose()||this.friend.isDying){return false;}else{return super.canUse() && !FriendFlee.willFriendFlee(this.friend);}
     }
     @Override
     public void tick(){
