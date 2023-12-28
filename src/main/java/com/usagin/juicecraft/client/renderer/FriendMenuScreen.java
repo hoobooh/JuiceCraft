@@ -83,6 +83,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     WidgetSprites enableSprite = new WidgetSprites(ENABLE_BEFORE, ENABLE_AFTER);
     WidgetSprites disableSprite = new WidgetSprites(DISABLE_BEFORE, DISABLE_AFTER);
     WidgetSprites speechSprite = new WidgetSprites(SPEECH_BEFORE, SPEECH_AFTER);
+    WidgetSprites exitSprite = new WidgetSprites(EXIT_BEFORE, EXIT_AFTER);
     WidgetSprites speechConnectorSprite = new WidgetSprites(SPEECH_CONNECTOR_BEFORE, SPEECH_CONNECTOR_AFTER);
 
     public FriendMenuScreen(FriendMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
@@ -853,7 +854,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         pGuiGraphics.blit(HEALTHBAR, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, 7 + (int) (84 * this.friend.getHealth() / this.friend.getMaxHealth()), this.imageHeight, this.imageWidth, this.imageHeight);
 
         //norma level
-        float x = this.friend.getFriendNorma();
+        int x = (int) this.friend.getFriendNorma();
         if (x == 0) {
             pGuiGraphics.blit(NORMA1, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
         } else if (x == 1) {
@@ -1044,7 +1045,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.dialogueTwo = addWidget(new FriendButton(xoffset, this.topPos + 108, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueTwo, true, false, ChatFormatting.BLACK.getColor(), false));
         this.dialogueThree = addWidget(new FriendButton(xoffset, this.topPos + 73, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueThree, true, false, ChatFormatting.BLACK.getColor(), false));
         this.dialogueFour = addWidget(new FriendButton(xoffset, this.topPos + 38, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueFour, true, false, ChatFormatting.BLACK.getColor(), false));
-        this.exitDialogue = addRenderableWidget(new FriendButton(this.leftPos + 365, this.topPos + 13, 27, 27, disableSprite, this::exitTalkButton, true, false));
+        this.exitDialogue = addRenderableWidget(new FriendButton(this.leftPos + 375, this.topPos + 13, 17, 17, exitSprite, this::exitTalkButton, true, false));
 
         this.talkBt.add(dialogueOne);
         this.talkBt.add(dialogueTwo);

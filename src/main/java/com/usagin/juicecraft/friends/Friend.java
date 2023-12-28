@@ -835,35 +835,56 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             if(this.normaprogress[source]+n*this.getPeaceAffinityModifier() <= this.normacaps[source]){
                 netup=n*this.getPeaceAffinityModifier();
                 this.normaprogress[source]+=netup;
+            }else{
+                netup=(this.normacaps[source]-this.normaprogress[source])*this.getPeaceAffinityModifier();
+                this.normaprogress[source]+=netup;
             }
         } else if (source == 1) { //combat kill
             if(this.normaprogress[source]+n*this.getCombatAffinityModifier() <= this.normacaps[source]){
                 netup=n*this.getCombatAffinityModifier();
+                this.normaprogress[source]+=netup;
+            }else{
+                netup=(this.normacaps[source]-this.normaprogress[source])*this.getCombatAffinityModifier();
                 this.normaprogress[source]+=netup;
             }
         } else if (source == 2) { //dialogue
             if(this.normaprogress[source]+n*this.getPeaceAffinityModifier() <= this.normacaps[source]){
                 netup=n*this.getPeaceAffinityModifier();
                 this.normaprogress[source]+=netup;
+            }else{
+                netup=(this.normacaps[source]-this.normaprogress[source])*this.getPeaceAffinityModifier();
+                this.normaprogress[source]+=netup;
             }
         } else if (source == 3) { //eating
             if(this.normaprogress[source]+n*this.getTravelAffinityModifier() <= this.normacaps[source]){
                 netup=n*this.getTravelAffinityModifier();
+                this.normaprogress[source]+=netup;
+            }else{
+                netup=(this.normacaps[source]-this.normaprogress[source])*this.getTravelAffinityModifier();
                 this.normaprogress[source]+=netup;
             }
         } else if (source == 5) { //passive
             if(this.normaprogress[source]+n*this.getTravelAffinityModifier() <= this.normacaps[source]){
                 netup=n*this.getTravelAffinityModifier();
                 this.normaprogress[source]+=netup;
+            }else{
+                netup=(this.normacaps[source]-this.normaprogress[source])*this.getTravelAffinityModifier();
+                this.normaprogress[source]+=netup;
             }
         } else if (source == 6) { //travel
             if(this.normaprogress[source]+n*this.getTravelAffinityModifier() <= this.normacaps[source]){
                 netup=n*this.getTravelAffinityModifier();
                 this.normaprogress[source]+=netup;
+            }else{
+                netup=(this.normacaps[source]-this.normaprogress[source])*this.getTravelAffinityModifier();
+                this.normaprogress[source]+=netup;
             }
         } else { //sleep
             if(this.normaprogress[source]+n*this.getTravelAffinityModifier() <= this.normacaps[source]){
                 netup=n*this.getPeaceAffinityModifier();
+                this.normaprogress[source]+=netup;
+            }else{
+                netup=(this.normacaps[source]-this.normaprogress[source])*this.getPeaceAffinityModifier();
                 this.normaprogress[source]+=netup;
             }
         }
@@ -1384,12 +1405,15 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
             if (this.tickCount % 40 == 0) {
                 this.updateGear();
-                if (this.random.nextBoolean() && this.random.nextBoolean() && this.animatestandingtimer <= 0) {
+                if (this.random.nextBoolean() && this.random.nextBoolean() && this.animatestandingtimer <= 0 && this.idleCounter==20) {
                     this.animatestandingtimer = 80;
                 }
             }
             if (this.animatestandingtimer > 0) {
                 this.animatestandingtimer--;
+                if(this.animatestandingtimer==0){
+                    this.idleCounter=0;
+                }
             }
             boolean sit = this.getInSittingPose();
             this.deathStartAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() != 0, this.tickCount);

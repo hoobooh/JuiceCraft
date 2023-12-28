@@ -33,13 +33,10 @@ public class ToServerCombatSettingsPacket {
     //menu should close in time in case of level change, shouldnt be any sync issues
     public void handle(CustomPayloadEvent.Context context){
         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
-        LOGGER.info(this.combatSettings +" received");
         this.friend=decodeBuffer(level, this.id);
         if(friend!=null){
             this.friend.combatSettings= CombatSettings.decodeHash(this.combatSettings);
-            LOGGER.info(this.friend.combatSettings.makeHash() + " preconfirm");
             this.friend.updateCombatSettings();
-            LOGGER.info(this.friend.getCombatSettings().makeHash() +" confirmed");
             context.setPacketHandled(true);
         }
     }

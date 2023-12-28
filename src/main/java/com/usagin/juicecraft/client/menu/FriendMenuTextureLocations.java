@@ -30,6 +30,9 @@ public class FriendMenuTextureLocations {
     public static final ResourceLocation BUTTON_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/buttondefault");
     public static final ResourceLocation BUTTON_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/buttonlocked");
 
+    public static final ResourceLocation EXIT_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/dialogueexit");
+    public static final ResourceLocation EXIT_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/dialogueexitdown");
+
     public static final ResourceLocation UPGRADE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/upgrade");
     public static final ResourceLocation ENABLE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/enable");
     public static final ResourceLocation DISABLE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/disable");
