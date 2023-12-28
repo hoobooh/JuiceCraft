@@ -38,7 +38,7 @@ public class FriendItemOnBackLayer<T extends Friend, M extends FriendEntityModel
     protected void renderBackWithItem(@NotNull LivingEntity pLivingEntity, ItemStack pItemStack, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight) {
         if (!pItemStack.isEmpty()) {
             pPoseStack.pushPose();
-            this.getParentModel().translateToBack(pPoseStack);
+            this.getParentModel().translateToBack(pPoseStack, pItemStack);
             this.itemInHandRenderer.renderItem(pLivingEntity, pItemStack, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, false, pPoseStack, pBuffer, pPackedLight);
             pPoseStack.popPose();
         }

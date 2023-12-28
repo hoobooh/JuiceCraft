@@ -3,21 +3,20 @@ package com.usagin.juicecraft.client.models;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.client.animation.SoraAnimation;
-import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 
-import static com.usagin.juicecraft.client.animation.SoraAnimation.*;
-import static com.usagin.juicecraft.client.animation.SoraAnimation.DEATHANIM;
 import static net.minecraft.world.entity.Pose.SITTING;
 import static net.minecraft.world.entity.Pose.SLEEPING;
 
@@ -35,7 +34,8 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                              AnimationDefinition sitpat, AnimationDefinition sleep, AnimationDefinition death,
                              AnimationDefinition deathstart, AnimationDefinition attackone,
                              AnimationDefinition attacktwo, AnimationDefinition attackthree,
-                             AnimationDefinition counter) {
+                             AnimationDefinition counter, AnimationDefinition bowdraw,
+                             AnimationDefinition standinginspect) {
     }
 
     public record ModelParts(ModelPart customroot, ModelPart head, ModelPart leftarm, ModelPart rightarm,
@@ -75,7 +75,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
 
     }
 
-    public void translateToBack(@NotNull PoseStack pPoseStack) {
+    public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
         ModelPart root = this.root().getChild("Friend");
         ModelPart hip = root.getChild("hip");
         ModelPart holster = hip.getChild("weaponholster");
@@ -83,7 +83,14 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         translateAndRotate(pPoseStack, root);
         translateAndRotate(pPoseStack, hip);
         translateAndRotate(pPoseStack, holster);
-        pPoseStack.rotateAround(new Quaternionf().rotationZYX((float) -Math.toRadians(60), (float) -Math.toRadians(90), 0), holster.x * 0.17F / 16, holster.y * 0.17F / 16, holster.z * 0.17F / 16);
+        if(pItemStack!=null){
+            if(pItemStack.getItem() instanceof BowItem){
+                pPoseStack.translate(0.45,0,0);
+            }
+        }
+        pPoseStack.translate(0,0.2,0);
+        pPoseStack.rotateAround(new Quaternionf().rotationZYX((float) -Math.toRadians(80), (float) -Math.toRadians(90),0), holster.x * 0.17F / 16, holster.y * 0.17F / 16, holster.z * 0.17F / 16);
+        pPoseStack.mulPose(new Quaternionf().rotationZYX( 0,(float)Math.toRadians(180),0));
 
         pPoseStack.scale(0.883F, 0.883F, 0.883F);
     }
@@ -113,7 +120,10 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 if (pEntity.getPose() == SLEEPING) {
                     animate(pEntity.sleepAnimState, animations.sleep(), pAgeInTicks);
                 } else {
-                    animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);
+                    if(pEntity.animatestandingtimer>0){
+                        animate(pEntity.idleAnimState, animations.standinginspect(), pAgeInTicks);
+                    }
+                    else{animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);}
                     animate(pEntity.idleAnimStartState, animations.idletransition(), pAgeInTicks);
                 }
                 animate(pEntity.patAnimState, animations.patgrounded(), pAgeInTicks);
@@ -140,13 +150,14 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 if (!pEntity.isSprinting() && !pEntity.isSwimming() && !pEntity.idle()) {
                     this.parts.rightleg().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                     this.parts.leftleg().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
-                    if (pEntity.getAttackCounter() == 0) {
+                    if (pEntity.getAttackCounter() == 0 && !pEntity.drawBowAnimationState.isStarted()) {
                         this.parts.leftarm().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                         this.parts.leftarm().zRot = (float) -Math.toRadians(10);
                         this.parts.rightarm().zRot = (float) Math.toRadians(10);
                         this.parts.rightarm().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
                     }
                 }
+                animate(pEntity.drawBowAnimationState,animations.bowdraw(),pAgeInTicks);
             }
             if (!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose() != SLEEPING) {
                 this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);

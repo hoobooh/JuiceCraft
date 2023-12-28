@@ -64,6 +64,8 @@ public class FriendSleepGoal extends Goal {
                     this.friend.refreshDimensions();
                 }else if(this.friend.getFeetBlockState().getValue(OCCUPIED)){
                     this.stop();
+                }else{
+                    this.friend.updateFriendNorma(0.00007F,7);
                 }
 
             } else if (!this.friend.getNavigation().isInProgress()) {

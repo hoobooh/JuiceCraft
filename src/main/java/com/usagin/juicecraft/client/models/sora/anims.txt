@@ -1,0 +1,66 @@
+
+public static final AnimationDefinition BOWDRAW = AnimationDefinition.Builder.withLength(0.5f).looping()
+.addAnimation("customroom",
+	new AnimationChannel(AnimationChannel.Targets.ROTATION,
+		new Keyframe(0f, KeyframeAnimations.degreeVec(0f, -17.5f, 0f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("head",
+	new AnimationChannel(AnimationChannel.Targets.ROTATION,
+		new Keyframe(0f, KeyframeAnimations.degreeVec(7.5f, 12.5f, 0f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("bangs",
+	new AnimationChannel(AnimationChannel.Targets.ROTATION,
+		new Keyframe(0f, KeyframeAnimations.degreeVec(-5f, 0f, 0f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("leftsidehair",
+	new AnimationChannel(AnimationChannel.Targets.ROTATION,
+		new Keyframe(0f, KeyframeAnimations.degreeVec(0f, 0f, -5f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("rightsidehair",
+	new AnimationChannel(AnimationChannel.Targets.ROTATION,
+		new Keyframe(0f, KeyframeAnimations.degreeVec(0f, 0f, 7.5f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("leftarm",
+	new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, -2f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("leftarm",
+	new AnimationChannel(AnimationChannel.Targets.ROTATION,
+		new Keyframe(0f, KeyframeAnimations.degreeVec(-90f, 20f, 0f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("lowerarm2",
+	new AnimationChannel(AnimationChannel.Targets.ROTATION,
+		new Keyframe(0f, KeyframeAnimations.degreeVec(0f, 0f, 30f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("rightarm",
+	new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, -2f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("rightarm",
+	new AnimationChannel(AnimationChannel.Targets.ROTATION,
+		new Keyframe(0f, KeyframeAnimations.degreeVec(-90.33f, -2.48f, 7.51f),
+			AnimationChannel.Interpolations.LINEAR),
+		new Keyframe(0.08343333f, KeyframeAnimations.degreeVec(-91.33f, -2.48f, 7.51f),
+			AnimationChannel.Interpolations.LINEAR),
+		new Keyframe(0.16766666f, KeyframeAnimations.degreeVec(-90.33f, -2.48f, 7.51f),
+			AnimationChannel.Interpolations.LINEAR),
+		new Keyframe(0.25f, KeyframeAnimations.degreeVec(-91.33f, -2.48f, 7.51f),
+			AnimationChannel.Interpolations.LINEAR),
+		new Keyframe(0.3433333f, KeyframeAnimations.degreeVec(-90.33f, -2.48f, 7.51f),
+			AnimationChannel.Interpolations.LINEAR),
+		new Keyframe(0.4167667f, KeyframeAnimations.degreeVec(-91.33f, -2.48f, 7.51f),
+			AnimationChannel.Interpolations.LINEAR),
+		new Keyframe(0.5f, KeyframeAnimations.degreeVec(-90.33f, -2.48f, 7.51f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("chest",
+	new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, -2f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("chest",
+	new AnimationChannel(AnimationChannel.Targets.ROTATION,
+		new Keyframe(0f, KeyframeAnimations.degreeVec(-5f, 0f, 0f),
+			AnimationChannel.Interpolations.LINEAR)))
+.addAnimation("waist",
+	new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, -2f),
+			AnimationChannel.Interpolations.LINEAR))).build();

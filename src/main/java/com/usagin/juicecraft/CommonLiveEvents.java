@@ -9,12 +9,17 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -94,13 +99,55 @@ public class CommonLiveEvents {
     @SubscribeEvent
     public static void onFriendKill(LivingDeathEvent event) {
         if (event.getSource() != null) {
+
+            //when friend kills something
+
             if (event.getSource().getDirectEntity() instanceof Friend pFriend) {
                 if (event.getEntity() instanceof Enemy) {
                     pFriend.setFriendEnemiesKilled(pFriend.getFriendEnemiesKilled() + 1);
                 }
 
                 //XP CALC EVENT
-                pFriend.increaseEXP(EnemyEvaluator.calculateNetGain(pFriend, event.getEntity()));
+                float temp = (float) EnemyEvaluator.calculateNetGain(pFriend, event.getEntity());
+                pFriend.updateFriendNorma(temp/1000,1);
+                pFriend.increaseEXP(temp);
+            }
+
+            //when villager dies
+            if(event.getEntity() instanceof Villager villager){
+                if(event.getSource().getDirectEntity() instanceof Player player){
+
+                    AABB detect = new AABB(villager.getX()-8,villager.getY()-8,villager.getZ()-8,villager.getX()+8,villager.getY()+8,villager.getZ()+8);
+                    for(LivingEntity entity: villager.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(),villager,detect)){
+                        if(entity instanceof Friend friend){
+                            if(friend.isTame() && friend.getOwner()!=null){
+                                if(friend.getOwner().getStringUUID().equals(player.getStringUUID())){
+                                    if(friend.aggression<50){
+                                        friend.playTimedVoice(friend.getAngry());
+                                        friend.updateFriendNorma(-0.4F,1);
+                                    } else if (friend.aggression > 90) { //starbo
+                                        friend.playTimedVoice(friend.getLaugh());
+                                        friend.updateFriendNorma(0.05F,1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+    @SubscribeEvent
+    public static void onCreeperPrime(LivingEvent event){
+        if(event.getEntity() instanceof Creeper creeper){
+            if(creeper.getSwellDir()==1){
+                AABB detect = new AABB(creeper.getX()-8,creeper.getY()-8,creeper.getZ()-8,creeper.getX()+8,creeper.getY()+8,creeper.getZ()+8);
+                for(LivingEntity entity: creeper.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(),creeper,detect)){
+                    if(entity instanceof Friend friend){
+                        friend.fleeTarget=creeper;
+                    }
+                }
             }
         }
     }

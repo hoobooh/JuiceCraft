@@ -28,6 +28,12 @@ public class Sora extends Friend{
     public Sora(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
+
+    @Override
+    int[] getSkillInfo() {
+        return new int[]{1,1,2,2,3,4};
+    }
+
     public static AttributeSupplier.Builder getSoraAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 25).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.ATTACK_DAMAGE, 2);
     }
@@ -50,7 +56,7 @@ public class Sora extends Friend{
 
     @Override
     void registerAdditionalGoals() {
-        this.goalSelector.addGoal(2,new FriendHitAndRunGoal(this));
+
     }
 
     @Override
@@ -94,7 +100,12 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getIdle() {
+    public SoundEvent getFlee() {
+        return this.getHurt(1000000);
+    }
+
+    @Override
+    public SoundEvent getIdle() {
         if(this.sleeping() && this.animateSleep() && !this.getInSittingPose()){
             return null;
         }
@@ -124,7 +135,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getInjured() {
+    public SoundEvent getInjured() {
         int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_INJURED2.get();
@@ -135,7 +146,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getInteract() {
+    public SoundEvent getInteract() {
         int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_INTERACT2.get();
@@ -146,7 +157,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getPat() {
+    public SoundEvent getPat() {
         int a=this.random.nextInt(3);
         return switch (a) {
             case 0 -> SORA_PAT1.get();
@@ -217,12 +228,12 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getHyperUse() {
+    public SoundEvent getHyperUse() {
         return SORA_HYPERUSE.get();
     }
 
     @Override
-    SoundEvent getRecovery() {
+    public SoundEvent getRecovery() {
         int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_RECOVERY1.get();
@@ -244,7 +255,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getRecoveryFail() {
+    public SoundEvent getRecoveryFail() {
         int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_RECOVERYFAILED1.get();
@@ -255,7 +266,7 @@ public class Sora extends Friend{
     }
 
     @Override
-    SoundEvent getWarning() {
+    public SoundEvent getWarning() {
         int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> SORA_WARNING1.get();

@@ -32,7 +32,7 @@ public class ToServerDialogueResultPacket {
         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
         this.friend=decodeBuffer(level, this.id);
         if(friend!=null){
-            this.friend.setFriendNorma(this.friend.getFriendNorma()+this.normachange);
+            this.friend.updateFriendNorma(this.normachange, 2);
             context.setPacketHandled(true);
         }
     }

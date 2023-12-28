@@ -1,4 +1,9 @@
 {
+  "normaup": {
+    "sounds": [
+      "juicecraft:normaup"
+    ]
+  },
   "counter_attack": {
     "sounds": [
       "juicecraft:counter_attack"

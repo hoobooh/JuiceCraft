@@ -31,6 +31,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -224,7 +225,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
     private void handleDialogueOne(Button btn) {
         this.playedSound=false;
-        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[0], this.friend.getId()));
+        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[0]/100, this.friend.getId()));
         this.answerstate = this.answerstatus[0];
         if(this.dialogueProgress==1){
             this.dialogueProgress++;
@@ -264,7 +265,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
     private void handleDialogueTwo(Button btn) {
         this.playedSound=false;
-        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[1], this.friend.getId()));
+        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[1]/100, this.friend.getId()));
         this.answerstate = this.answerstatus[1];
         if(this.dialogueProgress==1){
             this.dialogueProgress++;
@@ -300,7 +301,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
     private void handleDialogueThree(Button btn) {
         this.playedSound=false;
-        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[2], this.friend.getId()));
+        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[2]/100, this.friend.getId()));
         this.answerstate = this.answerstatus[2];
         if (this.dialogueProgress == 3) {
             this.currenttopic = DialogueEnums.WANDERING;
@@ -334,7 +335,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
     private void handleDialogueFour(Button btn) {
         this.playedSound=false;
-        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[3], this.friend.getId()));
+        DialogueResultPacketHandler.sendToServer(new ToServerDialogueResultPacket(this.answerstatus[3]/100, this.friend.getId()));
         this.answerstate = this.answerstatus[3];
         if (this.dialogueProgress == 3) {
             this.currenttopic = DialogueEnums.FARMING;
@@ -383,75 +384,111 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     private void doSkillOneUpgrade(Button btn) {
-
+        int[] levels = this.friend.getSkillLevels();
+        levels[0]+=1;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels,1,this.friend.skillEnabled,this.friend.getId()));
     }
 
     private void doSkillOneEnable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[0]=true;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillOneDisable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[0]=false;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillTwoUpgrade(Button btn) {
-
+        int[] levels = this.friend.getSkillLevels();
+        levels[1]+=1;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels,1,this.friend.skillEnabled,this.friend.getId()));
     }
 
     private void doSkillTwoEnable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[1]=true;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillTwoDisable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[1]=false;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillThreeUpgrade(Button btn) {
-
+        int[] levels = this.friend.getSkillLevels();
+        levels[2]+=1;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels,2,this.friend.skillEnabled,this.friend.getId()));
     }
 
     private void doSkillThreeEnable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[2]=true;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillThreeDisable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[2]=false;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillFourUpgrade(Button btn) {
-
+        int[] levels = this.friend.getSkillLevels();
+        levels[3]+=1;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels,2,this.friend.skillEnabled,this.friend.getId()));
     }
 
     private void doSkillFourEnable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[3]=true;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillFourDisable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[3]=false;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillFiveUpgrade(Button btn) {
-
+        int[] levels = this.friend.getSkillLevels();
+        levels[4]+=1;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels,3,this.friend.skillEnabled,this.friend.getId()));
     }
 
     private void doSkillFiveEnable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[4]=true;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillFiveDisable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[4]=false;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillSixUpgrade(Button btn) {
-
+        int[] levels = this.friend.getSkillLevels();
+        levels[5]+=1;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels,4,this.friend.skillEnabled,this.friend.getId()));
     }
 
     private void doSkillSixEnable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[5]=true;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
 
     private void doSkillSixDisable(Button btn) {
-
+        boolean[] enabled = this.friend.getSkillEnabled();
+        enabled[5]=false;
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(this.friend.getSkillLevels(),0,enabled,this.friend.getId()));
     }
     public void playDownSound(SoundManager pHandler) {
         pHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
@@ -654,26 +691,34 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             int[] levels = this.friend.getSkillLevels();
             if (i == 0 || i == 1) {
                 if (this.friend.getSkillPoints() > 0) {
-                    bt.get(i).visible = true;
+                    if(this.friend.getFriendNorma()>=this.friend.skillinfo[i]){
+                        bt.get(i).visible = true;
+                    }
                 }
                 bt.get(i + 2).setFocus(enabled[i] || levels[i] == 0);
                 bt.get(i + 4).setFocus(!enabled[i]);
             } else if (i == 6 || i == 7) {
-                if (this.friend.getSkillPoints() > 0) {
-                    bt.get(i).visible = true;
+                if (this.friend.getSkillPoints() > 1) {
+                    if(this.friend.getFriendNorma()>=this.friend.skillinfo[i-4]){
+                        bt.get(i).visible = true;
+                    }
                 }
                 bt.get(i + 2).setFocus(enabled[i - 4] || levels[i - 4] == 0);
                 bt.get(i + 4).setFocus(!enabled[i - 4]);
             } else if (i == 12) {
                 if (this.friend.getSkillPoints() > 2) {
-                    bt.get(i).visible = true;
+                    if(this.friend.getFriendNorma()>=this.friend.skillinfo[i-8]){
+                        bt.get(i).visible = true;
+                    }
                 }
                 bt.get(i + 2).setFocus(enabled[i - 8] || levels[i - 8] == 0);
                 bt.get(i + 4).setFocus(!enabled[i - 8]);
             } else if (i == 13) {
-                if (this.friend.getSkillPoints() > 2) {
+                if (this.friend.getSkillPoints() > 3) {
                     if (!this.friend.inventory.getItem(0).isEmpty()) {
-                        bt.get(i).visible = true;
+                        if(this.friend.getFriendNorma()>=this.friend.skillinfo[i-8]){
+                            bt.get(i).visible = true;
+                        }
                     }
                 }
                 bt.get(i + 2).setFocus(enabled[i - 8] || levels[i - 8] == 0);
@@ -1012,6 +1057,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     protected static void renderScrollingString(GuiGraphics pGuiGraphics, Font pFont, Component pText, int pMinX, int pMinY, int pMaxX, int pMaxY, int pColor) {
         renderScrollingString(pGuiGraphics, pFont, pText, (pMinX + pMaxX) / 2, pMinX, pMinY, pMaxX, pMaxY, pColor);
     }
+
     protected static void renderScrollingString(GuiGraphics pGuiGraphics, Font pFont, Component pText, int p_300294_, int pMinX, int pMinY, int pMaxX, int pMaxY, int pColor) {
         int i = pFont.width(pText);
         int j = (pMinY + pMaxY - 9) / 2 + 1;
