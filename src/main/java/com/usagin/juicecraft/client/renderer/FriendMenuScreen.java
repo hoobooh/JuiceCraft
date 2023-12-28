@@ -16,6 +16,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -617,7 +618,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                 b.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
             }
         }
-        pGuiGraphics.drawCenteredString(this.font,this.friend.getFriendName(),this.leftPos + 52, this.topPos + 179,ChatFormatting.WHITE.getColor());
+        pGuiGraphics.drawCenteredString(this.font,Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()),this.leftPos + 52, this.topPos + 179,ChatFormatting.WHITE.getColor());
 
         //epilogue
 
@@ -1001,7 +1002,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             }
         }
     }
-
+    FriendScrollWidget scrollWidget;
     @Override
     protected void init() {
         super.init();
@@ -1052,6 +1053,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.talkBt.add(dialogueThree);
         this.talkBt.add(dialogueFour);
         this.talkBt.add(exitDialogue);
+
+        this.scrollWidget = addRenderableWidget(new FriendScrollWidget(this.leftPos+284,this.topPos+30,30,300,null,this));
 
     }
 

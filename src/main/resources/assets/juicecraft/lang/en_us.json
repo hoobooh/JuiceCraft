@@ -192,5 +192,26 @@
   "juicecraft.sora_recoveryfailed4": "Not yet... just a bit more...",
   "juicecraft.sora_hyper_use": "I'll use everything I have...!",
   "juicecraft.sora_hyper_equip": "I'm powering myself up.",
-  "juicecraft.sora_moduleequip": "With this power..."
+  "juicecraft.sora_moduleequip": "With this power...",
+
+  "juicecraft.menu.sora.eventlog.tame": "I met an interesting person today. They seem to be a native of this world. I've decided to travel with them and observe for a while.\n",
+  "juicecraft.menu.sora.eventlog.playerdeath": " died today. I have to work harder to protect them.\n",
+  "juicecraft.menu.sora.eventlog.miraclebean": "I ate an incredibly sweet ice cream today. It was amazing.\n",
+  "juicecraft.menu.sora.eventlog.altesmeal": "I ate something horrible today. My anti-poison security system broke down trying to contain it.\n",
+  "juicecraft.menu.sora.eventlog.killhighratingfirst": "I defeated an incredible enemy today. My readings labeled it as \"",
+  "juicecraft.menu.sora.eventlog.killhighratingsecond": ".\" I should be more careful of it in the future.\n",
+  "juicecraft.menu.sora.eventlog.sleep": "I slept for a while. It was very refreshing.\n",
+  "juicecraft.menu.sora.eventlog.starvation": "My energy readings have been concerning for a while… If only I could process this world's normal food.\n",
+  "juicecraft.menu.sora.eventlog.farming": "I tried making a farm. It reminded me of Yukito and the engineers.\n",
+  "juicecraft.menu.sora.eventlog.changesettings": " told me to change how I fight. I wonder if my former approach was troubling them?\n",
+  "juicecraft.menu.sora.eventlog.breakweapon": "My weapon broke today. Sham would be angry. I should manage my equipment better.\n",
+  "juicecraft.menu.sora.eventlog.closecall": "I almost died today. Thankfully, I managed to bring my Heat back under control.\n",
+  "juicecraft.menu.sora.eventlog.dangerarea": "We passed through a dangerous area today. My danger sensors were going off without end.\n",
+  "juicecraft.menu.sora.eventlog.norma2": "I've been traveling with this person for a while now. They seem to be an adventurer of some sorts. I will continue my observations.\n.",
+  "juicecraft.menu.sora.eventlog.norma3": "This person possesses some incredible abilities. I'm sure Sumika would be interested in their unusual technology- especially their ability to resurrect themselves. I will continue my observations.\n",
+  "juicecraft.menu.sora.eventlog.norma4": "My observations are almost complete. These people are a bit strange, but I believe that they are an incredible race of people. I'm sure this world will become a beautiful place. I will continue my observations a bit longer.\n",
+  "juicecraft.menu.sora.eventlog.norma5.0": "My observations have concluded. My journey with ",
+  "juicecraft.menu.sora.eventlog.norma5.1": " has been wonderful. I believe I will continue traveling with them for a while longer.\n",
+  "juicecraft.menu.sora.eventlog.levelup": "I've gotten stronger. With this, I should be an even greater help to everyone.\n",
+  "juicecraft.menu.sora.eventlog.activator": "I've obtained an \"Activator.\" My data analysis indicates that it is an old piece of technology from my era, similar to the Hyper Activators that I can't access anymore. I wonder how it got here.\n"
 }

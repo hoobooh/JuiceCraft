@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -34,6 +35,7 @@ public class SweetHandler {
             friend.mood=Mth.clamp(friend.mood+20,0,100);
         }
         else if(pStack.is(REDBEANICECREAM.get())){
+            friend.appendEventLog(Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase()+".eventlog.miraclebean").getString());
             friend.setHealth(friend.getMaxHealth());
             friend.setHungerMeter(100);
             playVoice(friend,friend.getOnHeal());
@@ -52,6 +54,7 @@ public class SweetHandler {
             friend.mood=Mth.clamp(friend.mood+1,0,100);
         }
         else if(pStack.is(ALTESCOOKING.get())){
+            friend.appendEventLog(Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase()+".eventlog.altesmeal").getString());
             friend.playVoice(friend.getHurt(100000));
             friend.setHealth(friend.getHealth()-10);
             friend.setHungerMeter(Mth.clamp(friend.getHungerMeter()-10,0,100));

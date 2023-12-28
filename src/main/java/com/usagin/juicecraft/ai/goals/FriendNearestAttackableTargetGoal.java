@@ -41,6 +41,9 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
     public void start() {
         if(this.friend.canDoThings() && this.friend.getCombatSettings().aggression==3){
             this.mob.setTarget(this.target);
+            if(EnemyEvaluator.evaluate(this.target) > this.friend.getFriendExperience()/2){
+                this.friend.playTimedVoice(this.friend.getWarning());
+            }
             super.start();
         }
     }

@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.FriendDefense;
 import com.usagin.juicecraft.friends.Friend;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -109,6 +110,9 @@ public class CommonLiveEvents {
 
                 //XP CALC EVENT
                 float temp = (float) EnemyEvaluator.calculateNetGain(pFriend, event.getEntity());
+                if(temp>50){
+                    pFriend.appendEventLog(Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingfirst").getString() + event.getEntity().getScoreboardName() + Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingsecond").getString());
+                }
                 pFriend.updateFriendNorma(temp/1000,1);
                 pFriend.increaseEXP(temp);
             }
@@ -134,6 +138,20 @@ public class CommonLiveEvents {
                         }
                     }
 
+                }
+            }
+
+            //player death
+            else if(event.getEntity() instanceof Player player){
+                AABB detect = new AABB(player.getX()-16,player.getY()-16,player.getZ()-16,player.getX()+16,player.getY()+16,player.getZ()+16);
+                for(LivingEntity entity: player.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(),player,detect)){
+                    if(entity instanceof Friend friend){
+                        if(friend.isTame() && friend.getOwner()!=null){
+                            if(friend.getOwner().getStringUUID().equals(player.getStringUUID())){
+                                friend.appendEventLog(player.getScoreboardName() + Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase()+".eventlog.playerdeath").getString());
+                            }
+                        }
+                    }
                 }
             }
         }

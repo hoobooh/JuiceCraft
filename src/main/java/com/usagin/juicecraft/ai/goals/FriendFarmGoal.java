@@ -3,6 +3,7 @@ package com.usagin.juicecraft.ai.goals;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Pose;
@@ -97,6 +98,9 @@ public class FriendFarmGoal extends Goal {
                                         this.friend.inventory.getItem(i).setCount(this.friend.inventory.getItem(i).getCount()-1);
                                         sLevel.setBlockAndUpdate(this.targetPos,cropBlock.defaultBlockState());
                                         this.friend.increaseEXP(2*this.friend.getPeaceAffinityModifier());
+                                        if(this.friend.farmqueue.isEmpty()){
+                                            this.friend.appendEventLog(Component.translatable("juicecraft.menu." +friend.getFriendName().toLowerCase()+".eventlog.farming").getString());
+                                        }
                                     }
                                 }
                             }

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.Init.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
+import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.SkillManager;
 import com.usagin.juicecraft.ai.goals.*;
 import com.usagin.juicecraft.client.menu.FriendMenuProvider;
@@ -109,6 +110,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int deathCounter;
     public int attackCounter;
     public int attackType;
+    public String eventlog = "";
     public int blinkCounter = 150;
     public int soundCounter = 40;
     public int patCounter = 20;
@@ -231,6 +233,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
     }
 
+    public void broadcastBreakEvent(EquipmentSlot pSlot) {
+        if (pSlot == EquipmentSlot.MAINHAND) {
+            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.breakweapon").getString());
+        }
+        super.broadcastBreakEvent(pSlot);
+    }
+
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
@@ -258,19 +267,24 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         float nextlevel = 100 * (((int) (currentxp / 100)) + 1);
         float afterxp = currentxp + (float) gain;
         if (afterxp >= nextlevel) {
+            this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.levelup").getString());
             this.playSound(SoundEvents.PLAYER_LEVELUP, 1, 1);
             this.setSkillPoints(this.getSkillPoints() + ((int) (afterxp / 100) - ((int) (currentxp / 100))));
-            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getMaxHealth()+0.2*((int) (afterxp / 100) - ((int) (currentxp / 100))));
-            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE)+0.1*((int) (afterxp / 100) - ((int) (currentxp / 100))));
+            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getMaxHealth() + 0.2 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
+            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) + 0.1 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
+            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) + 0.1 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
             this.playVoice(this.getModuleEquip());
             this.spawnHorizontalParticles();
         }
         this.setFriendExperience(afterxp);
     }
-    public void setSkillInfo(){
-        this.skillinfo=this.getSkillInfo();
+
+    public void setSkillInfo() {
+        this.skillinfo = this.getSkillInfo();
     }
+
     abstract int[] getSkillInfo();
+
     public boolean canDoThings() {
         return !this.getInSittingPose() && !this.isDying;
     }
@@ -446,7 +460,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     }
                 }
             }
-            this.updateFriendNorma(0.02F,0);
+            this.updateFriendNorma(0.02F, 0);
         }
     }
 
@@ -461,6 +475,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     void doRecoveryEvent() {
+        this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.closecall").getString());
         this.setHealth(this.getMaxHealth() / 2);
         this.deathCounter = 7 - recoveryDifficulty;
         this.getEntityData().set(FRIEND_ISDYING, false);
@@ -605,6 +620,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putIntArray("juicecraft.normaprogress", new int[]{(int) (this.normaprogress[0] * 10000), (int) (this.normaprogress[1] * 10000), (int) (this.normaprogress[2] * 10000), (int) (this.normaprogress[3] * 10000), (int) (this.normaprogress[4] * 10000), (int) (this.normaprogress[5] * 10000), (int) (this.normaprogress[6] * 10000), (int) (this.normaprogress[7] * 10000)});
+        pCompound.putString("juicecraft.eventlog", this.eventlog);
         pCompound.putIntArray("juicecraft.dialogue", this.dialogueTree);
         pCompound.putIntArray("juicecraft.relationships", convertRelationships(this.relationships));
         pCompound.putIntArray("juicecraft.specialsenabled", this.specialDialogueEnabled);
@@ -680,6 +696,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.setIsWandering(pCompound.getBoolean("juicecraft.iswandering"));
         this.setIsFarming(pCompound.getBoolean("juicecraft.dofarming"));
         this.combatmodifier = pCompound.getInt("juicecraft.combatmodifier");
+        this.setEventLog(pCompound.getString("juicecraft.eventlog"));
 
         this.setTame(pCompound.getBoolean("Tame"));
         this.createInventory();
@@ -823,8 +840,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.norma = n;
         int orig = (int) this.getFriendNorma();
         int newone = (int) n;
-        if(newone>orig){
-            this.playSound(NORMAUP.get(),1,1);
+        if (newone > orig && newone <5) {
+            this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.norma"+newone).getString());
+            this.playSound(NORMAUP.get(), 1, 1);
+        }else if(newone > orig && newone ==5 && this.getOwner()!=null){
+            this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.norma5.0").getString() + this.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.norma5.1").getString());
+            this.playSound(NORMAUP.get(), 1, 1);
         }
         this.getEntityData().set(FRIEND_NORMA, n);
     }
@@ -832,64 +853,64 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public void updateFriendNorma(float n, int source) {
         double netup = 0;
         if (source == 0) { //pats
-            if(this.normaprogress[source]+n*this.getPeaceAffinityModifier() <= this.normacaps[source]){
-                netup=n*this.getPeaceAffinityModifier();
-                this.normaprogress[source]+=netup;
-            }else{
-                netup=(this.normacaps[source]-this.normaprogress[source])*this.getPeaceAffinityModifier();
-                this.normaprogress[source]+=netup;
+            if (this.normaprogress[source] + n * this.getPeaceAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
             }
         } else if (source == 1) { //combat kill
-            if(this.normaprogress[source]+n*this.getCombatAffinityModifier() <= this.normacaps[source]){
-                netup=n*this.getCombatAffinityModifier();
-                this.normaprogress[source]+=netup;
-            }else{
-                netup=(this.normacaps[source]-this.normaprogress[source])*this.getCombatAffinityModifier();
-                this.normaprogress[source]+=netup;
+            if (this.normaprogress[source] + n * this.getCombatAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getCombatAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getCombatAffinityModifier();
+                this.normaprogress[source] += netup;
             }
         } else if (source == 2) { //dialogue
-            if(this.normaprogress[source]+n*this.getPeaceAffinityModifier() <= this.normacaps[source]){
-                netup=n*this.getPeaceAffinityModifier();
-                this.normaprogress[source]+=netup;
-            }else{
-                netup=(this.normacaps[source]-this.normaprogress[source])*this.getPeaceAffinityModifier();
-                this.normaprogress[source]+=netup;
+            if (this.normaprogress[source] + n * this.getPeaceAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
             }
         } else if (source == 3) { //eating
-            if(this.normaprogress[source]+n*this.getTravelAffinityModifier() <= this.normacaps[source]){
-                netup=n*this.getTravelAffinityModifier();
-                this.normaprogress[source]+=netup;
-            }else{
-                netup=(this.normacaps[source]-this.normaprogress[source])*this.getTravelAffinityModifier();
-                this.normaprogress[source]+=netup;
+            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
             }
         } else if (source == 5) { //passive
-            if(this.normaprogress[source]+n*this.getTravelAffinityModifier() <= this.normacaps[source]){
-                netup=n*this.getTravelAffinityModifier();
-                this.normaprogress[source]+=netup;
-            }else{
-                netup=(this.normacaps[source]-this.normaprogress[source])*this.getTravelAffinityModifier();
-                this.normaprogress[source]+=netup;
+            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
             }
         } else if (source == 6) { //travel
-            if(this.normaprogress[source]+n*this.getTravelAffinityModifier() <= this.normacaps[source]){
-                netup=n*this.getTravelAffinityModifier();
-                this.normaprogress[source]+=netup;
-            }else{
-                netup=(this.normacaps[source]-this.normaprogress[source])*this.getTravelAffinityModifier();
-                this.normaprogress[source]+=netup;
+            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
             }
         } else { //sleep
-            if(this.normaprogress[source]+n*this.getTravelAffinityModifier() <= this.normacaps[source]){
-                netup=n*this.getPeaceAffinityModifier();
-                this.normaprogress[source]+=netup;
-            }else{
-                netup=(this.normacaps[source]-this.normaprogress[source])*this.getPeaceAffinityModifier();
-                this.normaprogress[source]+=netup;
+            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
             }
         }
 
-        this.setFriendNorma((float) (this.getFriendNorma()+netup),0);
+        this.setFriendNorma((float) (this.getFriendNorma() + netup), 0);
     }
 
     public float getFriendNorma() {
@@ -959,6 +980,23 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.getEntityData().set(FRIEND_ISFARMING, b);
     }
 
+    public String getEventLog() {
+        return this.getEntityData().get(FRIEND_EVENTLOG);
+    }
+
+    public void setEventLog(String s) {
+        this.eventlog = s;
+        this.getEntityData().set(FRIEND_EVENTLOG, s);
+    }
+
+    public void appendEventLog(String s) {
+        if(this.getEventLog().length()>500){
+            this.setEventLog("");
+        }
+        this.eventlog = this.eventlog + s +"\n";
+        this.getEntityData().set(FRIEND_EVENTLOG, this.eventlog);
+    }
+
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_ID_FLAGS, (byte) 0);
@@ -986,9 +1024,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.entityData.define(FRIEND_SKILLPOINTS, this.skillPoints);
         this.entityData.define(FRIEND_ISWANDERING, this.wandering);
         this.entityData.define(FRIEND_ISFARMING, this.doFarming);
-
+        this.eventlog = "";
+        this.entityData.define(FRIEND_EVENTLOG, this.eventlog);
     }
 
+    public static final EntityDataAccessor<String> FRIEND_EVENTLOG = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> FRIEND_ISFARMING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> FRIEND_ISWANDERING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> FRIEND_SPECIALSENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
@@ -1144,7 +1184,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             } else if (this.isTame() && this.isOwnedBy(pPlayer)) {
                 if (this.isEdible(itemstack)) {
                     SweetHandler.doSweetEffect(this, itemstack);
-                    this.updateFriendNorma(0.001F,3);
+                    this.updateFriendNorma(0.001F, 3);
                     this.socialInteraction += 1;
                     if (!pPlayer.getAbilities().instabuild) {
                         itemstack.shrink(1);
@@ -1193,6 +1233,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
                 if (this.random.nextInt(captureDifficulty) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, pPlayer)) {
                     this.tame(pPlayer);
+                    this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.tame").getString());
                     this.navigation.stop();
                     this.setTarget((LivingEntity) null);
                     this.indicateTamed();
@@ -1405,14 +1446,14 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
             if (this.tickCount % 40 == 0) {
                 this.updateGear();
-                if (this.random.nextBoolean() && this.random.nextBoolean() && this.animatestandingtimer <= 0 && this.idleCounter==20) {
+                if (this.random.nextBoolean() && this.random.nextBoolean() && this.animatestandingtimer <= 0 && this.idleCounter == 20) {
                     this.animatestandingtimer = 80;
                 }
             }
             if (this.animatestandingtimer > 0) {
                 this.animatestandingtimer--;
-                if(this.animatestandingtimer==0){
-                    this.idleCounter=0;
+                if (this.animatestandingtimer == 0) {
+                    this.idleCounter = 0;
                 }
             }
             boolean sit = this.getInSittingPose();
@@ -1436,7 +1477,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
         else {
             this.increaseEXP(this.distanceToSqr(this.xOld, this.yOld, this.zOld) < 10 ? this.distanceToSqr(this.xOld, this.yOld, this.zOld) * 0.02 * this.getTravelAffinityModifier() : 0);
-            this.updateFriendNorma(this.distanceToSqr(this.xOld, this.yOld, this.zOld) < 10 ? (float) (this.distanceToSqr(this.xOld, this.yOld, this.zOld) * 0.002 * this.getTravelAffinityModifier()) : 0,6);
+            this.updateFriendNorma(this.distanceToSqr(this.xOld, this.yOld, this.zOld) < 10 ? (float) (this.distanceToSqr(this.xOld, this.yOld, this.zOld) * 0.002 * this.getTravelAffinityModifier()) : 0, 6);
             if (this.runTimer > 0) {
                 this.runTimer--;
             }
@@ -1466,11 +1507,19 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 deathTimer = 200;
             }
             if (this.tickCount % 200 == 0) {
-                this.updateFriendNorma(0.01F,5);
+                if(EnemyEvaluator.evaluateAreaDanger(this) > this.getFriendExperience()/2){
+                    this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.dangerarea").getString());
+                }
+                this.updateFriendNorma(0.01F, 5);
                 if (this.hungerMeter > 0) {
                     this.setHungerMeter(this.hungerMeter - 1);
+                    if (this.tickCount % 4000 == 0) {
+                        if (this.hungerMeter < 50) {
+                            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.starvation").getString());
+                        }
+                    }
                 } else {
-                    this.updateFriendNorma(-0.1F,7);
+                    this.updateFriendNorma(-0.1F, 7);
                     this.mood -= 20;
                 }
                 if (this.doFarming && this.isTame()) {
@@ -1503,8 +1552,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
                     }
                 }
-                if(this.tickCount%24000==0){
-                    this.normaprogress=new double[8];
+                if (this.tickCount % 24000 == 0) {
+                    this.normaprogress = new double[8];
                 }
             }
         }

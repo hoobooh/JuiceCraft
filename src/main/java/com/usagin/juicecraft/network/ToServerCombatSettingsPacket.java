@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.network.CustomPayloadEvent;
@@ -35,7 +36,9 @@ public class ToServerCombatSettingsPacket {
         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
         this.friend=decodeBuffer(level, this.id);
         if(friend!=null){
-            this.friend.combatSettings= CombatSettings.decodeHash(this.combatSettings);
+            if(friend.getOwner()!=null) {
+                this.friend.appendEventLog(friend.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".eventlog.changesettings").getString());
+            }this.friend.combatSettings= CombatSettings.decodeHash(this.combatSettings);
             this.friend.updateCombatSettings();
             context.setPacketHandled(true);
         }

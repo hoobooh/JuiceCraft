@@ -4,6 +4,7 @@ import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Pose;
@@ -49,6 +50,7 @@ public class FriendSleepGoal extends Goal {
     }
 
     public void stop() {
+        this.friend.appendEventLog(Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase()+".eventlog.sleep").getString());
         this.friend.setPose(Pose.STANDING);
         this.friend.refreshDimensions();
     }
