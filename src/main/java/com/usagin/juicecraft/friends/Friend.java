@@ -2,6 +2,7 @@ package com.usagin.juicecraft.friends;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.ai.FriendLonelyGoal;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.SkillManager;
@@ -90,6 +91,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public final AnimationState deathStartAnimState = new AnimationState();
     public final AnimationState drawBowAnimationState = new AnimationState();
     public int combatmodifier = 0;
+    public int timesincelastpat = 0;
     public boolean wandering = false;
     public int[] skillLevels = new int[6];
     public boolean[] skillEnabled = new boolean[]{false, false, false, false, false, false};
@@ -458,6 +460,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     void petEvent() {
         this.playTimedVoice(this.getPat());
         patCounter = 20;
+        this.setTimeSinceLastPat(0);
         if (this.random.nextInt(20) == 6) {
             if (this.mood <= 80) {
                 this.mood += 20;
@@ -617,6 +620,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
+        pCompound.putInt("juicecraft.timesincelastpat",this.timesincelastpat);
         pCompound.putIntArray("juicecraft.normaprogress", new int[]{(int) (this.normaprogress[0] * 10000), (int) (this.normaprogress[1] * 10000), (int) (this.normaprogress[2] * 10000), (int) (this.normaprogress[3] * 10000), (int) (this.normaprogress[4] * 10000), (int) (this.normaprogress[5] * 10000), (int) (this.normaprogress[6] * 10000), (int) (this.normaprogress[7] * 10000)});
         pCompound.putString("juicecraft.eventlog", this.eventlog);
         pCompound.putIntArray("juicecraft.dialogue", this.dialogueTree);
@@ -671,6 +675,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         super.readAdditionalSaveData(pCompound);
         this.initializeNew();
         int[] temp2 = pCompound.getIntArray("juicecraft.normaprogress");
+        this.setTimeSinceLastPat(pCompound.getInt("juicecraft.timesincelastpat"));
         this.normaprogress = new double[]{((double) temp2[0]) / 10000, ((double) temp2[1]) / 10000, ((double) temp2[2]) / 10000, ((double) temp2[3]) / 10000, ((double) temp2[4]) / 10000, ((double) temp2[5]) / 10000, ((double) temp2[6]) / 10000, ((double) temp2[7]) / 10000};
         this.dialogueTree = pCompound.getIntArray("juicecraft.dialogue");
         this.setSpecialDialogueEnabled(pCompound.getIntArray("juicecraft.specialsenabled"));
@@ -836,7 +841,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.norma = n;
         int orig = (int) this.getFriendNorma();
         int newone = (int) n;
-        if (newone > orig && newone < 5) {
+        if (newone > orig && newone < 5 && newone > 1) {
             this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma" + newone).getString());
             this.playSound(NORMAUP.get(), 1, 1);
         } else if (newone > orig && newone == 5 && this.getOwner() != null) {
@@ -992,6 +997,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.eventlog = this.eventlog + s + "\n";
         this.getEntityData().set(FRIEND_EVENTLOG, this.eventlog);
     }
+    public void setTimeSinceLastPat(int n){
+        this.timesincelastpat=n;
+        this.getEntityData().set(FRIEND_TIMESINCEPAT,n);
+    }
+    public int getTimeSinceLastPat(){
+        return this.getEntityData().get(FRIEND_TIMESINCEPAT);
+    }
 
     protected void defineSynchedData() {
         super.defineSynchedData();
@@ -1022,8 +1034,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.entityData.define(FRIEND_ISFARMING, this.doFarming);
         this.eventlog = "";
         this.entityData.define(FRIEND_EVENTLOG, this.eventlog);
+        this.entityData.define(FRIEND_TIMESINCEPAT,this.timesincelastpat);
     }
-
+    public static final EntityDataAccessor<Integer> FRIEND_TIMESINCEPAT = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> FRIEND_EVENTLOG = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> FRIEND_ISFARMING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> FRIEND_ISWANDERING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
@@ -1099,6 +1112,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     @Override
     protected void registerGoals() {
+        this.goalSelector.addGoal(8, new FriendLonelyGoal(this,1,false));
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(4, new OpenDoorGoal(this, true));
         this.goalSelector.addGoal(4, new FriendLadderClimbGoal(this));
@@ -1331,6 +1345,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 if (this.random.nextInt(3) == 2 && this.getPose() != SLEEPING && !this.getIsDying()) {
                     this.playTimedVoice(this.getIdle());
                 }
+                this.setTimeSinceLastPat(this.getTimeSinceLastPat()+80);
             }
 
             //mood/social
@@ -1480,9 +1495,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
             if (this.animatestandingtimer > 0) {
                 this.animatestandingtimer--;
-                if (this.animatestandingtimer == 0) {
-                    this.idleCounter = 0;
-                }
             }
             boolean sit = this.getInSittingPose();
             this.deathStartAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() != 0, this.tickCount);

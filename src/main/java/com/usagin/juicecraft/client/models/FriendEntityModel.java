@@ -127,10 +127,10 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 if (pEntity.getPose() == SLEEPING) {
                     animate(pEntity.sleepAnimState, animations.sleep(), pAgeInTicks);
                 } else {
+                    animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);
                     if(pEntity.animatestandingtimer>0){
                         animate(pEntity.idleAnimState, animations.standinginspect(), pAgeInTicks);
                     }
-                    else{animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);}
                     animate(pEntity.idleAnimStartState, animations.idletransition(), pAgeInTicks);
                 }
                 animate(pEntity.patAnimState, animations.patgrounded(), pAgeInTicks);
