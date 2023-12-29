@@ -39,7 +39,7 @@ public class CommonLiveEvents {
                     if (friend.getAttackType() == 50 && friend.getAttackCounter() > 26/friend.getAttackSpeed()) {
                         event.setCanceled(true);
                     } else if (FriendDefense.shouldDefendAgainst(friend)) {
-                        friend.setAttackCounter((int) (34* (1/friend.getAttackSpeed())));
+                        friend.setAttackCounter((int) (34/friend.getAttackSpeed()));
                         friend.setAttackType(50);
                         friend.playTimedVoice(friend.getEvade());
                         friend.playSound(COUNTER_BLOCK.get());

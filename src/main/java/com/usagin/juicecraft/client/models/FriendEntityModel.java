@@ -24,7 +24,10 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     Logger LOGGER = LogUtils.getLogger();
     public ModelParts parts;
     public Animations animations;
-
+    public FriendEntityModel(ModelPart root){
+        defineParts(root);
+        defineAnimations();
+    }
     public abstract void defineAnimations();
 
     public abstract void defineParts(ModelPart root);
@@ -44,9 +47,13 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        parts.customroot().offsetScale(new Vector3f(-0.83F, -0.83F, -0.83F));
-        parts.customroot().offsetPos(new Vector3f(0, 24, 0));
+        poseStack.pushPose();
+        //parts.customroot().offsetScale(new Vector3f(-0.83F, -0.83F, -0.83F));
+        poseStack.translate(0,1.5F,0);
+        poseStack.scale(0.17F,0.17F,0.17F);
+        poseStack.translate(0,-1.5F,0);
         parts.customroot().render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        poseStack.popPose();
     }
 
     public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
@@ -133,8 +140,9 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 animate(pEntity.sitImpatientAnimState, animations.sitimpatient(), pAgeInTicks);
             }
             if (pEntity.getAttackType() == 50) {
-                if(pEntity.getAttackCounter()==34/pEntity.getAttackSpeed()){
+                if(pEntity.getAttackCounter()>33/pEntity.getAttackSpeed()){
                     pEntity.attackAnimState.stop();
+                    pEntity.attackAnimState.start(pEntity.tickCount);
                 }
                 animate(pEntity.attackAnimState, animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             }

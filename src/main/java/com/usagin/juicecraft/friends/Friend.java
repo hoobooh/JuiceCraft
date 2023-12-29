@@ -34,6 +34,7 @@ import net.minecraft.world.*;
 import net.minecraft.world.damagesource.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.*;
@@ -73,7 +74,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     int captureDifficulty;
     int hungerMeter;
     double[] normaprogress = new double[9];
-    double[] normacaps = new double[]{0.1, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1,0.1};
+    double[] normacaps = new double[]{0.1, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1};
     public int[] skillinfo = new int[6];
     int[] specialDialogueEnabled = {0, 0, 0};
     public Creeper fleeTarget = null;
@@ -201,15 +202,23 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     protected AbstractArrow getArrow(ItemStack pArrowStack, float pVelocity) {
         return ProjectileUtil.getMobArrow(this, pArrowStack, pVelocity);
     }
-    public double getAttackSpeed(){
-        if(this.getFriendWeapon().getItem() instanceof SwordItem item){
-            try{
-            return ((Attribute)item.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_SPEED).toArray()[0]).getDefaultValue()/1.6;}catch(Exception e){
+
+    public double getAttackSpeed() {
+        try {
+                double temp=-3;
+                for(AttributeModifier mod: this.getFriendWeapon().getItem().getDefaultAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_SPEED)){
+                    if(mod.getName().equals("Weapon modifier")){
+                        temp=mod.getAmount();
+                        break;
+                    }
+                }
+                temp+=4;
+                return temp / 1.6;
+        } catch (Exception e) {
                 return 0.625;
-            }
         }
-        return 0.625;
     }
+
     public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
         boolean flag = false;
         ItemStack ammo = null;
@@ -273,7 +282,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         float nextlevel = 100 * (((int) (currentxp / 100)) + 1);
         float afterxp = currentxp + (float) gain;
         if (afterxp >= nextlevel) {
-            this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.levelup").getString());
+            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.levelup").getString());
             this.playSound(SoundEvents.PLAYER_LEVELUP, 1, 1);
             this.setSkillPoints(this.getSkillPoints() + ((int) (afterxp / 100) - ((int) (currentxp / 100))));
             this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getMaxHealth() + 0.2 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
@@ -299,13 +308,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         int rand = this.random.nextInt(3);
 
         if (rand == 0) { //heavy
-            this.setAttackCounter((int) (40* (1/this.getAttackSpeed())));
+            this.setAttackCounter((int) (40 * (1 / this.getAttackSpeed())));
             this.setAttackType(40);
         } else if (rand == 1) { //med
-            this.setAttackCounter((int) (20* (1/this.getAttackSpeed())));
+            this.setAttackCounter((int) (20 * (1 / this.getAttackSpeed())));
             this.setAttackType(20);
         } else { //light
-            this.setAttackCounter((int) (10* (1/this.getAttackSpeed())));
+            this.setAttackCounter((int) (10 * (1 / this.getAttackSpeed())));
             this.setAttackType(10);
         }
     }
@@ -481,7 +490,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     void doRecoveryEvent() {
-        this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.closecall").getString());
+        this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.closecall").getString());
         this.setHealth(this.getMaxHealth() / 2);
         this.deathCounter = 7 - recoveryDifficulty;
         this.getEntityData().set(FRIEND_ISDYING, false);
@@ -827,11 +836,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.norma = n;
         int orig = (int) this.getFriendNorma();
         int newone = (int) n;
-        if (newone > orig && newone <5) {
-            this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.norma"+newone).getString());
+        if (newone > orig && newone < 5) {
+            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma" + newone).getString());
             this.playSound(NORMAUP.get(), 1, 1);
-        }else if(newone > orig && newone ==5 && this.getOwner()!=null){
-            this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.norma5.0").getString() + this.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.norma5.1").getString());
+        } else if (newone > orig && newone == 5 && this.getOwner() != null) {
+            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma5.0").getString() + this.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma5.1").getString());
             this.playSound(NORMAUP.get(), 1, 1);
         }
         this.getEntityData().set(FRIEND_NORMA, n);
@@ -977,10 +986,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public void appendEventLog(String s) {
-        if(this.getEventLog().length()>5000){
+        if (this.getEventLog().length() > 5000) {
             this.setEventLog("");
         }
-        this.eventlog = this.eventlog + s +"\n";
+        this.eventlog = this.eventlog + s + "\n";
         this.getEntityData().set(FRIEND_EVENTLOG, this.eventlog);
     }
 
@@ -1147,11 +1156,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return pStack.is(ItemInit.ORANGE.get()) || pStack.is(ItemInit.GOLDEN_ORANGE.get()) || pStack.getItem() instanceof SweetItem;
     }
 
-    void loadMemory(SumikaMemory memory){
-        this.combatSettings=memory.settings;
+    void loadMemory(SumikaMemory memory) {
+        this.combatSettings = memory.settings;
         this.setIsWandering(memory.wander);
         this.setIsFarming(memory.farm);
-        this.setFriendNorma((float) memory.normalevel,-1);
+        this.setFriendNorma((float) memory.normalevel, -1);
         this.setSpecialDialogueEnabled(memory.specialsenabled);
         this.updateCombatSettings();
     }
@@ -1189,9 +1198,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     return InteractionResult.SUCCESS;
                 } else if (itemstack.is(ItemInit.SUMIKA_MEMORY.get())) {
 
-                    if(itemstack.getOrCreateTag().contains("juicecraft.memories")){
+                    if (itemstack.getOrCreateTag().contains("juicecraft.memories")) {
                         SumikaMemory temp = SumikaMemory.deserialize(itemstack.getOrCreateTag().getByteArray("juicecraft.memories"));
-                        if(temp.verifyValid(this)){
+                        if (temp.verifyValid(this)) {
                             this.loadMemory(temp);
                             if (!pPlayer.getAbilities().instabuild) {
                                 itemstack.shrink(1);
@@ -1203,14 +1212,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                             this.playSound(RECOVERY.get(), 1, 1);
                             this.playVoice(this.getRecovery());
                             this.spawnHorizontalParticles();
-                            this.appendEventLog(Component.translatable("juicecraft.menu."+this.getFriendName().toLowerCase()+".eventlog.revive").getString());
-                        }
-                        else{
+                            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.revive").getString());
+                        } else {
                             return InteractionResult.PASS;
                         }
-                    }
-                    else{
-                        itemstack.getOrCreateTag().putByteArray("juicecraft.memories",new SumikaMemory(this).serialize());
+                    } else {
+                        itemstack.getOrCreateTag().putByteArray("juicecraft.memories", new SumikaMemory(this).serialize());
                     }
 
 
@@ -1329,7 +1336,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             //mood/social
             if (!this.wandering) {
                 if (this.aggression < 50) {
-                    if (this.tickCount % 100 == 0) {
+                    if (this.tickCount % (100 * ((int) this.getFriendNorma())) == 0) {
                         if (mood < 100) {
                             this.mood++;
                         }
@@ -1341,7 +1348,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         }
                     }
                 } else if (this.aggression < 75) {
-                    if (this.tickCount % 200 == 0) {
+                    if (this.tickCount % (200 * ((int) this.getFriendNorma())) == 0) {
                         if (this.mood < 100) {
                             this.mood++;
                         }
@@ -1353,7 +1360,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         }
                     }
                 } else {
-                    if (this.tickCount % 300 == 0) {
+                    if (this.tickCount % (300* ((int) this.getFriendNorma())) == 0) {
                         if (this.mood < 100) {
                             this.mood++;
                         }
@@ -1367,6 +1374,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
                 if (socialInteraction <= 0) {
                     this.setTame(false);
+                    this.setFriendNorma(1,-1);
                     this.setOwnerUUID(null);
                     this.socialInteraction = 100;
                     this.mood = 0;
@@ -1438,16 +1446,16 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (this.impatientCounter > 0) {
             impatientCounter--;
         }
-        if (this.getAttackCounter() == (int) (22/this.getAttackSpeed()) && this.getAttackType() == 40) {
-            this.doHurtTarget();
-        } else if (this.getAttackCounter() == (int) (10/this.getAttackSpeed()) && this.getAttackType() == 20) {
-            this.doHurtTarget();
-        } else if (this.getAttackCounter() == (int) (8/this.getAttackSpeed()) && this.getAttackType() == 10) {
-            this.doHurtTarget();
-        } else if (this.getAttackCounter() == (int) (22/this.getAttackSpeed()) && this.getAttackType() == 50) {
-            this.doHurtTarget();
-        }
-        if (this.getAttackCounter() != 0) {
+        if (this.getAttackCounter() > 0) {
+            if (this.getAttackCounter() == (int) (22 / this.getAttackSpeed()) && this.getAttackType() == 40) {
+                this.doHurtTarget();
+            } else if (this.getAttackCounter() == (int) (10 / this.getAttackSpeed()) && this.getAttackType() == 20) {
+                this.doHurtTarget();
+            } else if (this.getAttackCounter() == (int) (8 / this.getAttackSpeed()) && this.getAttackType() == 10) {
+                this.doHurtTarget();
+            } else if (this.getAttackCounter() == (int) (21 / this.getAttackSpeed()) && this.getAttackType() == 50) {
+                this.doHurtTarget();
+            }
             this.setAttackCounter(this.getAttackCounter() - 1);
         }
         if (this.isAggressive()) {
@@ -1506,10 +1514,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
             if (isDying) {
                 this.setTarget(null);
-                if(this.tickCount%20==0){
+                if (this.tickCount % 20 == 0) {
                     ServerLevel sLevel = (ServerLevel) this.level();
-                    this.playSound(GLITCH.get(),0.4F,1);
-                    sLevel.sendParticles(GLITCH_PARTICLE.get(),this.getX(), this.getY()+1, this.getZ(), 3, 0.3, 0.5, 0.3, 0.1);
+                    this.playSound(GLITCH.get(), 0.4F, 1);
+                    sLevel.sendParticles(GLITCH_PARTICLE.get(), this.getX(), this.getY() + 1, this.getZ(), 3, 0.3, 0.5, 0.3, 0.1);
                 }
                 if (deathTimer == 100) {
                     n = this.random.nextInt(1, 7);
@@ -1531,9 +1539,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             } else {
                 deathTimer = 200;
             }
-            if (this.tickCount % 200 == 0) {
-                if(EnemyEvaluator.evaluateAreaDanger(this) > this.getFriendExperience()/2){
-                    this.appendEventLog(Component.translatable("juicecraft.menu." +this.getFriendName().toLowerCase()+".eventlog.dangerarea").getString());
+            if (this.tickCount % 4000 == 0) {
+                if (EnemyEvaluator.evaluateAreaDanger(this) > this.getFriendExperience() / 2) {
+                    this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.dangerarea").getString());
                 }
                 this.updateFriendNorma(0.01F, 5);
                 if (this.hungerMeter > 0) {
@@ -1652,7 +1660,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             if (!stack.isEmpty()) {
                 this.doMeleeAttack();
             } else {
-                this.setAttackCounter((int) (10*(1/this.getAttackSpeed())));
+                this.setAttackCounter((int) (10 * (1 / this.getAttackSpeed())));
                 this.setAttackType(10);
             }
         }

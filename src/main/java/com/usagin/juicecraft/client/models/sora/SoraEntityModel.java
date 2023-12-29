@@ -9,6 +9,7 @@ import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.client.animation.SoraAnimation;
 import com.usagin.juicecraft.client.models.FriendEntityModel;
 import com.usagin.juicecraft.friends.Friend;
+import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -27,12 +28,11 @@ import static com.usagin.juicecraft.client.animation.SoraAnimation.*;
 import static net.minecraft.world.entity.Pose.SITTING;
 import static net.minecraft.world.entity.Pose.SLEEPING;
 
-public class SoraEntityModel extends FriendEntityModel<Friend> {
+public class SoraEntityModel extends FriendEntityModel<Sora> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
 	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "soraentitymodel"), "main");
 	public SoraEntityModel(ModelPart root) {
-		defineParts(root);
-		defineAnimations();
+		super(root);
 	}
 	public void defineParts(ModelPart root){
 		ModelPart customroom = root.getChild("customroom");
@@ -51,7 +51,7 @@ public class SoraEntityModel extends FriendEntityModel<Friend> {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition customroom = partdefinition.addOrReplaceChild("customroom", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
+		PartDefinition customroom = partdefinition.addOrReplaceChild("customroom", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
 		PartDefinition Friend = customroom.addOrReplaceChild("Friend", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
 

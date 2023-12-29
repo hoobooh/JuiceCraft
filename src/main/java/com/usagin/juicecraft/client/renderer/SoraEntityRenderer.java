@@ -10,10 +10,7 @@ import com.usagin.juicecraft.friends.Friend;
 import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.AbstractZombieRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.ZombieRenderer;
+import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.core.Direction;
@@ -31,15 +28,15 @@ import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 
-public class SoraEntityRenderer extends MobRenderer<Friend, SoraEntityModel> {
+public class SoraEntityRenderer extends MobRenderer<Sora, SoraEntityModel> {
     private static final ResourceLocation SORA_NEUTRAL = new ResourceLocation(MODID, "textures/entities/sora/sora_neutral.png");
     private static final ResourceLocation SORA_NARROW = new ResourceLocation(MODID, "textures/entities/sora/sora_midclose.png");
     private static final ResourceLocation SORA_CLOSED = new ResourceLocation(MODID, "textures/entities/sora/sora_closed.png");
-    SoraEyeLayer<Friend, SoraEntityModel> eyeopen;
-    SoraMediumEyeLayer<Friend, SoraEntityModel> eyemedium;
-    SoraOrbLayer<Friend, SoraEntityModel> orb;
-    FriendItemInHandLayer<Friend, SoraEntityModel> pLayer;
-    FriendItemOnBackLayer<Friend, SoraEntityModel> pBackLayer;
+    SoraEyeLayer<Sora, SoraEntityModel> eyeopen;
+    SoraMediumEyeLayer<Sora, SoraEntityModel> eyemedium;
+    SoraOrbLayer<Sora, SoraEntityModel> orb;
+    FriendItemInHandLayer<Sora, SoraEntityModel> pLayer;
+    FriendItemOnBackLayer<Sora, SoraEntityModel> pBackLayer;
     public SoraEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new SoraEntityModel(pContext.bakeLayer(SoraEntityModel.LAYER_LOCATION)),0.5f);
         eyeopen=new SoraEyeLayer<>(this);
@@ -55,7 +52,7 @@ public class SoraEntityRenderer extends MobRenderer<Friend, SoraEntityModel> {
         this.addLayer(eyeopen);
     }
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull Friend pEntity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull Sora pEntity) {
         if(pEntity.patCounter!=0 || pEntity.getPose() == Pose.SLEEPING||pEntity.blinkCounter<=6){
             this.eyeopen.visible=false;
             this.eyemedium.visible=false;
@@ -73,7 +70,7 @@ public class SoraEntityRenderer extends MobRenderer<Friend, SoraEntityModel> {
     }
     private static final Logger LOGGER = LogUtils.getLogger();
     @Override
-    public void render(@NotNull Friend pEntity, float pEntityYaw, float pPartialTicks, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight) {
+    public void render(@NotNull Sora pEntity, float pEntityYaw, float pPartialTicks, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight) {
         super.render(pEntity,pEntityYaw,pPartialTicks,pPoseStack,pBuffer,pPackedLight);
     }
 }

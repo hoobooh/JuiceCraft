@@ -31,6 +31,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 public class FriendSleepGoal extends Goal {
     Friend friend;
     int snoozeCounter = 40;
+    int sleeptime = 0;
 
     public FriendSleepGoal(Friend f) {
         this.friend = f;
@@ -50,9 +51,12 @@ public class FriendSleepGoal extends Goal {
     }
 
     public void stop() {
-        this.friend.appendEventLog(Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase()+".eventlog.sleep").getString());
         this.friend.setPose(Pose.STANDING);
         this.friend.refreshDimensions();
+        if(this.sleeptime>2400){
+            this.friend.appendEventLog(Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase()+".eventlog.sleep").getString());
+        }
+        this.sleeptime=0;
     }
 
     public void tick() {
@@ -67,6 +71,7 @@ public class FriendSleepGoal extends Goal {
                 }else if(this.friend.getFeetBlockState().getValue(OCCUPIED)){
                     this.stop();
                 }else{
+                    this.sleeptime++;
                     this.friend.updateFriendNorma(0.00007F,7);
                 }
 
