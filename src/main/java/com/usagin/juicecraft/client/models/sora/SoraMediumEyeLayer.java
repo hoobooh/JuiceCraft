@@ -1,5 +1,6 @@
 package com.usagin.juicecraft.client.models.sora;
 
+import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -14,7 +15,7 @@ import static com.usagin.juicecraft.JuiceCraft.MODID;
 
 @OnlyIn(Dist.CLIENT)
 public
-class SoraMediumEyeLayer<T extends Entity, M extends EntityModel<T>> extends EyesLayer<T, M> {
+class SoraMediumEyeLayer<T extends Entity, M extends EntityModel<T>> extends FriendEyeLayer<T,M> {
     private static final RenderType SORA_EYES = RenderType.eyes(new ResourceLocation(MODID, "textures/entities/sora/sora_mediumeyelayer.png"));
 
     public SoraMediumEyeLayer(RenderLayerParent<T, M> pRenderer) {

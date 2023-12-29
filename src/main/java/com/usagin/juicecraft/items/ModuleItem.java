@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.data;
+package com.usagin.juicecraft.items;
 
 import net.minecraft.world.item.Item;
 

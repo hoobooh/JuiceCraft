@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.models.sora.SoraEyeLayer;
 import com.usagin.juicecraft.client.models.sora.SoraMediumEyeLayer;
@@ -26,6 +27,7 @@ import net.minecraftforge.client.ForgeRenderTypes;
 import net.minecraftforge.client.RenderTypeGroup;
 import net.minecraftforge.client.event.ScreenEvent;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 
@@ -43,38 +45,35 @@ public class SoraEntityRenderer extends MobRenderer<Friend, SoraEntityModel> {
         eyeopen=new SoraEyeLayer<>(this);
         eyemedium=new SoraMediumEyeLayer<>(this);
         orb=new SoraOrbLayer<>(this);
-        pLayer=new FriendItemInHandLayer<Friend, SoraEntityModel>(this, pContext.getItemInHandRenderer());
+        pLayer=new FriendItemInHandLayer<>(this, pContext.getItemInHandRenderer());
         pBackLayer = new FriendItemOnBackLayer<>(this, pContext.getItemInHandRenderer());
+        orb.visible=true;
+        this.addLayer(orb);
+        this.addLayer(pBackLayer);
+        this.addLayer(pLayer);
+        this.addLayer(eyemedium);
+        this.addLayer(eyeopen);
     }
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull Friend pEntity) {
-        if(pEntity.patCounter!=0 || pEntity.sleeping()||pEntity.blinkCounter<=6){
-            this.layers.clear();
-            this.addLayer(orb);
-            this.addLayer(pLayer);
-            this.addLayer(pBackLayer);
+        if(pEntity.patCounter!=0 || pEntity.getPose() == Pose.SLEEPING||pEntity.blinkCounter<=6){
+            this.eyeopen.visible=false;
+            this.eyemedium.visible=false;
             return SORA_CLOSED;
         }
 
         else if(pEntity.blinkCounter<=8){
-            this.layers.clear();
-            this.addLayer(eyemedium);
-            this.addLayer(orb);
-            this.addLayer(pLayer);
-            this.addLayer(pBackLayer);
+            this.eyeopen.visible=false;
+            this.eyemedium.visible=true;
             return SORA_NARROW;
         }
-        this.layers.clear();
-        this.addLayer(eyeopen);
-        this.addLayer(orb);
-        this.addLayer(pLayer);
-        this.addLayer(pBackLayer);
+        this.eyeopen.visible=true;
+        this.eyemedium.visible=false;
         return SORA_NEUTRAL;
     }
+    private static final Logger LOGGER = LogUtils.getLogger();
     @Override
     public void render(@NotNull Friend pEntity, float pEntityYaw, float pPartialTicks, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight) {
-        //pPoseStack.translate(0,-1.5F,0);
-        //pPoseStack.scale(0.17F,0.17F,0.17F);
         super.render(pEntity,pEntityYaw,pPartialTicks,pPoseStack,pBuffer,pPackedLight);
     }
 }

@@ -2,7 +2,6 @@ package com.usagin.juicecraft.friends;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.Init.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.SkillManager;
@@ -13,7 +12,8 @@ import com.usagin.juicecraft.Seagull;
 import com.usagin.juicecraft.data.*;
 import com.usagin.juicecraft.ai.goals.navigation.FriendPathNavigation;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
-import com.usagin.juicecraft.items.Sweet;
+import com.usagin.juicecraft.items.ModuleItem;
+import com.usagin.juicecraft.items.SweetItem;
 import com.usagin.juicecraft.items.SweetHandler;
 import com.usagin.juicecraft.particles.DiceHandler;
 import net.minecraft.core.BlockPos;
@@ -1144,7 +1144,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public boolean isEdible(ItemStack pStack) {
-        return pStack.is(ItemInit.ORANGE.get()) || pStack.is(ItemInit.GOLDEN_ORANGE.get()) || pStack.getItem() instanceof Sweet;
+        return pStack.is(ItemInit.ORANGE.get()) || pStack.is(ItemInit.GOLDEN_ORANGE.get()) || pStack.getItem() instanceof SweetItem;
     }
 
     void loadMemory(SumikaMemory memory){
