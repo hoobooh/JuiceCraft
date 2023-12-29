@@ -1203,6 +1203,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                             this.playSound(RECOVERY.get(), 1, 1);
                             this.playVoice(this.getRecovery());
                             this.spawnHorizontalParticles();
+                            this.appendEventLog(Component.translatable("juicecraft.menu."+this.getFriendName().toLowerCase()+".eventlog.revive").getString());
                         }
                         else{
                             return InteractionResult.PASS;
