@@ -111,7 +111,7 @@ public class CommonLiveEvents {
                 //XP CALC EVENT
                 float temp = (float) EnemyEvaluator.calculateNetGain(pFriend, event.getEntity());
                 if(temp>50){
-                    pFriend.appendEventLog(Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingfirst").getString() + event.getEntity().getScoreboardName() + Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingsecond").getString());
+                    pFriend.appendEventLog(Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingfirst").getString() + event.getEntity().getDisplayName().getString() + Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingsecond").getString());
                 }
                 pFriend.updateFriendNorma(temp/1000,1);
                 pFriend.increaseEXP(temp);

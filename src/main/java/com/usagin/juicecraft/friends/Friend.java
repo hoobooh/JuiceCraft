@@ -71,7 +71,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     int captureDifficulty;
     int hungerMeter;
     double[] normaprogress = new double[9];
-    double[] normacaps = new double[]{0.1, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1};
+    double[] normacaps = new double[]{0.1, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1,0.1};
     public int[] skillinfo = new int[6];
     int[] specialDialogueEnabled = {0, 0, 0};
     public Creeper fleeTarget = null;
@@ -990,7 +990,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public void appendEventLog(String s) {
-        if(this.getEventLog().length()>500){
+        if(this.getEventLog().length()>5000){
             this.setEventLog("");
         }
         this.eventlog = this.eventlog + s +"\n";

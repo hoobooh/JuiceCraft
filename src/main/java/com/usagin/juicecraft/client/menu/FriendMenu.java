@@ -61,7 +61,7 @@ public class FriendMenu extends AbstractContainerMenu {
             public void set(ItemStack pStack) {
                 this.container.setItem(0, pStack);
                 if(!pPlayerInventory.player.level().isClientSide()){
-                    pFriend.appendEventLog(Component.translatable("juicecraft.menu." +pFriend.getFriendName().toLowerCase()+".eventlog.activator    ").getString());
+                    pFriend.appendEventLog(Component.translatable("juicecraft.menu." +pFriend.getFriendName().toLowerCase()+".eventlog.activator").getString());
                 pFriend.playVoice(pFriend.getHyperEquip());
                 pFriend.playSound(HYPER_EQUIP.get(),0.3F,1);}
                 this.setChanged();

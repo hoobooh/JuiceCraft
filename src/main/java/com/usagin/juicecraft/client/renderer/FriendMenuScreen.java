@@ -1053,8 +1053,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.talkBt.add(dialogueThree);
         this.talkBt.add(dialogueFour);
         this.talkBt.add(exitDialogue);
-
-        this.scrollWidget = addRenderableWidget(new FriendScrollWidget(this.leftPos+284,this.topPos+30,30,300,null,this));
+        this.scrollWidget = addRenderableWidget(new FriendScrollWidget(this.leftPos+292,this.topPos+30,83,143,Component.literal(this.friend.getEventLog()),this.font,this));
 
     }
 
