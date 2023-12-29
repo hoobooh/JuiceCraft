@@ -1336,7 +1336,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             //mood/social
             if (!this.wandering) {
                 if (this.aggression < 50) {
-                    if (this.tickCount % (100 * ((int) this.getFriendNorma())) == 0) {
+                    if (this.tickCount % (100 * (1 +(int) this.getFriendNorma())) == 0) {
                         if (mood < 100) {
                             this.mood++;
                         }
@@ -1348,7 +1348,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         }
                     }
                 } else if (this.aggression < 75) {
-                    if (this.tickCount % (200 * ((int) this.getFriendNorma())) == 0) {
+                    if (this.tickCount % (200 * (1+ (int) this.getFriendNorma())) == 0) {
                         if (this.mood < 100) {
                             this.mood++;
                         }
@@ -1360,7 +1360,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         }
                     }
                 } else {
-                    if (this.tickCount % (300* ((int) this.getFriendNorma())) == 0) {
+                    if (this.tickCount % (300* (1 + (int) this.getFriendNorma())) == 0) {
                         if (this.mood < 100) {
                             this.mood++;
                         }
