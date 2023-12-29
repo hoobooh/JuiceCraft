@@ -4,7 +4,9 @@ import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.friends.Friend;
 import org.slf4j.Logger;
 
-public class CombatSettings {
+import java.io.Serializable;
+
+public class CombatSettings implements Serializable {
     public int hyperCondition=3;
     public int aggression=3;
     public int willFlee=1;

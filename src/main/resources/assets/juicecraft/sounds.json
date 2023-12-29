@@ -1,4 +1,9 @@
 {
+  "friend_glitch": {
+    "sounds": [
+      "juicecraft:friend_glitch"
+    ]
+  },
   "normaup": {
     "sounds": [
       "juicecraft:normaup"

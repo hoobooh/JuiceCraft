@@ -18,5 +18,6 @@ public class ParticleInit {
     public static final RegistryObject<SimpleParticleType> DICEFOUR = PARTICLES.register("dice_four", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> DICEFIVE = PARTICLES.register("dice_five", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> DICESIX = PARTICLES.register("dice_six", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> GLITCH_PARTICLE = PARTICLES.register("glitchparticle", () -> new SimpleParticleType(true));
 
 }

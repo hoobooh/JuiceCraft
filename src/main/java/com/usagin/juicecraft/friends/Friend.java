@@ -61,6 +61,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static com.usagin.juicecraft.Init.ItemInit.GOLDEN_ORANGE;
+import static com.usagin.juicecraft.Init.ParticleInit.GLITCH_PARTICLE;
 import static com.usagin.juicecraft.Init.ParticleInit.SUGURIVERSE_LARGE;
 import static com.usagin.juicecraft.Init.UniversalSoundInit.*;
 import static net.minecraft.core.particles.ParticleTypes.HEART;
@@ -126,10 +127,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     float shakeAnim;
     float shakeAnimO;
     public SimpleContainer inventory = new SimpleContainer(16);
-    Relationships relationships;
     int[] dialogueTree = new int[300];
     public CombatSettings combatSettings;
-    SumikaMemory oldMemory;
 
     public String getFriendName() {
         return this.name;
@@ -158,9 +157,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.setPersistenceRequired();
         this.setName();
         this.initializeDialogueSettings();
-        this.relationships = new Relationships();
         this.combatSettings = new CombatSettings(4, 3, 1, 0, 0);
-        this.oldMemory = new SumikaMemory();
         this.setInventoryRows();
         this.setArmorableModular();
         ((FriendPathNavigation) this.getNavigation()).setCanOpenDoors(true);
@@ -565,10 +562,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     float atkdmg;
 
 
-    abstract Relationships parseRelationships(int[] relations);
-
-    abstract int[] convertRelationships(Relationships relations);
-
     public boolean isArmorable() {
         return this.isArmorable;
     }
@@ -599,19 +592,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public abstract AbstractDialogueManager getDialogueManager();
 
-
-    void saveMemory() {
-        this.oldMemory.saveDialogue(dialogueTree);
-        this.oldMemory.saveCombatSettings(combatSettings);
-        this.oldMemory.saveRelationships(relationships);
-    }
-
-    void loadMemory() {
-        this.dialogueTree = this.oldMemory.getDialogueTree();
-        this.relationships = this.oldMemory.getRelationships();
-        this.combatSettings = this.oldMemory.getCombatSettings();
-    }
-
     protected void dropEquipment() {
         super.dropEquipment();
         if (this.inventory != null) {
@@ -631,7 +611,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         pCompound.putIntArray("juicecraft.normaprogress", new int[]{(int) (this.normaprogress[0] * 10000), (int) (this.normaprogress[1] * 10000), (int) (this.normaprogress[2] * 10000), (int) (this.normaprogress[3] * 10000), (int) (this.normaprogress[4] * 10000), (int) (this.normaprogress[5] * 10000), (int) (this.normaprogress[6] * 10000), (int) (this.normaprogress[7] * 10000)});
         pCompound.putString("juicecraft.eventlog", this.eventlog);
         pCompound.putIntArray("juicecraft.dialogue", this.dialogueTree);
-        pCompound.putIntArray("juicecraft.relationships", convertRelationships(this.relationships));
         pCompound.putIntArray("juicecraft.specialsenabled", this.specialDialogueEnabled);
         pCompound.putInt("juicecraft.csettings", this.getCombatSettings().makeHash());
         pCompound.putInt("juicecraft.social", this.socialInteraction);
@@ -686,7 +665,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.normaprogress = new double[]{((double) temp2[0]) / 10000, ((double) temp2[1]) / 10000, ((double) temp2[2]) / 10000, ((double) temp2[3]) / 10000, ((double) temp2[4]) / 10000, ((double) temp2[5]) / 10000, ((double) temp2[6]) / 10000, ((double) temp2[7]) / 10000};
         this.dialogueTree = pCompound.getIntArray("juicecraft.dialogue");
         this.setSpecialDialogueEnabled(pCompound.getIntArray("juicecraft.specialsenabled"));
-        this.relationships = this.parseRelationships((pCompound.getIntArray("juicecraft.relationships")));
         this.combatSettings = CombatSettings.decodeHash((pCompound.getInt("juicecraft.csettings")));
         this.updateCombatSettings();
         this.socialInteraction = (pCompound.getInt("juicecraft.social"));
@@ -1169,6 +1147,15 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return pStack.is(ItemInit.ORANGE.get()) || pStack.is(ItemInit.GOLDEN_ORANGE.get()) || pStack.getItem() instanceof Sweet;
     }
 
+    void loadMemory(SumikaMemory memory){
+        this.combatSettings=memory.settings;
+        this.setIsWandering(memory.wander);
+        this.setIsFarming(memory.farm);
+        this.setFriendNorma((float) memory.normalevel,-1);
+        this.setSpecialDialogueEnabled(memory.specialsenabled);
+        this.updateCombatSettings();
+    }
+
     @Override
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         double totalZ = this.getZ() - pPlayer.getZ();
@@ -1201,8 +1188,31 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     this.gameEvent(GameEvent.EAT);
                     return InteractionResult.SUCCESS;
                 } else if (itemstack.is(ItemInit.SUMIKA_MEMORY.get())) {
-                    this.loadMemory();
-                    this.doRecoveryEvent(); //recovery animation
+
+                    if(itemstack.getOrCreateTag().contains("juicecraft.memories")){
+                        SumikaMemory temp = SumikaMemory.deserialize(itemstack.getOrCreateTag().getByteArray("juicecraft.memories"));
+                        if(temp.verifyValid(this)){
+                            this.loadMemory(temp);
+                            if (!pPlayer.getAbilities().instabuild) {
+                                itemstack.shrink(1);
+                            }
+                            this.setHealth(this.getMaxHealth() / 2);
+                            this.deathCounter = 7 - recoveryDifficulty;
+                            this.getEntityData().set(FRIEND_ISDYING, false);
+                            this.isDying = false;
+                            this.playSound(RECOVERY.get(), 1, 1);
+                            this.playVoice(this.getRecovery());
+                            this.spawnHorizontalParticles();
+                        }
+                        else{
+                            return InteractionResult.PASS;
+                        }
+                    }
+                    else{
+                        itemstack.getOrCreateTag().putByteArray("juicecraft.memories",new SumikaMemory(this).serialize());
+                    }
+
+
                     return InteractionResult.SUCCESS;
                 } else {
 
@@ -1495,6 +1505,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
             if (isDying) {
                 this.setTarget(null);
+                if(this.tickCount%20==0){
+                    ServerLevel sLevel = (ServerLevel) this.level();
+                    this.playSound(GLITCH.get(),0.4F,1);
+                    sLevel.sendParticles(GLITCH_PARTICLE.get(),this.getX(), this.getY()+1, this.getZ(), 3, 0.3, 0.5, 0.3, 0.1);
+                }
                 if (deathTimer == 100) {
                     n = this.random.nextInt(1, 7);
                     ServerLevel sLevel = (ServerLevel) this.level();

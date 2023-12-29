@@ -6,6 +6,7 @@ import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.SoraEntityRenderer;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.network.*;
+import com.usagin.juicecraft.particles.GlitchParticle;
 import com.usagin.juicecraft.particles.SleepyParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -39,7 +40,8 @@ public class CommonEvents {
         Minecraft.getInstance().particleEngine.register(ParticleInit.DICETHREE.get(), SleepyParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.DICEFOUR.get(), SleepyParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.DICEFIVE.get(), SleepyParticle.Provider::new);
-        Minecraft.getInstance().particleEngine.register(ParticleInit.DICESIX    .get(), SleepyParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.DICESIX.get(), SleepyParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.GLITCH_PARTICLE.get(), GlitchParticle.Provider::new);
 
     }
     @SubscribeEvent
