@@ -1251,7 +1251,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         return InteractionResult.SUCCESS;
                     }
                 }
-            } else if ((itemstack.is(ItemInit.ORANGE.get()) || itemstack.is(GOLDEN_ORANGE.get())) && !this.isAngry() && this.mood == 100) {
+            } else if ((itemstack.is(ItemInit.ORANGE.get()) || itemstack.is(GOLDEN_ORANGE.get())) && !this.isAngry() && this.mood > 50) {
                 if (!pPlayer.getAbilities().instabuild) {
                     itemstack.shrink(1);
                 }
@@ -1272,7 +1272,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     } else if (aggression > 75) {
                         this.setRemainingPersistentAngerTime(24000);
                     }
-                    this.mood = 0;
+                    this.mood -=10;
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -1602,6 +1602,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (this.isInvulnerableTo(pSource)) {
             return false;
         } else {
+            this.mood-=(int)(3*this.getPeaceAffinityModifier());
             this.setFriendInSittingPose(false);
             Entity entity = pSource.getEntity();
             if (!this.level().isClientSide) {
