@@ -33,6 +33,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.*;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.*;
@@ -203,7 +204,15 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     protected AbstractArrow getArrow(ItemStack pArrowStack, float pVelocity) {
         return ProjectileUtil.getMobArrow(this, pArrowStack, pVelocity);
     }
-
+    public double getAttackSpeed(){
+        if(this.getFriendWeapon().getItem() instanceof SwordItem item){
+            try{
+            return ((Attribute)item.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_SPEED).toArray()[0]).getDefaultValue()/1.6;}catch(Exception e){
+                return 0.625;
+            }
+        }
+        return 0.625;
+    }
     public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
         boolean flag = false;
         ItemStack ammo = null;
@@ -293,13 +302,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         int rand = this.random.nextInt(3);
 
         if (rand == 0) { //heavy
-            this.setAttackCounter(40);
+            this.setAttackCounter((int) (40* (1/this.getAttackSpeed())));
             this.setAttackType(40);
         } else if (rand == 1) { //med
-            this.setAttackCounter(20);
+            this.setAttackCounter((int) (20* (1/this.getAttackSpeed())));
             this.setAttackType(20);
         } else { //light
-            this.setAttackCounter(10);
+            this.setAttackCounter((int) (10* (1/this.getAttackSpeed())));
             this.setAttackType(10);
         }
     }
@@ -1418,13 +1427,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (this.impatientCounter > 0) {
             impatientCounter--;
         }
-        if (this.getAttackCounter() == 22 && this.getAttackType() == 40) {
+        if (this.getAttackCounter() == (int) (22/this.getAttackSpeed()) && this.getAttackType() == 40) {
             this.doHurtTarget();
-        } else if (this.getAttackCounter() == 8 && this.getAttackType() == 20) {
+        } else if (this.getAttackCounter() == (int) (10/this.getAttackSpeed()) && this.getAttackType() == 20) {
             this.doHurtTarget();
-        } else if (this.getAttackCounter() == 8 && this.getAttackType() == 10) {
+        } else if (this.getAttackCounter() == (int) (8/this.getAttackSpeed()) && this.getAttackType() == 10) {
             this.doHurtTarget();
-        } else if (this.getAttackCounter() == 24 && this.getAttackType() == 50) {
+        } else if (this.getAttackCounter() == (int) (22/this.getAttackSpeed()) && this.getAttackType() == 50) {
             this.doHurtTarget();
         }
         if (this.getAttackCounter() != 0) {
@@ -1627,7 +1636,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             if (!stack.isEmpty()) {
                 this.doMeleeAttack();
             } else {
-                this.setAttackCounter(10);
+                this.setAttackCounter((int) (10*(1/this.getAttackSpeed())));
                 this.setAttackType(10);
             }
         }

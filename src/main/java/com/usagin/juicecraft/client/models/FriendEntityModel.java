@@ -133,17 +133,17 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 animate(pEntity.sitImpatientAnimState, animations.sitimpatient(), pAgeInTicks);
             }
             if (pEntity.getAttackType() == 50) {
-                if(pEntity.getAttackCounter()==34){
+                if(pEntity.getAttackCounter()==34/pEntity.getAttackSpeed()){
                     pEntity.attackAnimState.stop();
                 }
-                animate(pEntity.attackAnimState, animations.counter(), pAgeInTicks);
+                animate(pEntity.attackAnimState, animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             }
             else if (pEntity.getAttackType() == 40) {
-                animate(pEntity.attackAnimState, animations.attackone(), pAgeInTicks);
+                animate(pEntity.attackAnimState, animations.attackone(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             } else if (pEntity.getAttackType() == 20) {
-                animate(pEntity.attackAnimState, animations.attacktwo(), pAgeInTicks);
+                animate(pEntity.attackAnimState, animations.attacktwo(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             } else if (pEntity.getAttackType() == 10) {
-                animate(pEntity.attackAnimState, animations.attackthree(), pAgeInTicks);
+                animate(pEntity.attackAnimState, animations.attackthree(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             }
 
             if (!pEntity.getInSittingPose()) {
