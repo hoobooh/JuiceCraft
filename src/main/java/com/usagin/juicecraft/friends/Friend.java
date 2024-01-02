@@ -1368,6 +1368,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                             return InteractionResult.PASS;
                         }
                     } else {
+                        this.playSound(MEMORY_WRITE.get(),1,1);
                         itemstack.getOrCreateTag().putByteArray("juicecraft.memories", new SumikaMemory(this).serialize());
                     }
 

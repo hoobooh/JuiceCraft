@@ -1,4 +1,9 @@
 {
+  "memory_write": {
+    "sounds": [
+      "juicecraft:memory_write"
+    ]
+  },
   "dicethrow": {
     "sounds": [
       "juicecraft:dicethrow"
