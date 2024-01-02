@@ -54,6 +54,7 @@ public class CommonEvents {
             SetWanderingPacketHandler.register();
             PlaySoundPacketHandler.register();
             UpdateSkillPacketHandler.register();
+            ItemPickupPacketHandler.register();
         });
     }
 

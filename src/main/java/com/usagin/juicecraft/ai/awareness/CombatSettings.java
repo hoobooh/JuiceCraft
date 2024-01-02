@@ -11,7 +11,13 @@ public class CombatSettings implements Serializable {
     public int aggression=3;
     public int willFlee=1;
     public int defense=0;
+    public int pickup = 0;
     public int hash=33100;
+
+    //pickup key
+    //0: always pickup
+    //1: pickup if exists in inventory
+    //2: never pickup
 
     //aggression key
     //0: never attack

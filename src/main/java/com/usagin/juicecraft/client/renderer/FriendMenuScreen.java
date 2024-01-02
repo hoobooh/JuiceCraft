@@ -18,6 +18,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -36,6 +37,7 @@ import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -1003,14 +1005,15 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         }
     }
     FriendScrollWidget scrollWidget;
+    FriendButton itempickupButton;
     @Override
     protected void init() {
         super.init();
 
         //button renderer
-        this.skillButton = addRenderableWidget(new FriendButton(this.leftPos + 120, this.topPos + 7, 36, 18, buttonSprite, this::handleSkillButton, Component.translatable("juicecraft.skills")));
-        this.bagButton = addRenderableWidget(new FriendButton(this.leftPos + 174, this.topPos + 7, 36, 18, buttonSprite, this::handleGearButton, Component.translatable("juicecraft.gear")));
-        this.statButton = addRenderableWidget(new FriendButton(this.leftPos + 228, this.topPos + 7, 36, 18, buttonSprite, this::handleStatsButton, Component.translatable("juicecraft.stats")));
+        this.skillButton = addRenderableWidget(new FriendButton(this.leftPos + 119, this.topPos + 7, 36, 18, buttonSprite, this::handleSkillButton, Component.translatable("juicecraft.skills")));
+        this.bagButton = addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 7, 36, 18, buttonSprite, this::handleGearButton, Component.translatable("juicecraft.gear")));
+        this.statButton = addRenderableWidget(new FriendButton(this.leftPos + 227, this.topPos + 7, 36, 18, buttonSprite, this::handleStatsButton, Component.translatable("juicecraft.stats")));
         this.talkButton = addRenderableWidget(new FriendButton(this.leftPos + 335, this.topPos + 179, 36, 18, buttonSprite, this::handleTalkButton, Component.translatable("juicecraft.talk")));
         this.bagButton.setFocus(true);
 
@@ -1055,6 +1058,22 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.talkBt.add(exitDialogue);
         this.scrollWidget = addRenderableWidget(new FriendScrollWidget(this.leftPos+292,this.topPos+30,83,143,Component.literal(this.friend.getEventLog()),this.font,this));
 
+        this.itempickupButton = addRenderableWidget(new FriendButton(this.leftPos+40,this.topPos+204,18,18,new WidgetSprites(PICKUP_BEFORE,PICKUP_AFTER),this::doPickup,true,true));
+        this.itempickupButton.setTooltip(Tooltip.create(Component.translatable("juicecraft.menu.itempickup" + this.friend.getFriendItemPickup())));
+    }
+
+    private void doPickup(Button button) {
+        int pickup = this.friend.getFriendItemPickup();
+        if(pickup==0){ //always
+            this.itempickupButton.setTooltip(Tooltip.create(Component.translatable("juicecraft.menu.itempickup1")));
+            ItemPickupPacketHandler.sendToServer(new ToServerItemPickupPacket(1, this.friend.getId()));
+        }else if(pickup==1){ //sometimes
+            this.itempickupButton.setTooltip(Tooltip.create(Component.translatable("juicecraft.menu.itempickup2")));
+            ItemPickupPacketHandler.sendToServer(new ToServerItemPickupPacket(2, this.friend.getId()));
+        }else{ //never
+            this.itempickupButton.setTooltip(Tooltip.create(Component.translatable("juicecraft.menu.itempickup0")));
+            ItemPickupPacketHandler.sendToServer(new ToServerItemPickupPacket(0, this.friend.getId()));
+        }
     }
 
     protected static void renderScrollingString(GuiGraphics pGuiGraphics, Font pFont, Component pText, int pMinX, int pMinY, int pMaxX, int pMaxY, int pColor) {

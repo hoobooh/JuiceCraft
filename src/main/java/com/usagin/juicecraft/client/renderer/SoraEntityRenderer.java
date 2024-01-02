@@ -59,7 +59,7 @@ public class SoraEntityRenderer extends MobRenderer<Sora, SoraEntityModel> {
             return SORA_CLOSED;
         }
 
-        else if(pEntity.blinkCounter<=8 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.isAggressive())){
+        else if(pEntity.blinkCounter<=8 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive())){
             this.eyeopen.visible=false;
             this.eyemedium.visible=true;
             return SORA_NARROW;

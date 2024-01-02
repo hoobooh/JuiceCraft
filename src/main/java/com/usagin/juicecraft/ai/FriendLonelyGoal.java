@@ -20,9 +20,6 @@ public class FriendLonelyGoal extends FriendFollowGoal {
         return false;
     }
     public void start(){
-        if(this.friend.getOwner()!=null){
-            this.friend.appendEventLog(this.friend.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu."+this.friend.getFriendName().toLowerCase()+".eventlog.lonely").getString());
-        }
         super.start();
     }
 }

@@ -5,8 +5,10 @@ import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import org.slf4j.Logger;
 
@@ -39,11 +41,25 @@ public class EnemyEvaluator {
         }
         return danger;
     }
+    public static boolean shouldDoHurtTarget(Friend friend, LivingEntity entity){
+        LivingEntity owner = friend.getOwner();
+        if(owner!=null){
+            if(entity instanceof TamableAnimal pFriend){
+                if(pFriend.getOwner()!=null){
+                    return !owner.getStringUUID().equals(pFriend.getOwner().getStringUUID());
+                }
+            }
+            return !entity.getStringUUID().equals(owner.getStringUUID());
+        }
+        return true;
+    }
     public static int evaluateAreaDanger(Friend friend){
         AABB detect = new AABB(friend.getX()-20,friend.getY()-20,friend.getZ()-20,friend.getX()+20,friend.getY()+20,friend.getZ()+20);
         int danger=0;
         for(LivingEntity entity: friend.level().getNearbyEntities(LivingEntity.class,TargetingConditions.forCombat(),friend,detect)){
-            danger+=evaluate(entity);
+            if(!(entity instanceof Player)){
+                danger+=evaluate(entity);
+            }
         }
         return danger;
     }

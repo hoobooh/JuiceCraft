@@ -1,4 +1,9 @@
 {
+  "dicethrow": {
+    "sounds": [
+      "juicecraft:dicethrow"
+    ]
+  },
   "friend_glitch": {
     "sounds": [
       "juicecraft:friend_glitch"

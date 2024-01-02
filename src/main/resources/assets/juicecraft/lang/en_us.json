@@ -30,6 +30,10 @@
   "juicecraft.menu.home":"Home: ",
   "juicecraft.menu.skillpoints": "SP: ",
 
+  "juicecraft.menu.itempickup0": "Friend will always collect items.",
+  "juicecraft.menu.itempickup1": "Friend will collect any items that exist in their inventory.",
+  "juicecraft.menu.itempickup2": "Friend will never collect items.",
+
   "juicecraft.menu.responses.generic_response": "I see.",
   "juicecraft.menu.responses.comment_health_response1": "Got it. We’ll keep pushing forward for now.",
   "juicecraft.menu.responses.comment_health_response2": "Got it. We’ll slow down a bit.",
@@ -215,6 +219,7 @@
   "juicecraft.menu.sora.eventlog.levelup": "I've gotten stronger. With this, I should be an even greater help to everyone.\n",
   "juicecraft.menu.sora.eventlog.activator": "I've obtained an \"Activator.\" My data analysis indicates that it is an old piece of technology from my era, similar to the Hyper Activators that I can't access anymore. I wonder how it got here.\n",
   "juicecraft.menu.sora.eventlog.revive": "It seems that I died before having my memories restored. My readings imply that this \"Memory\" was made by Sumika… I wonder…?\n",
-  "juicecraft.menu.sora.eventlog.lonely": " hasn't talked to me in a while. I wonder if I did something wrong?\n"
+  "juicecraft.menu.sora.eventlog.lonely": " hasn't talked to me in a while. I wonder if I did something wrong?\n",
+  "juicecraft.menu.sora.eventlog.untame": "My journey has gotten unpleasant. I've decided to travel on my own.\n"
 
 }

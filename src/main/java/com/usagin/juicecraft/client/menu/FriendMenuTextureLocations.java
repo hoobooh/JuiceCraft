@@ -46,6 +46,10 @@ public class FriendMenuTextureLocations {
     public static final ResourceLocation SPEECH_CONNECTOR_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/buttonspeechconnectorenabled");
     public static final ResourceLocation SPEECH_CONNECTOR_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/buttonspeechconnectordisabled");
 
+    public static final ResourceLocation PICKUP_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/itempickup");
+    public static final ResourceLocation PICKUP_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/itempickupdown");
+
+
 
 
 }

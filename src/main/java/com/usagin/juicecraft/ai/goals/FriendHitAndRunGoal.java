@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.ai.goals;
 
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.ai.awareness.FriendDefense;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.client.particle.HeartParticle;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,7 +33,7 @@ public class FriendHitAndRunGoal extends Goal {
     private static final Logger LOGGER = LogUtils.getLogger();
     @Override
     public boolean canUse() {
-        if(friend.getTarget()!=null && this.friend.canDoThings() && this.friend.runTimer>30 && this.friend.getCombatSettings().defense<2){
+        if(friend.getTarget()!=null && this.friend.canDoThings() && this.friend.runTimer>30 && FriendDefense.shouldDefendAgainst(this.friend)){
             this.target = this.friend.getTarget();
                 Vec3 vec3 = DefaultRandomPos.getPosAway(this.friend, 16, 7, this.target.position());
                 if (vec3 == null) {

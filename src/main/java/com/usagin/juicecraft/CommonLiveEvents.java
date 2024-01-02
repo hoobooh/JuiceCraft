@@ -57,6 +57,7 @@ public class CommonLiveEvents {
                             if (!friend.level().isClientSide) {
                                 friend.setDeathAnimCounter(60);
                             }
+                            friend.getNavigation().stop();
                             friend.setIsDying(true);
                         }
                         friend.setHealth(0.1F);
