@@ -68,9 +68,9 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         }
         Logger LOGGER = LogUtils.getLogger();
         String armName = pSide.name().toLowerCase() + "arm";
-        ModelPart root = this.root().getChild("Friend");
-        ModelPart limb = this.root().getChild("Friend").getChild(armName).getChild(limbName);
-        ModelPart arm = this.root().getChild("Friend").getChild(armName);
+        ModelPart root = this.root().getChild("chest");
+        ModelPart arm = root.getChild(armName);
+        ModelPart limb = arm.getChild(limbName);
         ModelPart hand = limb.getChild(grabberName);
         pPoseStack.translate(0, 1.5, 0);
         translateAndRotate(pPoseStack, root);
