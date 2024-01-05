@@ -16,7 +16,6 @@ import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
-import static com.usagin.juicecraft.friends.Friend.POSES;
 
 public class FriendSitGoal extends Goal {
     Friend friend;

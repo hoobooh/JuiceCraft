@@ -98,7 +98,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean wandering = false;
     public int[] skillLevels = new int[6];
     public boolean[] skillEnabled = new boolean[]{false, false, false, false, false, false};
-    public static final Map<Pose, EntityDimensions> POSES = ImmutableMap.<Pose, EntityDimensions>builder().put(STANDING, EntityDimensions.scalable(0.6F, 1.8F)).put(SITTING, EntityDimensions.scalable(0.6F, 1.1F)).put(Pose.SLEEPING, EntityDimensions.scalable(0.6F, 0.5F)).build();
+    public  Map<Pose, EntityDimensions> POSES = ImmutableMap.<Pose, EntityDimensions>builder().put(STANDING, EntityDimensions.scalable(0.6F, 1.8F)).put(SITTING, EntityDimensions.scalable(0.6F, 1.1F)).put(Pose.SLEEPING, EntityDimensions.scalable(0.6F, 0.5F)).build();
     private final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedAttackGoal<>(this, 1.0D, 20, 15.0F);
     public int impatientCounter = 0;
     public int runTimer = 0;
@@ -581,6 +581,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.playTimedVoice(this.getPat());
         patCounter = 20;
         this.setTimeSinceLastPat(0);
+        this.getNavigation().stop();
         if (this.random.nextInt(20) == 6) {
             if (this.mood <= 80) {
                 this.mood += 20;

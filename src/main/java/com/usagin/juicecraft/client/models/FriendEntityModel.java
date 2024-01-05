@@ -68,7 +68,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         }
         Logger LOGGER = LogUtils.getLogger();
         String armName = pSide.name().toLowerCase() + "arm";
-        ModelPart root = this.root().getChild("chest");
+        ModelPart root = this.root().getChild("hip").getChild("chest");
         ModelPart arm = root.getChild(armName);
         ModelPart limb = arm.getChild(limbName);
         ModelPart hand = limb.getChild(grabberName);
@@ -83,11 +83,9 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     }
 
     public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
-        ModelPart root = this.root().getChild("Friend");
-        ModelPart hip = root.getChild("hip");
+        ModelPart hip = this.root().getChild("hip");
         ModelPart holster = hip.getChild("weaponholster");
         pPoseStack.translate(0, 1.5, 0);
-        translateAndRotate(pPoseStack, root);
         translateAndRotate(pPoseStack, hip);
         translateAndRotate(pPoseStack, holster);
         if(pItemStack!=null){
