@@ -1611,7 +1611,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.doHurtTarget();
             } else if (this.getAttackCounter() == (int) (10 / this.getAttackSpeed()) && this.getAttackType() == 20) {
                 this.doHurtTarget();
-            } else if (this.getAttackCounter() == (int) (8 / this.getAttackSpeed()) && this.getAttackType() == 10) {
+            } else if (this.getAttackCounter() == (int) (5 / this.getAttackSpeed()) && this.getAttackType() == 10) {
                 this.doHurtTarget();
             } else if (this.getAttackCounter() == (int) (21 / this.getAttackSpeed()) && this.getAttackType() == 50) {
                 this.doHurtTarget();
