@@ -9,20 +9,29 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.slf4j.Logger;
 
-public abstract class FriendEyeLayer<T extends Entity, M extends EntityModel<T>> extends EyesLayer<T, M> {
-    public boolean visible = false;
+import static com.usagin.juicecraft.JuiceCraft.MODID;
 
-    public FriendEyeLayer(RenderLayerParent<T,M> pRenderer) {
+public class FriendEyeLayer<T extends Entity, M extends EntityModel<T>> extends EyesLayer<T, M> {
+    public boolean visible = false;
+    public ResourceLocation location;
+    public RenderType rendertype;
+
+    public FriendEyeLayer(RenderLayerParent<T,M> pRenderer, ResourceLocation location) {
         super(pRenderer);
+        this.location=location;
+        this.rendertype= RenderType.eyes(location);
     }
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    abstract public @NotNull RenderType renderType();
+    public @NotNull RenderType renderType() {
+        return this.rendertype;
+    }
 
     public void render(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         if(this.visible){

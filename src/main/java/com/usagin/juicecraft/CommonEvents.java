@@ -3,7 +3,7 @@ package com.usagin.juicecraft;
 import com.usagin.juicecraft.Init.EntityInit;
 import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
-import com.usagin.juicecraft.client.renderer.SoraEntityRenderer;
+import com.usagin.juicecraft.client.renderer.entities.SoraEntityRenderer;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.network.*;
 import com.usagin.juicecraft.particles.GlitchParticle;

@@ -7,6 +7,7 @@ import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.SkillManager;
 import com.usagin.juicecraft.ai.goals.*;
+import com.usagin.juicecraft.client.menu.FriendMenu;
 import com.usagin.juicecraft.client.menu.FriendMenuProvider;
 import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.Seagull;
@@ -30,30 +31,38 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.*;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.*;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.animal.Dolphin;
+import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.PlantType;
@@ -76,6 +85,7 @@ import static net.minecraft.world.item.Items.AIR;
 public abstract class Friend extends FakeWolf implements ContainerListener, MenuProvider, RangedAttackMob {
     int captureDifficulty;
     int hungerMeter;
+    public int viewflower=0;
     public int itempickup = 0;
     double[] normaprogress = new double[9];
     double[] normacaps = new double[]{0.1, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1};
@@ -93,6 +103,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public final AnimationState deathAnimState = new AnimationState();
     public final AnimationState deathStartAnimState = new AnimationState();
     public final AnimationState drawBowAnimationState = new AnimationState();
+    public final AnimationState wetAnimState = new AnimationState();
+    public final AnimationState viewFlowerAnimState = new AnimationState();
+    public final AnimationState swimAnimState = new AnimationState();
     public int combatmodifier = 0;
     public int timesincelastpat = 0;
     public boolean wandering = false;
@@ -130,8 +143,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     String name;
     boolean isShaking;
     public float volume = 0.5F;
-    float shakeAnim;
-    float shakeAnimO;
     public SimpleContainer inventory = new SimpleContainer(16);
     int[] dialogueTree = new int[300];
     public CombatSettings combatSettings;
@@ -676,6 +687,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     abstract public SoundEvent getHyperEquip();
 
+
     public abstract SoundEvent getHyperUse();
 
     public abstract SoundEvent getRecovery();
@@ -1138,7 +1150,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.itempickup = n;
         this.getEntityData().set(FRIEND_ITEMPICKUP, n);
     }
-
+    public void setViewFlower(int n){
+        this.viewflower=n;
+        this.getEntityData().set(FRIEND_VIEWFLOWER,n);
+    }
+    public int getViewFlower(){
+        return this.getEntityData().get(FRIEND_VIEWFLOWER);
+    }
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_ID_FLAGS, (byte) 0);
@@ -1170,8 +1188,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.entityData.define(FRIEND_EVENTLOG, this.eventlog);
         this.entityData.define(FRIEND_TIMESINCEPAT, this.timesincelastpat);
         this.entityData.define(FRIEND_ITEMPICKUP, this.itempickup);
+        this.entityData.define(FRIEND_VIEWFLOWER, this.viewflower);
     }
-
+    public static final EntityDataAccessor<Integer> FRIEND_VIEWFLOWER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_ITEMPICKUP = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_TIMESINCEPAT = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> FRIEND_EVENTLOG = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.STRING);
@@ -1596,6 +1615,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     @Override
     public void tick() {
+        super.tick();
         if (this.patCounter > 0) {
             this.idleCounter = 0;
             this.patCounter--;
@@ -1642,6 +1662,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.animatestandingtimer--;
             }
             boolean sit = this.getInSittingPose();
+            this.viewFlowerAnimState.animateWhen(this.getViewFlower()>0,this.tickCount);
+            this.wetAnimState.animateWhen(this.shakeAnimO > 0, this.tickCount);
             this.deathStartAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() != 0, this.tickCount);
             this.deathAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() == 0, this.tickCount);
             this.idleAnimState.animateWhen(!sit && idle() && this.idleCounter == 20 && this.patCounter == 0, this.tickCount);
@@ -1653,6 +1675,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.attackAnimState.animateWhen(this.getAttackCounter() != 0, this.tickCount);
             this.sleepAnimState.animateWhen(true, this.tickCount);
             this.drawBowAnimationState.animateWhen(this.isUsingItem() && this.getMainHandItem().getItem() instanceof BowItem, this.tickCount);
+            this.swimAnimState.animateWhen(this.isFallFlying() && this.isInWater(), this.tickCount);
             if (this.getPose() == STANDING && this.idle() && idleCounter < 20) {
                 this.idleCounter++;
             }
@@ -1673,8 +1696,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.setTarget(null);
                 if (this.tickCount % 20 == 0) {
                     ServerLevel sLevel = (ServerLevel) this.level();
-                    this.playSound(GLITCH.get(), 0.4F, 1);
-                    sLevel.sendParticles(GLITCH_PARTICLE.get(), this.getX(), this.getY() + 1, this.getZ(), 3, 0.3, 0.5, 0.3, 0.1);
                 }
                 if (deathTimer == 100) {
                     n = this.random.nextInt(6);
@@ -1695,6 +1716,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
 
             } else {
+                if(this.viewflower > 0){
+                    this.setViewFlower(this.viewflower-1);
+                }
                 deathTimer = 200;
             }
             if (this.tickCount % 4000 == 0) {
@@ -1748,7 +1772,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
             }
         }
-        super.tick();
     }
 
 
@@ -1852,9 +1875,36 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
         this.reassessTameGoals();
     }
+    @Override
+    public void travel(Vec3 pTravelVector) {
+        if (this.isEffectiveAi() && this.isInWater()) {
+            this.moveRelative(this.getSpeed(), pTravelVector);
+            this.move(MoverType.SELF, this.getDeltaMovement());
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
+            if (this.getTarget() == null) {
+                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.005D, 0.0D));
+            }
+        } else {
+            super.travel(pTravelVector);
+        }
+    }
+    private SoundEvent getFallDamageSound(int pHeight) {
+        return pHeight > 4 ? this.getFallSounds().big() : this.getFallSounds().small();
+    }
 
     @Override
     public SoundEvent getDeathSound() {
         return this.getRecoveryFail();
+    }
+    @Override
+    public void containerChanged(Container pContainer) {
+        this.updateContainerEquipment();
+        this.updateGear();
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+        return new FriendMenu(pContainerId, pPlayerInventory, this);
     }
 }

@@ -38,6 +38,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraftforge.client.gui.widget.ScrollPanel;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -1004,6 +1005,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             }
         }
     }
+
     FriendScrollWidget scrollWidget;
     FriendButton itempickupButton;
     @Override

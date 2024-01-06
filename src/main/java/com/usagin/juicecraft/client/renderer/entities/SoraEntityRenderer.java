@@ -1,11 +1,11 @@
-package com.usagin.juicecraft.client.renderer;
+package com.usagin.juicecraft.client.renderer.entities;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
-import com.usagin.juicecraft.client.models.sora.SoraEyeLayer;
-import com.usagin.juicecraft.client.models.sora.SoraMediumEyeLayer;
-import com.usagin.juicecraft.client.models.sora.SoraOrbLayer;
+import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
+import com.usagin.juicecraft.client.renderer.FriendItemInHandLayer;
+import com.usagin.juicecraft.client.renderer.FriendItemOnBackLayer;
 import com.usagin.juicecraft.friends.Friend;
 import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -32,16 +32,16 @@ public class SoraEntityRenderer extends MobRenderer<Sora, SoraEntityModel> {
     private static final ResourceLocation SORA_NEUTRAL = new ResourceLocation(MODID, "textures/entities/sora/sora_neutral.png");
     private static final ResourceLocation SORA_NARROW = new ResourceLocation(MODID, "textures/entities/sora/sora_midclose.png");
     private static final ResourceLocation SORA_CLOSED = new ResourceLocation(MODID, "textures/entities/sora/sora_closed.png");
-    SoraEyeLayer<Sora, SoraEntityModel> eyeopen;
-    SoraMediumEyeLayer<Sora, SoraEntityModel> eyemedium;
-    SoraOrbLayer<Sora, SoraEntityModel> orb;
+    FriendEyeLayer<Sora, SoraEntityModel> eyeopen;
+    FriendEyeLayer<Sora, SoraEntityModel> eyemedium;
+    FriendEyeLayer<Sora, SoraEntityModel> orb;
     FriendItemInHandLayer<Sora, SoraEntityModel> pLayer;
     FriendItemOnBackLayer<Sora, SoraEntityModel> pBackLayer;
     public SoraEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new SoraEntityModel(pContext.bakeLayer(SoraEntityModel.LAYER_LOCATION)),0.5f);
-        eyeopen=new SoraEyeLayer<>(this);
-        eyemedium=new SoraMediumEyeLayer<>(this);
-        orb=new SoraOrbLayer<>(this);
+        eyeopen=new FriendEyeLayer<>(this, new ResourceLocation(MODID, "textures/entities/sora/sora_eyelayer.png"));
+        eyemedium=new FriendEyeLayer<>(this,new ResourceLocation(MODID, "textures/entities/sora/sora_mediumeyelayer.png"));
+        orb=new FriendEyeLayer<>(this, new ResourceLocation(MODID, "textures/entities/sora/sora_orb_layer.png"));
         pLayer=new FriendItemInHandLayer<>(this, pContext.getItemInHandRenderer());
         pBackLayer = new FriendItemOnBackLayer<>(this, pContext.getItemInHandRenderer());
         orb.visible=true;

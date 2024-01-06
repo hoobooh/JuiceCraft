@@ -87,8 +87,8 @@ public class FakeWolf extends TamableAnimal implements NeutralMob {
     private float interestedAngleO;
     private boolean isWet;
     private boolean isShaking;
-    private float shakeAnim;
-    private float shakeAnimO;
+    public float shakeAnim;
+    public float shakeAnimO;
     private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(20, 39);
     @Nullable
     private UUID persistentAngerTarget;
@@ -187,13 +187,6 @@ public class FakeWolf extends TamableAnimal implements NeutralMob {
     public void tick() {
         super.tick();
         if (this.isAlive()) {
-            this.interestedAngleO = this.interestedAngle;
-            if (this.isInterested()) {
-                this.interestedAngle += (1.0F - this.interestedAngle) * 0.4F;
-            } else {
-                this.interestedAngle += (0.0F - this.interestedAngle) * 0.4F;
-            }
-
             if (this.isInWaterRainOrBubble()) {
                 this.isWet = true;
                 if (this.isShaking && !this.level().isClientSide) {
@@ -271,10 +264,6 @@ public class FakeWolf extends TamableAnimal implements NeutralMob {
         }
 
         return Mth.sin(f * (float)Math.PI) * Mth.sin(f * (float)Math.PI * 11.0F) * 0.15F * (float)Math.PI;
-    }
-
-    public float getHeadRollAngle(float pPartialTicks) {
-        return Mth.lerp(pPartialTicks, this.interestedAngleO, this.interestedAngle) * 0.15F * (float)Math.PI;
     }
 
     protected float getStandingEyeHeight(Pose pPose, EntityDimensions pSize) {

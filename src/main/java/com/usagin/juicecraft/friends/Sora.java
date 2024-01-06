@@ -295,15 +295,4 @@ public class Sora extends Friend{
     public AbstractDialogueManager getDialogueManager() {
         return new SoraDialogueManager();
     }
-
-    @Override
-    public void containerChanged(Container pContainer) {
-        this.updateContainerEquipment();
-    }
-
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return new FriendMenu(pContainerId, pPlayerInventory, this);
-    }
 }

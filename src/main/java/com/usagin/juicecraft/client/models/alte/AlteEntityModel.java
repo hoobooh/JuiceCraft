@@ -1,48 +1,35 @@
-package com.usagin.juicecraft.client.models.sora;// Made with Blockbench 4.8.3
+package com.usagin.juicecraft.client.models.alte;// Made with Blockbench 4.8.3
 // Exported for Minecraft version 1.17 or later with Mojang mappings
 // Paste this class into your mod and generate all required imports
 
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.client.animation.SoraAnimation;
+import com.usagin.juicecraft.JuiceCraft;
 import com.usagin.juicecraft.client.models.FriendEntityModel;
-import com.usagin.juicecraft.friends.Friend;
+import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Sora;
-import net.minecraft.client.animation.AnimationDefinition;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.HumanoidArm;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.client.animation.SoraAnimation.*;
-import static net.minecraft.world.entity.Pose.SITTING;
-import static net.minecraft.world.entity.Pose.SLEEPING;
 
-public class SoraEntityModel extends FriendEntityModel<Sora> {
+public class AlteEntityModel extends FriendEntityModel<Alte> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "soraentitymodel"), "main");
-	public SoraEntityModel(ModelPart root) {
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(JuiceCraft.MODID, "alteentitymodel"), "main");
+	public AlteEntityModel(ModelPart root) {
 		super(root);
 	}
 	public void defineParts(ModelPart root){
-		ModelPart customroom = root.getChild("customroom");
-		ModelPart head = root.getChild("customroom").getChild("Friend").getChild("head");
-		ModelPart leftarm = root.getChild("customroom").getChild("Friend").getChild("leftarm");
-		ModelPart rightarm = root.getChild("customroom").getChild("Friend").getChild("rightarm");
-		ModelPart leftleg = root.getChild("customroom").getChild("Friend").getChild("leftleg");
-		ModelPart rightleg = root.getChild("customroom").getChild("Friend").getChild("rightleg");
-		ModelPart chest = root.getChild("customroom").getChild("Friend").getChild("chest");
-		this.parts=new ModelParts(customroom, head, leftarm, rightarm, leftleg, rightleg, chest);
+		ModelPart customroot = root.getChild("customroot");
+		ModelPart head = root.getChild("customroot").getChild("Friend").getChild("head");
+		ModelPart leftarm = root.getChild("customroot").getChild("Friend").getChild("leftarm");
+		ModelPart rightarm = root.getChild("customroot").getChild("Friend").getChild("rightarm");
+		ModelPart leftleg = root.getChild("customroot").getChild("Friend").getChild("leftleg");
+		ModelPart rightleg = root.getChild("customroot").getChild("Friend").getChild("rightleg");
+		ModelPart chest = root.getChild("customroot").getChild("Friend").getChild("chest");
+		this.parts=new ModelParts(customroot, head, leftarm, rightarm, leftleg, rightleg, chest);
 	}
 	public void defineAnimations(){
 		this.animations=new Animations(IDLEGROUNDED,IDLETRANSITION,PATGROUNDED,SIT,SITIMPATIENT,SITPAT,SLEEPINGPOSE,DEATHANIM,DEATHANIMSTART,ATTACKONE,ATTACKTWO,ATTACKTHREE,COUNTERANIM, BOWDRAW, ATTACKONE, ATTACKONE, ATTACKONE, ATTACKONE);
@@ -51,9 +38,9 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition customroom = partdefinition.addOrReplaceChild("customroom", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition customroot = partdefinition.addOrReplaceChild("customroot", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-		PartDefinition Friend = customroom.addOrReplaceChild("Friend", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
+		PartDefinition Friend = customroot.addOrReplaceChild("Friend", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
 
 		PartDefinition rightleg = Friend.addOrReplaceChild("rightleg", CubeListBuilder.create().texOffs(0, 154).addBox(-4.0F, 0.0F, -8.0F, 8.0F, 24.0F, 16.0F, new CubeDeformation(0.0F))
 				.texOffs(0, 214).addBox(-8.0F, 0.0F, -4.0F, 16.0F, 24.0F, 8.0F, new CubeDeformation(0.0F)), PartPose.offset(-12.0F, -60.0F, 4.0F));
