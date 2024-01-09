@@ -1654,7 +1654,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
             if (this.tickCount % 40 == 0) {
                 this.updateGear();
-                if (this.random.nextBoolean() && this.random.nextBoolean() && this.animatestandingtimer <= 0 && this.idleCounter == 20) {
+                if (this.random.nextBoolean() && this.random.nextBoolean() && this.animatestandingtimer <= 0 && this.idleCounter == 20 && !this.getFriendWeapon().isEmpty()) {
                     this.animatestandingtimer = 80;
                 }
             }
