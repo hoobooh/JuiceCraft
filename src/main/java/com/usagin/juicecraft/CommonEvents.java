@@ -2,8 +2,11 @@ package com.usagin.juicecraft;
 
 import com.usagin.juicecraft.Init.EntityInit;
 import com.usagin.juicecraft.Init.ParticleInit;
+import com.usagin.juicecraft.client.models.alte.AlteEntityModel;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
+import com.usagin.juicecraft.client.renderer.entities.AlteEntityRenderer;
 import com.usagin.juicecraft.client.renderer.entities.SoraEntityRenderer;
+import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.network.*;
 import com.usagin.juicecraft.particles.GlitchParticle;
@@ -22,14 +25,17 @@ public class CommonEvents {
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event){
         event.put(EntityInit.SORA.get(), Sora.getSoraAttributes().build());
+        event.put(EntityInit.ALTE.get(), Alte.getAlteAttributes().build());
     }
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event){
         event.registerEntityRenderer(EntityInit.SORA.get(),SoraEntityRenderer::new);
+        event.registerEntityRenderer(EntityInit.ALTE.get(), AlteEntityRenderer::new);
     }
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event){
         event.registerLayerDefinition(SoraEntityModel.LAYER_LOCATION, SoraEntityModel::createBodyLayer);
+        event.registerLayerDefinition(AlteEntityModel.LAYER_LOCATION, AlteEntityModel::createBodyLayer);
     }
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event){

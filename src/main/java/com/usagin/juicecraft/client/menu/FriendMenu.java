@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.Init.MenuInit.FRIEND_MENU;
-import static com.usagin.juicecraft.Init.UniversalSoundInit.HYPER_EQUIP;
+import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.HYPER_EQUIP;
 
 public class FriendMenu extends AbstractContainerMenu {
     private final Container friendContainer;

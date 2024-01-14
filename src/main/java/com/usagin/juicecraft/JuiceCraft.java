@@ -1,7 +1,8 @@
 package com.usagin.juicecraft;
 
 import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.Init.SoraSoundInit;
+import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
+import com.usagin.juicecraft.Init.sounds.SoraSoundInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -32,7 +33,7 @@ import static com.usagin.juicecraft.Init.ItemInit.ITEMS;
 import static com.usagin.juicecraft.Init.JuiceCreativeTab.CREATIVE_MODE_TABS;
 import static com.usagin.juicecraft.Init.MenuInit.MENUS;
 import static com.usagin.juicecraft.Init.ParticleInit.PARTICLES;
-import static com.usagin.juicecraft.Init.UniversalSoundInit.SOUNDS;
+import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.SOUNDS;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(JuiceCraft.MODID)
@@ -64,6 +65,7 @@ public class JuiceCraft
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
         SoraSoundInit.SORA_SOUNDS.register(modEventBus);
+        AlteSoundInit.ALTE_SOUNDS.register(modEventBus);
         SOUNDS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);

@@ -84,6 +84,7 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
                     for (Entity e : entityList) {
                         if (e instanceof ItemEntity item) {
                             if (this.friend.wantsToPickUp(item.getItem())) {
+                                this.friend.chasingitem=true;
                                 this.friend.getNavigation().moveTo(e,1);
                                 return;
                             }

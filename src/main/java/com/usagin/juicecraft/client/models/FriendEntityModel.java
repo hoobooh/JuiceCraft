@@ -7,7 +7,6 @@ import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HierarchicalModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.BowItem;
@@ -15,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 import static net.minecraft.world.entity.Pose.SITTING;
@@ -42,7 +40,8 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                              AnimationDefinition attacktwo, AnimationDefinition attackthree,
                              AnimationDefinition counter, AnimationDefinition bowdraw,
                              AnimationDefinition standinginspect, AnimationDefinition wet,
-                             AnimationDefinition viewflower, AnimationDefinition swim) {
+                             AnimationDefinition viewflower, AnimationDefinition swim,
+                             AnimationDefinition interact) {
     }
 
     public record ModelParts(ModelPart customroot, ModelPart head, ModelPart leftarm, ModelPart rightarm,
@@ -63,26 +62,32 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
         String limbName;
         String grabberName;
+        ModelPart arm;
+        ModelPart limb;
+        ModelPart hand;
         if (pSide.name().equals("LEFT")) {
             limbName = "lowerarm2";
             grabberName = "grabber2";
+            arm=this.parts.leftarm();
+            limb=arm.getChild(limbName);
+            hand=limb.getChild(grabberName);
         } else {
             limbName = "lowerarm";
             grabberName = "grabber";
+            arm=this.parts.rightarm();
+            limb=arm.getChild(limbName);
+            hand=limb.getChild(grabberName);
         }
-        Logger LOGGER = LogUtils.getLogger();
-        String armName = pSide.name().toLowerCase() + "arm";
-        ModelPart root = this.root().getChild("hip").getChild("chest");
-        ModelPart arm = root.getChild(armName);
-        ModelPart limb = arm.getChild(limbName);
-        ModelPart hand = limb.getChild(grabberName);
+        ModelPart root = this.root().getChild("hip");
         pPoseStack.translate(0, 1.5, 0);
+        //translateAndRotate(pPoseStack, this.root());
         translateAndRotate(pPoseStack, root);
         translateAndRotate(pPoseStack, arm);
         translateAndRotate(pPoseStack, limb);
         translateAndRotate(pPoseStack, hand);
-
         pPoseStack.scale(0.883F, 0.883F, 0.883F);
+
+
 
     }
 
@@ -128,16 +133,14 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
             if (pEntity.getPose() != SITTING) {
                 if (pEntity.getPose() == SLEEPING) {
                     animate(pEntity.sleepAnimState, animations.sleep(), pAgeInTicks);
-                } else {
-                    if (pEntity.isWet()) {
+                } else if(pEntity.getAttackCounter() <= 0) {
+                    if (pEntity.shakeAnimO>0) {
                         animate(pEntity.wetAnimState, animations.wet(), pAgeInTicks);
                     } else {
                         animate(pEntity.viewFlowerAnimState, animations.viewflower(),pAgeInTicks);
                         if(!pEntity.viewFlowerAnimState.isStarted()){
                             animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);
-                            if (pEntity.animatestandingtimer > 0) {
-                                animate(pEntity.idleAnimState, animations.standinginspect(), pAgeInTicks);
-                            }
+                            animate(pEntity.inspectAnimState, animations.standinginspect(), pAgeInTicks);
                             animate(pEntity.idleAnimStartState, animations.idletransition(), pAgeInTicks);
                             animate(pEntity.swimAnimState, animations.swim(),pAgeInTicks);
                         }
@@ -150,10 +153,10 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 animate(pEntity.sitImpatientAnimState, animations.sitimpatient(), pAgeInTicks);
             }
             if (pEntity.getAttackType() == 50) {
-                if (pEntity.getAttackCounter() > 33 / pEntity.getAttackSpeed()) {
+                /*if (pEntity.getAttackCounter() > 33 / pEntity.getAttackSpeed()) {
                     pEntity.attackAnimState.stop();
                     pEntity.attackAnimState.start(pEntity.tickCount);
-                }
+                }*/
                 animate(pEntity.attackAnimState, animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             } else if (pEntity.getAttackType() == 40) {
                 animate(pEntity.attackAnimState, animations.attackone(), pAgeInTicks, (float) pEntity.getAttackSpeed());
@@ -176,9 +179,12 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 }
                 animate(pEntity.drawBowAnimationState, animations.bowdraw(), pAgeInTicks);
             }
-            if (!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose() != SLEEPING) {
+            if (!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose() != SLEEPING && pEntity.animatestandingtimer <= 0) {
                 this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
                 this.parts.head().xRot = (pHeadPitch * (float) Math.PI / 180f);
+            }
+            if(!pEntity.attackAnimState.isStarted()){
+                animate(pEntity.interactAnimState,animations.interact(),pAgeInTicks);
             }
         } else {
             animate(pEntity.deathStartAnimState, animations.deathstart(), pAgeInTicks);

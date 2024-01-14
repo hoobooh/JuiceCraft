@@ -45,7 +45,7 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
 		this.parts=new ModelParts(customroom, head, leftarm, rightarm, leftleg, rightleg, chest);
 	}
 	public void defineAnimations(){
-		this.animations=new Animations(IDLEGROUNDED,IDLETRANSITION,PATGROUNDED,SIT,SITIMPATIENT,SITPAT,SLEEPINGPOSE,DEATHANIM,DEATHANIMSTART,ATTACKONE,ATTACKTWO,ATTACKTHREE,COUNTERANIM, BOWDRAW, ATTACKONE, ATTACKONE, ATTACKONE, ATTACKONE);
+		this.animations=new Animations(IDLEGROUNDED,IDLETRANSITION,PATGROUNDED,SIT,SITIMPATIENT,SITPAT,SLEEPINGPOSE,DEATHANIM,DEATHANIMSTART,ATTACKONE,ATTACKTWO,ATTACKTHREE,COUNTERANIM, BOWDRAW, ATTACKONE, ATTACKONE, ATTACKONE, ATTACKONE, ATTACKONE);
 	}
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();

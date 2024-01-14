@@ -3,10 +3,6 @@ package com.usagin.juicecraft.client.renderer.entities;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.client.models.alte.AlteEntityModel;
-import com.usagin.juicecraft.client.models.Alte.AlteEntityModel;
-import com.usagin.juicecraft.client.models.Alte.AlteEyeLayer;
-import com.usagin.juicecraft.client.models.Alte.AlteMediumEyeLayer;
-import com.usagin.juicecraft.client.models.Alte.AlteOrbLayer;
 import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
 import com.usagin.juicecraft.client.renderer.FriendItemInHandLayer;
 import com.usagin.juicecraft.client.renderer.FriendItemOnBackLayer;
@@ -22,28 +18,23 @@ import org.slf4j.Logger;
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 
 public class AlteEntityRenderer extends MobRenderer<Alte, AlteEntityModel> {
-    private static final ResourceLocation ALTE_NEUTRAL = new ResourceLocation(MODID, "textures/entities/Alte/Alte_neutral.png");
-    private static final ResourceLocation ALTE_NARROW = new ResourceLocation(MODID, "textures/entities/Alte/Alte_midclose.png");
-    private static final ResourceLocation ALTE_CLOSED = new ResourceLocation(MODID, "textures/entities/Alte/Alte_closed.png");
-    private static final ResourceLocation ALTE_WINK = new ResourceLocation(MODID, "textures/entities/Alte/Alte_closed.png");
-    FriendEyeLayer<Alte, AlteEntityModel> panels;
-    FriendEyeLayer<Alte, AlteEntityModel> powerring;
-    FriendEyeLayer<Alte, AlteEntityModel> orb;
+    private static final ResourceLocation ALTE_NEUTRAL = new ResourceLocation(MODID, "textures/entities/alte/neutral.png");
+    private static final ResourceLocation ALTE_NARROW = new ResourceLocation(MODID, "textures/entities/alte/half.png");
+    private static final ResourceLocation ALTE_CLOSED = new ResourceLocation(MODID, "textures/entities/alte/closed.png");
+    private static final ResourceLocation ALTE_WINK = new ResourceLocation(MODID, "textures/entities/alte/wink.png");
+    private static final ResourceLocation ALTE_ENERGYLAYER = new ResourceLocation(MODID, "textures/entities/alte/lightlayerfinal.png");
+    FriendEyeLayer<Alte, AlteEntityModel> energylayer;
     FriendItemInHandLayer<Alte, AlteEntityModel> pLayer;
     FriendItemOnBackLayer<Alte, AlteEntityModel> pBackLayer;
     public AlteEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new AlteEntityModel(pContext.bakeLayer(AlteEntityModel.LAYER_LOCATION)),0.5f);
-        panels =new FriendEyeLayer<>(this);
-        powerring =new FriendEyeLayer<>(this);
-        orb=new FriendEyeLayer<>(this);
+        energylayer =new FriendEyeLayer<>(this, ALTE_ENERGYLAYER);
         pLayer=new FriendItemInHandLayer<>(this, pContext.getItemInHandRenderer());
         pBackLayer = new FriendItemOnBackLayer<>(this, pContext.getItemInHandRenderer());
-        orb.visible=true;
-        this.addLayer(orb);
+        energylayer.visible=true;
+        this.addLayer(energylayer);
         this.addLayer(pBackLayer);
         this.addLayer(pLayer);
-        this.addLayer(powerring);
-        this.addLayer(panels);
     }
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull Alte pEntity) {

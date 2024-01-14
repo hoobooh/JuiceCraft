@@ -1,14 +1,11 @@
 package com.usagin.juicecraft;
 
-import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.FriendDefense;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Creeper;
@@ -16,7 +13,6 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -24,10 +20,8 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.slf4j.Logger;
 
-import static com.usagin.juicecraft.Init.UniversalSoundInit.COUNTER_BLOCK;
-import static com.usagin.juicecraft.friends.Friend.FRIEND_ISDYING;
+import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.COUNTER_BLOCK;
 
 @Mod.EventBusSubscriber
 public class CommonLiveEvents {
@@ -39,7 +33,7 @@ public class CommonLiveEvents {
                     if (friend.getAttackType() == 50 && friend.getAttackCounter() > 26/friend.getAttackSpeed()) {
                         event.setCanceled(true);
                     } else if (FriendDefense.shouldDefendAgainst(friend)) {
-                        friend.setAttackCounter((int) (34/friend.getAttackSpeed()));
+                        friend.setAttackCounter(34);
                         friend.setAttackType(50);
                         friend.playTimedVoice(friend.getEvade());
                         friend.playSound(COUNTER_BLOCK.get());
@@ -58,6 +52,7 @@ public class CommonLiveEvents {
                                 friend.setDeathAnimCounter(60);
                             }
                             friend.getNavigation().stop();
+                            friend.playVoice(friend.getDeath());
                             friend.setIsDying(true);
                         }
                         friend.setHealth(0.1F);
@@ -115,6 +110,7 @@ public class CommonLiveEvents {
                     pFriend.appendEventLog(Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingfirst").getString() + event.getEntity().getDisplayName().getString() + Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingsecond").getString());
                 }
                 pFriend.updateFriendNorma(temp/1000,1);
+                pFriend.playVoice(pFriend.getOnKill());
                 pFriend.increaseEXP(temp);
             }
 

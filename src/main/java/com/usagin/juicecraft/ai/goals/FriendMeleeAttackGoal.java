@@ -24,6 +24,9 @@ public class FriendMeleeAttackGoal extends MeleeAttackGoal {
         this.friend.playVoice(((Friend)this.mob).getBattle());
         super.start();}
     }
+    protected boolean isTimeToAttack() {
+        return true;
+    }
     @Override
     protected void checkAndPerformAttack(@NotNull LivingEntity pTarget) {
         Logger LOGGER = LogUtils.getLogger();

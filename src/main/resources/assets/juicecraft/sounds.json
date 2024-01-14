@@ -64,6 +64,362 @@
       "juicecraft:friend_hyper_equip"
     ]
   },
+
+
+
+
+
+  "alte_angry": {
+    "sounds": [
+      "juicecraft:alte_angry"
+    ]
+  },
+  "alte_attack_0": {
+    "sounds": [
+      "juicecraft:alte_attack_0"
+    ]
+  },
+  "alte_attack_1": {
+    "sounds": [
+      "juicecraft:alte_attack_1"
+    ]
+  },
+  "alte_attack_2": {
+    "sounds": [
+      "juicecraft:alte_attack_2"
+    ]
+  },
+  "alte_attack_3": {
+    "sounds": [
+      "juicecraft:alte_attack_3"
+    ]
+  },
+  "alte_attack_4": {
+    "sounds": [
+      "juicecraft:alte_attack_4"
+    ]
+  },
+  "alte_battle_0": {
+    "sounds": [
+      "juicecraft:alte_battle_0"
+    ]
+  },
+  "alte_battle_1": {
+    "sounds": [
+      "juicecraft:alte_battle_1"
+    ]
+  },
+  "alte_battle_2": {
+    "sounds": [
+      "juicecraft:alte_battle_2"
+    ]
+  },
+  "alte_battle_3": {
+    "sounds": [
+      "juicecraft:alte_battle_3"
+    ]
+  },
+  "alte_battle_4": {
+    "sounds": [
+      "juicecraft:alte_battle_4"
+    ]
+  },
+  "alte_battle_5": {
+    "sounds": [
+      "juicecraft:alte_battle_5"
+    ]
+  },
+  "alte_battle_6": {
+    "sounds": [
+      "juicecraft:alte_battle_6"
+    ]
+  },
+  "alte_battle_7": {
+    "sounds": [
+      "juicecraft:alte_battle_7"
+    ]
+  },
+  "alte_death": {
+    "sounds": [
+      "juicecraft:alte_death"
+    ]
+  },
+  "alte_equip_0": {
+    "sounds": [
+      "juicecraft:alte_equip_0"
+    ]
+  },
+  "alte_equip_1": {
+    "sounds": [
+      "juicecraft:alte_equip_1"
+    ]
+  },
+  "alte_equip_2": {
+    "sounds": [
+      "juicecraft:alte_equip_2"
+    ]
+  },
+  "alte_equip_3": {
+    "sounds": [
+      "juicecraft:alte_equip_3"
+    ]
+  },
+  "alte_evade_0": {
+    "sounds": [
+      "juicecraft:alte_evade_0"
+    ]
+  },
+  "alte_evade_1": {
+    "sounds": [
+      "juicecraft:alte_evade_1"
+    ]
+  },
+  "alte_evade_2": {
+    "sounds": [
+      "juicecraft:alte_evade_2"
+    ]
+  },
+  "alte_flee_0": {
+    "sounds": [
+      "juicecraft:alte_flee_0"
+    ]
+  },
+  "alte_flee_1": {
+    "sounds": [
+      "juicecraft:alte_flee_1"
+    ]
+  },
+  "alte_flee_2": {
+    "sounds": [
+      "juicecraft:alte_flee_2"
+    ]
+  },
+  "alte_flee_3": {
+    "sounds": [
+      "juicecraft:alte_flee_3"
+    ]
+  },
+  "alte_healing_0": {
+    "sounds": [
+      "juicecraft:alte_healing_0"
+    ]
+  },
+  "alte_healing_1": {
+    "sounds": [
+      "juicecraft:alte_healing_1"
+    ]
+  },
+  "alte_healing_2": {
+    "sounds": [
+      "juicecraft:alte_healing_2"
+    ]
+  },
+  "alte_healing_3": {
+    "sounds": [
+      "juicecraft:alte_healing_3"
+    ]
+  },
+  "alte_hurt_0": {
+    "sounds": [
+      "juicecraft:alte_hurt_0"
+    ]
+  },
+  "alte_hurt_1": {
+    "sounds": [
+      "juicecraft:alte_hurt_1"
+    ]
+  },
+  "alte_hurt_2": {
+    "sounds": [
+      "juicecraft:alte_hurt_2"
+    ]
+  },
+  "alte_hurt_3": {
+    "sounds": [
+      "juicecraft:alte_hurt_3"
+    ]
+  },
+  "alte_hyper_equip": {
+    "sounds": [
+      "juicecraft:alte_hyper_equip"
+    ]
+  },
+  "alte_hyper_use": {
+    "sounds": [
+      "juicecraft:alte_hyper_use"
+    ]
+  },
+  "alte_idle_0": {
+    "sounds": [
+      "juicecraft:alte_idle_0"
+    ]
+  },
+  "alte_idle_1": {
+    "sounds": [
+      "juicecraft:alte_idle_1"
+    ]
+  },
+  "alte_idle_2": {
+    "sounds": [
+      "juicecraft:alte_idle_2"
+    ]
+  },
+  "alte_idle_night": {
+    "sounds": [
+      "juicecraft:alte_idle_night"
+    ]
+  },
+  "alte_injured_0": {
+    "sounds": [
+      "juicecraft:alte_injured_0"
+    ]
+  },
+  "alte_injured_1": {
+    "sounds": [
+      "juicecraft:alte_injured_1"
+    ]
+  },
+  "alte_injured_2": {
+    "sounds": [
+      "juicecraft:alte_injured_2"
+    ]
+  },
+  "alte_injured_3": {
+    "sounds": [
+      "juicecraft:alte_injured_3"
+    ]
+  },
+  "alte_interact_0": {
+    "sounds": [
+      "juicecraft:alte_interact_0"
+    ]
+  },
+  "alte_interact_1": {
+    "sounds": [
+      "juicecraft:alte_interact_1"
+    ]
+  },
+  "alte_interact_2": {
+    "sounds": [
+      "juicecraft:alte_interact_2"
+    ]
+  },
+  "alte_interact_3": {
+    "sounds": [
+      "juicecraft:alte_interact_3"
+    ]
+  },
+  "alte_laugh": {
+    "sounds": [
+      "juicecraft:alte_laugh"
+    ]
+  },
+  "alte_module_equip": {
+    "sounds": [
+      "juicecraft:alte_module_equip"
+    ]
+  },
+  "alte_pat_0": {
+    "sounds": [
+      "juicecraft:alte_pat_0"
+    ]
+  },
+  "alte_pat_1": {
+    "sounds": [
+      "juicecraft:alte_pat_1"
+    ]
+  },
+  "alte_pat_2": {
+    "sounds": [
+      "juicecraft:alte_pat_2"
+    ]
+  },
+  "alte_recovery_0": {
+    "sounds": [
+      "juicecraft:alte_recovery_0"
+    ]
+  },
+  "alte_recovery_1": {
+    "sounds": [
+      "juicecraft:alte_recovery_1"
+    ]
+  },
+  "alte_recovery_2": {
+    "sounds": [
+      "juicecraft:alte_recovery_2"
+    ]
+  },
+  "alte_recovery_3": {
+    "sounds": [
+      "juicecraft:alte_recovery_3"
+    ]
+  },
+  "alte_recovery_failed_0": {
+    "sounds": [
+      "juicecraft:alte_recovery_failed_0"
+    ]
+  },
+  "alte_recovery_failed_1": {
+    "sounds": [
+      "juicecraft:alte_recovery_failed_1"
+    ]
+  },
+  "alte_recovery_failed_2": {
+    "sounds": [
+      "juicecraft:alte_recovery_failed_2"
+    ]
+  },
+  "alte_recovery_failed_3": {
+    "sounds": [
+      "juicecraft:alte_recovery_failed_3"
+    ]
+  },
+  "alte_warning_0": {
+    "sounds": [
+      "juicecraft:alte_warning_0"
+    ]
+  },
+  "alte_warning_1": {
+    "sounds": [
+      "juicecraft:alte_warning_1"
+    ]
+  },
+  "alte_warning_2": {
+    "sounds": [
+      "juicecraft:alte_warning_2"
+    ]
+  },
+  "alte_win_0": {
+    "sounds": [
+      "juicecraft:alte_win_0"
+    ]
+  },
+  "alte_win_1": {
+    "sounds": [
+      "juicecraft:alte_win_1"
+    ]
+  },
+  "alte_win_2": {
+    "sounds": [
+      "juicecraft:alte_win_2"
+    ]
+  },
+  "alte_win_3": {
+    "sounds": [
+      "juicecraft:alte_win_3"
+    ]
+  },
+  "alte_idle_3": {
+    "sounds": [
+      "juicecraft:alte_idle_3"
+    ]
+  },
+
+
+
+
+
+
   "sora_injured1": {
     "sounds": [
       "juicecraft:sora_injured1"

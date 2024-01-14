@@ -201,7 +201,7 @@ public class FakeWolf extends TamableAnimal implements NeutralMob {
 
                 this.shakeAnimO = this.shakeAnim;
                 this.shakeAnim += 0.05F;
-                if (this.shakeAnimO >= 2.0F) {
+                if (this.shakeAnimO >= 4.0F) {
                     this.isWet = false;
                     this.isShaking = false;
                     this.shakeAnimO = 0.0F;

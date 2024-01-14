@@ -1,25 +1,18 @@
 package com.usagin.juicecraft.friends;
 
 import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.ai.goals.FriendHitAndRunGoal;
-import com.usagin.juicecraft.client.menu.FriendMenu;
 import com.usagin.juicecraft.ai.goals.sora.SoraHyperGoal;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.SoraDialogueManager;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import static com.usagin.juicecraft.Init.SoraSoundInit.*;
+import static com.usagin.juicecraft.Init.sounds.SoraSoundInit.*;
 
 
 public class Sora extends Friend{
@@ -34,7 +27,7 @@ public class Sora extends Friend{
     }
 
     public static AttributeSupplier.Builder getSoraAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 25).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.ATTACK_DAMAGE, 2);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30).add(Attributes.MOVEMENT_SPEED, 0.4).add(Attributes.ATTACK_DAMAGE, 4);
     }
 
     @Override
@@ -59,11 +52,6 @@ public class Sora extends Friend{
     }
 
     @Override
-    void initializeDialogueSettings() {
-
-    }
-
-    @Override
     void setName() {
         this.name="Sora";
     }
@@ -84,9 +72,15 @@ public class Sora extends Friend{
     }
 
     @Override
-    void indicateTamed() {
-
+    public SoundEvent getDeath() {
+        return this.getHurt(100000);
     }
+
+    @Override
+    public SoundEvent getOnKill() {
+        return this.getHurt(100000);
+    }
+
 
     @Override
     public SoundEvent getLaugh() {

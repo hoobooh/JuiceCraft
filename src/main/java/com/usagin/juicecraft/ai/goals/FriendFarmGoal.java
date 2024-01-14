@@ -103,6 +103,7 @@ public class FriendFarmGoal extends Goal {
                                         }
                                     }
                                 }
+                                this.friend.setFriendPlaceCounter(10);
                             }
                         }
                         this.friend.getNavigation().stop();
