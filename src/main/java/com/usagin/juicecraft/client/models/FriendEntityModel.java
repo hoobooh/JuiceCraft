@@ -3,17 +3,22 @@ package com.usagin.juicecraft.client.models;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.logging.LogUtils;
+import com.mojang.math.Axis;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HierarchicalModel;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
 import static net.minecraft.world.entity.Pose.SITTING;
@@ -52,39 +57,66 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         poseStack.pushPose();
         //parts.customroot().offsetScale(new Vector3f(-0.83F, -0.83F, -0.83F));
-        poseStack.translate(0, 1.5F, 0);
+        //poseStack.translate(0, 1.5F, 0);
+        //parts.customroot().x*=4;
         poseStack.scale(0.17F, 0.17F, 0.17F);
-        poseStack.translate(0, -1.5F, 0);
-        parts.customroot().render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        //poseStack.translate(poseStack.);
+        poseStack.translate(0, 1.245/0.17, 0);
+        //parts.customroot().render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        renderModelPart(parts.customroot(),poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+
         poseStack.popPose();
     }
+    public void renderModelPart(ModelPart part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+        if (part.visible) {
+            if (!part.isEmpty() || !part.children.isEmpty()) {
+                pPoseStack.pushPose();
+                part.translateAndRotate(pPoseStack);
+                //translateAndRotate(pPoseStack, part);
+                if (!part.skipDraw) {
+                    compile(part,pPoseStack.last(), pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+                }
 
-    public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
-        String limbName;
-        String grabberName;
-        ModelPart arm;
-        ModelPart limb;
-        ModelPart hand;
-        if (pSide.name().equals("LEFT")) {
-            limbName = "lowerarm2";
-            grabberName = "grabber2";
-            arm=this.parts.leftarm();
-            limb=arm.getChild(limbName);
-            hand=limb.getChild(grabberName);
-        } else {
-            limbName = "lowerarm";
-            grabberName = "grabber";
-            arm=this.parts.rightarm();
-            limb=arm.getChild(limbName);
-            hand=limb.getChild(grabberName);
+                for(ModelPart modelpart : part.children.values()) {
+                    renderModelPart(modelpart,pPoseStack, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+                }
+
+                pPoseStack.popPose();
+            }
         }
+    }
+    private void compile(ModelPart part, PoseStack.Pose pPose, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+        for(ModelPart.Cube modelpart$cube : part.cubes) {
+            modelpart$cube.compile(pPose, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        }
+
+    }
+    public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
         ModelPart root = this.root().getChild("hip");
-        pPoseStack.translate(0, 1.5, 0);
-        //translateAndRotate(pPoseStack, this.root());
+        ModelPart limb;
+        ModelPart arm;
+        ModelPart hand;
+
+        if (pSide.name().equals("LEFT")) {
+            arm=this.parts.leftarm();
+            limb=arm.getChild("lowerarm2");
+            hand=limb.getChild("grabber2");
+        } else {
+            arm=this.parts.rightarm();
+            limb=arm.getChild("lowerarm");
+            hand=limb.getChild("grabber");
+        }
+
+        pPoseStack.translate(0, 1.34, 0);
+
+
         translateAndRotate(pPoseStack, root);
         translateAndRotate(pPoseStack, arm);
         translateAndRotate(pPoseStack, limb);
-        translateAndRotate(pPoseStack, hand);
+        translateAndRotateHand(pPoseStack, hand);
+
+        //pPoseStack.translate(hand.x * 0.17 / 16.0F, hand.y * 0.17 / 16.0F, hand.z * 0.17 / 16.0F);
+
         pPoseStack.scale(0.883F, 0.883F, 0.883F);
 
 
@@ -94,7 +126,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
         ModelPart hip = this.root().getChild("hip");
         ModelPart holster = hip.getChild("weaponholster");
-        pPoseStack.translate(0, 1.5, 0);
+        pPoseStack.translate(0, 1.34125, 0);
         translateAndRotate(pPoseStack, hip);
         translateAndRotate(pPoseStack, holster);
         if (pItemStack != null) {
@@ -106,12 +138,25 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         pPoseStack.rotateAround(new Quaternionf().rotationZYX((float) -Math.toRadians(80), (float) -Math.toRadians(90), 0), holster.x * 0.17F / 16, holster.y * 0.17F / 16, holster.z * 0.17F / 16);
         pPoseStack.mulPose(new Quaternionf().rotationZYX(0, (float) Math.toRadians(180), 0));
 
-        pPoseStack.scale(0.883F, 0.883F, 0.883F);
+        //pPoseStack.scale(0.883F, 0.883F, 0.883F);
     }
 
     public void translateAndRotate(PoseStack pPoseStack, ModelPart part) {
         pPoseStack.translate(part.x * 0.17 / 16.0F, part.y * 0.17 / 16.0F, part.z * 0.17 / 16.0F);
         if (part.xRot != 0.0F || part.yRot != 0.0F || part.zRot != 0.0F) {
+            //pPoseStack.rotateAround(new Quaternionf().rotationZYX(part.zRot,part.yRot,part.xRot),part.x* 0.17F / 16,part.y* 0.17F / 16,part.z* 0.17F / 16);
+            pPoseStack.mulPose((new Quaternionf()).rotationZYX(part.zRot, part.yRot, part.xRot));
+        }
+
+        if (part.xScale != 1.0F || part.yScale != 1.0F || part.zScale != 1.0F) {
+            pPoseStack.scale(part.xScale, part.yScale, part.zScale);
+        }
+
+    }
+    public void translateAndRotateHand(PoseStack pPoseStack, ModelPart part) {
+        pPoseStack.translate(part.x * 0.17 / 16.0F, part.y * 0.17 / 16.0F, part.z * 0.17 / 16.0F);
+        if (part.xRot != 0.0F || part.yRot != 0.0F || part.zRot != 0.0F) {
+            //pPoseStack.rotateAround(new Quaternionf().rotationZYX(part.zRot,part.yRot,part.xRot),part.x* 0.17F / 16,part.y* 0.17F / 16,part.z* 0.17F / 16);
             pPoseStack.mulPose((new Quaternionf()).rotationZYX(part.zRot, part.yRot, part.xRot));
         }
 

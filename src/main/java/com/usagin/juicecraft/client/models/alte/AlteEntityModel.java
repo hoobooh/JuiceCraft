@@ -24,6 +24,7 @@ import static com.usagin.juicecraft.client.animation.AlteAnimation.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation2.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation3.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation4.*;
+import static com.usagin.juicecraft.client.animation.testanims.*;
 
 public class AlteEntityModel extends FriendEntityModel<Alte> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
@@ -57,7 +58,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 		this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible=b;
 	}
 	public void defineAnimations(){
-		this.animations=new Animations(idleGrounded,idleTransition,patGrounded,sit,sitImpatient,sitPat,sleepingPose,deathLoop,deathStart,attackOne,attackTwo,attackThree,attackCounter,bowDraw,standingInspect,wetShake,viewFlower,swimLoop,interact);
+		this.animations=new Animations(attackOne,idleTransition,patGrounded,sit,sitImpatient,sitPat,sleepingPose,deathLoop,deathStart,attackOne,attackTwo,attackThree,attackCounter,bowDraw,standingInspect,wetShake,viewFlower,swimLoop,interact);
 	}
 	public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
 		ModelPart hip = this.root().getChild("hip");

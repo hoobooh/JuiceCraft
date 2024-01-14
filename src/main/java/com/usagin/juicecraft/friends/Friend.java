@@ -1293,7 +1293,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.targetSelector.addGoal(2, new FriendOwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new FriendOwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(4, (new HurtByTargetGoal(this)).setAlertOthers());
-        this.targetSelector.addGoal(5, new FriendNearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
+        this.targetSelector.addGoal(5, new FriendNearestAttackableTargetGoal<>(this, Player.class, 0, true, false, this::isAngryAt));
         this.targetSelector.addGoal(8, new FriendNearestAttackableTargetGoal<>(this, Seagull.class, true));
         this.targetSelector.addGoal(9, new ResetUniversalAngerTargetGoal<>(this, true));
         this.goalSelector.addGoal(5, new FriendFarmGoal(this));
@@ -1304,10 +1304,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     void registerCustomGoals() {
         if (this.aggression > 75) {
-            this.targetSelector.addGoal(6, new FriendNearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::testMood));
-            this.targetSelector.addGoal(7, new FriendNearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, (p_28879_) -> p_28879_ instanceof Enemy));
+            this.targetSelector.addGoal(6, new FriendNearestAttackableTargetGoal<>(this, Player.class, 0, true, false, this::testMood));
+            this.targetSelector.addGoal(7, new FriendNearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, (p_28879_) -> p_28879_ instanceof Enemy));
         } else if (this.aggression > 49) {
-            this.targetSelector.addGoal(7, new FriendNearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, (p_28879_) -> p_28879_ instanceof Enemy && !(p_28879_ instanceof Creeper)));
+            this.targetSelector.addGoal(7, new FriendNearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, (p_28879_) -> p_28879_ instanceof Enemy && !(p_28879_ instanceof Creeper)));
         } else {
             this.targetSelector.addGoal(7, new AvoidEntityGoal<>(this, Mob.class, 5, 1, 1, (p_28879_) -> p_28879_ instanceof Enemy && !(p_28879_ instanceof Creeper)));
         }

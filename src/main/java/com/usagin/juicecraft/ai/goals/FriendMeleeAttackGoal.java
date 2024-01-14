@@ -51,4 +51,9 @@ public class FriendMeleeAttackGoal extends MeleeAttackGoal {
             super.tick();
         }
     }
+    @Override
+    public void stop(){
+
+        super.stop();
+    }
 }
