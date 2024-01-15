@@ -107,13 +107,14 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
             hand=limb.getChild("grabber");
         }
 
-        pPoseStack.translate(0, 1.34, 0);
 
+        pPoseStack.translate(0, 1.5, 0);
 
         translateAndRotate(pPoseStack, root);
         translateAndRotate(pPoseStack, arm);
         translateAndRotate(pPoseStack, limb);
-        translateAndRotateHand(pPoseStack, hand);
+        translateAndRotate(pPoseStack, hand);
+
 
         //pPoseStack.translate(hand.x * 0.17 / 16.0F, hand.y * 0.17 / 16.0F, hand.z * 0.17 / 16.0F);
 
@@ -184,7 +185,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                     } else {
                         animate(pEntity.viewFlowerAnimState, animations.viewflower(),pAgeInTicks);
                         if(!pEntity.viewFlowerAnimState.isStarted()){
-                            animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);
+                            animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks,0.3F);
                             animate(pEntity.inspectAnimState, animations.standinginspect(), pAgeInTicks);
                             animate(pEntity.idleAnimStartState, animations.idletransition(), pAgeInTicks);
                             animate(pEntity.swimAnimState, animations.swim(),pAgeInTicks);
