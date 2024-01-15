@@ -58,23 +58,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 		this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible=b;
 	}
 	public void defineAnimations(){
-		this.animations=new Animations(attackOne,idleTransition,patGrounded,sit,sitImpatient,sitPat,sleepingPose,deathLoop,deathStart,attackOne,attackTwo,attackThree,attackCounter,bowDraw,standingInspect,wetShake,viewFlower,swimLoop,interact);
-	}
-	public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
-		ModelPart hip = this.root().getChild("hip");
-		ModelPart holster = hip.getChild("weaponholster");
-		pPoseStack.translate(0, 1.5, 0);
-		translateAndRotate(pPoseStack, hip);
-		translateAndRotate(pPoseStack, holster);
-		if (pItemStack != null) {
-			if (pItemStack.getItem() instanceof BowItem) {
-				pPoseStack.translate(0.45, 0, 0);
-			}
-		}
-		pPoseStack.rotateAround(new Quaternionf().rotationZYX((float) -Math.toRadians(80), (float) -Math.toRadians(90), 0), holster.x * 0.17F / 16, holster.y * 0.17F / 16, holster.z * 0.17F / 16);
-		pPoseStack.mulPose(new Quaternionf().rotationZYX(0, (float) Math.toRadians(180), 0));
-
-		pPoseStack.scale(0.883F, 0.883F, 0.883F);
+		this.animations=new Animations(idleGrounded,idleTransition,patGrounded,sit,sitImpatient,sitPat,sleepingPose,deathLoop,deathStart,attackOne,attackTwo,attackThree,attackCounter,bowDraw,standingInspect,wetShake,viewFlower,swimLoop,interact);
 	}
 	public void setupAnim(Friend alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 		if(alte instanceof Alte alt){
@@ -156,7 +140,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 				.texOffs(222, 699).addBox(20.0F, 1.0F, -22.0F, 6.0F, 8.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(530, 38).addBox(26.0F, -2.0F, -18.0F, 4.0F, 8.0F, 6.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 11.0F, 0.0F));
 
-		PartDefinition weaponholster = hip.addOrReplaceChild("weaponholster", CubeListBuilder.create(), PartPose.offset(-18.0F, -74.0F, 5.0F));
+		PartDefinition weaponholster = hip.addOrReplaceChild("weaponholster", CubeListBuilder.create(), PartPose.offset(-23.0F, -68.0F, 32.0F));
 
 		PartDefinition waist = hip.addOrReplaceChild("waist", CubeListBuilder.create().texOffs(438, 496).addBox(-14.0F, -18.0F, 4.0F, 28.0F, 22.0F, 8.0F, new CubeDeformation(0.0F))
 				.texOffs(580, 360).addBox(-11.0F, -18.0F, 12.0F, 22.0F, 22.0F, 4.0F, new CubeDeformation(0.0F))

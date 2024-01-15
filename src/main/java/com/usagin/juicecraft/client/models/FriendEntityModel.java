@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
@@ -56,46 +57,18 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         poseStack.pushPose();
-        //parts.customroot().offsetScale(new Vector3f(-0.83F, -0.83F, -0.83F));
-        //poseStack.translate(0, 1.5F, 0);
-        //parts.customroot().x*=4;
         poseStack.scale(0.17F, 0.17F, 0.17F);
-        //poseStack.translate(poseStack.);
         poseStack.translate(0, 1.245/0.17, 0);
-        //parts.customroot().render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        renderModelPart(parts.customroot(),poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-
+        parts.customroot().render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
         poseStack.popPose();
-    }
-    public void renderModelPart(ModelPart part, PoseStack pPoseStack, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
-        if (part.visible) {
-            if (!part.isEmpty() || !part.children.isEmpty()) {
-                pPoseStack.pushPose();
-                part.translateAndRotate(pPoseStack);
-                //translateAndRotate(pPoseStack, part);
-                if (!part.skipDraw) {
-                    compile(part,pPoseStack.last(), pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
-                }
-
-                for(ModelPart modelpart : part.children.values()) {
-                    renderModelPart(modelpart,pPoseStack, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
-                }
-
-                pPoseStack.popPose();
-            }
-        }
-    }
-    private void compile(ModelPart part, PoseStack.Pose pPose, VertexConsumer pVertexConsumer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
-        for(ModelPart.Cube modelpart$cube : part.cubes) {
-            modelpart$cube.compile(pPose, pVertexConsumer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
-        }
-
     }
     public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
         ModelPart root = this.root().getChild("hip");
         ModelPart limb;
         ModelPart arm;
         ModelPart hand;
+        ModelPart waist = root.getChild("waist");
+        ModelPart chest = waist.getChild("chest");
 
         if (pSide.name().equals("LEFT")) {
             arm=this.parts.leftarm();
@@ -111,12 +84,13 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         pPoseStack.translate(0, 1.5, 0);
 
         translateAndRotate(pPoseStack, root);
+        translateAndRotate(pPoseStack, waist);
+        translateAndRotate(pPoseStack, chest);
         translateAndRotate(pPoseStack, arm);
         translateAndRotate(pPoseStack, limb);
         translateAndRotate(pPoseStack, hand);
 
-
-        //pPoseStack.translate(hand.x * 0.17 / 16.0F, hand.y * 0.17 / 16.0F, hand.z * 0.17 / 16.0F);
+        pPoseStack.translate(0, 0.1, 0);
 
         pPoseStack.scale(0.883F, 0.883F, 0.883F);
 
@@ -127,25 +101,26 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
         ModelPart hip = this.root().getChild("hip");
         ModelPart holster = hip.getChild("weaponholster");
-        pPoseStack.translate(0, 1.34125, 0);
+
+        pPoseStack.translate(0, 1.5, 0);
+
         translateAndRotate(pPoseStack, hip);
         translateAndRotate(pPoseStack, holster);
+
         if (pItemStack != null) {
             if (pItemStack.getItem() instanceof BowItem) {
                 pPoseStack.translate(0.45, 0, 0);
             }
         }
-        pPoseStack.translate(0, 0.2, 0);
-        pPoseStack.rotateAround(new Quaternionf().rotationZYX((float) -Math.toRadians(80), (float) -Math.toRadians(90), 0), holster.x * 0.17F / 16, holster.y * 0.17F / 16, holster.z * 0.17F / 16);
-        pPoseStack.mulPose(new Quaternionf().rotationZYX(0, (float) Math.toRadians(180), 0));
 
-        //pPoseStack.scale(0.883F, 0.883F, 0.883F);
+       // pPoseStack.translate(-0.3, 1, 0);
+
+        pPoseStack.scale(0.883F, 0.883F, 0.883F);
     }
 
     public void translateAndRotate(PoseStack pPoseStack, ModelPart part) {
         pPoseStack.translate(part.x * 0.17 / 16.0F, part.y * 0.17 / 16.0F, part.z * 0.17 / 16.0F);
         if (part.xRot != 0.0F || part.yRot != 0.0F || part.zRot != 0.0F) {
-            //pPoseStack.rotateAround(new Quaternionf().rotationZYX(part.zRot,part.yRot,part.xRot),part.x* 0.17F / 16,part.y* 0.17F / 16,part.z* 0.17F / 16);
             pPoseStack.mulPose((new Quaternionf()).rotationZYX(part.zRot, part.yRot, part.xRot));
         }
 
@@ -154,19 +129,6 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         }
 
     }
-    public void translateAndRotateHand(PoseStack pPoseStack, ModelPart part) {
-        pPoseStack.translate(part.x * 0.17 / 16.0F, part.y * 0.17 / 16.0F, part.z * 0.17 / 16.0F);
-        if (part.xRot != 0.0F || part.yRot != 0.0F || part.zRot != 0.0F) {
-            //pPoseStack.rotateAround(new Quaternionf().rotationZYX(part.zRot,part.yRot,part.xRot),part.x* 0.17F / 16,part.y* 0.17F / 16,part.z* 0.17F / 16);
-            pPoseStack.mulPose((new Quaternionf()).rotationZYX(part.zRot, part.yRot, part.xRot));
-        }
-
-        if (part.xScale != 1.0F || part.yScale != 1.0F || part.zScale != 1.0F) {
-            pPoseStack.scale(part.xScale, part.yScale, part.zScale);
-        }
-
-    }
-
     @Override
     public ModelPart root() {
         return this.parts.customroot();
@@ -185,14 +147,15 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                     } else {
                         animate(pEntity.viewFlowerAnimState, animations.viewflower(),pAgeInTicks);
                         if(!pEntity.viewFlowerAnimState.isStarted()){
-                            animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks,0.3F);
+                            animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);
                             animate(pEntity.inspectAnimState, animations.standinginspect(), pAgeInTicks);
                             animate(pEntity.idleAnimStartState, animations.idletransition(), pAgeInTicks);
                             animate(pEntity.swimAnimState, animations.swim(),pAgeInTicks);
                         }
                     }
+                    animate(pEntity.patAnimState, animations.patgrounded(), pAgeInTicks);
                 }
-                animate(pEntity.patAnimState, animations.patgrounded(), pAgeInTicks);
+
             } else {
                 animate(pEntity.sitPatAnimState, animations.sitpat(), pAgeInTicks);
                 animate(pEntity.sitAnimState, animations.sit(), pAgeInTicks);
@@ -216,7 +179,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 if (!pEntity.isSprinting() && !pEntity.isSwimming() && !pEntity.idle()) {
                     this.parts.rightleg().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                     this.parts.leftleg().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
-                    if (pEntity.getAttackCounter() == 0 && !pEntity.drawBowAnimationState.isStarted()) {
+                    if (pEntity.getAttackCounter() == 0 && !pEntity.drawBowAnimationState.isStarted() && !pEntity.swimAnimState.isStarted()) {
                         this.parts.leftarm().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                         this.parts.leftarm().zRot = (float) -Math.toRadians(10);
                         this.parts.rightarm().zRot = (float) Math.toRadians(10);

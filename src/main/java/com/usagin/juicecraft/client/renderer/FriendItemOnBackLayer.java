@@ -39,6 +39,9 @@ public class FriendItemOnBackLayer<T extends Friend, M extends FriendEntityModel
         if (!pItemStack.isEmpty()) {
             pPoseStack.pushPose();
             this.getParentModel().translateToBack(pPoseStack, pItemStack);
+            pPoseStack.mulPose(Axis.XP.rotationDegrees(190.0F));
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees(260.0F));
+            pPoseStack.mulPose(Axis.YP.rotationDegrees(-90.0F));
             this.itemInHandRenderer.renderItem(pLivingEntity, pItemStack, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, false, pPoseStack, pBuffer, pPackedLight);
             pPoseStack.popPose();
         }

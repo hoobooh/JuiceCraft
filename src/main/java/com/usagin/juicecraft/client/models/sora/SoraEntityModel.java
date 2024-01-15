@@ -19,7 +19,10 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
@@ -47,11 +50,69 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
 	public void defineAnimations(){
 		this.animations=new Animations(IDLEGROUNDED,IDLETRANSITION,PATGROUNDED,SIT,SITIMPATIENT,SITPAT,SLEEPINGPOSE,DEATHANIM,DEATHANIMSTART,ATTACKONE,ATTACKTWO,ATTACKTHREE,COUNTERANIM, BOWDRAW, ATTACKONE, ATTACKONE, ATTACKONE, ATTACKONE, ATTACKONE);
 	}
+
+	public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
+		String limbName;
+		String grabberName;
+		if (pSide.name().equals("LEFT")) {
+			limbName = "lowerarm2";
+			grabberName = "grabber2";
+		} else {
+			limbName = "lowerarm";
+			grabberName = "grabber";
+		}
+		Logger LOGGER = LogUtils.getLogger();
+		String armName = pSide.name().toLowerCase() + "arm";
+		ModelPart root = this.root().getChild("Friend");
+		ModelPart limb = this.root().getChild("Friend").getChild(armName).getChild(limbName);
+		ModelPart arm = this.root().getChild("Friend").getChild(armName);
+		ModelPart hand = limb.getChild(grabberName);
+		pPoseStack.translate(0, 1.5, 0);
+		translateAndRotate(pPoseStack, root);
+		translateAndRotate(pPoseStack, arm);
+		translateAndRotate(pPoseStack, limb);
+		translateAndRotate(pPoseStack, hand);
+
+		pPoseStack.scale(0.883F, 0.883F, 0.883F);
+
+	}
+	public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
+		ModelPart root = this.root().getChild("Friend");
+		ModelPart hip = root.getChild("hip");
+		ModelPart holster = hip.getChild("weaponholster");
+		pPoseStack.translate(0, 1.5, 0);
+		translateAndRotate(pPoseStack, root);
+		translateAndRotate(pPoseStack, hip);
+		translateAndRotate(pPoseStack, holster);
+		if(pItemStack!=null){
+			if(pItemStack.getItem() instanceof BowItem){
+				pPoseStack.translate(0.45,0,0);
+			}
+		}
+		pPoseStack.translate(0,0.2,0);
+		pPoseStack.rotateAround(new Quaternionf().rotationZYX((float) -Math.toRadians(80), (float) -Math.toRadians(90),0), holster.x * 0.17F / 16, holster.y * 0.17F / 16, holster.z * 0.17F / 16);
+		pPoseStack.mulPose(new Quaternionf().rotationZYX( 0,(float)Math.toRadians(180),0));
+
+		pPoseStack.scale(0.883F, 0.883F, 0.883F);
+	}
+
+	public void translateAndRotate(PoseStack pPoseStack, ModelPart part) {
+		pPoseStack.translate(part.x * 0.17 / 16.0F, part.y * 0.17 / 16.0F, part.z * 0.17 / 16.0F);
+		if (part.xRot != 0.0F || part.yRot != 0.0F || part.zRot != 0.0F) {
+			pPoseStack.mulPose((new Quaternionf()).rotationZYX(part.zRot, part.yRot, part.xRot));
+		}
+
+		if (part.xScale != 1.0F || part.yScale != 1.0F || part.zScale != 1.0F) {
+			pPoseStack.scale(part.xScale, part.yScale, part.zScale);
+		}
+
+	}
+
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition customroom = partdefinition.addOrReplaceChild("customroom", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition customroom = partdefinition.addOrReplaceChild("customroom", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
 
 		PartDefinition Friend = customroom.addOrReplaceChild("Friend", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
 
