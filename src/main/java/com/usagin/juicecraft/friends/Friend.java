@@ -1622,7 +1622,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public Queue<BlockPos> farmqueue = new LinkedList<>();
 
     public boolean idle() {
-        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && !this.onGround();
+        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround();
     }
 
     public boolean sleeping() {
@@ -1906,25 +1906,32 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.reassessTameGoals();
     }
 
+    @Override
+    public float getEyeHeight(Pose pPose) {
+        return super.getEyeHeight(pPose)-0.2F;
+    }
+
     public void jumpInFluid(FluidType type) {
         if (this.isEyeInFluid(FluidTags.WATER) || this.horizontalCollision) {
-            LOGGER.info(this.horizontalCollision + "");
-            double change = (double) 0.02F * self().getAttributeValue(ForgeMod.SWIM_SPEED.get());
+
+            double change = (double) 0.04F * self().getAttributeValue(ForgeMod.SWIM_SPEED.get());
             self().setDeltaMovement(self().getDeltaMovement().add(0.0D, change, 0.0D));
         }else{
-            self().setDeltaMovement(self().getDeltaMovement().multiply(1D, 0, 1D));
+            this.sinkInFluid(type);
         }
+        self().setDeltaMovement(self().getDeltaMovement().multiply(1, 0.9, 1));
     }
 
     public void sinkInFluid(FluidType type) {
         double change = -(double) 0.02F * self().getAttributeValue(ForgeMod.SWIM_SPEED.get());
         self().setDeltaMovement(self().getDeltaMovement().add(0.0D, change, 0.0D));
+        //self().setDeltaMovement(self().getDeltaMovement().multiply(1, 0.95, 1));
     }
 
     @Override
     public void travel(Vec3 pTravelVector) {
         if (this.isEffectiveAi() && this.isInWater()) {
-
+            self().setDeltaMovement(self().getDeltaMovement().multiply(1, 0.9, 1));
             this.move(MoverType.SELF, this.getDeltaMovement());
             /*this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
             if (!this.getNavigation().isInProgress()) {
