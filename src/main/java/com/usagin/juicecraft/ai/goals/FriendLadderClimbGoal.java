@@ -63,10 +63,7 @@ public class FriendLadderClimbGoal extends Goal {
 
     @Override
     public void tick() {
-        double xOffset;
-        double zOffset;
-
-        yMotion = 0;
+        this.yMotion = 0;
         if (canUse()) {
             //uncomment this if you want to see the path ingame
             /*for(int i=0;i<this.path.getNodeCount();i++){
@@ -82,35 +79,31 @@ public class FriendLadderClimbGoal extends Goal {
                 if (this.path.getNextNodePos().getY() + 1> this.friend.getY() || this.friend.horizontalCollision) {
                     //need enough momentum to clear a two block ladder
                     //LOGGER.info("HIT");
-                    yMotion = 0.17;
+                    this.yMotion = 0.17;
                 } else {
                     //LOGGER.info("HIT2");
-                    yMotion = -0.17;
-                    yMod = 0;
+                    this.yMotion = -0.17;
 
                 }
             } catch (Exception e) {
                 //do nothing
             }
-            findCounter = 20;
+            this.findCounter = 20;
         }
 
         try {
             if (isLadder(this.friend.getBlockX(), this.friend.getBlockY(), this.friend.getBlockZ())) {
                 this.friend.setDeltaMovement(this.friend.getDeltaMovement().multiply(0.3, 1, 0.3));
                 //centers the friend onto the ladder to keep it from bumping into the roof or falling off
-                xOffset = friend.getBlockX() - friend.getX();
-                zOffset = friend.getBlockZ() - friend.getZ();
                 if (soundcounter <= 0) {
                     this.friend.playSound(SoundEvents.LADDER_STEP);
-                    soundcounter = 15;
+                    this.soundcounter = 15;
                 } else {
-                    soundcounter--;
+                    this.soundcounter--;
                 }
                 this.friend.setDeltaMovement(this.friend.getDeltaMovement().multiply(1,0,1));
-                this.friend.setDeltaMovement(this.friend.getDeltaMovement().add(0, yMotion, 0));
+                this.friend.setDeltaMovement(this.friend.getDeltaMovement().add(0, this.yMotion, 0));
             } else {
-                this.yMod = 2;
                 this.yMotion = 0;
             }
         } catch (Exception E) {

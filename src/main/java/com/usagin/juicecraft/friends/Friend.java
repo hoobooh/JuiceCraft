@@ -1654,7 +1654,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public Queue<BlockPos> farmqueue = new LinkedList<>();
 
     public boolean idle() {
-        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.shakeAnimO == 0;
+        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0 ;
     }
 
     public boolean sleeping() {
@@ -1707,21 +1707,21 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.idleCounter = 0;
             }
             boolean sit = this.getInSittingPose();
-            this.interactAnimState.animateWhen(this.getFriendPlaceCounter() > 0, this.tickCount);
-            this.viewFlowerAnimState.animateWhen(this.getViewFlower() > 0, this.tickCount);
-            this.wetAnimState.animateWhen(this.shakeAnimO > 0, this.tickCount);
+            this.interactAnimState.animateWhen(this.canDoThings() && this.getFriendPlaceCounter() > 0, this.tickCount);
+            this.viewFlowerAnimState.animateWhen(this.canDoThings() && this.getViewFlower() > 0, this.tickCount);
+            this.wetAnimState.animateWhen(this.canDoThings() && this.shakeAnimO > 0, this.tickCount);
             this.deathStartAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() != 0, this.tickCount);
             this.deathAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() == 0, this.tickCount);
             this.idleAnimState.animateWhen(!sit && idle() && this.idleCounter == 20 && this.patCounter == 0, this.tickCount);
             this.idleAnimStartState.animateWhen(!sit && idle() && this.idleCounter < 20 && this.patCounter == 0, this.tickCount);
             this.inspectAnimState.animateWhen(!sit && idle() && this.idleCounter == 20 && this.patCounter == 0 && this.animatestandingtimer > 0, this.tickCount);
-            this.patAnimState.animateWhen(this.patCounter > 0 && !this.walkAnimation.isMoving() && !this.isDescending() && this.idle() && this.shakeAnimO == 0, this.tickCount);
+            this.patAnimState.animateWhen(this.canDoThings() && this.patCounter > 0 && !this.walkAnimation.isMoving() && !this.isDescending() && this.idle() && this.shakeAnimO == 0, this.tickCount);
             this.sitPatAnimState.animateWhen(this.getPose() == SITTING && this.patCounter != 0, this.tickCount);
             this.sitAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter == 0, this.tickCount);
             this.sitImpatientAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter != 0, this.tickCount);
-            this.attackAnimState.animateWhen(this.getAttackCounter() != 0, this.tickCount);
-            this.sleepAnimState.animateWhen(true, this.tickCount);
-            this.drawBowAnimationState.animateWhen(this.isUsingItem() && this.getMainHandItem().getItem() instanceof BowItem, this.tickCount);
+            this.attackAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0, this.tickCount);
+            this.sleepAnimState.animateWhen(this.canDoThings(), this.tickCount);
+            this.drawBowAnimationState.animateWhen(this.canDoThings() && this.isUsingItem() && this.getMainHandItem().getItem() instanceof BowItem, this.tickCount);
             this.swimAnimState.animateWhen(this.isInWater() && !this.onGround() && !this.jumping, this.tickCount);
             if (this.getPose() == STANDING && this.idle() && idleCounter < 20) {
                 this.idleCounter++;

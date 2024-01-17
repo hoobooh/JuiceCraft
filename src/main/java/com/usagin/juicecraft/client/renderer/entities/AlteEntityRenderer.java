@@ -2,22 +2,26 @@ package com.usagin.juicecraft.client.renderer.entities;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
+import com.mojang.math.Axis;
 import com.usagin.juicecraft.client.models.alte.AlteEntityModel;
 import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
 import com.usagin.juicecraft.client.renderer.FriendItemInHandLayer;
 import com.usagin.juicecraft.client.renderer.FriendItemOnBackLayer;
+import com.usagin.juicecraft.client.renderer.FriendRenderer;
 import com.usagin.juicecraft.friends.Alte;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Pose;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 
-public class AlteEntityRenderer extends MobRenderer<Alte, AlteEntityModel> {
+public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
     private static final ResourceLocation ALTE_NEUTRAL = new ResourceLocation(MODID, "textures/entities/alte/neutral.png");
     private static final ResourceLocation ALTE_NARROW = new ResourceLocation(MODID, "textures/entities/alte/half.png");
     private static final ResourceLocation ALTE_CLOSED = new ResourceLocation(MODID, "textures/entities/alte/closed.png");
@@ -50,9 +54,5 @@ public class AlteEntityRenderer extends MobRenderer<Alte, AlteEntityModel> {
         return ALTE_NEUTRAL;
     }
     private static final Logger LOGGER = LogUtils.getLogger();
-    @Override
-    public void render(@NotNull Alte pEntity, float pEntityYaw, float pPartialTicks, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight) {
-        super.render(pEntity,pEntityYaw,pPartialTicks,pPoseStack,pBuffer,pPackedLight);
-    }
 }
 

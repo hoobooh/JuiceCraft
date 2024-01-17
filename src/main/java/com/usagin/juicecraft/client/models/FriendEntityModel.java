@@ -133,6 +133,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     public ModelPart root() {
         return this.parts.customroot();
     }
+    public boolean swimming = false;
 
     @Override
     public void setupAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
@@ -151,8 +152,12 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                             animate(pEntity.inspectAnimState, animations.standinginspect(), pAgeInTicks);
                             animate(pEntity.idleAnimStartState, animations.idletransition(), pAgeInTicks);
                             if(pLimbSwingAmount > 0.1){
+                                this.swimming=true;
                                 animate(pEntity.swimAnimState, animations.swimmove(),pAgeInTicks);
+                                //LOGGER.info(pEntity.getDeltaMovement().y +"");
+                                //this.root().getChild("hip").offsetRotation(new Vector3f((float)pEntity.getDeltaMovement().y*(float)pEntity.getDeltaMovement().y/4*25 ,0,0));
                             }else{
+                                this.swimming=false;
                             animate(pEntity.swimAnimState, animations.swim(),pAgeInTicks);}
 
                         }
