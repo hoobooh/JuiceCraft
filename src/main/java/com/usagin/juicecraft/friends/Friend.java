@@ -1273,11 +1273,19 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return false;
     }
 
+    //10: light attack
+    //20: medium
+    //34: counterattack
+    //40: heavy attack
+
     public void setAttackCounter(int time) {
         this.attackCounter = (int) ((time + 2) / this.getAttackSpeed());
         this.getEntityData().set(FRIEND_ATTACKCOUNTER, time + 2);
     }
-
+    //override if change attack timing
+    public int getCounterTiming(){
+        return 26;
+    }
     public void decrementAttackCounter() {
         this.attackCounter--;
         this.getEntityData().set(FRIEND_ATTACKCOUNTER, this.attackCounter);

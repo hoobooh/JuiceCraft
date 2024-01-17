@@ -30,7 +30,7 @@ public class CommonLiveEvents {
         if (event.getEntity() instanceof Friend friend) {
             if (!friend.level().isClientSide()) {
                 if (event.getSource().getEntity() != null && !friend.isDying) {
-                    if (friend.getAttackType() == 50 && friend.getAttackCounter() > 26/friend.getAttackSpeed()) {
+                    if (friend.getAttackType() == 50 && friend.getAttackCounter() > friend.getCounterTiming()/friend.getAttackSpeed()) {
                         event.setCanceled(true);
                     } else if (FriendDefense.shouldDefendAgainst(friend)) {
                         friend.setAttackCounter(34);
