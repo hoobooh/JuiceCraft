@@ -1599,7 +1599,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         }
                     }
                 }
-                if (socialInteraction <= 0 && this.getFriendNorma() < 1) {
+                if (socialInteraction <= 0 || this.getFriendNorma() < 1) {
                     this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.untame").getString());
                     this.setTame(false);
                     this.setFriendNorma(1, -1);
