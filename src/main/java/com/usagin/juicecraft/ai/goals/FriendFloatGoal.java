@@ -14,6 +14,8 @@ import net.minecraft.world.level.material.WaterFluid;
 import net.minecraftforge.common.ForgeMod;
 import org.slf4j.Logger;
 
+//unproducable bug in which the friend will climb into a block instead of on surface. dont know why
+
 public class FriendFloatGoal extends FloatGoal {
     public final Friend friend;
     private static final Logger LOGGER = LogUtils.getLogger();
