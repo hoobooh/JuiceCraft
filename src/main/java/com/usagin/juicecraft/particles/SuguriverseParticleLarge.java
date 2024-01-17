@@ -1,18 +1,26 @@
 package com.usagin.juicecraft.particles;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.logging.LogUtils;
+import com.sun.jna.platform.win32.OpenGL32;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.RenderTypeHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
+import org.slf4j.Logger;
 
 import java.util.SplittableRandom;
 
@@ -25,7 +33,7 @@ public class SuguriverseParticleLarge extends SonicBoomParticle {
         this.friction=0.8F;
         this.quadSize=1.5F;
         this.setSpriteFromAge(spriteset);
-        SplittableRandom random = new SplittableRandom();
+        //SplittableRandom random = new SplittableRandom();
         //randomized colors if wanted
         /*(this.rCol=random.nextFloat(255);
         this.gCol=random.nextFloat(255);
@@ -38,17 +46,7 @@ public class SuguriverseParticleLarge extends SonicBoomParticle {
     }
     @Override
     public int getLightColor(float pPartialTick) {
-        float f = ((float)this.age + pPartialTick) / (float)this.lifetime;
-        f = Mth.clamp(f, 0.0F, 1.0F);
-        int i = super.getLightColor(pPartialTick);
-        int j = i & 255;
-        int k = i >> 16 & 255;
-        j += (int)(f * 15.0F * 16.0F);
-        if (j > 240) {
-            j = 240;
-        }
-
-        return j | k << 16;
+        return 15728880;
     }
     @Override
     public void render(VertexConsumer pBuffer, Camera pRenderInfo, float pPartialTicks) {
@@ -78,12 +76,13 @@ public class SuguriverseParticleLarge extends SonicBoomParticle {
         float f7 = this.getU1();
         float f4 = this.getV0();
         float f5 = this.getV1();
-        int j = this.getLightColor(pPartialTicks);
-        pBuffer.vertex((double)avector3f[0].x(), (double)avector3f[0].y(), (double)avector3f[0].z()).uv(f7, f5).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
-        pBuffer.vertex((double)avector3f[1].x(), (double)avector3f[1].y(), (double)avector3f[1].z()).uv(f7, f4).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
-        pBuffer.vertex((double)avector3f[2].x(), (double)avector3f[2].y(), (double)avector3f[2].z()).uv(f6, f4).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
-        pBuffer.vertex((double)avector3f[3].x(), (double)avector3f[3].y(), (double)avector3f[3].z()).uv(f6, f5).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
+        int j = 15728640;
+        pBuffer.vertex(avector3f[0].x(), avector3f[0].y(), avector3f[0].z()).uv(f7, f5).color(1, 1, 1, this.alpha).uv2(j).endVertex();
+        pBuffer.vertex(avector3f[1].x(), avector3f[1].y(), avector3f[1].z()).uv(f7, f4).color(1, 1, 1, this.alpha).uv2(j).endVertex();
+        pBuffer.vertex(avector3f[2].x(), avector3f[2].y(), avector3f[2].z()).uv(f6, f4).color(1, 1, 1, this.alpha).uv2(j).endVertex();
+        pBuffer.vertex(avector3f[3].x(), avector3f[3].y(), avector3f[3].z()).uv(f6, f5).color(1, 1, 1, this.alpha).uv2(j).endVertex();
     }
+    public static final Logger LOGGER = LogUtils.getLogger();
     @Override
     public @NotNull ParticleRenderType getRenderType() {
         return ParticleRenderType.PARTICLE_SHEET_LIT;

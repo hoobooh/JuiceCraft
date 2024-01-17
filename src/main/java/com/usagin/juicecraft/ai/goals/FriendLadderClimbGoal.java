@@ -26,7 +26,6 @@ public class FriendLadderClimbGoal extends Goal {
     private final Friend friend;
     double yMotion = 0;
     private static final Logger LOGGER = LogUtils.getLogger();
-    private int findCounter = 20;
     int yMod = 2;
     int soundcounter = 15;
     Path path;
@@ -88,7 +87,6 @@ public class FriendLadderClimbGoal extends Goal {
             } catch (Exception e) {
                 //do nothing
             }
-            this.findCounter = 20;
         }
 
         try {

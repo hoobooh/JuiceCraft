@@ -84,6 +84,8 @@ import static net.minecraft.world.item.Items.AIR;
 public abstract class Friend extends FakeWolf implements ContainerListener, MenuProvider, RangedAttackMob {
     int captureDifficulty;
     int hungerMeter;
+    public int snoozeCounter = 40;
+    public int flowercooldown = 300;
     public int viewflower = 0;
     public int itempickup = 0;
     double[] normaprogress = new double[9];
@@ -421,7 +423,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         ItemStack copy = itemstack.copy();
         this.onItemPickup(pItemEntity);
         this.take(pItemEntity, itemstack.getCount());
-
+        this.playTimedVoice(this.getEquip());
         this.moveItemToEmptySlots(this.inventory, itemstack);
 
         itemstack.shrink(copy.getCount() - itemstack.getCount());
@@ -604,21 +606,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.setTimeSinceLastPat(0);
         this.getNavigation().stop();
         if (this.random.nextInt(20) == 6) {
-            if (this.mood <= 80) {
-                this.mood += 20;
-                if (this.level() instanceof ServerLevel sLevel) {
-                    for (int i = 0; i < 5; i++) {
-                        sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), 0.5);
-                    }
+            this.mood+=Mth.clamp(this.mood+20,0,100);
+            if (this.level() instanceof ServerLevel sLevel) {
+                for (int i = 0; i < 5; i++) {
+                    sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), 0.5);
+                }
 
-                }
-            } else {
-                this.mood = 100;
-                if (this.level() instanceof ServerLevel sLevel) {
-                    for (int i = 0; i < 5; i++) {
-                        sLevel.sendParticles(HEART, this.getX(), this.getY() + 1, this.getZ(), 1, this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), this.random.nextInt(-1, 2), 0.5);
-                    }
-                }
             }
             this.updateFriendNorma(0.02F, 0);
         }
@@ -1282,10 +1275,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.attackCounter = (int) ((time + 2) / this.getAttackSpeed());
         this.getEntityData().set(FRIEND_ATTACKCOUNTER, time + 2);
     }
+
     //override if change attack timing
-    public int getCounterTiming(){
+    public int getCounterTiming() {
         return 26;
     }
+
     public void decrementAttackCounter() {
         this.attackCounter--;
         this.getEntityData().set(FRIEND_ATTACKCOUNTER, this.attackCounter);
@@ -1568,7 +1563,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             //mood/social
             if (!this.wandering) {
                 if (this.aggression < 50) {
-                    if (this.tickCount % (100 * (1 + (int) this.getFriendNorma())) == 0) {
+                    if (this.tickCount % (100 * Mth.clamp((int) this.getFriendNorma(),1,5)) == 0) {
                         if (mood < 100) {
                             this.mood++;
                         }
@@ -1580,7 +1575,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         }
                     }
                 } else if (this.aggression < 75) {
-                    if (this.tickCount % (200 * (1 + (int) this.getFriendNorma())) == 0) {
+                    if (this.tickCount % (200 * Mth.clamp((int) this.getFriendNorma(),1,5)) == 0) {
                         if (this.mood < 100) {
                             this.mood++;
                         }
@@ -1592,7 +1587,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         }
                     }
                 } else {
-                    if (this.tickCount % (300 * (1 + (int) this.getFriendNorma())) == 0) {
+                    if (this.tickCount % (300 * Mth.clamp((int) this.getFriendNorma(),1,5)) == 0) {
                         if (this.mood < 100) {
                             this.mood++;
                         }
@@ -1604,7 +1599,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         }
                     }
                 }
-                if (socialInteraction <= 0) {
+                if (socialInteraction <= 0 && this.getFriendNorma() < 1) {
                     this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.untame").getString());
                     this.setTame(false);
                     this.setFriendNorma(1, -1);
@@ -1654,7 +1649,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public Queue<BlockPos> farmqueue = new LinkedList<>();
 
     public boolean idle() {
-        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0 ;
+        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0;
     }
 
     public boolean sleeping() {
@@ -1779,54 +1774,56 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 if (EnemyEvaluator.evaluateAreaDanger(this) > this.getFriendExperience() / 2) {
                     this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.dangerarea").getString());
                 }
-                this.updateFriendNorma(0.01F, 5);
-                if (this.hungerMeter > 0) {
-                    this.setHungerMeter(this.hungerMeter - 1);
-                    if (this.tickCount % 4000 == 0) {
-                        if (this.hungerMeter < 50) {
-                            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.starvation").getString());
-                        }
+            }
+            if(this.tickCount % 200 == 0){
+            this.updateFriendNorma(0.01F, 5);
+            if (this.hungerMeter > 0) {
+                this.setHungerMeter(this.hungerMeter - 1);
+                if (this.tickCount % 4000 == 0) {
+                    if (this.hungerMeter < 50) {
+                        this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.starvation").getString());
                     }
-                } else {
-                    this.updateFriendNorma(-0.1F, 7);
-                    this.mood -= 20;
                 }
-                if (this.doFarming && this.isTame()) {
-                    boolean hasSpace = false;
-                    for (int i = 7; i < this.inventory.getContainerSize(); i++) {
-                        if (this.inventory.getItem(i).isEmpty()) {
-                            hasSpace = true;
-                        }
+            } else {
+                this.updateFriendNorma(-0.1F, 7);
+                this.mood -= 20;
+            }
+            if (this.doFarming && this.isTame()) {
+                boolean hasSpace = false;
+                for (int i = 7; i < this.inventory.getContainerSize(); i++) {
+                    if (this.inventory.getItem(i).isEmpty()) {
+                        hasSpace = true;
                     }
-                    if (hasSpace) {
-                        this.farmqueue.clear();
-                        for (int x = -5; x < 6; x++) {
-                            for (int y = -2; y < 3; y++) {
-                                for (int z = -5; z < 6; z++) {
-                                    BlockPos pos = new BlockPos(this.getBlockX() + x, this.getBlockY() + y, this.getBlockZ() + z);
-                                    BlockState state = this.level().getBlockState(pos);
-                                    Block block = state.getBlock();
+                }
+                if (hasSpace) {
+                    this.farmqueue.clear();
+                    for (int x = -5; x < 6; x++) {
+                        for (int y = -2; y < 3; y++) {
+                            for (int z = -5; z < 6; z++) {
+                                BlockPos pos = new BlockPos(this.getBlockX() + x, this.getBlockY() + y, this.getBlockZ() + z);
+                                BlockState state = this.level().getBlockState(pos);
+                                Block block = state.getBlock();
 
-                                    if (block instanceof CropBlock cropBlock) {
-                                        if (cropBlock.isMaxAge(this.level().getBlockState(pos)) && ((CropBlock) block).getPlantType(this.level(), pos) == PlantType.CROP) {
-                                            if (this.farmqueue.size() < 20) {
-                                                this.farmqueue.offer(pos);
-                                            } else break;
-                                        }
+                                if (block instanceof CropBlock cropBlock) {
+                                    if (cropBlock.isMaxAge(this.level().getBlockState(pos)) && ((CropBlock) block).getPlantType(this.level(), pos) == PlantType.CROP) {
+                                        if (this.farmqueue.size() < 20) {
+                                            this.farmqueue.offer(pos);
+                                        } else break;
                                     }
                                 }
-
                             }
-                        }
 
+                        }
                     }
+
                 }
-                if (this.tickCount % 24000 == 0) {
-                    this.normaprogress = new double[8];
-                }
+            }}
+            if (this.tickCount % 24000 == 0) {
+                this.normaprogress = new double[8];
             }
         }
-        if (this.isInWater() && !this.onGround() && !this.jumping && this.getPose()!=SITTING) {
+
+        if (this.isInWater() && !this.onGround() && !this.jumping && this.getPose() != SITTING) {
             this.setPose(SWIMMING);
         } else {
             if (this.getPose() == SWIMMING) {
@@ -1982,7 +1979,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public float getBackupSurfaceWaterDistanceFromEye() {
-            float eyeheight = (float) this.getEyeY();
+        float eyeheight = (float) this.getEyeY();
 
 
         BlockPos toppos = BlockPos.containing(this.getX(), eyeheight - 1, this.getZ());

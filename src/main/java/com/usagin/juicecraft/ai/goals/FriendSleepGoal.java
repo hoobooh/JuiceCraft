@@ -30,7 +30,6 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 public class FriendSleepGoal extends Goal {
     Friend friend;
-    int snoozeCounter = 40;
     int sleeptime = 0;
 
     public FriendSleepGoal(Friend f) {
@@ -110,14 +109,14 @@ public class FriendSleepGoal extends Goal {
                 this.friend.refreshDimensions();}
             }
 
-            if (snoozeCounter-- == 0) {
+            if (this.friend.snoozeCounter-- == 0) {
                 if (friend.level() instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(SLEEPY.get(), this.friend.getX() + (float) this.friend.getRandom().nextInt(-1,2)/2,
                                 this.friend.getY()+this.friend.getBbHeight() + (float) this.friend.getRandom().nextInt(-1,2)/7,
                                 this.friend.getZ() + (float) this.friend.getRandom().nextInt(-1,2)/2,
                                 1, 0, 0, 0, 0.1);
                 }
-                snoozeCounter = 40;
+                this.friend.snoozeCounter = 40;
             }
         } else {
             this.stop();

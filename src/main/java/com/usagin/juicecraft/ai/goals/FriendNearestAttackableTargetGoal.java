@@ -16,9 +16,7 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.PlantType;
@@ -28,6 +26,8 @@ import java.awt.*;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+
+import static com.usagin.juicecraft.particles.SuguriverseParticleLarge.LOGGER;
 
 public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     Friend friend;
@@ -73,6 +73,7 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
 
     @Override
     protected void findTarget() {
+        //LOGGER.info(this.friend.flowercooldown +" " + this.friend.getViewFlower());
         if (this.targetType != Player.class && this.targetType != ServerPlayer.class) {
             this.target = this.mob.level().getNearestEntity(this.mob.level().getEntitiesOfClass(this.targetType, this.getTargetSearchArea(this.getFollowDistance()), (p_148152_) -> {
                 return true;
@@ -84,50 +85,57 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
                     for (Entity e : entityList) {
                         if (e instanceof ItemEntity item) {
                             if (this.friend.wantsToPickUp(item.getItem())) {
-                                this.friend.chasingitem=true;
-                                this.friend.getNavigation().moveTo(e,1);
+                                this.friend.chasingitem = true;
+                                this.friend.getNavigation().moveTo(e, 1);
                                 return;
                             }
                         }
                     }
                 }
-                for (int x = -1; x < 2; x++) {
-                    for (int y = -1; y < 2; y++) {
-                        for (int z = -1; z < 2; z++) {
-                            BlockPos pos = new BlockPos(this.friend.getBlockX() + x, this.friend.getBlockY() + y, this.friend.getBlockZ() + z);
-                            BlockState state = this.friend.level().getBlockState(pos);
-                            Block block = state.getBlock();
-
-                            if (block instanceof FlowerBlock) {
-                                this.friend.getNavigation().stop();
-                                this.friend.lookAt(EntityAnchorArgument.Anchor.EYES,pos.getCenter());
-                                this.friend.playVoice(this.friend.getLaugh());
-                                this.friend.setViewFlower(60);
-                                return;
+                if (this.friend.getViewFlower() == 0 && this.friend.flowercooldown <= 0) {
+                    for (int x = -1; x < 2; x++) {
+                        for (int y = -1; y < 2; y++) {
+                            for (int z = -1; z < 2; z++) {
+                                BlockPos pos = new BlockPos(this.friend.getBlockX() + x, this.friend.getBlockY() + y, this.friend.getBlockZ() + z);
+                                BlockState state = this.friend.level().getBlockState(pos);
+                                Block block = state.getBlock();
+                                //LOGGER.info(block.getName().getString() +" " + block.getClass().getSimpleName());
+                                if (block instanceof BushBlock) {
+                                    this.friend.getNavigation().stop();
+                                    this.friend.lookAt(EntityAnchorArgument.Anchor.EYES, pos.getCenter());
+                                    this.friend.playVoice(this.friend.getLaugh());
+                                    this.friend.setViewFlower(60);
+                                    this.friend.flowercooldown = 300;
+                                    return;
+                                }
                             }
                         }
-
                     }
-                }
-                for (int x = -3; x < 4; x++) {
-                    for (int y = -1; y < 2; y++) {
-                        for (int z = -3; z < 4; z++) {
-                            BlockPos pos = new BlockPos(this.friend.getBlockX() + x, this.friend.getBlockY() + y, this.friend.getBlockZ() + z);
-                            BlockState state = this.friend.level().getBlockState(pos);
-                            Block block = state.getBlock();
+                    if (this.friend.tickCount % 200 == 0) {
+                        for (int x = -10; x < 11; x++) {
+                            for (int y = -2; y < 3; y++) {
+                                for (int z = -10; z < 11; z++) {
+                                    BlockPos pos = new BlockPos(this.friend.getBlockX() + x, this.friend.getBlockY() + y, this.friend.getBlockZ() + z);
+                                    BlockState state = this.friend.level().getBlockState(pos);
+                                    Block block = state.getBlock();
 
-                            if (block instanceof FlowerBlock) {
-                                this.friend.getNavigation().moveTo(pos.getX(),pos.getY(),pos.getZ(),1);
-                                return;
+                                    if (block instanceof BushBlock) {
+                                        this.friend.getNavigation().moveTo(pos.getX(), pos.getY(), pos.getZ(), 1);
+                                        return;
+                                    }
+                                }
+
                             }
                         }
-
                     }
                 }
+                if (this.friend.flowercooldown > 0) {
+                    this.friend.flowercooldown--;
+                }
+            } else {
+                this.target = this.mob.level().getNearestPlayer(this.targetConditions, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
             }
-        } else {
-            this.target = this.mob.level().getNearestPlayer(this.targetConditions, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
-        }
 
+        }
     }
 }
