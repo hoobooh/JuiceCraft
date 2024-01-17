@@ -447,6 +447,17 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.setAttackType(10);
         }
     }
+    void doReleaseStart(){
+        if (this.getAttackCounter() == (int) (22 / this.getAttackSpeed()) && this.getAttackType() == 40) {
+            this.doHurtTarget();
+        } else if (this.getAttackCounter() == (int) (10 / this.getAttackSpeed()) && this.getAttackType() == 20) {
+            this.doHurtTarget();
+        } else if (this.getAttackCounter() == (int) (5 / this.getAttackSpeed()) && this.getAttackType() == 10) {
+            this.doHurtTarget();
+        } else if (this.getAttackCounter() == (int) (19 / this.getAttackSpeed()) && this.getAttackType() == 50) {
+            this.doHurtTarget();
+        }
+    }
 
     public void playTimedVoice(SoundEvent sound) {
         if (this.soundCounter >= 50) {
@@ -455,6 +466,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public void setAttackType(int attackType) {
+        this.attackAnimState.stop();
         this.attackType = attackType;
         this.getEntityData().set(FRIEND_ATTACKTYPE, attackType);
     }
@@ -1171,6 +1183,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.placecounter = n;
         this.getEntityData().set(FRIEND_PLACECOUNTER, n);
     }
+    public void setFriendSwimCounter(int n){
+        this.startfloattimer=n;
+        this.getEntityData().set(FRIEND_SWIMCOUNTER,n);
+    }
+    public int getFriendSwimCounter(){
+        return this.getEntityData().get(FRIEND_SWIMCOUNTER);
+    }
 
     protected void defineSynchedData() {
         super.defineSynchedData();
@@ -1205,8 +1224,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.entityData.define(FRIEND_ITEMPICKUP, this.itempickup);
         this.entityData.define(FRIEND_VIEWFLOWER, this.viewflower);
         this.entityData.define(FRIEND_PLACECOUNTER, this.placecounter);
+        this.entityData.define(FRIEND_SWIMCOUNTER, this.startfloattimer);
     }
 
+    public static final EntityDataAccessor<Integer> FRIEND_SWIMCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_PLACECOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_VIEWFLOWER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_ITEMPICKUP = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
@@ -1292,7 +1313,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(8, new FriendLonelyGoal(this, 1, false));
-        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new FriendFloatGoal(this));
         this.goalSelector.addGoal(4, new OpenDoorGoal(this, true));
         this.goalSelector.addGoal(4, new FriendLadderClimbGoal(this));
         this.goalSelector.addGoal(5, new FriendMeleeAttackGoal(this, 1.0D, true));
@@ -1622,7 +1643,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public Queue<BlockPos> farmqueue = new LinkedList<>();
 
     public boolean idle() {
-        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround();
+        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.shakeAnimO ==0;
     }
 
     public boolean sleeping() {
@@ -1671,7 +1692,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             if (this.animatestandingtimer > 0) {
                 this.animatestandingtimer--;
             }
-            if (this.isWet() || this.getAttackCounter() > 0) {
+            if (this.getAttackCounter() > 0 || this.shakeAnimO > 0) {
                 this.idleCounter = 0;
             }
             boolean sit = this.getInSittingPose();
@@ -1683,14 +1704,14 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.idleAnimState.animateWhen(!sit && idle() && this.idleCounter == 20 && this.patCounter == 0, this.tickCount);
             this.idleAnimStartState.animateWhen(!sit && idle() && this.idleCounter < 20 && this.patCounter == 0, this.tickCount);
             this.inspectAnimState.animateWhen(!sit && idle() && this.idleCounter == 20 && this.patCounter == 0 && this.animatestandingtimer > 0, this.tickCount);
-            this.patAnimState.animateWhen(this.patCounter > 0 && !this.walkAnimation.isMoving() && !this.isDescending() && this.idle(), this.tickCount);
+            this.patAnimState.animateWhen(this.patCounter > 0 && !this.walkAnimation.isMoving() && !this.isDescending() && this.idle() && this.shakeAnimO == 0, this.tickCount);
             this.sitPatAnimState.animateWhen(this.getPose() == SITTING && this.patCounter != 0, this.tickCount);
             this.sitAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter == 0, this.tickCount);
             this.sitImpatientAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter != 0, this.tickCount);
             this.attackAnimState.animateWhen(this.getAttackCounter() != 0, this.tickCount);
             this.sleepAnimState.animateWhen(true, this.tickCount);
             this.drawBowAnimationState.animateWhen(this.isUsingItem() && this.getMainHandItem().getItem() instanceof BowItem, this.tickCount);
-            this.swimAnimState.animateWhen(this.isInWater() && !this.onGround(), this.tickCount);
+            this.swimAnimState.animateWhen(this.isInWater() && !this.onGround() && !this.jumping, this.tickCount);
             if (this.getPose() == STANDING && this.idle() && idleCounter < 20) {
                 this.idleCounter++;
             }
@@ -1700,15 +1721,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
         else {
             if (this.getAttackCounter() > 0) {
-                if (this.getAttackCounter() == (int) (22 / this.getAttackSpeed()) && this.getAttackType() == 40) {
-                    this.doHurtTarget();
-                } else if (this.getAttackCounter() == (int) (10 / this.getAttackSpeed()) && this.getAttackType() == 20) {
-                    this.doHurtTarget();
-                } else if (this.getAttackCounter() == (int) (5 / this.getAttackSpeed()) && this.getAttackType() == 10) {
-                    this.doHurtTarget();
-                } else if (this.getAttackCounter() == (int) (19 / this.getAttackSpeed()) && this.getAttackType() == 50) {
-                    this.doHurtTarget();
-                }
+                this.doReleaseStart();
                 this.decrementAttackCounter();
             }
             if (this.placecounter > 0) {
@@ -1813,6 +1826,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (this.isInvulnerableTo(pSource)) {
             return false;
         } else {
+            this.playVoice(this.getHurt(pAmount));
             this.mood -= (int) (3 * this.getPeaceAffinityModifier());
             this.setFriendInSittingPose(false);
             Entity entity = pSource.getEntity();
@@ -1825,6 +1839,14 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.setPersistentAngerTarget(null);
         }
         return b;
+    }
+
+    public boolean isFree(double pX, double pY, double pZ) {
+        if(this.isInWater() && this.getFriendSwimCounter() != 0){
+            //LOGGER.info(this.startfloattimer +"");
+            return false;
+        }
+        return super.isFree(pX, pY, pZ);
     }
 
     @Override
@@ -1905,65 +1927,50 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
         this.reassessTameGoals();
     }
-
+    public int startfloattimer = 0;
     @Override
     public float getEyeHeight(Pose pPose) {
-        return super.getEyeHeight(pPose)-0.2F;
+        return super.getEyeHeight(pPose) - 0.2F;
     }
-
-    public void jumpInFluid(FluidType type) {
-        if (this.isEyeInFluid(FluidTags.WATER) || this.horizontalCollision) {
-
-            double change = (double) 0.04F * self().getAttributeValue(ForgeMod.SWIM_SPEED.get());
-            self().setDeltaMovement(self().getDeltaMovement().add(0.0D, change, 0.0D));
-        }else{
-            this.sinkInFluid(type);
-        }
-        self().setDeltaMovement(self().getDeltaMovement().multiply(1, 0.9, 1));
-    }
-
-    public void sinkInFluid(FluidType type) {
-        double change = -(double) 0.02F * self().getAttributeValue(ForgeMod.SWIM_SPEED.get());
-        self().setDeltaMovement(self().getDeltaMovement().add(0.0D, change, 0.0D));
-        //self().setDeltaMovement(self().getDeltaMovement().multiply(1, 0.95, 1));
-    }
-
     @Override
-    public void travel(Vec3 pTravelVector) {
-        if (this.isEffectiveAi() && this.isInWater()) {
-            self().setDeltaMovement(self().getDeltaMovement().multiply(1, 0.9, 1));
-            this.move(MoverType.SELF, this.getDeltaMovement());
-            /*this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
-            if (!this.getNavigation().isInProgress()) {
-                int level = this.getWaterLevelAbove();
-                //if(this.getDeltaMovement().y()>0){
-                    this.setDeltaMovement(this.getDeltaMovement().multiply(1, (float) (level-2)/10, 1));
-                //}
-
-            }
-            //LOGGER.info(level +"WATER LEVEL");
-
-            /*if (this.getTarget() == null) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.005D, 0.0D));
-            }*/
-        } else {
-            super.travel(pTravelVector);
+    public void setPos(double x, double y, double z) {
+        if(this.isInWater() && this.getFriendSwimCounter() <= 0){
+            double diff = y-this.getY();
+                diff=diff/4;
+            this.setPosRaw(x,this.getY() + diff,z);
         }
-
+        else{
+        this.setPosRaw(x,y,z);}
+        this.setBoundingBox(this.makeBoundingBox());
     }
 
 
-    public float getWaterLevelAbove() {
-        float height = -1;
-        for (int y = 0; y < 10; y++) {
-            FluidState fluidstate = this.level().getFluidState(new BlockPos(this.getBlockX(), this.getBlockY() + y, this.getBlockZ()));
-            if (!(fluidstate.getType() instanceof WaterFluid)) {
-                return (this.getY() - this.getBlockY() > 0.3) ? y + 0.5F : y;
-            } else {
-                height = y;
-            }
+    public float getSurfaceWaterDistanceFromEye() {
+        float eyeheight = (float) this.getEyeY();
+        BlockPos toppos = BlockPos.containing(this.getX(), eyeheight, this.getZ());
+        int topheight = BlockPos.containing(this.getX(), eyeheight, this.getZ()).getY();
+
+        FluidState fluidstate = this.level().getFluidState(toppos);
+        float fluidheight = fluidstate.getHeight(this.level(), toppos);
+        if (this.canSwimInFluidType(fluidstate.getFluidType()) && fluidheight > 0) {
+            return eyeheight - topheight - fluidheight;
+        } else {
+            return getBackupSurfaceWaterDistanceFromEye();
         }
-        return (this.getY() - this.getBlockY() > 0.3) ? height + 0.5F : height;
+    }
+
+    public float getBackupSurfaceWaterDistanceFromEye() {
+        float eyeheight = (float) this.getEyeY();
+        BlockPos toppos = BlockPos.containing(this.getX(), eyeheight - 1, this.getZ());
+        int topheight = BlockPos.containing(this.getX(), eyeheight - 1, this.getZ()).getY();
+
+        FluidState fluidstate = this.level().getFluidState(toppos);
+        float fluidheight = fluidstate.getHeight(this.level(), toppos);
+        if (this.canSwimInFluidType(fluidstate.getFluidType()) && fluidheight > 0) {
+            return eyeheight - topheight - fluidheight;
+        } else {
+            return 1;
+        }
     }
 
     private SoundEvent getFallDamageSound(int pHeight) {

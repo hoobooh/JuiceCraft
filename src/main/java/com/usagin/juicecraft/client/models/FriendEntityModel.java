@@ -47,7 +47,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                              AnimationDefinition counter, AnimationDefinition bowdraw,
                              AnimationDefinition standinginspect, AnimationDefinition wet,
                              AnimationDefinition viewflower, AnimationDefinition swim,
-                             AnimationDefinition interact) {
+                             AnimationDefinition interact, AnimationDefinition swimmove) {
     }
 
     public record ModelParts(ModelPart customroot, ModelPart head, ModelPart leftarm, ModelPart rightarm,
@@ -150,7 +150,11 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                             animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);
                             animate(pEntity.inspectAnimState, animations.standinginspect(), pAgeInTicks);
                             animate(pEntity.idleAnimStartState, animations.idletransition(), pAgeInTicks);
-                            animate(pEntity.swimAnimState, animations.swim(),pAgeInTicks);
+                            if(pLimbSwingAmount > 1){
+                                animate(pEntity.swimAnimState, animations.swimmove(),pAgeInTicks);
+                            }else{
+                            animate(pEntity.swimAnimState, animations.swim(),pAgeInTicks);}
+
                         }
                     }
                     animate(pEntity.patAnimState, animations.patgrounded(), pAgeInTicks);
@@ -179,7 +183,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 if (!pEntity.isSprinting() && !pEntity.isSwimming() && !pEntity.idle()) {
                     this.parts.rightleg().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                     this.parts.leftleg().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
-                    if (pEntity.getAttackCounter() == 0 && !pEntity.drawBowAnimationState.isStarted() && !pEntity.swimAnimState.isStarted()) {
+                    if (pEntity.getAttackCounter() == 0 && !pEntity.drawBowAnimationState.isStarted() && !pEntity.swimAnimState.isStarted() && pEntity.shakeAnimO == 0) {
                         this.parts.leftarm().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                         this.parts.leftarm().zRot = (float) -Math.toRadians(10);
                         this.parts.rightarm().zRot = (float) Math.toRadians(10);

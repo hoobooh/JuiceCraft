@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
@@ -23,7 +24,7 @@ public class Alte extends Friend{
         super(pEntityType, pLevel);
     }
     public static AttributeSupplier.Builder getAlteAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 25).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.ATTACK_DAMAGE, 3);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 25).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.ATTACK_DAMAGE, 3).add(ForgeMod.SWIM_SPEED.get(),3);
     }
     public boolean isUsingHyper(){
         return false;

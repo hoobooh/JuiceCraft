@@ -66,7 +66,6 @@ public class CommonLiveEvents {
                             friend.doDeathEvent();
                         }
                     }
-                    friend.playVoice(friend.getHurt(event.getAmount()));
                     for (int i = 3; i < 7; i++) {
                         if (!friend.inventory.getItem(i).isEmpty()) {
                             if (i == 3) {

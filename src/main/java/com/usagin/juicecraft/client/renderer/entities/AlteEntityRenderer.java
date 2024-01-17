@@ -38,7 +38,7 @@ public class AlteEntityRenderer extends MobRenderer<Alte, AlteEntityModel> {
     }
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull Alte pEntity) {
-        if(pEntity.getPose() == Pose.SLEEPING||pEntity.blinkCounter<=6){
+        if(pEntity.getPose() == Pose.SLEEPING||pEntity.blinkCounter<=6||(pEntity.shakeAnimO>0 && pEntity.shakeAnimO<2) || pEntity.shakeAnimO > 3){
             return ALTE_CLOSED;
         }
         else if(pEntity.patCounter!=0 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive())){
