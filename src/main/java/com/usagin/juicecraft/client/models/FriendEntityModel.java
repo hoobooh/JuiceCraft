@@ -150,7 +150,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                             animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);
                             animate(pEntity.inspectAnimState, animations.standinginspect(), pAgeInTicks);
                             animate(pEntity.idleAnimStartState, animations.idletransition(), pAgeInTicks);
-                            if(pLimbSwingAmount > 1){
+                            if(pLimbSwingAmount > 0.1){
                                 animate(pEntity.swimAnimState, animations.swimmove(),pAgeInTicks);
                             }else{
                             animate(pEntity.swimAnimState, animations.swim(),pAgeInTicks);}
@@ -185,16 +185,19 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                     this.parts.leftleg().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
                     if (pEntity.getAttackCounter() == 0 && !pEntity.drawBowAnimationState.isStarted() && !pEntity.swimAnimState.isStarted() && pEntity.shakeAnimO == 0) {
                         this.parts.leftarm().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
-                        this.parts.leftarm().zRot = (float) -Math.toRadians(10);
-                        this.parts.rightarm().zRot = (float) Math.toRadians(10);
                         this.parts.rightarm().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
                     }
                 }
                 animate(pEntity.drawBowAnimationState, animations.bowdraw(), pAgeInTicks);
             }
             if (!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose() != SLEEPING && pEntity.animatestandingtimer <= 0) {
-                this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
-                this.parts.head().xRot = (pHeadPitch * (float) Math.PI / 180f);
+                if((pEntity.sleepAnimState.isStarted() && pLimbSwingAmount > 0.1)){
+                    this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
+                }else{
+                    this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
+                    this.parts.head().xRot = (pHeadPitch * (float) Math.PI / 180f);
+                }
+
             }
             if(!pEntity.attackAnimState.isStarted()){
                 animate(pEntity.interactAnimState,animations.interact(),pAgeInTicks);

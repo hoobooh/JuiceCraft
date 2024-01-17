@@ -6,6 +6,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.Sheep;
@@ -34,14 +35,15 @@ public class FriendFloatGoal extends FloatGoal {
     }
 
     public void tick() {
+        //LOGGER.info(this.friend.getSurfaceWaterDistanceFromEye() +"");
         if (this.friend.getSurfaceWaterDistanceFromEye() < 0.2) {
             double change = (double) 0.02F * this.friend.getAttributeValue(ForgeMod.SWIM_SPEED.get());
             this.friend.setDeltaMovement(this.friend.getDeltaMovement().add(0.0D, change, 0.0D));
         } else if (this.friend.horizontalCollision && this.friend.getFriendSwimCounter() == 0) {
-            double change = (double) 0.4F * this.friend.getAttributeValue(ForgeMod.SWIM_SPEED.get());
+            double change = (double) 0.04F * this.friend.getAttributeValue(ForgeMod.SWIM_SPEED.get());
             this.friend.setDeltaMovement(this.friend.getDeltaMovement().add(0.0D, change, 0.0D));
         }
-        if (this.friend.getSurfaceWaterDistanceFromEye() > 0.6) {
+        if (this.friend.getSurfaceWaterDistanceFromEye() > 0.45) {
             this.friend.setFriendSwimCounter(11);
         }
         if (this.friend.getFriendSwimCounter() > 0) {

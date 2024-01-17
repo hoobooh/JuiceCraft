@@ -58,7 +58,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 		this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible=b;
 	}
 	public void defineAnimations(){
-		this.animations=new Animations(idleGrounded,idleTransition,patGrounded,sit,sitImpatient,sitPat,sleepingPose,deathLoop,deathStart,attackOne,attackTwo,attackThree,attackCounter,bowDraw,standingInspect,wetShake,viewFlower,swimLoop,interact);
+		this.animations=new Animations(idleGrounded,idleTransition,patGrounded,sit,sitImpatient,sitPat,sleepingPose,deathLoop,deathStart,attackOne,attackTwo,attackThree,attackCounter,bowDraw,standingInspect,wetShake,viewFlower,swimLoop,interact,swimMove);
 	}
 	public void setupAnim(Friend alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 		if(alte instanceof Alte alt){
@@ -75,7 +75,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 		PartDefinition customroot = partdefinition.addOrReplaceChild("customroot", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
 		PartDefinition hip = customroot.addOrReplaceChild("hip", CubeListBuilder.create().texOffs(342, 217).addBox(-16.0F, -84.0F, -7.0F, 32.0F, 12.0F, 3.0F, new CubeDeformation(0.0F))
-				.texOffs(296, 313).addBox(-17.0F, -84.0F, -4.0F, 34.0F, 24.0F, 16.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+				.texOffs(296, 313).addBox(-17.0F, -84.0F, -4.0F, 34.0F, 20.0F, 16.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
 		PartDefinition butt = hip.addOrReplaceChild("butt", CubeListBuilder.create().texOffs(290, 92).addBox(-19.0F, 0.0F, 2.0F, 38.0F, 12.0F, 19.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -71.0F, -7.0F));
 

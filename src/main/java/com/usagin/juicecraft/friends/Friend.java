@@ -114,7 +114,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean chasingitem = false;
     public int[] skillLevels = new int[6];
     public boolean[] skillEnabled = new boolean[]{false, false, false, false, false, false};
-    public Map<Pose, EntityDimensions> POSES = ImmutableMap.<Pose, EntityDimensions>builder().put(STANDING, EntityDimensions.scalable(0.6F, 1.8F)).put(SITTING, EntityDimensions.scalable(0.6F, 1.1F)).put(Pose.SLEEPING, EntityDimensions.scalable(0.6F, 0.5F)).build();
+    public Map<Pose, EntityDimensions> POSES = ImmutableMap.<Pose, EntityDimensions>builder().put(STANDING, EntityDimensions.scalable(0.6F, 1.8F)).put(SITTING, EntityDimensions.scalable(0.6F, 1.1F)).put(Pose.SLEEPING, EntityDimensions.scalable(0.6F, 0.5F)).put(SWIMMING, EntityDimensions.scalable(0.6F, 0.9F)).build();
     private final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedAttackGoal<>(this, 1.0D, 20, 15.0F);
     public int impatientCounter = 0;
     public int runTimer = 0;
@@ -447,7 +447,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.setAttackType(10);
         }
     }
-    void doReleaseStart(){
+
+    void doReleaseStart() {
         if (this.getAttackCounter() == (int) (22 / this.getAttackSpeed()) && this.getAttackType() == 40) {
             this.doHurtTarget();
         } else if (this.getAttackCounter() == (int) (10 / this.getAttackSpeed()) && this.getAttackType() == 20) {
@@ -1183,11 +1184,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.placecounter = n;
         this.getEntityData().set(FRIEND_PLACECOUNTER, n);
     }
-    public void setFriendSwimCounter(int n){
-        this.startfloattimer=n;
-        this.getEntityData().set(FRIEND_SWIMCOUNTER,n);
+
+    public void setFriendSwimCounter(int n) {
+        this.startfloattimer = n;
+        this.getEntityData().set(FRIEND_SWIMCOUNTER, n);
     }
-    public int getFriendSwimCounter(){
+
+    public int getFriendSwimCounter() {
         return this.getEntityData().get(FRIEND_SWIMCOUNTER);
     }
 
@@ -1449,7 +1452,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
                         }
                         return InteractionResult.SUCCESS;
-                    } else if ((!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && !pPlayer.isCrouching())) {
+                    } else if ((!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && !pPlayer.isCrouching()) && (!this.isInWater() || this.onGround())) {
                         this.setFriendInSittingPose(!this.getInSittingPose());
                         if (sleeping() && animateSleep()) {
                             this.setPose(Pose.SLEEPING);
@@ -1643,7 +1646,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public Queue<BlockPos> farmqueue = new LinkedList<>();
 
     public boolean idle() {
-        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.shakeAnimO ==0;
+        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.shakeAnimO == 0;
     }
 
     public boolean sleeping() {
@@ -1815,6 +1818,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
             }
         }
+        if (this.isInWater() && !this.onGround() && !this.jumping && this.getPose()!=SITTING) {
+            this.setPose(SWIMMING);
+        } else {
+            if (this.getPose() == SWIMMING) {
+                this.setPose(STANDING);
+            }
+        }
     }
 
 
@@ -1842,7 +1852,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public boolean isFree(double pX, double pY, double pZ) {
-        if(this.isInWater() && this.getFriendSwimCounter() != 0){
+        if (this.isInWater() && this.getFriendSwimCounter() != 0) {
             //LOGGER.info(this.startfloattimer +"");
             return false;
         }
@@ -1927,28 +1937,32 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
         this.reassessTameGoals();
     }
+
     public int startfloattimer = 0;
+
     @Override
     public float getEyeHeight(Pose pPose) {
-        return super.getEyeHeight(pPose) - 0.2F;
+        return super.getEyeHeight(pPose);
     }
+
     @Override
     public void setPos(double x, double y, double z) {
-        if(this.isInWater() && this.getFriendSwimCounter() <= 0){
-            double diff = y-this.getY();
-                diff=diff/4;
-            this.setPosRaw(x,this.getY() + diff,z);
+        if (this.isInWater() && this.getFriendSwimCounter() <= 0) {
+            double diff = y - this.getY();
+            diff = diff / 4;
+            this.setPosRaw(x, this.getY() + diff, z);
+        } else {
+            this.setPosRaw(x, y, z);
         }
-        else{
-        this.setPosRaw(x,y,z);}
         this.setBoundingBox(this.makeBoundingBox());
     }
 
 
     public float getSurfaceWaterDistanceFromEye() {
         float eyeheight = (float) this.getEyeY();
+
         BlockPos toppos = BlockPos.containing(this.getX(), eyeheight, this.getZ());
-        int topheight = BlockPos.containing(this.getX(), eyeheight, this.getZ()).getY();
+        int topheight = toppos.getY();
 
         FluidState fluidstate = this.level().getFluidState(toppos);
         float fluidheight = fluidstate.getHeight(this.level(), toppos);
@@ -1960,9 +1974,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public float getBackupSurfaceWaterDistanceFromEye() {
-        float eyeheight = (float) this.getEyeY();
+            float eyeheight = (float) this.getEyeY();
+
+
         BlockPos toppos = BlockPos.containing(this.getX(), eyeheight - 1, this.getZ());
-        int topheight = BlockPos.containing(this.getX(), eyeheight - 1, this.getZ()).getY();
+        int topheight = toppos.getY();
 
         FluidState fluidstate = this.level().getFluidState(toppos);
         float fluidheight = fluidstate.getHeight(this.level(), toppos);
