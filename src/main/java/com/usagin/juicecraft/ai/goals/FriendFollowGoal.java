@@ -23,7 +23,7 @@ public class FriendFollowGoal extends Goal {
     private static final int MAX_HORIZONTAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 3;
     private static final int MAX_VERTICAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 1;
     private final Friend tamable;
-    private LivingEntity owner;
+    public LivingEntity owner;
     private final LevelReader level;
     private final double speedModifier;
     private final PathNavigation navigation;
@@ -52,20 +52,23 @@ public class FriendFollowGoal extends Goal {
      * method as well.
      */
     public boolean canUse() {
-        if(!this.tamable.canDoThings()||this.tamable.wandering){return false;}else{
-        LivingEntity livingentity = this.tamable.getOwner();
-        if (livingentity == null) {
-            return false;
-        } else if (livingentity.isSpectator()) {
-            return false;
-        } else if (this.unableToMove()) {
-            return false;
-        } else if (this.tamable.distanceToSqr(livingentity) < (double)(this.startDistance * this.startDistance)) {
+        if (!this.tamable.canDoThings() || this.tamable.wandering) {
             return false;
         } else {
-            this.owner = livingentity;
-            return !this.tamable.getInSittingPose();
-        }}
+            LivingEntity livingentity = this.tamable.getOwner();
+            if (livingentity == null) {
+                return false;
+            } else if (livingentity.isSpectator()) {
+                return false;
+            } else if (this.unableToMove()) {
+                return false;
+            } else if (this.tamable.distanceToSqr(livingentity) < (double) (this.startDistance * this.startDistance)) {
+                return false;
+            } else {
+                this.owner = livingentity;
+                return !this.tamable.getInSittingPose();
+            }
+        }
     }
 
     /**
@@ -76,8 +79,10 @@ public class FriendFollowGoal extends Goal {
             return false;
         } else if (this.unableToMove()) {
             return false;
+        } else if (this.owner == null) {
+            return false;
         } else {
-            return !this.tamable.isDying || !this.tamable.getInSittingPose() || !(this.tamable.distanceToSqr(this.owner) <= (double)(this.stopDistance * this.stopDistance));
+            return !this.tamable.isDying || !this.tamable.getInSittingPose() || !(this.tamable.distanceToSqr(this.owner) <= (double) (this.stopDistance * this.stopDistance));
         }
     }
 
@@ -89,17 +94,17 @@ public class FriendFollowGoal extends Goal {
      * Execute a one shot task or start executing a continuous task
      */
     public void start() {
-        if(!this.tamable.isDying){
-        this.timeToRecalcPath = 0;
-        this.oldWaterCost = this.tamable.getPathfindingMalus(BlockPathTypes.WATER);
-        this.tamable.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);}
+        if (!this.tamable.isDying) {
+            this.timeToRecalcPath = 0;
+            this.oldWaterCost = this.tamable.getPathfindingMalus(BlockPathTypes.WATER);
+            this.tamable.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+        }
     }
 
     /**
      * Reset the task's internal state. Called when this task is interrupted by another one
      */
     public void stop() {
-        this.owner = null;
         this.navigation.stop();
         this.tamable.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
     }
@@ -108,22 +113,22 @@ public class FriendFollowGoal extends Goal {
      * Keep ticking a continuous task that has already been started
      */
     public void tick() {
-        this.tamable.getLookControl().setLookAt(this.owner, 10.0F, (float)this.tamable.getMaxHeadXRot());
-        if (--this.timeToRecalcPath <= 0) {
-            this.timeToRecalcPath = this.adjustedTickDelay(10);
-            if (this.tamable.distanceToSqr(this.owner) >= 400.0D) {
-                this.teleportToOwner();
-            } else {
-                this.navigation.moveTo(this.owner, this.speedModifier);
-            }
+            this.tamable.getLookControl().setLookAt(this.owner, 10.0F, (float) this.tamable.getMaxHeadXRot());
+            if (--this.timeToRecalcPath <= 0) {
+                this.timeToRecalcPath = this.adjustedTickDelay(10);
+                if (this.tamable.distanceToSqr(this.owner) >= 400.0D) {
+                    this.teleportToOwner();
+                } else {
+                    this.navigation.moveTo(this.owner, this.speedModifier);
+                }
 
-        }
+            }
     }
 
     private void teleportToOwner() {
         BlockPos blockpos = this.owner.blockPosition();
 
-        for(int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i) {
             int j = this.randomIntInclusive(-3, 3);
             int k = this.randomIntInclusive(-1, 1);
             int l = this.randomIntInclusive(-3, 3);
@@ -136,12 +141,12 @@ public class FriendFollowGoal extends Goal {
     }
 
     private boolean maybeTeleportTo(int pX, int pY, int pZ) {
-        if (Math.abs((double)pX - this.owner.getX()) < 2.0D && Math.abs((double)pZ - this.owner.getZ()) < 2.0D) {
+        if (Math.abs((double) pX - this.owner.getX()) < 2.0D && Math.abs((double) pZ - this.owner.getZ()) < 2.0D) {
             return false;
         } else if (!this.canTeleportTo(new BlockPos(pX, pY, pZ))) {
             return false;
         } else {
-            this.tamable.moveTo((double)pX + 0.5D, (double)pY, (double)pZ + 0.5D, this.tamable.getYRot(), this.tamable.getXRot());
+            this.tamable.moveTo((double) pX + 0.5D, (double) pY, (double) pZ + 0.5D, this.tamable.getYRot(), this.tamable.getXRot());
             this.navigation.stop();
             return true;
         }

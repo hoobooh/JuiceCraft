@@ -2,6 +2,7 @@ package com.usagin.juicecraft.ai.goals;
 
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Wolf;
@@ -15,8 +16,6 @@ import java.util.EnumSet;
 
 public class FriendBegGoal extends FriendLonelyGoal{
     private final Friend friend;
-    @Nullable
-    private Player player;
     private final Level level;
 
     public FriendBegGoal(Friend pTamable, double pSpeedModifier, boolean pCanFly) {
@@ -31,10 +30,11 @@ public class FriendBegGoal extends FriendLonelyGoal{
      */
     public boolean canUse() {
         if(!this.friend.getInSittingPose() && !this.friend.isDying){
-        this.player = (Player) friend.getOwner();
-        return this.player != null && this.playerHoldingInteresting(this.player);}
+        this.owner= friend.getOwner();
+        return this.owner != null && this.playerHoldingInteresting((Player) this.owner) && !this.friend.getInSittingPose();}
         else{return false;}
     }
+
 
     /**
      * Gets if the Player has the Bone in the hand.

@@ -791,7 +791,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         //render friend
         pGuiGraphics.pose().pushPose();
-        pGuiGraphics.pose().translate(0, 0, -500);
+        pGuiGraphics.pose().translate(0, 0, 0);
         renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos + 13, this.topPos + 18, this.leftPos + 88, this.topPos + 170, 55, 0.20F, pMouseX, pMouseY, this.friend);
         pGuiGraphics.pose().popPose();
 
