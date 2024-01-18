@@ -482,7 +482,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public void doHurtTarget() {
         this.runTimer = 35;
-        AABB hitTracer = new AABB(this.getX() - 1.5, this.getY(), this.getZ() - 1.5, this.getX() + 1.5, this.getY() + 1, this.getZ() + 1.5);
+        AABB hitTracer = new AABB(this.getX() - 1.5, this.getY(), this.getZ() - 1.5, this.getX() + 1.5, this.getY() + 2, this.getZ() + 1.5);
         List<Entity> entityList = this.level().getEntities(this, hitTracer);
         if (this.getTarget() != null) {
             this.lookAt(this.getTarget(), 360, 360);
@@ -1283,7 +1283,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     //override if change attack timing
     public int getCounterTiming() {
-        return 26;
+        return 24;
     }
 
     public void decrementAttackCounter() {
@@ -1333,7 +1333,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.goalSelector.addGoal(8, new FriendFollowGoal(this, 1D, 10.0F, 2.0F, false));
         //this.goalSelector.addGoal(7, new BreedGoal(this, 1.0D)); //...maybe in the future...
         this.goalSelector.addGoal(9, new FriendWanderGoal(this, 1.0D));
-        this.goalSelector.addGoal(10, new FriendBegGoal(this, 8.0F));
+        this.goalSelector.addGoal(10, new FriendBegGoal(this, 1, false));
         this.goalSelector.addGoal(11, new FriendLookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(11, new FriendRandomLookAroundGoal(this));
         this.targetSelector.addGoal(2, new FriendOwnerHurtByTargetGoal(this));
