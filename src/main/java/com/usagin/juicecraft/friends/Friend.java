@@ -66,6 +66,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.unsafe.UnsafeFieldAccess;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -74,6 +75,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static com.usagin.juicecraft.Init.ItemInit.GOLDEN_ORANGE;
+import static com.usagin.juicecraft.Init.ItemInit.ORANGE;
 import static com.usagin.juicecraft.Init.ParticleInit.SUGURIVERSE_LARGE;
 import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.*;
 import static net.minecraft.core.particles.ParticleTypes.HEART;
@@ -1397,7 +1399,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (lookRot < worstRot) {
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             if (this.level().isClientSide) {
-                boolean flag = (this.isOwnedBy(pPlayer) && this.isTame()) || this.isEdible(itemstack);
+                boolean flag = (this.isOwnedBy(pPlayer) && this.isTame());
                 if (this.isOwnedBy(pPlayer) || this.isTame()) {
                     if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
                         this.patCounter = 20;
@@ -1405,9 +1407,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         this.idleCounter = 0;
                     }
                 }
-                return flag ? InteractionResult.CONSUME : InteractionResult.PASS;
+                if(this.isEdible(itemstack)){
+                    return InteractionResult.CONSUME_PARTIAL;
+                }
+                return flag ? InteractionResult.SUCCESS : InteractionResult.PASS;
             } else if (this.isTame() && this.isOwnedBy(pPlayer)) {
-                LOGGER.info(this.getFriendNorma() + "");
+                //LOGGER.info(this.getFriendNorma() + "");
                 if (this.isEdible(itemstack)) {
                     SweetHandler.doSweetEffect(this, itemstack);
                     this.updateFriendNorma(0.001F, 3);
@@ -1416,7 +1421,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         itemstack.shrink(1);
                     }
                     this.gameEvent(GameEvent.EAT);
-                    return InteractionResult.SUCCESS;
+                    return InteractionResult.CONSUME_PARTIAL;
                 } else if (itemstack.is(ItemInit.SUMIKA_MEMORY.get())) {
 
                     if (itemstack.getOrCreateTag().contains("juicecraft.memories")) {
@@ -1488,14 +1493,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     this.level().broadcastEntityEvent(this, (byte) 7);
                 } else {
                     this.level().broadcastEntityEvent(this, (byte) 6);
-                    if (aggression < 50) {
-                        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Player.class, 50, 1, 1));
-                    } else if (aggression > 75) {
-                        this.setRemainingPersistentAngerTime(24000);
-                    }
                     this.mood -= 10;
                 }
-                return InteractionResult.SUCCESS;
+                return InteractionResult.CONSUME_PARTIAL;
             }
             return InteractionResult.SUCCESS;
         } else {
@@ -1552,7 +1552,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 if (this.random.nextInt(3) == 2 && this.getPose() != SLEEPING && !this.getIsDying()) {
                     this.playTimedVoice(this.getIdle());
                 }
-                this.setTimeSinceLastPat(this.getTimeSinceLastPat() + 80);
+                if(this.isTame()){
+                this.setTimeSinceLastPat(this.getTimeSinceLastPat() + 80);}
                 if (this.getTimeSinceLastPat() == 3600) {
                     if (this.getOwner() != null) {
                         this.appendEventLog(this.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.lonely").getString());
