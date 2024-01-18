@@ -1665,7 +1665,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     int n = 5;
-
+    boolean wasDay = false;
     @Override
     public void tick() {
         super.tick();
@@ -1827,8 +1827,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
                 }
             }}
-            if (this.tickCount % 24000 == 0) {
+            if (!this.day() && this.wasDay) {
                 this.normaprogress = new double[8];
+            }else if(this.day()){
+                this.wasDay=true;
             }
         }
 
