@@ -104,6 +104,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public final AnimationState sitImpatientAnimState = new AnimationState();
     public final AnimationState sleepAnimState = new AnimationState();
     public final AnimationState attackAnimState = new AnimationState();
+    public final AnimationState attackCounterAnimState = new AnimationState();
     public final AnimationState deathAnimState = new AnimationState();
     public final AnimationState deathStartAnimState = new AnimationState();
     public final AnimationState drawBowAnimationState = new AnimationState();
@@ -471,7 +472,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public void setAttackType(int attackType) {
-        this.attackAnimState.stop();
         this.attackType = attackType;
         this.getEntityData().set(FRIEND_ATTACKTYPE, attackType);
     }
@@ -1273,7 +1273,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     //34: counterattack
     //40: heavy attack
 
+    public boolean changedattack = false;
+
     public void setAttackCounter(int time) {
+        this.changedattack=true;
         this.attackCounter = (int) ((time + 2) / this.getAttackSpeed());
         this.getEntityData().set(FRIEND_ATTACKCOUNTER, time + 2);
     }
@@ -1716,6 +1719,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.sitAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter == 0, this.tickCount);
             this.sitImpatientAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter != 0, this.tickCount);
             this.attackAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0, this.tickCount);
+            if(this.changedattack){
+                this.changedattack=false;
+                this.attackCounterAnimState.stop();
+            }
+            this.attackCounterAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType()==50, this.tickCount);
             this.sleepAnimState.animateWhen(this.canDoThings(), this.tickCount);
             this.drawBowAnimationState.animateWhen(this.canDoThings() && this.isUsingItem() && this.getMainHandItem().getItem() instanceof BowItem, this.tickCount);
             this.swimAnimState.animateWhen(this.isInWater() && !this.onGround() && !this.jumping, this.tickCount);

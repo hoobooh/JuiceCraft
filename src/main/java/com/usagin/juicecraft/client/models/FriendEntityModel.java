@@ -171,11 +171,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 animate(pEntity.sitImpatientAnimState, animations.sitimpatient(), pAgeInTicks);
             }
             if (pEntity.getAttackType() == 50) {
-                /*if (pEntity.getAttackCounter() > 33 / pEntity.getAttackSpeed()) {
-                    pEntity.attackAnimState.stop();
-                    pEntity.attackAnimState.start(pEntity.tickCount);
-                }*/
-                animate(pEntity.attackAnimState, animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+                animate(pEntity.attackCounterAnimState, animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             } else if (pEntity.getAttackType() == 40) {
                 animate(pEntity.attackAnimState, animations.attackone(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             } else if (pEntity.getAttackType() == 20) {
