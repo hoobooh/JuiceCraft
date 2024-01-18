@@ -32,6 +32,7 @@ public class AlteSoundInit {
     public static final RegistryObject<SoundEvent> ALTE_EVADE_0 = registerFriendSoundEvent("alte_evade_0");
     public static final RegistryObject<SoundEvent> ALTE_EVADE_1 = registerFriendSoundEvent("alte_evade_1");
     public static final RegistryObject<SoundEvent> ALTE_EVADE_2 = registerFriendSoundEvent("alte_evade_2");
+    public static final RegistryObject<SoundEvent> ALTE_EVADE_3 = registerFriendSoundEvent("alte_evade_3");
     public static final RegistryObject<SoundEvent> ALTE_FLEE_0 = registerFriendSoundEvent("alte_flee_0");
     public static final RegistryObject<SoundEvent> ALTE_FLEE_1 = registerFriendSoundEvent("alte_flee_1");
     public static final RegistryObject<SoundEvent> ALTE_FLEE_2 = registerFriendSoundEvent("alte_flee_2");

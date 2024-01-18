@@ -1,5 +1,6 @@
 package com.usagin.juicecraft.friends;
 
+import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.alte.AlteDialogueManager;
 import net.minecraft.sounds.SoundEvent;
@@ -117,6 +118,9 @@ public class Alte extends Friend{
         if(this.getHealth()<this.getMaxHealth()/2){
             return getInjured();
         }
+        if(EnemyEvaluator.evaluateAreaDanger(this) > this.getFriendExperience() / 2){
+            return getWarning();
+        }
         int a=this.random.nextInt(5);
         if(a==3&&!this.level().isDay()){
             return ALTE_IDLE_NIGHT.get();
@@ -194,11 +198,12 @@ public class Alte extends Friend{
 
     @Override
     public SoundEvent getEvade() {
-        int a=this.random.nextInt(3);
+        int a=this.random.nextInt(4);
         return switch (a) {
             case 0 -> ALTE_EVADE_0.get();
             case 1 -> ALTE_EVADE_1.get();
-            default -> ALTE_EVADE_2.get();
+            case 2 -> ALTE_EVADE_2.get();
+            default -> ALTE_EVADE_3.get();
         };
     }
 

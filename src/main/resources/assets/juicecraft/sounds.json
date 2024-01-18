@@ -179,6 +179,11 @@
       "juicecraft:alte_evade_2"
     ]
   },
+  "alte_evade_3": {
+    "sounds": [
+      "juicecraft:alte_evade_2"
+    ]
+  },
   "alte_flee_0": {
     "sounds": [
       "juicecraft:alte_flee_0"
