@@ -58,7 +58,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 		this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible=b;
 	}
 	public void defineAnimations(){
-		this.animations=new Animations(idleGrounded,idleTransition,patGrounded,sit,sitImpatient,sitPat,sleepingPose,deathLoop,deathStart,attackOne,attackTwo,attackThree,attackCounter,bowDraw,standingInspect,wetShake,viewFlower,swimLoop,interact,swimMove);
+		this.animations=new Animations(idleGrounded,idleTransition,patGrounded,sit,sitImpatient,sitPat,sleepingPose,deathLoop,deathStart,attackOne,attackTwo,attackThree,attackCounter,bowDraw,standingInspect,wetShake,viewFlower,swimLoop,interact,swimMove, snowballIdle, throwSnowball, snowballIdleTransition);
 	}
 	public void setupAnim(Friend alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 		if(alte instanceof Alte alt){

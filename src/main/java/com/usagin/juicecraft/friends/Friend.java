@@ -31,6 +31,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.*;
@@ -50,6 +52,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -105,6 +108,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public final AnimationState viewFlowerAnimState = new AnimationState();
     public final AnimationState swimAnimState = new AnimationState();
     public final AnimationState interactAnimState = new AnimationState();
+    public final AnimationState snowballIdleAnimState = new AnimationState();
+
+    public final AnimationState snowballIdleTransitionAnimState = new AnimationState();
+
+    public final AnimationState snowballThrowAnimState = new AnimationState();
     public int combatmodifier = 0;
     public int placecounter = 0;
     public int timesincelastpat = 0;
@@ -113,8 +121,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int[] skillLevels = new int[6];
     public boolean[] skillEnabled = new boolean[]{false, false, false, false, false, false};
     public Map<Pose, EntityDimensions> POSES = ImmutableMap.<Pose, EntityDimensions>builder().put(STANDING, EntityDimensions.scalable(0.6F, 1.8F)).put(SITTING, EntityDimensions.scalable(0.6F, 1.1F)).put(Pose.SLEEPING, EntityDimensions.scalable(0.6F, 0.5F)).put(SWIMMING, EntityDimensions.scalable(0.6F, 0.9F)).build();
-    private final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
-    private final FriendRangedCrossbowAttackGoal crossbowGoal = new FriendRangedCrossbowAttackGoal(this, 1.0D, 20);
+    public final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
+    public final FriendRangedCrossbowAttackGoal crossbowGoal = new FriendRangedCrossbowAttackGoal(this, 1.0D, 20);
+    public final FriendThrowSnowballGoal snowballGoal = new FriendThrowSnowballGoal(this);
 
     public int impatientCounter = 0;
     public int runTimer = 0;
@@ -252,6 +261,26 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     @Override
     public void onCrossbowAttackPerformed() {
         //this.noActionTime = 0;
+    }
+    public boolean isHoldingThrowable() {
+        return this.getMainHandItem().getItem() instanceof SnowballItem;
+    }
+    public void throwSnowball(){
+        ItemStack itemstack = this.getItemInHand(InteractionHand.MAIN_HAND);
+        if (!this.level().isClientSide) {
+            this.playVoice(this.getAttack());
+            this.playSound(SoundEvents.SNOWBALL_THROW);
+            Snowball snowball = new Snowball(this.level(), this);
+            snowball.setItem(itemstack);
+            if(this.getTarget()!=null){
+                this.lookAt(this.getTarget(),360,360);
+            }
+            float xrot = this.getXRot();
+            float yrot=this.getYRot();
+            snowball.shootFromRotation(this, xrot, yrot, 0.0F, 1.5F, 1.0F);
+            this.level().addFreshEntity(snowball);
+        }
+        itemstack.shrink(1);
     }
     public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
         boolean flag = false;
@@ -472,6 +501,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.doHurtTarget();
         } else if (this.getAttackCounter() == (int) (16 / this.getAttackSpeed()) && this.getAttackType() == 50) {
             this.doHurtTarget();
+        } else if(this.getAttackCounter() == (int) (8 / this.getAttackSpeed()) && this.getAttackType() == 60){
+            this.throwSnowball();
         }
     }
 
@@ -901,15 +932,23 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public void updateGear() {
         if (!this.level().isClientSide()) {
             if (this.inventory.getItem(1).getItem() instanceof BowItem) {
-                this.goalSelector.removeGoal(bowGoal);
-                this.goalSelector.removeGoal(crossbowGoal);
+                this.goalSelector.removeGoal(this.bowGoal);
+                this.goalSelector.removeGoal(this.crossbowGoal);
+                this.goalSelector.removeGoal(this.snowballGoal);
                 this.goalSelector.addGoal(4, this.bowGoal);
             } else if(this.inventory.getItem(1).getItem() instanceof CrossbowItem){
-                this.goalSelector.removeGoal(crossbowGoal);
-                this.goalSelector.removeGoal(bowGoal);
+                this.goalSelector.removeGoal(this.crossbowGoal);
+                this.goalSelector.removeGoal(this.bowGoal);
+                this.goalSelector.removeGoal(this.snowballGoal);
                 this.goalSelector.addGoal(4, this.crossbowGoal);
+            } else if(this.isHoldingThrowable()){
+                this.goalSelector.removeGoal(this.crossbowGoal);
+                this.goalSelector.removeGoal(this.bowGoal);
+                this.goalSelector.removeGoal(this.snowballGoal);
+                this.goalSelector.addGoal(4, this.snowballGoal);
             }
             else {
+                this.goalSelector.removeGoal(this.snowballGoal);
                 this.goalSelector.removeGoal(crossbowGoal);
                 this.goalSelector.removeGoal(bowGoal);
             }
@@ -1288,11 +1327,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return false;
     }
 
+    //TYPES
+    //verify that both type and counter are correct when you override
     //10: light attack
     //20: medium
     //34: counterattack
     //40: heavy attack
-
+    //60 snowball throw
 
     public void setAttackCounter(int time) {
         this.attackCounter = (int) ((time + 2) / this.getAttackSpeed());
@@ -1688,7 +1729,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public Queue<BlockPos> farmqueue = new LinkedList<>();
 
     public boolean idle() {
-        return this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0;
+        return !this.isHoldingThrowable() && this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0;
+    }
+    public boolean snowballIdle(){
+        return this.isHoldingThrowable() && !this.isDescending() && this.canDoThings() && this.shakeAnimO == 0;
     }
 
     public boolean sleeping() {
@@ -1725,7 +1769,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.aggroCounter--;
         }
         if (level().isClientSide()) {
-            if (this.getPose() == STANDING && !idle() && idleCounter > 0) {
+            if (this.getPose() == STANDING && !idle() && !snowballIdle() && idleCounter > 0) {
                 this.idleCounter = 0;
             }
             if (this.level().getGameTime() % 150 == 0 && this.getInSittingPose()) {
@@ -1742,16 +1786,28 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             if (this.animatestandingtimer > 0) {
                 this.animatestandingtimer--;
             }
+            if (this.getPose() == STANDING && (this.idle() || this.snowballIdle()) && idleCounter < 20) {
+                this.idleCounter++;
+            }
+            if ((this.getAttackCounter() > 0 && this.getAttackType() != 60) || this.shakeAnimO > 0) {
+                this.idleCounter = 0;
+            }
+            //LOGGER.info((idle() && this.idleCounter == 20 && this.patCounter == 0 ) +"");
+            this.snowballThrowAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() > 0 && this.getAttackType()==60, this.tickCount);
+            this.attackAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType()!=50 && this.getAttackType()!=60, this.tickCount);
+            this.attackCounterAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType()==50, this.tickCount);
 
-            boolean sit = this.getInSittingPose();
             this.interactAnimState.animateWhen(this.canDoThings() && this.getFriendPlaceCounter() > 0, this.tickCount);
             this.viewFlowerAnimState.animateWhen(this.canDoThings() && this.getViewFlower() > 0, this.tickCount);
-            this.wetAnimState.animateWhen(this.canDoThings() && this.shakeAnimO > 0, this.tickCount);
+            this.wetAnimState.animateWhen(this.canDoThings() && this.shakeAnimO > 0 && !this.walkAnimation.isMoving(), this.tickCount);
             this.deathStartAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() != 0, this.tickCount);
             this.deathAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() == 0, this.tickCount);
-            this.idleAnimState.animateWhen(!sit && idle() && this.idleCounter == 20 && this.patCounter == 0, this.tickCount);
-            this.idleAnimStartState.animateWhen(!sit && idle() && this.idleCounter < 20 && this.patCounter == 0, this.tickCount);
-            this.inspectAnimState.animateWhen(!sit && idle() && this.idleCounter == 20 && this.patCounter == 0 && this.animatestandingtimer > 0, this.tickCount);
+            this.idleAnimState.animateWhen(idle() && this.idleCounter == 20 && this.patCounter == 0, this.tickCount);
+            this.idleAnimStartState.animateWhen(!this.idleAnimState.isStarted() && idle() && this.idleCounter > 0 && this.idleCounter < 20 && this.patCounter == 0, this.tickCount);
+            this.snowballIdleAnimState.animateWhen(snowballIdle() && this.idleCounter == 20 && this.patCounter == 0 && !this.snowballThrowAnimState.isStarted(), this.tickCount);
+            this.snowballIdleTransitionAnimState.animateWhen(!this.snowballIdleAnimState.isStarted() && snowballIdle() && this.idleCounter > 0 && this.idleCounter < 20 && this.patCounter == 0 && !this.snowballThrowAnimState.isStarted(), this.tickCount);
+
+            this.inspectAnimState.animateWhen(idle() && this.idleCounter == 20 && this.patCounter == 0 && this.animatestandingtimer > 0, this.tickCount);
             this.patAnimState.animateWhen(this.canDoThings() && this.patCounter > 0 && !this.walkAnimation.isMoving() && !this.isDescending() && this.idle() && this.shakeAnimO == 0, this.tickCount);
             this.sitPatAnimState.animateWhen(this.getPose() == SITTING && this.patCounter != 0, this.tickCount);
             this.sitAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter == 0, this.tickCount);
@@ -1759,15 +1815,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.sleepAnimState.animateWhen(this.canDoThings(), this.tickCount);
             this.drawBowAnimationState.animateWhen(this.canDoThings() && ((this.getMainHandItem().getItem() instanceof BowItem && this.isUsingItem()) || (this.getMainHandItem().getItem() instanceof CrossbowItem && this.isAggressive())), this.tickCount);
             this.swimAnimState.animateWhen(this.isInWater() && !this.onGround() && !this.jumping, this.tickCount);
-            if (this.getAttackCounter() > 0 || this.shakeAnimO > 0) {
-                this.idleCounter = 0;
-            }
-            this.attackAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0, this.tickCount);
-            this.attackCounterAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType()==50, this.tickCount);
 
-            if (this.getPose() == STANDING && this.idle() && idleCounter < 20) {
-                this.idleCounter++;
-            }
+
+
         }
 
         //SERVERSIDE-ONLY TICKS
@@ -1950,14 +2000,17 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return POSES.getOrDefault(pPose, new EntityDimensions(0.6F, 1.8F, false));
     }
 
-
+    public void swing(InteractionHand pHand) {
+        this.swing(pHand, false);
+    }
     @Override
     public void swing(InteractionHand pHand, boolean pUpdateSelf) {
         ItemStack stack = this.getItemInHand(pHand);
         if (this.getAttackCounter() == 0 && !this.getIsDying()) {
             if (!stack.isEmpty()) {
                 this.doMeleeAttack();
-            } else {
+            }
+            else {
                 this.setAttackCounter(10);
                 this.setAttackType(10);
             }

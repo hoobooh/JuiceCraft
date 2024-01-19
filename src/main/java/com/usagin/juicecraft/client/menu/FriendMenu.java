@@ -89,7 +89,7 @@ public class FriendMenu extends AbstractContainerMenu {
                 this.setChanged();
             }
             public int getMaxStackSize() {
-                return 1;
+                return 64;
             }
         });
         //Module slot

@@ -11,48 +11,63 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import static com.usagin.juicecraft.particles.SuguriverseParticleLarge.LOGGER;
+
 public class FriendMeleeAttackGoal extends MeleeAttackGoal {
     private int ticksUntilNextAttack;
     Friend friend;
+
     public FriendMeleeAttackGoal(PathfinderMob pMob, double pSpeedModifier, boolean pFollowingTargetEvenIfNotSeen) {
         super(pMob, pSpeedModifier, pFollowingTargetEvenIfNotSeen);
-        this.friend=(Friend) pMob;
+        this.friend = (Friend) pMob;
     }
+
     @Override
     public void start() {
-        if(!this.friend.isDying){
-        this.friend.playVoice(((Friend)this.mob).getBattle());
-        super.start();}
+        if (!this.friend.isDying) {
+            this.friend.playVoice(((Friend) this.mob).getBattle());
+            super.start();
+        }
     }
+
     protected boolean isTimeToAttack() {
         return true;
     }
+
     @Override
     protected void checkAndPerformAttack(@NotNull LivingEntity pTarget) {
         Logger LOGGER = LogUtils.getLogger();
         if (this.canPerformAttack(pTarget) && this.mob instanceof Friend pFriend) {
-            if(pFriend.getAttackCounter()==0){
+            if (pFriend.getAttackCounter() == 0) {
                 this.resetAttackCooldown();
                 pFriend.swing(InteractionHand.MAIN_HAND);
             }
         }
     }
+
     @Override
     protected void resetAttackCooldown() {
         this.ticksUntilNextAttack = this.adjustedTickDelay(0);
     }
+
     @Override
-    public boolean canUse(){
-        if(this.friend.getInSittingPose()||this.friend.isDying){return false;}else{return super.canUse() && !FriendFlee.willFriendFlee(this.friend);}
+    public boolean canUse() {
+        if (this.friend.getInSittingPose() || this.friend.isDying || this.friend.isHoldingThrowable()) {
+            return false;
+        } else {
+            return super.canUse() && !FriendFlee.willFriendFlee(this.friend);
+        }
     }
+
     @Override
-    public void tick(){
-        if(this.friend.canDoThings()&&this.friend.runTimer<=0){
+    public void tick() {
+        if (this.friend.canDoThings() && this.friend.runTimer <= 0 && this.canUse()) {
             super.tick();
         }
     }
+
     @Override
-    public void stop(){
+    public void stop() {
 
         super.stop();
     }

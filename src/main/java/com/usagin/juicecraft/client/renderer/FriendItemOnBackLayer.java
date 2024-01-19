@@ -28,7 +28,7 @@ public class FriendItemOnBackLayer<T extends Friend, M extends FriendEntityModel
         ItemStack itemstack1 = flag ? pLivingEntity.getMainHandItem() : pLivingEntity.getOffhandItem();
         if (!itemstack.isEmpty() || !itemstack1.isEmpty()) {
             pPoseStack.pushPose();
-            if(pLivingEntity.aggroCounter==0 && pLivingEntity.getAttackCounter()==0 && pLivingEntity.animatestandingtimer==0) {
+            if(pLivingEntity.aggroCounter==0 && pLivingEntity.getAttackCounter()==0 && pLivingEntity.animatestandingtimer==0 && !pLivingEntity.isHoldingThrowable()) {
                 this.renderBackWithItem(pLivingEntity, itemstack1, pPoseStack, pBuffer, pPackedLight);
             }
             pPoseStack.popPose();

@@ -47,8 +47,9 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                              AnimationDefinition attacktwo, AnimationDefinition attackthree,
                              AnimationDefinition counter, AnimationDefinition bowdraw,
                              AnimationDefinition standinginspect, AnimationDefinition wet,
-                             AnimationDefinition viewflower, AnimationDefinition swim,
-                             AnimationDefinition interact, AnimationDefinition swimmove) {
+                             AnimationDefinition viewflower, AnimationDefinition swim, AnimationDefinition interact,
+                             AnimationDefinition swimmove, AnimationDefinition snowballIdle,
+                             AnimationDefinition snowballThrow, AnimationDefinition snowballIdleTransition) {
     }
 
     public record ModelParts(ModelPart customroot, ModelPart head, ModelPart leftarm, ModelPart rightarm,
@@ -59,10 +60,11 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         poseStack.pushPose();
         poseStack.scale(0.17F, 0.17F, 0.17F);
-        poseStack.translate(0, 1.245/0.17, 0);
+        poseStack.translate(0, 1.245 / 0.17, 0);
         parts.customroot().render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
         poseStack.popPose();
     }
+
     public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
         ModelPart root = this.root().getChild("hip");
         ModelPart limb;
@@ -72,13 +74,13 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         ModelPart chest = waist.getChild("chest");
 
         if (pSide.name().equals("LEFT")) {
-            arm=this.parts.leftarm();
-            limb=arm.getChild("lowerarm2");
-            hand=limb.getChild("grabber2");
+            arm = this.parts.leftarm();
+            limb = arm.getChild("lowerarm2");
+            hand = limb.getChild("grabber2");
         } else {
-            arm=this.parts.rightarm();
-            limb=arm.getChild("lowerarm");
-            hand=limb.getChild("grabber");
+            arm = this.parts.rightarm();
+            limb = arm.getChild("lowerarm");
+            hand = limb.getChild("grabber");
         }
 
 
@@ -96,7 +98,6 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         pPoseStack.scale(0.883F, 0.883F, 0.883F);
 
 
-
     }
 
     public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
@@ -112,7 +113,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
             if (pItemStack.getItem() instanceof BowItem) {
                 pPoseStack.translate(0.2, 0, -0.1);
                 pPoseStack.mulPose(Axis.ZP.rotationDegrees(70));
-            }else if(pItemStack.getItem() instanceof CrossbowItem){
+            } else if (pItemStack.getItem() instanceof CrossbowItem) {
                 pPoseStack.translate(0.35, -0.1, 0);
                 pPoseStack.mulPose(Axis.XP.rotationDegrees(0));
                 pPoseStack.mulPose(Axis.YP.rotationDegrees(90));
@@ -120,7 +121,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
             }
         }
 
-       // pPoseStack.translate(-0.3, 1, 0);
+        // pPoseStack.translate(-0.3, 1, 0);
 
         pPoseStack.scale(0.883F, 0.883F, 0.883F);
     }
@@ -136,10 +137,12 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         }
 
     }
+
     @Override
     public ModelPart root() {
         return this.parts.customroot();
     }
+
     public boolean swimming = false;
 
     @Override
@@ -148,74 +151,79 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         if (!pEntity.getIsDying()) {
             if (pEntity.getPose() != SITTING) {
                 if (pEntity.getPose() == SLEEPING) {
-                    animate(pEntity.sleepAnimState, animations.sleep(), pAgeInTicks);
-                } else if(pEntity.getAttackCounter() <= 0) {
-                    if (pEntity.shakeAnimO>0) {
-                        animate(pEntity.wetAnimState, animations.wet(), pAgeInTicks);
+                    animate(pEntity.sleepAnimState, this.animations.sleep(), pAgeInTicks);
+                } else if (pEntity.getAttackCounter() <= 0) {
+                    if (pEntity.shakeAnimO > 0) {
+                        animate(pEntity.wetAnimState, this.animations.wet(), pAgeInTicks);
                     } else {
-                        animate(pEntity.viewFlowerAnimState, animations.viewflower(),pAgeInTicks);
-                        if(!pEntity.viewFlowerAnimState.isStarted()){
-                            animate(pEntity.idleAnimState, animations.idlegrounded(), pAgeInTicks);
-                            animate(pEntity.inspectAnimState, animations.standinginspect(), pAgeInTicks);
-                            animate(pEntity.idleAnimStartState, animations.idletransition(), pAgeInTicks);
-                            if(pLimbSwingAmount > 0.1){
-                                this.swimming=true;
-                                animate(pEntity.swimAnimState, animations.swimmove(),pAgeInTicks);
+                        animate(pEntity.viewFlowerAnimState, this.animations.viewflower(), pAgeInTicks);
+                        if (!pEntity.viewFlowerAnimState.isStarted()) {
+                            animate(pEntity.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
+                            animate(pEntity.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);
+                            animate(pEntity.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
+                            animate(pEntity.snowballIdleAnimState, this.animations.snowballIdle(), pAgeInTicks);
+                            animate(pEntity.snowballIdleTransitionAnimState, this.animations.snowballIdleTransition(), pAgeInTicks);
+                            if (pLimbSwingAmount > 0.1) {
+                                this.swimming = true;
+                                animate(pEntity.swimAnimState, this.animations.swimmove(), pAgeInTicks);
                                 //LOGGER.info(pEntity.getDeltaMovement().y +"");
                                 //this.root().getChild("hip").offsetRotation(new Vector3f((float)pEntity.getDeltaMovement().y*(float)pEntity.getDeltaMovement().y/4*25 ,0,0));
-                            }else{
-                                this.swimming=false;
-                            animate(pEntity.swimAnimState, animations.swim(),pAgeInTicks);}
+                            } else {
+                                this.swimming = false;
+                                animate(pEntity.swimAnimState, this.animations.swim(), pAgeInTicks);
+                            }
 
                         }
                     }
-                    animate(pEntity.patAnimState, animations.patgrounded(), pAgeInTicks);
+                    animate(pEntity.patAnimState, this.animations.patgrounded(), pAgeInTicks);
                 }
 
             } else {
-                animate(pEntity.sitPatAnimState, animations.sitpat(), pAgeInTicks);
-                animate(pEntity.sitAnimState, animations.sit(), pAgeInTicks);
-                animate(pEntity.sitImpatientAnimState, animations.sitimpatient(), pAgeInTicks);
+                animate(pEntity.sitPatAnimState, this.animations.sitpat(), pAgeInTicks);
+                animate(pEntity.sitAnimState, this.animations.sit(), pAgeInTicks);
+                animate(pEntity.sitImpatientAnimState, this.animations.sitimpatient(), pAgeInTicks);
             }
             if (pEntity.getAttackType() == 50) {
-                if(pEntity.getAttackCounter() >= pEntity.getCounterMax()-1){
+                if (pEntity.getAttackCounter() >= pEntity.getCounterMax() - 1) {
                     pEntity.attackCounterAnimState.stop();
                 }
-                animate(pEntity.attackCounterAnimState, animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+                animate(pEntity.attackCounterAnimState, this.animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             } else if (pEntity.getAttackType() == 40) {
-                animate(pEntity.attackAnimState, animations.attackone(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+                animate(pEntity.attackAnimState, this.animations.attackone(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             } else if (pEntity.getAttackType() == 20) {
-                animate(pEntity.attackAnimState, animations.attacktwo(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+                animate(pEntity.attackAnimState, this.animations.attacktwo(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             } else if (pEntity.getAttackType() == 10) {
-                animate(pEntity.attackAnimState, animations.attackthree(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+                animate(pEntity.attackAnimState, this.animations.attackthree(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+            } else if (pEntity.getAttackType() == 60) {
+                animate(pEntity.snowballThrowAnimState, this.animations.snowballThrow(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             }
 
             if (!pEntity.getInSittingPose()) {
-                if (!pEntity.isSprinting() && !pEntity.isSwimming() && !pEntity.idle()) {
+                if (!pEntity.isSprinting() && !pEntity.isSwimming() && !pEntity.idle() && pEntity.walkAnimation.isMoving()) {
                     this.parts.rightleg().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                     this.parts.leftleg().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
-                    if (pEntity.getAttackCounter() == 0 && !pEntity.drawBowAnimationState.isStarted() && !pEntity.swimAnimState.isStarted() && pEntity.shakeAnimO == 0) {
+                    if (pEntity.getAttackCounter() <= 0 && !pEntity.drawBowAnimationState.isStarted() && !pEntity.swimAnimState.isStarted() && pEntity.shakeAnimO == 0 && !pEntity.snowballIdle() && !pEntity.snowballThrowAnimState.isStarted()) {
                         this.parts.leftarm().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                         this.parts.rightarm().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
                     }
                 }
-                animate(pEntity.drawBowAnimationState, animations.bowdraw(), pAgeInTicks);
+                animate(pEntity.drawBowAnimationState, this.animations.bowdraw(), pAgeInTicks);
             }
             if (!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose() != SLEEPING && pEntity.animatestandingtimer <= 0) {
-                if((pEntity.sleepAnimState.isStarted() && pLimbSwingAmount > 0.1)){
+                if ((pEntity.sleepAnimState.isStarted() && pLimbSwingAmount > 0.1)) {
                     this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
-                }else{
+                } else {
                     this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
                     this.parts.head().xRot = (pHeadPitch * (float) Math.PI / 180f);
                 }
 
             }
-            if(!pEntity.attackAnimState.isStarted()){
-                animate(pEntity.interactAnimState,animations.interact(),pAgeInTicks);
+            if (!pEntity.attackAnimState.isStarted()) {
+                animate(pEntity.interactAnimState, this.animations.interact(), pAgeInTicks);
             }
         } else {
-            animate(pEntity.deathStartAnimState, animations.deathstart(), pAgeInTicks);
-            animate(pEntity.deathAnimState, animations.death(), pAgeInTicks);
+            animate(pEntity.deathStartAnimState, this.animations.deathstart(), pAgeInTicks);
+            animate(pEntity.deathAnimState, this.animations.death(), pAgeInTicks);
         }
 
     }
