@@ -29,8 +29,10 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Skeleton;
@@ -39,6 +41,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraftforge.client.gui.widget.ScrollPanel;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -500,6 +503,9 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         pHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
+    static final Style style = Style.EMPTY.withItalic(true);
+
+
     void renderTalkMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         for (Slot slot : this.menu.slots) {
             ((FriendSlot) slot).tempBypass = true;
@@ -514,9 +520,13 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         }
         pGuiGraphics.flush();
         RenderSystem.disableDepthTest();
-        GL11.glEnable(GL11.GL_BLEND);
+
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate(0, 0, 1000);
+        //GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+        GL11.glEnable(GL11.GL_BLEND);
+        //GL11.glDisable(GL11.GL_ALPHA_TEST);
+
         //dialogue codes:
         //0: prompt
         //1: player response
@@ -537,9 +547,13 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         //ACTUAL STUFF
         pGuiGraphics.fillGradient(0, 0, this.width, this.height, -500, -1072689136, -804253680); //render background dim
-        pGuiGraphics.drawWordWrap(this.font, FormattedText.of(this.friend.getDialogueManager().sendToManage(this, pGuiGraphics, this.dialogueProgress, this.currenttopic)), this.leftPos + 20, this.topPos + 200, 350, ChatFormatting.BLACK.getColor());
+        pGuiGraphics.pose().pushPose();
+        float scale2=1.3F;
+        String message = this.friend.getDialogueManager().sendToManage(this, pGuiGraphics, this.dialogueProgress, this.currenttopic);
+        pGuiGraphics.pose().scale(scale2,scale2,1);
+        pGuiGraphics.drawWordWrap(this.font, FormattedText.of(message, style), (int) ((this.leftPos + 20)/scale2), (int)((this.topPos + 200)/scale2), (int) (350/scale2), ChatFormatting.DARK_GRAY.getColor());
+        pGuiGraphics.pose().popPose();
         pGuiGraphics.blit(DIALOGUEBOX, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
-
         //render buttons
         this.exitDialogue.visible = true;
         if (this.dialogueProgress == 1) {
@@ -572,13 +586,13 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         if (!this.dialogueOne.visible) {
             int time = (int) (this.timer % 30);
             if (time < 9 || time > 21) {
-                pGuiGraphics.blit(DIALOGUECLICK1, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+                pGuiGraphics.blit(DIALOGUECLICK1, this.leftPos - 1, this.topPos - 10, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
             } else if (time < 12 || time > 18) {
-                pGuiGraphics.blit(DIALOGUECLICK2, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+                pGuiGraphics.blit(DIALOGUECLICK2, this.leftPos - 1, this.topPos - 10, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
             } else if (time < 14 || time > 16) {
-                pGuiGraphics.blit(DIALOGUECLICK3, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+                pGuiGraphics.blit(DIALOGUECLICK3, this.leftPos - 1, this.topPos - 10, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
             } else {
-                pGuiGraphics.blit(DIALOGUECLICK4, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+                pGuiGraphics.blit(DIALOGUECLICK4, this.leftPos - 1, this.topPos - 10, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
             }
         }
 
@@ -587,13 +601,26 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                 b.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
             }
         }
-        pGuiGraphics.drawCenteredString(this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), this.leftPos + 52, this.topPos + 179, ChatFormatting.WHITE.getColor());
+
+        float scale = 1.8F;
+        pGuiGraphics.pose().scale(scale,scale,1);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale)+1, (int) ((this.topPos + 169)/scale) + 3, 16765067);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale)-1, (int) ((this.topPos + 169)/scale) +3, 16765067);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale), (int) ((this.topPos + 169)/scale)+4, 16765067);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale), (int) ((this.topPos + 169)/scale)+2, 16765067);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale), (int) ((this.topPos + 169)/scale) + 3, ChatFormatting.WHITE.getColor());
+
 
         //epilogue
 
         pGuiGraphics.pose().popPose();
         GL11.glDisable(GL11.GL_BLEND);
         RenderSystem.enableDepthTest();
+    }
+
+    public static void drawCenteredString(GuiGraphics pGuiGraphics, Font pFont, Component pText, int pX, int pY, int pColor) {
+        FormattedCharSequence formattedcharsequence = pText.getVisualOrderText();
+        pGuiGraphics.drawString(pFont, formattedcharsequence, pX - pFont.width(formattedcharsequence) / 2, pY, pColor, false);
     }
 
     void renderSkillMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
@@ -964,10 +991,10 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 183, 27, 12, disableSprite, this::doSkillSixDisable, false, false)));
         int xoffset = this.leftPos + this.imageWidth / 2 - 110;
 
-        this.dialogueOne = addWidget(new FriendButton(xoffset, this.topPos + 143, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueOne, true, false, ChatFormatting.BLACK.getColor(), false));
-        this.dialogueTwo = addWidget(new FriendButton(xoffset, this.topPos + 108, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueTwo, true, false, ChatFormatting.BLACK.getColor(), false));
-        this.dialogueThree = addWidget(new FriendButton(xoffset, this.topPos + 73, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueThree, true, false, ChatFormatting.BLACK.getColor(), false));
-        this.dialogueFour = addWidget(new FriendButton(xoffset, this.topPos + 38, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueFour, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueOne = addWidget(new FriendButton(xoffset, this.topPos + 133, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueOne, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueTwo = addWidget(new FriendButton(xoffset, this.topPos + 98, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueTwo, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueThree = addWidget(new FriendButton(xoffset, this.topPos + 63, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueThree, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueFour = addWidget(new FriendButton(xoffset, this.topPos + 28, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueFour, true, false, ChatFormatting.BLACK.getColor(), false));
         this.exitDialogue = addRenderableWidget(new FriendButton(this.leftPos + 375, this.topPos + 13, 17, 17, exitSprite, this::exitTalkButton, true, false));
 
         this.talkBt.add(dialogueOne);
