@@ -132,10 +132,7 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
                 if (this.friend.flowercooldown > 0) {
                     this.friend.flowercooldown--;
                 }
-            } else {
-                this.target = this.mob.level().getNearestPlayer(this.targetConditions, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
             }
-
         }
     }
 }

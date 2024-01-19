@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -109,7 +110,13 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
 
         if (pItemStack != null) {
             if (pItemStack.getItem() instanceof BowItem) {
-                pPoseStack.translate(0.45, 0, 0);
+                pPoseStack.translate(0.2, 0, -0.1);
+                pPoseStack.mulPose(Axis.ZP.rotationDegrees(70));
+            }else if(pItemStack.getItem() instanceof CrossbowItem){
+                pPoseStack.translate(0.35, -0.1, 0);
+                pPoseStack.mulPose(Axis.XP.rotationDegrees(0));
+                pPoseStack.mulPose(Axis.YP.rotationDegrees(90));
+                pPoseStack.mulPose(Axis.ZP.rotationDegrees(180));
             }
         }
 
@@ -171,6 +178,9 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 animate(pEntity.sitImpatientAnimState, animations.sitimpatient(), pAgeInTicks);
             }
             if (pEntity.getAttackType() == 50) {
+                if(pEntity.getAttackCounter() >= pEntity.getCounterMax()-1){
+                    pEntity.attackCounterAnimState.stop();
+                }
                 animate(pEntity.attackCounterAnimState, animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
             } else if (pEntity.getAttackType() == 40) {
                 animate(pEntity.attackAnimState, animations.attackone(), pAgeInTicks, (float) pEntity.getAttackSpeed());

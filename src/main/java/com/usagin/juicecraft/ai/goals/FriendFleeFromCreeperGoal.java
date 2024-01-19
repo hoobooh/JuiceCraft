@@ -3,6 +3,7 @@ package com.usagin.juicecraft.ai.goals;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.ai.awareness.FriendFlee;
 import com.usagin.juicecraft.friends.Friend;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -30,7 +31,7 @@ public class FriendFleeFromCreeperGoal extends Goal {
     public boolean canUse() {
         if(this.friend.canDoThings() && this.friend.fleeTarget!=null){
             this.target = this.friend.fleeTarget;
-            Vec3 vec3 = DefaultRandomPos.getPosAway(this.friend, 16, 7, this.target.position());
+            Vec3 vec3 = this.findRandomAwayPos();
             if (vec3 == null) {
                 return false;
             } else if (this.friend.distanceToSqr(vec3.x, vec3.y, vec3.z) < this.target.distanceToSqr(this.friend)) {
@@ -41,6 +42,23 @@ public class FriendFleeFromCreeperGoal extends Goal {
             }
         }
         return false;
+    }
+    Vec3 findRandomAwayPos(){
+        Vec3 temp = this.nearbyVec(new Vec3(this.target.getX(),this.target.getY(),this.target.getZ()));
+        for(int n=0;n<14;n++){
+            if(verifyMove(temp)){
+                temp=this.nearbyVec(temp);
+
+            }
+        }
+        return temp;
+    }
+    boolean verifyMove(Vec3 vec3){
+        return this.friend.getNavigation().moveTo(vec3.x,vec3.y,vec3.z,1);
+    }
+    Vec3 nearbyVec(Vec3 vec3){
+        RandomSource random = this.friend.getRandom();
+        return new Vec3(vec3.x+random.nextInt(-1,2),vec3.y+random.nextInt(0,2),vec3.z+random.nextInt(-1,2));
     }
     @Override
     public boolean canContinueToUse(){

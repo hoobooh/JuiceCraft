@@ -6,9 +6,13 @@ import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.SoraDialogueManager;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Pillager;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 
@@ -289,4 +293,6 @@ public class Sora extends Friend{
     public AbstractDialogueManager getDialogueManager() {
         return new SoraDialogueManager();
     }
+
+
 }
