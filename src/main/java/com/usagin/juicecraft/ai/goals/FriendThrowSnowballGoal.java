@@ -6,6 +6,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
+import static com.usagin.juicecraft.particles.SuguriverseParticleLarge.LOGGER;
+
 public class FriendThrowSnowballGoal extends Goal {
     protected final Friend friend;
     private final double speedModifier;
@@ -19,14 +21,16 @@ public class FriendThrowSnowballGoal extends Goal {
     public FriendThrowSnowballGoal(Friend f){
         this.friend=f;
         this.speedModifier=1;
-        this.attackRadiusSqr=400;
+        this.attackRadiusSqr=225;
     }
 
     @Override
     public boolean canUse() {
         return this.friend.canDoThings() && this.friend.getTarget()!=null && this.friend.isHoldingThrowable() && this.friend.getAttackCounter()<=0;
     }
-
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
     @Override
     public void start(){
         this.friend.setAttackCounter(20);
@@ -54,7 +58,7 @@ public class FriendThrowSnowballGoal extends Goal {
                 --this.seeTime;
             }
 
-            if (!(d0 > (double)this.attackRadiusSqr) && this.seeTime >= 20) {
+            if (!(d0 > (double)this.attackRadiusSqr)) {
                 this.friend.getNavigation().stop();
                 ++this.strafingTime;
             } else {
@@ -82,16 +86,12 @@ public class FriendThrowSnowballGoal extends Goal {
                 }
 
                 this.friend.getMoveControl().strafe(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);
-                Entity entity = this.friend.getControlledVehicle();
-                if (entity instanceof Mob) {
-                    Mob mob = (Mob)entity;
-                    mob.lookAt(livingentity, 30.0F, 30.0F);
-                }
 
                 this.friend.lookAt(livingentity, 30.0F, 30.0F);
             } else {
                 this.friend.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
             }
+
         }
     }
 }

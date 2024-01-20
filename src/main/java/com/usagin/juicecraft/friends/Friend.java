@@ -277,7 +277,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
             float xrot = this.getXRot();
             float yrot=this.getYRot();
-            snowball.shootFromRotation(this, xrot, yrot, 0.0F, 1.5F, 1.0F);
+            snowball.shootFromRotation(this, xrot, yrot, 0.0F, 1.5F, 0.8F);
             this.level().addFreshEntity(snowball);
         }
         itemstack.shrink(1);

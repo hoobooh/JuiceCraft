@@ -202,9 +202,17 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 if (!pEntity.isSprinting() && !pEntity.isSwimming() && !pEntity.idle() && pEntity.walkAnimation.isMoving()) {
                     this.parts.rightleg().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                     this.parts.leftleg().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
-                    if (pEntity.getAttackCounter() <= 0 && !pEntity.drawBowAnimationState.isStarted() && !pEntity.swimAnimState.isStarted() && pEntity.shakeAnimO == 0 && !pEntity.snowballIdle() && !pEntity.snowballThrowAnimState.isStarted()) {
+                    if (pEntity.getAttackCounter() <= 0 && !pEntity.drawBowAnimationState.isStarted() && !pEntity.swimAnimState.isStarted() && pEntity.shakeAnimO == 0 && !pEntity.snowballIdle()) {
                         this.parts.leftarm().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                         this.parts.rightarm().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
+                    }else if(pEntity.getAttackCounter() <= 0 && !pEntity.drawBowAnimationState.isStarted() && !pEntity.swimAnimState.isStarted() && pEntity.shakeAnimO == 0 && pEntity.snowballIdle()){
+                        this.parts.leftarm().resetPose();
+                        for(ModelPart part: this.parts.leftarm().getAllParts().toList()){
+                            part.resetPose();
+                        }
+                        this.parts.leftarm().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
+                        //LOGGER.info("HIT");
+
                     }
                 }
                 animate(pEntity.drawBowAnimationState, this.animations.bowdraw(), pAgeInTicks);
