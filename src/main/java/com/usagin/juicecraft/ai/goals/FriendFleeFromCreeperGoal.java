@@ -26,7 +26,9 @@ public class FriendFleeFromCreeperGoal extends Goal {
     protected Path path;
     protected final PathNavigation pathNav;
     private static final Logger LOGGER = LogUtils.getLogger();
-
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
     @Override
     public boolean canUse() {
         if(this.friend.canDoThings() && this.friend.fleeTarget!=null){
@@ -34,9 +36,7 @@ public class FriendFleeFromCreeperGoal extends Goal {
             Vec3 vec3 = this.findRandomAwayPos();
             if (vec3 == null) {
                 return false;
-            } else if (this.friend.distanceToSqr(vec3.x, vec3.y, vec3.z) < this.target.distanceToSqr(this.friend)) {
-                return false;
-            } else {
+            }  else {
                 this.path = this.pathNav.createPath(vec3.x, vec3.y, vec3.z, 0);
                 return this.path != null;
             }
@@ -45,8 +45,12 @@ public class FriendFleeFromCreeperGoal extends Goal {
     }
     Vec3 findRandomAwayPos(){
         Vec3 temp = this.nearbyVec(new Vec3(this.target.getX(),this.target.getY(),this.target.getZ()));
-        for(int n=0;n<14;n++){
+        for(int n=0;n<40;n++){
             if(verifyMove(temp)){
+                if(temp.distanceToSqr(this.target.position()) > 140  ){
+                    //LOGGER.info(temp.distanceToSqr(this.target.position()) +"");
+                    return temp;
+                }
                 temp=this.nearbyVec(temp);
 
             }
@@ -65,7 +69,7 @@ public class FriendFleeFromCreeperGoal extends Goal {
         if(this.friend.fleeTarget==null){
             return false;
         }
-        if(this.friend.fleeTarget.getSwellDir() != 1){
+        if(this.friend.fleeTarget.getSwellDir() != 1 || !this.friend.fleeTarget.isAlive()){
             this.friend.fleeTarget=null;
         }
         return this.friend.canDoThings() && this.friend.fleeTarget!=null;
@@ -82,7 +86,7 @@ public class FriendFleeFromCreeperGoal extends Goal {
     @Override
     public void tick(){
         if (this.friend.distanceToSqr(this.target) < 5.0D) {
-            this.friend.getNavigation().setSpeedModifier(1.3);
+            this.friend.getNavigation().setSpeedModifier(1.5);
         } else {
             this.friend.getNavigation().setSpeedModifier(1);
         }
