@@ -523,7 +523,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public void doHurtTarget() {
         this.runTimer = 35;
-        AABB hitTracer = new AABB(this.getX() - 1.5, this.getY(), this.getZ() - 1.5, this.getX() + 1.5, this.getY() + 2, this.getZ() + 1.5);
+        AABB hitTracer = new AABB(this.getX() - 1.8, this.getY(), this.getZ() - 1.8, this.getX() + 1.8, this.getY() + 2, this.getZ() + 1.8);
         List<Entity> entityList = this.level().getEntities(this, hitTracer);
         if (this.getTarget() != null) {
             this.lookAt(this.getTarget(), 360, 360);
