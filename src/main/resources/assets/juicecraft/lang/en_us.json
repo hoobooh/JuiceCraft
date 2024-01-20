@@ -118,7 +118,7 @@
   "juicecraft.menu.alte.prompts.special3": "Those energy readings belong to… Tsih, I believe. Her cloaking techniques are as refined as ever, I see. It's good to see a familiar face.",
   "juicecraft.menu.alte.responses.special3_response1": "A familiar face? But she looked so young…",
   "juicecraft.menu.alte.responses.special3_response2": "A mysterious being that can go invisible… could that have been… a ghost!?",
-  "juicecraft.menu.alte.prompts.comment_health_high": "There's no trouble on my end. Our competence shows itself proudly, huh?",
+  "juicecraft.menu.alte.prompts.comment_health_high": "There's no trouble on my end. Our competence shows itself proudly, huh? Let's keep pushing forward like this.",
   "juicecraft.menu.alte.prompts.comment_health_medium": "...I might have taken a bit of damage. It's fine. I can keep going.",
   "juicecraft.menu.alte.prompts.comment_health_low":  "Kgh…! This kind of injury is… nothing…!",
   "juicecraft.menu.alte.prompts.comment_hunger_low": "I'm feeling a bit peckish. What's the status of our rations?",
@@ -127,7 +127,7 @@
   "juicecraft.menu.alte.prompts.comment_area_danger_low": "No readings in the area. We should take this chance to relax while we can.",
 
   "juicecraft.menu.alte.reactions.combatsettings": "My fighting? Is something wrong?",
-  "juicecraft.menu.alte.reactions.generic_accept": "Got it.",
+  "juicecraft.menu.alte.reactions.generic_accept": "Right.",
   "juicecraft.menu.alte.reactions.generic_reject": "That's no good.",
   "juicecraft.menu.alte.reactions.disapproval": "What?!",
   "juicecraft.menu.alte.reactions.neutral": "I see.",
@@ -156,6 +156,8 @@
   "juicecraft.menu.alte.eventlog.revive": "It looks like… I died?! This memory device… the design reminds me of that strange fairy-like girl.\n",
   "juicecraft.menu.alte.eventlog.lonely": " has been quiet for a while now. I wonder if they have something on their mind?.\n",
   "juicecraft.menu.alte.eventlog.untame": "This journey isn't quite what I thought it would be. This will have to be where we part ways.\n",
+
+
 
 
 
