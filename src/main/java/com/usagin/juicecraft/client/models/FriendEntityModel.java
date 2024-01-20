@@ -49,7 +49,8 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                              AnimationDefinition standinginspect, AnimationDefinition wet,
                              AnimationDefinition viewflower, AnimationDefinition swim, AnimationDefinition interact,
                              AnimationDefinition swimmove, AnimationDefinition snowballIdle,
-                             AnimationDefinition snowballThrow, AnimationDefinition snowballIdleTransition) {
+                             AnimationDefinition snowballThrow, AnimationDefinition snowballIdleTransition,
+                             AnimationDefinition patEmbarrased) {
     }
 
     public record ModelParts(ModelPart customroot, ModelPart head, ModelPart leftarm, ModelPart rightarm,
@@ -175,7 +176,11 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
 
                         }
                     }
-                    animate(pEntity.patAnimState, this.animations.patgrounded(), pAgeInTicks);
+                    if(pEntity.isembarassed>0){
+                        //LOGGER.info(pEntity.patAnimState.isStarted() +"");
+                        animate(pEntity.patAnimState, this.animations.patEmbarrased(), pAgeInTicks);
+                    }else{
+                    animate(pEntity.patAnimState, this.animations.patgrounded(), pAgeInTicks);}
                 }
 
             } else {

@@ -1451,6 +1451,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.updateCombatSettings();
     }
     public boolean attackplayertoo = false;
+    public int isembarassed = 0;
     @Override
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         double totalZ = this.getZ() - pPlayer.getZ();
@@ -1569,6 +1570,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 if (this.isOwnedBy(pPlayer) || this.isTame()) {
                     if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
                         this.patCounter = 20;
+                        this.isembarassed=20;
                     } else if (itemstack.isEmpty()) {
                         this.idleCounter = 0;
                     }
@@ -1729,7 +1731,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public Queue<BlockPos> farmqueue = new LinkedList<>();
 
     public boolean idle() {
-        return !this.isHoldingThrowable() && this.walkAnimation.speed() < 0.2 && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0;
+        return !this.isHoldingThrowable() && !this.walkAnimation.isMoving() && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0;
     }
     public boolean snowballIdle(){
         return this.isHoldingThrowable() && !this.isDescending() && this.canDoThings() && this.shakeAnimO == 0;
@@ -1756,6 +1758,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (this.patCounter > 0) {
             this.idleCounter = 0;
             this.patCounter--;
+        }
+        if (this.isembarassed > 0) {
+            this.isembarassed--;
         }
         if (this.mood > 100) {
             this.mood = 100;
@@ -1808,7 +1813,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.snowballIdleTransitionAnimState.animateWhen(!this.snowballIdleAnimState.isStarted() && snowballIdle() && this.idleCounter > 0 && this.idleCounter < 20 && this.patCounter == 0 && !this.snowballThrowAnimState.isStarted(), this.tickCount);
 
             this.inspectAnimState.animateWhen(idle() && this.idleCounter == 20 && this.patCounter == 0 && this.animatestandingtimer > 0, this.tickCount);
-            this.patAnimState.animateWhen(this.canDoThings() && this.patCounter > 0 && !this.walkAnimation.isMoving() && !this.isDescending() && this.idle() && this.shakeAnimO == 0, this.tickCount);
+            this.patAnimState.animateWhen(this.canDoThings() && this.patCounter > 0 && !this.walkAnimation.isMoving() && !this.isDescending() && (this.idle() || this.snowballIdle()) && this.shakeAnimO == 0, this.tickCount);
             this.sitPatAnimState.animateWhen(this.getPose() == SITTING && this.patCounter != 0, this.tickCount);
             this.sitAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter == 0, this.tickCount);
             this.sitImpatientAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter != 0, this.tickCount);
