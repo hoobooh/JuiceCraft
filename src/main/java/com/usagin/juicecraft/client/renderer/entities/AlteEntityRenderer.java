@@ -26,31 +26,59 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
     private static final ResourceLocation ALTE_NARROW = new ResourceLocation(MODID, "textures/entities/alte/half.png");
     private static final ResourceLocation ALTE_CLOSED = new ResourceLocation(MODID, "textures/entities/alte/closed.png");
     private static final ResourceLocation ALTE_WINK = new ResourceLocation(MODID, "textures/entities/alte/wink.png");
+    private static final ResourceLocation GLOW_OPEN = new ResourceLocation(MODID, "textures/entities/alte/glowopen.png");
+    private static final ResourceLocation GLOW_NARROW = new ResourceLocation(MODID, "textures/entities/alte/glownarrow.png");
+    private static final ResourceLocation GLOW_WINK = new ResourceLocation(MODID, "textures/entities/alte/glowwink.png");
     private static final ResourceLocation ALTE_ENERGYLAYER = new ResourceLocation(MODID, "textures/entities/alte/lightlayerfinal.png");
+
+
+
     FriendEyeLayer<Alte, AlteEntityModel> energylayer;
+    FriendEyeLayer<Alte, AlteEntityModel> openlayer;
+    FriendEyeLayer<Alte, AlteEntityModel> narrowlayer;
+    FriendEyeLayer<Alte, AlteEntityModel> winklayer;
     FriendItemInHandLayer<Alte, AlteEntityModel> pLayer;
     FriendItemOnBackLayer<Alte, AlteEntityModel> pBackLayer;
+
     public AlteEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new AlteEntityModel(pContext.bakeLayer(AlteEntityModel.LAYER_LOCATION)),0.5f);
         energylayer =new FriendEyeLayer<>(this, ALTE_ENERGYLAYER);
+        openlayer =new FriendEyeLayer<>(this, GLOW_OPEN);
+        narrowlayer =new FriendEyeLayer<>(this, GLOW_NARROW);
+        winklayer =new FriendEyeLayer<>(this, GLOW_WINK);
         pLayer=new FriendItemInHandLayer<>(this, pContext.getItemInHandRenderer());
         pBackLayer = new FriendItemOnBackLayer<>(this, pContext.getItemInHandRenderer());
         energylayer.visible=true;
         this.addLayer(energylayer);
         this.addLayer(pBackLayer);
         this.addLayer(pLayer);
+        this.addLayer(openlayer);
+        this.addLayer(narrowlayer);
+        this.addLayer(winklayer);
     }
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull Alte pEntity) {
         if(pEntity.getPose() == Pose.SLEEPING||pEntity.blinkCounter<=6||(pEntity.shakeAnimO>0 && pEntity.shakeAnimO<2) || pEntity.shakeAnimO > 3){
+            this.openlayer.visible=false;
+            this.narrowlayer.visible=false;
+            this.winklayer.visible=false;
             return ALTE_CLOSED;
         }
         else if(pEntity.patCounter!=0 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive())){
+            this.openlayer.visible=false;
+            this.narrowlayer.visible=false;
+            this.winklayer.visible=true;
             return ALTE_WINK;
         }
         else if(pEntity.blinkCounter<=8){
+            this.openlayer.visible=false;
+            this.narrowlayer.visible=true;
+            this.winklayer.visible=false;
             return ALTE_NARROW;
         }
+        this.openlayer.visible=true;
+        this.narrowlayer.visible=false;
+        this.winklayer.visible=false;
         return ALTE_NEUTRAL;
     }
     private static final Logger LOGGER = LogUtils.getLogger();
