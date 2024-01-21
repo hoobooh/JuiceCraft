@@ -50,6 +50,7 @@ import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+import javax.tools.Tool;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,9 +58,9 @@ import static com.usagin.juicecraft.client.menu.FriendMenuTextureLocations.*;
 import static net.minecraft.client.gui.screens.inventory.InventoryScreen.renderEntityInInventory;
 
 public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
-    public ResourceLocation FRIEND_PORTRAIT;
-    public ResourceLocation FRIEND_THEME;
-    public ResourceLocation FRIEND_SOURCE;
+    public final ResourceLocation FRIEND_PORTRAIT;
+    public final ResourceLocation FRIEND_THEME;
+    public final ResourceLocation FRIEND_SOURCE;
     public boolean playedSound = false;
     private static final Logger LOGGER = LogUtils.getLogger();
     final Friend friend;
@@ -92,6 +93,13 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     WidgetSprites speechSprite = new WidgetSprites(SPEECH_BEFORE, SPEECH_AFTER);
     WidgetSprites exitSprite = new WidgetSprites(EXIT_BEFORE, EXIT_AFTER);
     WidgetSprites speechConnectorSprite = new WidgetSprites(SPEECH_CONNECTOR_BEFORE, SPEECH_CONNECTOR_AFTER);
+    final ResourceLocation SKILLS;
+    final Tooltip SKILL1;
+    final Tooltip SKILL2;
+    final Tooltip SKILL3;
+    final Tooltip SKILL4;
+    final Tooltip SKILL5;
+    final Tooltip SKILL6;
 
     public FriendMenuScreen(FriendMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -101,9 +109,16 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.menu = pMenu;
         this.inventoryLabelX = 111;
         this.inventoryLabelY = 170;
+        this.SKILLS=new ResourceLocation(JuiceCraft.MODID,"textures/gui/" + friend.getFriendName().toLowerCase() + "/skills.png");
         FRIEND_THEME = new ResourceLocation(JuiceCraft.MODID, "textures/gui/" + friend.getFriendName().toLowerCase() + "/" + friend.getFriendName().toLowerCase() + ".png");
         FRIEND_SOURCE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/" + friend.getFriendName().toLowerCase() + "/" + friend.getFriendName().toLowerCase() + "_theme.png");
         FRIEND_PORTRAIT = new ResourceLocation(JuiceCraft.MODID, "textures/gui/" + friend.getFriendName().toLowerCase() + "/" + friend.getFriendName().toLowerCase() + "_portrait.png");
+        this.SKILL1= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill1"));
+        this.SKILL2= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill2"));
+        this.SKILL3= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill3"));
+        this.SKILL4= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill4"));
+        this.SKILL5= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill5"));
+        this.SKILL6= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill6"));
     }
 
     void hideMiddleScreen() {
@@ -507,22 +522,11 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
 
     void renderTalkMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        for (Slot slot : this.menu.slots) {
-            ((FriendSlot) slot).tempBypass = true;
-            pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
-            if (slot.getItem().getCount() > 1) {
-                String s = Integer.toString(slot.getItem().getCount());
-                pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
-                pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
-            }
-
-            ((FriendSlot) slot).tempBypass = false;
-        }
         pGuiGraphics.flush();
         RenderSystem.disableDepthTest();
 
         pGuiGraphics.pose().pushPose();
-        pGuiGraphics.pose().translate(0, 0, 1000);
+        pGuiGraphics.pose().translate(0, 0, 2000);
         //GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
         GL11.glEnable(GL11.GL_BLEND);
         //GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -624,20 +628,6 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     }
 
     void renderSkillMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-
-        for (Slot slot : this.menu.slots) {
-            ((FriendSlot) slot).tempBypass = true;
-            if (((slot.getSlotIndex() > 6 || slot.getSlotIndex() == 0) && !(slot.container instanceof Inventory)) || (slot.getSlotIndex() > 8 && slot.container instanceof Inventory)) {
-
-                pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
-                if (slot.getItem().getCount() > 1) {
-                    String s = Integer.toString(slot.getItem().getCount());
-                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
-                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
-                }
-            }
-            ((FriendSlot) slot).tempBypass = false;
-        }
         pGuiGraphics.flush();
         RenderSystem.disableDepthTest();
         GL11.glEnable(GL11.GL_BLEND);
@@ -648,6 +638,8 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         pGuiGraphics.blit(EXPBAREMPTY, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
         pGuiGraphics.blit(EXPBAR, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, 154 + (int) (0.97 * (this.friend.getFriendExperience() % 100)), this.imageHeight, this.imageWidth, this.imageHeight);
         pGuiGraphics.blit(SKILLMENU, this.leftPos - 1, this.topPos - 1, 1000, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+        pGuiGraphics.blit(SKILLS, this.leftPos - 1, this.topPos - 1, 1000, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+
 
         //skill button setup
         //0~5 is first row
@@ -683,11 +675,9 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                 bt.get(i + 4).setFocus(!enabled[i - 8]);
             } else if (i == 13) {
                 if (this.friend.getSkillPoints() > 3) {
-                    if (!this.friend.inventory.getItem(0).isEmpty()) {
-                        if (this.friend.getFriendNorma() >= this.friend.skillinfo[i - 8]) {
+                    if (this.friend.getFriendNorma() >= this.friend.skillinfo[i - 8]) {
                             bt.get(i).visible = true;
                         }
-                    }
                 }
                 bt.get(i + 2).setFocus(enabled[i - 8] || levels[i - 8] == 0);
                 bt.get(i + 4).setFocus(!enabled[i - 8]);
@@ -701,6 +691,49 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         //render level
         pGuiGraphics.drawCenteredString(this.font, Integer.toString((int) this.friend.getFriendExperience() / 100), this.leftPos + 144, this.topPos + 46, ChatFormatting.WHITE.getColor());
         pGuiGraphics.drawString(this.font, Component.translatable("juicecraft.menu.skillpoints").getString() + this.friend.getSkillPoints(), this.leftPos + 157, this.topPos + 52, ChatFormatting.WHITE.getColor());
+
+        int[] levels = this.friend.getSkillLevels();
+
+
+        //SKILL 1
+        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 146, this.topPos + 81)){
+            this.setTooltipForNextRenderPass(this.SKILL1.toCharSequence(this.getMinecraft()));
+
+        }
+
+        //SKILL 2
+        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 211, this.topPos + 81)){
+            this.setTooltipForNextRenderPass(this.SKILL2.toCharSequence(this.getMinecraft()));
+        }
+
+        //SKILL 3
+        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 146, this.topPos + 129)){
+            this.setTooltipForNextRenderPass(this.SKILL3.toCharSequence(this.getMinecraft()));
+        }
+
+        //SKILL 4
+        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 211, this.topPos + 129)){
+            this.setTooltipForNextRenderPass(this.SKILL4.toCharSequence(this.getMinecraft()));
+        }
+        //SKILL 5
+        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 146, this.topPos + 177)){
+            this.setTooltipForNextRenderPass(this.SKILL5.toCharSequence(this.getMinecraft()));
+        }
+
+        //SKILL 6
+        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 211, this.topPos + 177)){
+            this.setTooltipForNextRenderPass(this.SKILL6.toCharSequence(this.getMinecraft()));
+        }
+
+        pGuiGraphics.pose().translate(0,0,-400);
+
+        drawCenteredString(pGuiGraphics, this.font, Component.literal(Integer.toString(levels[0])), this.leftPos + 147, this.topPos + 93, ChatFormatting.BLACK.getColor());
+        drawCenteredString(pGuiGraphics, this.font, Component.literal(Integer.toString(levels[1])), this.leftPos + 212, this.topPos + 93, ChatFormatting.BLACK.getColor());
+        drawCenteredString(pGuiGraphics, this.font, Component.literal(Integer.toString(levels[2])), this.leftPos + 147, this.topPos + 141, ChatFormatting.BLACK.getColor());
+        drawCenteredString(pGuiGraphics, this.font, Component.literal(Integer.toString(levels[3])), this.leftPos + 212, this.topPos + 141, ChatFormatting.BLACK.getColor());
+        drawCenteredString(pGuiGraphics, this.font, Component.literal(Integer.toString(levels[4])), this.leftPos + 147, this.topPos + 189, ChatFormatting.BLACK.getColor());
+        drawCenteredString(pGuiGraphics, this.font, Component.literal(Integer.toString(levels[5])), this.leftPos + 212, this.topPos + 189, ChatFormatting.BLACK.getColor());
+
         RenderSystem.disableDepthTest();
 
 
@@ -708,21 +741,14 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         GL11.glDisable(GL11.GL_BLEND);
         RenderSystem.enableDepthTest();
     }
+    boolean hoveringImage(int x, int y, int centerx, int centery){
+        if(x<centerx+11 && x>centerx-11){
+            return y < centery+ 8 && y > centery - 8;
+        }
+        return false;
+    }
 
     void renderStatsMenu(GuiGraphics pGuiGraphics) {
-        for (Slot slot : this.menu.slots) {
-            ((FriendSlot) slot).tempBypass = true;
-            if (((slot.getSlotIndex() > 6 || slot.getSlotIndex() == 0) && !(slot.container instanceof Inventory)) || (slot.getSlotIndex() > 8 && slot.container instanceof Inventory)) {
-
-                pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
-                if (slot.getItem().getCount() > 1) {
-                    String s = Integer.toString(slot.getItem().getCount());
-                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
-                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
-                }
-            }
-            ((FriendSlot) slot).tempBypass = false;
-        }
         pGuiGraphics.flush();
         RenderSystem.disableDepthTest();
         GL11.glEnable(GL11.GL_BLEND);
@@ -924,6 +950,34 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         }
 
         //additional menus
+
+        if(this.talkActive){
+            for (Slot slot : this.menu.slots) {
+                ((FriendSlot) slot).tempBypass = true;
+                pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
+                if (slot.getItem().getCount() > 1) {
+                    String s = Integer.toString(slot.getItem().getCount());
+                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
+                    pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
+                }
+                ((FriendSlot) slot).tempBypass = false;
+            }
+        }
+        if(this.skillActive || this.statsActive){
+            for (Slot slot : this.menu.slots) {
+                ((FriendSlot) slot).tempBypass = true;
+                if (((slot.getSlotIndex() > 6 || slot.getSlotIndex() == 0) && !(slot.container instanceof Inventory)) || (slot.getSlotIndex() > 8 && slot.container instanceof Inventory)) {
+
+                    pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
+                    if (slot.getItem().getCount() > 1) {
+                        String s = Integer.toString(slot.getItem().getCount());
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 1 - this.font.width(s), this.topPos + slot.y + 6 + 4, ChatFormatting.BLACK.getColor(), false);
+                        pGuiGraphics.drawString(this.font, s, this.leftPos + slot.x + 19 - 2 - this.font.width(s), this.topPos + slot.y + 6 + 3, ChatFormatting.WHITE.getColor(), false);
+                    }
+                }
+                ((FriendSlot) slot).tempBypass = false;
+            }
+        }
         if (this.skillActive) {
             this.renderSkillMenu(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         } else if (this.statsActive) {

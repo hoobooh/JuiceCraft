@@ -133,6 +133,13 @@
   "juicecraft.menu.alte.reactions.neutral": "I see.",
   "juicecraft.menu.alte.reactions.approval": "Yeah. That's good.",
 
+  "juicecraft.menu.alte.skill1": "§n§lWeapon of War§r§l\nNorma 1§r\nImprove Alte's combat capabilities, strengthening her physical stats and fighting prowess.",
+  "juicecraft.menu.alte.skill2": "§n§lSpark§r§l\nNorma 2§r\nAlte creates a shockwave in front of her, damaging and slowing any enemies caught inside.",
+  "juicecraft.menu.alte.skill3": "§n§lShock Rod§r§l\nNorma 3§r\nAlte temporarily equips her Shock Rod, increasing melee attack damage and shocking the enemies she hits.",
+  "juicecraft.menu.alte.skill4": "§n§lPunisher§r§l\nNorma 3§r\nRequires \"Shock Rod\" to be active. Alte increases the energy output of her Shock Rod before dashing through a target, knocking aside any enemy in the way.",
+  "juicecraft.menu.alte.skill5": "§n§lWhatever It Takes§r§l\nNorma 4§r\nRequires Activator. Once per day, when Alte would die: Alte instead unleashes a violent shockwave of energy, dealing massive damage to the enemies around her.",
+  "juicecraft.menu.alte.skill6": "§d§n§lLambda Leonis§r§l\nNorma 5§r\nRequires Activator. Alte shoots everything.",
+
   "juicecraft.menu.alte.eventlog.tame": "This person is… a native of this world? They don't seem to be hostile. I've decided to travel with them in return for this strangely delicious food. I should try to make some of this later.\n",
   "juicecraft.menu.alte.eventlog.playerdeath": " perished in front of my eyes today. I'm ashamed of my own ineptitude. To think that I would fail to protect even a single person.\n",
   "juicecraft.menu.alte.eventlog.miraclebean": "This ice cream… incredible! I need to remember this taste while I can! This should help with my cooking.\n",

@@ -1601,7 +1601,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         }
                     }
                     else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer)) {
-                        if (this.getRandom().nextInt(10) < 3) {
+                        if (this.getRandom().nextInt(30) < 3) {
                             this.playTimedVoice(this.getBattle());
                             this.swing(InteractionHand.MAIN_HAND);
                             this.attackplayertoo=true;

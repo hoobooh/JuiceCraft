@@ -36,7 +36,7 @@ public class Alte extends Friend{
 
     @Override
     int[] getSkillInfo() {
-        return new int[]{1,1,1,1,2,3};
+        return new int[]{1,2,3,3,4,5};
     }
 
     @Override
