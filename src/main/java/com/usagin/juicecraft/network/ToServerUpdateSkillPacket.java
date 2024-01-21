@@ -6,7 +6,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 
+import java.util.Arrays;
 import java.util.Objects;
+
+import static com.usagin.juicecraft.particles.SuguriverseParticleLarge.LOGGER;
 
 public class ToServerUpdateSkillPacket {
     private final boolean[] enabled;
@@ -51,7 +54,8 @@ public class ToServerUpdateSkillPacket {
         this.friend=decodeBuffer(level, this.id);
         if(this.friend!=null){
             if(this.friend.getSkillPoints()>=cost){
-                this.friend.setSkillLevels(this.levels);
+                //LOGGER.info(Arrays.toString(this.levels) +"") ;
+            this.friend.setSkillLevels(this.levels);
                 this.friend.setSkillPoints(this.friend.getSkillPoints()-cost);
                 this.friend.setSkillEnabled(this.enabled);
                 context.setPacketHandled(true);

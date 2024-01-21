@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import javax.tools.Tool;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.usagin.juicecraft.client.menu.FriendMenuTextureLocations.*;
@@ -109,16 +110,16 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.menu = pMenu;
         this.inventoryLabelX = 111;
         this.inventoryLabelY = 170;
-        this.SKILLS=new ResourceLocation(JuiceCraft.MODID,"textures/gui/" + friend.getFriendName().toLowerCase() + "/skills.png");
+        this.SKILLS = new ResourceLocation(JuiceCraft.MODID, "textures/gui/" + friend.getFriendName().toLowerCase() + "/skills.png");
         FRIEND_THEME = new ResourceLocation(JuiceCraft.MODID, "textures/gui/" + friend.getFriendName().toLowerCase() + "/" + friend.getFriendName().toLowerCase() + ".png");
         FRIEND_SOURCE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/" + friend.getFriendName().toLowerCase() + "/" + friend.getFriendName().toLowerCase() + "_theme.png");
         FRIEND_PORTRAIT = new ResourceLocation(JuiceCraft.MODID, "textures/gui/" + friend.getFriendName().toLowerCase() + "/" + friend.getFriendName().toLowerCase() + "_portrait.png");
-        this.SKILL1= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill1"));
-        this.SKILL2= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill2"));
-        this.SKILL3= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill3"));
-        this.SKILL4= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill4"));
-        this.SKILL5= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill5"));
-        this.SKILL6= Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill6"));
+        this.SKILL1 = Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill1"));
+        this.SKILL2 = Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill2"));
+        this.SKILL3 = Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill3"));
+        this.SKILL4 = Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill4"));
+        this.SKILL5 = Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill5"));
+        this.SKILL6 = Tooltip.create(Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".skill6"));
     }
 
     void hideMiddleScreen() {
@@ -409,7 +410,9 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void doSkillOneUpgrade(Button btn) {
         int[] levels = this.friend.getSkillLevels();
         levels[0] += 1;
-        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 1, this.friend.skillEnabled, this.friend.getId()));
+
+        //LOGGER.info(Arrays.toString(levels) +" and " + Arrays.toString(this.friend.getSkillEnabled()));
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 1, this.friend.getSkillEnabled(), this.friend.getId()));
     }
 
     private void doSkillOneEnable(Button btn) {
@@ -427,7 +430,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void doSkillTwoUpgrade(Button btn) {
         int[] levels = this.friend.getSkillLevels();
         levels[1] += 1;
-        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 1, this.friend.skillEnabled, this.friend.getId()));
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 1, this.friend.getSkillEnabled(), this.friend.getId()));
     }
 
     private void doSkillTwoEnable(Button btn) {
@@ -445,7 +448,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void doSkillThreeUpgrade(Button btn) {
         int[] levels = this.friend.getSkillLevels();
         levels[2] += 1;
-        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 2, this.friend.skillEnabled, this.friend.getId()));
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 2, this.friend.getSkillEnabled(), this.friend.getId()));
     }
 
     private void doSkillThreeEnable(Button btn) {
@@ -463,7 +466,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void doSkillFourUpgrade(Button btn) {
         int[] levels = this.friend.getSkillLevels();
         levels[3] += 1;
-        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 2, this.friend.skillEnabled, this.friend.getId()));
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 2, this.friend.getSkillEnabled(), this.friend.getId()));
     }
 
     private void doSkillFourEnable(Button btn) {
@@ -481,7 +484,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void doSkillFiveUpgrade(Button btn) {
         int[] levels = this.friend.getSkillLevels();
         levels[4] += 1;
-        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 3, this.friend.skillEnabled, this.friend.getId()));
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 3, this.friend.getSkillEnabled(), this.friend.getId()));
     }
 
     private void doSkillFiveEnable(Button btn) {
@@ -499,7 +502,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     private void doSkillSixUpgrade(Button btn) {
         int[] levels = this.friend.getSkillLevels();
         levels[5] += 1;
-        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 4, this.friend.skillEnabled, this.friend.getId()));
+        UpdateSkillPacketHandler.sendToServer(new ToServerUpdateSkillPacket(levels, 4, this.friend.getSkillEnabled(), this.friend.getId()));
     }
 
     private void doSkillSixEnable(Button btn) {
@@ -552,10 +555,10 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         //ACTUAL STUFF
         pGuiGraphics.fillGradient(0, 0, this.width, this.height, -500, -1072689136, -804253680); //render background dim
         pGuiGraphics.pose().pushPose();
-        float scale2=1.3F;
+        float scale2 = 1.3F;
         String message = this.friend.getDialogueManager().sendToManage(this, pGuiGraphics, this.dialogueProgress, this.currenttopic);
-        pGuiGraphics.pose().scale(scale2,scale2,1);
-        pGuiGraphics.drawWordWrap(this.font, FormattedText.of(message, style), (int) ((this.leftPos + 20)/scale2), (int)((this.topPos + 200)/scale2), (int) (350/scale2), ChatFormatting.DARK_GRAY.getColor());
+        pGuiGraphics.pose().scale(scale2, scale2, 1);
+        pGuiGraphics.drawWordWrap(this.font, FormattedText.of(message, style), (int) ((this.leftPos + 20) / scale2), (int) ((this.topPos + 200) / scale2), (int) (350 / scale2), ChatFormatting.DARK_GRAY.getColor());
         pGuiGraphics.pose().popPose();
         pGuiGraphics.blit(DIALOGUEBOX, this.leftPos - 1, this.topPos - 1, -500, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
         //render buttons
@@ -607,12 +610,12 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         }
 
         float scale = 1.8F;
-        pGuiGraphics.pose().scale(scale,scale,1);
-        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale)+1, (int) ((this.topPos + 169)/scale) + 3, 16765067);
-        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale)-1, (int) ((this.topPos + 169)/scale) +3, 16765067);
-        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale), (int) ((this.topPos + 169)/scale)+4, 16765067);
-        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale), (int) ((this.topPos + 169)/scale)+2, 16765067);
-        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72)/scale), (int) ((this.topPos + 169)/scale) + 3, ChatFormatting.WHITE.getColor());
+        pGuiGraphics.pose().scale(scale, scale, 1);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72) / scale) + 1, (int) ((this.topPos + 169) / scale) + 3, 16765067);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72) / scale) - 1, (int) ((this.topPos + 169) / scale) + 3, 16765067);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72) / scale), (int) ((this.topPos + 169) / scale) + 4, 16765067);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72) / scale), (int) ((this.topPos + 169) / scale) + 2, 16765067);
+        drawCenteredString(pGuiGraphics, this.font, Component.translatable("entity.juicecraft." + this.friend.getFriendName().toLowerCase()), (int) ((this.leftPos + 72) / scale), (int) ((this.topPos + 169) / scale) + 3, ChatFormatting.WHITE.getColor());
 
 
         //epilogue
@@ -633,7 +636,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         GL11.glEnable(GL11.GL_BLEND);
         pGuiGraphics.pose().pushPose();
 
-        pGuiGraphics.pose().translate(0,0,800);
+        pGuiGraphics.pose().translate(0, 0, 800);
 
         pGuiGraphics.blit(EXPBAREMPTY, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
         pGuiGraphics.blit(EXPBAR, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, 154 + (int) (0.97 * (this.friend.getFriendExperience() % 100)), this.imageHeight, this.imageWidth, this.imageHeight);
@@ -651,33 +654,33 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             int[] levels = this.friend.getSkillLevels();
             if (i == 0 || i == 1) {
                 if (this.friend.getSkillPoints() > 0) {
-                    if (this.friend.getFriendNorma() >= this.friend.skillinfo[i]) {
-                        bt.get(i).visible = true;
-                    }
+                    bt.get(i).visible = this.friend.getFriendNorma() >= this.friend.skillinfo[i];
+                }else{
+                    bt.get(i).visible = false;
                 }
                 bt.get(i + 2).setFocus(enabled[i] || levels[i] == 0);
                 bt.get(i + 4).setFocus(!enabled[i]);
             } else if (i == 6 || i == 7) {
                 if (this.friend.getSkillPoints() > 1) {
-                    if (this.friend.getFriendNorma() >= this.friend.skillinfo[i - 4]) {
-                        bt.get(i).visible = true;
-                    }
+                    bt.get(i).visible = this.friend.getFriendNorma() >= this.friend.skillinfo[i - 4];
+                }else{
+                    bt.get(i).visible = false;
                 }
                 bt.get(i + 2).setFocus(enabled[i - 4] || levels[i - 4] == 0);
                 bt.get(i + 4).setFocus(!enabled[i - 4]);
             } else if (i == 12) {
                 if (this.friend.getSkillPoints() > 2) {
-                    if (this.friend.getFriendNorma() >= this.friend.skillinfo[i - 8]) {
-                        bt.get(i).visible = true;
-                    }
+                    bt.get(i).visible = this.friend.getFriendNorma() >= this.friend.skillinfo[i - 8];
+                }else{
+                    bt.get(i).visible = false;
                 }
                 bt.get(i + 2).setFocus(enabled[i - 8] || levels[i - 8] == 0);
                 bt.get(i + 4).setFocus(!enabled[i - 8]);
             } else if (i == 13) {
                 if (this.friend.getSkillPoints() > 3) {
-                    if (this.friend.getFriendNorma() >= this.friend.skillinfo[i - 8]) {
-                            bt.get(i).visible = true;
-                        }
+                    bt.get(i).visible = this.friend.getFriendNorma() >= this.friend.skillinfo[i - 8];
+                }else{
+                    bt.get(i).visible = false;
                 }
                 bt.get(i + 2).setFocus(enabled[i - 8] || levels[i - 8] == 0);
                 bt.get(i + 4).setFocus(!enabled[i - 8]);
@@ -696,36 +699,36 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
 
         //SKILL 1
-        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 146, this.topPos + 81)){
+        if (this.hoveringImage(pMouseX, pMouseY, this.leftPos + 146, this.topPos + 81)) {
             this.setTooltipForNextRenderPass(this.SKILL1.toCharSequence(this.getMinecraft()));
 
         }
 
         //SKILL 2
-        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 211, this.topPos + 81)){
+        if (this.hoveringImage(pMouseX, pMouseY, this.leftPos + 211, this.topPos + 81)) {
             this.setTooltipForNextRenderPass(this.SKILL2.toCharSequence(this.getMinecraft()));
         }
 
         //SKILL 3
-        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 146, this.topPos + 129)){
+        if (this.hoveringImage(pMouseX, pMouseY, this.leftPos + 146, this.topPos + 129)) {
             this.setTooltipForNextRenderPass(this.SKILL3.toCharSequence(this.getMinecraft()));
         }
 
         //SKILL 4
-        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 211, this.topPos + 129)){
+        if (this.hoveringImage(pMouseX, pMouseY, this.leftPos + 211, this.topPos + 129)) {
             this.setTooltipForNextRenderPass(this.SKILL4.toCharSequence(this.getMinecraft()));
         }
         //SKILL 5
-        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 146, this.topPos + 177)){
+        if (this.hoveringImage(pMouseX, pMouseY, this.leftPos + 146, this.topPos + 177)) {
             this.setTooltipForNextRenderPass(this.SKILL5.toCharSequence(this.getMinecraft()));
         }
 
         //SKILL 6
-        if(this.hoveringImage(pMouseX,pMouseY,this.leftPos + 211, this.topPos + 177)){
+        if (this.hoveringImage(pMouseX, pMouseY, this.leftPos + 211, this.topPos + 177)) {
             this.setTooltipForNextRenderPass(this.SKILL6.toCharSequence(this.getMinecraft()));
         }
 
-        pGuiGraphics.pose().translate(0,0,-400);
+        pGuiGraphics.pose().translate(0, 0, -400);
 
         drawCenteredString(pGuiGraphics, this.font, Component.literal(Integer.toString(levels[0])), this.leftPos + 147, this.topPos + 93, ChatFormatting.BLACK.getColor());
         drawCenteredString(pGuiGraphics, this.font, Component.literal(Integer.toString(levels[1])), this.leftPos + 212, this.topPos + 93, ChatFormatting.BLACK.getColor());
@@ -741,9 +744,10 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         GL11.glDisable(GL11.GL_BLEND);
         RenderSystem.enableDepthTest();
     }
-    boolean hoveringImage(int x, int y, int centerx, int centery){
-        if(x<centerx+11 && x>centerx-11){
-            return y < centery+ 8 && y > centery - 8;
+
+    boolean hoveringImage(int x, int y, int centerx, int centery) {
+        if (x < centerx + 11 && x > centerx - 11) {
+            return y < centery + 8 && y > centery - 8;
         }
         return false;
     }
@@ -754,24 +758,24 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         GL11.glEnable(GL11.GL_BLEND);
         pGuiGraphics.pose().pushPose();
 
-        pGuiGraphics.pose().translate(0,0,800);
+        pGuiGraphics.pose().translate(0, 0, 800);
         pGuiGraphics.blit(STATMENU, this.leftPos - 1, this.topPos - 1, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
         pGuiGraphics.blit(FRIEND_PORTRAIT, this.leftPos - 1, this.topPos - 1, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
 
         Component comp = Component.translatable("juicecraft.menu.name");
 
         pGuiGraphics.drawString(this.font, comp, this.leftPos - 1 + 187, this.topPos - 1 + 50, ChatFormatting.BLACK.getColor(), false);
-        renderScrollingString(pGuiGraphics, this.font, Component.literal(this.friend.getFriendName()), this.leftPos - 1 + 187 + this.font.width(comp.getString()), this.topPos - 1 + 50,this.leftPos - 1 + 260,this.topPos - 1 + 60, ChatFormatting.BLACK.getColor());
+        renderScrollingString(pGuiGraphics, this.font, Component.literal(this.friend.getFriendName()), this.leftPos - 1 + 187 + this.font.width(comp.getString()), this.topPos - 1 + 50, this.leftPos - 1 + 260, this.topPos - 1 + 60, ChatFormatting.BLACK.getColor());
 
         comp = Component.translatable("juicecraft.menu.origin");
 
         pGuiGraphics.drawString(this.font, comp, this.leftPos - 1 + 187, this.topPos - 1 + 67, ChatFormatting.BLACK.getColor(), false);
-        renderScrollingString(pGuiGraphics, this.font, this.getFriendResource("origin"), this.leftPos - 1 + 187+ this.font.width(comp.getString()), this.topPos - 1 + 67,this.leftPos - 1 + 260,this.topPos - 1 + 87, ChatFormatting.BLACK.getColor());
+        renderScrollingString(pGuiGraphics, this.font, this.getFriendResource("origin"), this.leftPos - 1 + 187 + this.font.width(comp.getString()), this.topPos - 1 + 67, this.leftPos - 1 + 260, this.topPos - 1 + 87, ChatFormatting.BLACK.getColor());
 
         comp = Component.translatable("juicecraft.menu.disposition");
 
         pGuiGraphics.drawString(this.font, comp, this.leftPos - 1 + 187, this.topPos - 1 + 87, ChatFormatting.BLACK.getColor(), false);
-        renderScrollingString(pGuiGraphics,this.font, this.getFriendResource("disposition"), this.leftPos - 1 + 187+ this.font.width(comp.getString()), this.topPos - 1 + 87,this.leftPos - 1 + 260,this.topPos - 1 + 97, ChatFormatting.BLACK.getColor());
+        renderScrollingString(pGuiGraphics, this.font, this.getFriendResource("disposition"), this.leftPos - 1 + 187 + this.font.width(comp.getString()), this.topPos - 1 + 87, this.leftPos - 1 + 260, this.topPos - 1 + 97, ChatFormatting.BLACK.getColor());
 
         comp = Component.translatable("juicecraft.menu.specialties");
         pGuiGraphics.drawString(this.font, comp, this.leftPos - 1 + 124, this.topPos - 1 + 110, ChatFormatting.BLACK.getColor(), false);
@@ -951,7 +955,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         //additional menus
 
-        if(this.talkActive){
+        if (this.talkActive) {
             for (Slot slot : this.menu.slots) {
                 ((FriendSlot) slot).tempBypass = true;
                 pGuiGraphics.renderItem(slot.getItem(), this.leftPos + slot.x, this.topPos + slot.y, 0, -1000);
@@ -963,7 +967,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                 ((FriendSlot) slot).tempBypass = false;
             }
         }
-        if(this.skillActive || this.statsActive){
+        if (this.skillActive || this.statsActive) {
             for (Slot slot : this.menu.slots) {
                 ((FriendSlot) slot).tempBypass = true;
                 if (((slot.getSlotIndex() > 6 || slot.getSlotIndex() == 0) && !(slot.container instanceof Inventory)) || (slot.getSlotIndex() > 8 && slot.container instanceof Inventory)) {

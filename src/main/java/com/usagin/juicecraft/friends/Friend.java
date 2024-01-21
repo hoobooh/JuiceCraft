@@ -31,8 +31,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.*;
@@ -243,9 +241,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
             }
             temp += 4;
-            return temp / 1.6 * Mth.clamp(this.getCombatMod(),0.1,1.5);
+            //LOGGER.info(this.combatmodifier + "BASE");
+            //LOGGER.info(this.getCombatMod() +"MOD");
+            return temp / 1.6 * Mth.clamp(1+ 0.05*this.getCombatMod(),0.1,1.5);
         } catch (Exception e) {
-            return 0.625;
+            return 0.625  * Mth.clamp(1+ 0.05*this.getCombatMod(),0.1,1.5) ;
         }
     }
     @Override
@@ -576,9 +576,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
     }
     public float getCombatMod(){
-        float mod = this.combatmodifier;
-        float difficulty = 10*(1+mod)/(10+mod);
-        return difficulty/10;
+        float mod = this.getCombatModifier();
+        return 10*(1+mod)/(10+mod);
     }
     @Override
     public boolean doHurtTarget(Entity pEntity) {
@@ -588,10 +587,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         boolean flag = false;
         if (pEntity != null) {
             if (this.distanceTo(pEntity) < 3) {
-                int mod = this.combatmodifier;
+                int mod = this.getCombatModifier();
                 int difficulty = 10*(1+mod)/(10+mod);
                 //int n = this.getRandom().nextInt(0,21);
-                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5*this.getCombatMod()/21)+this.getRandom().nextInt(1,7),1,6)+3)/6;
+                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5*this.getCombatMod()/10)+this.getRandom().nextInt(1,7),1,6)+3)/6;
                 float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
                 if (pEntity instanceof LivingEntity) {
                     f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
@@ -833,7 +832,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         pCompound.putFloat("juicecraft.experience", this.experience);
         pCompound.putInt("juicecraft.itemscollected", this.itemsCollected);
         pCompound.putInt("juicecraft.enemieskilled", this.enemiesKilled);
-        pCompound.putInt("juicecraft.skilllevels", SkillManager.makeHash(this.getSkillLevels()));
+
+        //pCompound.putInt("juicecraft.skilllevels", SkillManager.saveSkills(this.getSkillLevels()));
+        byte[] bytes = new byte[]{(byte) this.skillLevels[0],(byte)  this.skillLevels[1],(byte)  this.skillLevels[2],(byte)  this.skillLevels[3],(byte)  this.skillLevels[4],(byte) this.skillLevels[5],};
+        pCompound.putByteArray("juicecraft.skilllevels", bytes);
+
         pCompound.putInt("juicecraft.skillenabled", SkillManager.makeBooleanHash(this.getSkillEnabled()));
         pCompound.putInt("juicecraft.skillpoints", this.getSkillPoints());
         pCompound.putBoolean("juicecraft.dofarming", this.doFarming);
@@ -888,12 +891,14 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.setFriendExperience(pCompound.getFloat("juicecraft.experience"));
         this.setFriendItemsCollected(pCompound.getInt("juicecraft.itemscollected"));
         this.setFriendEnemiesKilled(pCompound.getInt("juicecraft.enemieskilled"));
-        this.setSkillLevels(SkillManager.decodeHash(pCompound.getInt("juicecraft.skilllevels")));
+
+        byte[] bytes = pCompound.getByteArray("juicecraft.skilllevels");
+        this.setSkillLevels(new int[]{(int) bytes[0], (int) bytes[1], (int) bytes[2], (int) bytes[3], (int) bytes[4], (int) bytes[5]});
         this.setSkillEnabled(SkillManager.decodeBooleanHash(pCompound.getInt("juicecraft.skillenabled")));
         this.setSkillPoints(pCompound.getInt("juicecraft.skillpoints"));
         this.setIsWandering(pCompound.getBoolean("juicecraft.iswandering"));
         this.setIsFarming(pCompound.getBoolean("juicecraft.dofarming"));
-        this.combatmodifier = pCompound.getInt("juicecraft.combatmodifier");
+        this.setCombatModifier(pCompound.getInt("juicecraft.combatmodifier"));
         this.setEventLog(pCompound.getString("juicecraft.eventlog"));
 
         this.setTame(pCompound.getBoolean("Tame"));
@@ -1142,12 +1147,18 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public int[] getSkillLevels() {
-        return SkillManager.decodeHash(this.getEntityData().get(FRIEND_SKILLLEVELS));
+        return SkillManager.assembleSkillLevels(this);
     }
 
     public void setSkillLevels(int[] a) {
         this.skillLevels = a;
-        this.getEntityData().set(FRIEND_SKILLLEVELS, SkillManager.makeHash(a));
+
+        this.getEntityData().set(FRIEND_SKILLLEVELS1, a[0]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS2, a[1]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS3, a[2]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS4, a[3]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS5, a[4]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS6, a[5]);
     }
 
     public boolean[] getSkillEnabled() {
@@ -1257,6 +1268,14 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return this.getEntityData().get(FRIEND_SWIMCOUNTER);
     }
 
+    public int getCombatModifier(){
+        return this.getEntityData().get(FRIEND_COMBATMOD);
+    }
+    public void setCombatModifier(int n){
+        this.combatmodifier=n;
+        this.getEntityData().set(FRIEND_COMBATMOD,n);
+    }
+
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_ID_FLAGS, (byte) 0);
@@ -1278,7 +1297,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.skillEnabled = new boolean[6];
         this.skillLevels = new int[6];
         this.entityData.define(FRIEND_SKILLENABLED, SkillManager.makeBooleanHash(this.skillEnabled));
-        this.entityData.define(FRIEND_SKILLLEVELS, SkillManager.makeHash(this.skillLevels));
+        this.entityData.define(FRIEND_SKILLLEVELS1, this.skillLevels[0]);
+        this.entityData.define(FRIEND_SKILLLEVELS2, this.skillLevels[1]);
+        this.entityData.define(FRIEND_SKILLLEVELS3, this.skillLevels[2]);
+        this.entityData.define(FRIEND_SKILLLEVELS4, this.skillLevels[3]);
+        this.entityData.define(FRIEND_SKILLLEVELS5, this.skillLevels[4]);
+        this.entityData.define(FRIEND_SKILLLEVELS6, this.skillLevels[5]);
         this.specialDialogueEnabled = new int[]{0, 0, 0};
         this.entityData.define(FRIEND_SPECIALSENABLED, AbstractDialogueManager.encodeSpecialHash(this.specialDialogueEnabled));
         this.entityData.define(FRIEND_SKILLPOINTS, this.skillPoints);
@@ -1291,7 +1315,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.entityData.define(FRIEND_VIEWFLOWER, this.viewflower);
         this.entityData.define(FRIEND_PLACECOUNTER, this.placecounter);
         this.entityData.define(FRIEND_SWIMCOUNTER, this.startfloattimer);
+        this.entityData.define(FRIEND_COMBATMOD, this.combatmodifier);
     }
+    public static final EntityDataAccessor<Integer> FRIEND_COMBATMOD = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SWIMCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_PLACECOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_VIEWFLOWER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
@@ -1302,7 +1328,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public static final EntityDataAccessor<Boolean> FRIEND_ISWANDERING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> FRIEND_SPECIALSENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SKILLPOINTS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    //public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS1 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS2 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS3 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS4 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS5 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS6 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SKILLENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_COMBATSETTINGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Byte> DATA_ID_FLAGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BYTE);
@@ -1345,6 +1377,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public void setAttackCounter(int time) {
         this.attackCounter = (int) ((time + 2) / this.getAttackSpeed());
+        //LOGGER.info(this.attackCounter +"");
         this.getEntityData().set(FRIEND_ATTACKCOUNTER, time + 2);
     }
 

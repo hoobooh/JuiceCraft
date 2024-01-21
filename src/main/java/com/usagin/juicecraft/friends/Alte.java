@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,11 +18,13 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
 import static com.usagin.juicecraft.Init.sounds.SoraSoundInit.*;
 import static com.usagin.juicecraft.Init.sounds.SoraSoundInit.SORA_HURT4;
 
-public class Alte extends Friend{
+public class Alte extends OldWarFriend{
     public Alte(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -33,18 +36,6 @@ public class Alte extends Friend{
     }
     public boolean isUsingShockRod(){
         return false;
-    }
-    public void setSkillLevels(int[] a) {
-        if(this.setupcomplete){
-            int diff = a[0]-this.getSkillLevels()[0];
-            if(diff > 0){
-                this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttributeBaseValue(Attributes.MAX_HEALTH)+0.2*diff);
-                this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE)+0.1*diff);
-            }
-        }
-        super.setSkillLevels(a);
-        this.combatmodifier=a[0];
-
     }
     @Override
     int[] getSkillInfo() {

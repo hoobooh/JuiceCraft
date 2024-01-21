@@ -20,9 +20,7 @@ public class FriendDefense {
             return false;
         }
 
-        int mod = friend.combatmodifier;
-        int difficulty = 10*(1+mod)/(10+mod);
         int n = friend.getRandom().nextInt(0,21);
-        return n<=difficulty;
+        return n<=friend.getCombatMod();
     }
 }
