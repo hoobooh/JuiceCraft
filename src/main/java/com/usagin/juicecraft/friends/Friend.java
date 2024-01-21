@@ -158,7 +158,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public SimpleContainer inventory = new SimpleContainer(16);
     int[] dialogueTree = new int[300];
     public CombatSettings combatSettings;
-
+    public boolean setupcomplete = false;
     public String getFriendName() {
         return this.name;
     }
@@ -173,6 +173,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.inventory.setItem(1, this.getFriendWeapon());
         }
         this.setCanPickUpLoot(true);
+        this.setupcomplete=true;
     }
 
     void initializeNew() {
@@ -242,7 +243,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
             }
             temp += 4;
-            return temp / 1.6;
+            return temp / 1.6 * Mth.clamp(this.getCombatMod(),0.1,1.5);
         } catch (Exception e) {
             return 0.625;
         }
@@ -574,7 +575,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             return COUNTER_ATTACK.get();
         }
     }
-
+    public float getCombatMod(){
+        float mod = this.combatmodifier;
+        float difficulty = 10*(1+mod)/(10+mod);
+        return difficulty/10;
+    }
     @Override
     public boolean doHurtTarget(Entity pEntity) {
         if (pEntity.level() instanceof ServerLevel t) {
@@ -583,7 +588,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         boolean flag = false;
         if (pEntity != null) {
             if (this.distanceTo(pEntity) < 3) {
-                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getAttackType() / 20;
+                int mod = this.combatmodifier;
+                int difficulty = 10*(1+mod)/(10+mod);
+                //int n = this.getRandom().nextInt(0,21);
+                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((6*this.getCombatMod()/21)+this.getRandom().nextInt(1,7),1,6)+3)/6;
                 float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
                 if (pEntity instanceof LivingEntity) {
                     f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());

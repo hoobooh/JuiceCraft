@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.friends;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
+import com.usagin.juicecraft.ai.awareness.SkillManager;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.alte.AlteDialogueManager;
 import net.minecraft.sounds.SoundEvent;
@@ -33,7 +34,18 @@ public class Alte extends Friend{
     public boolean isUsingShockRod(){
         return false;
     }
+    public void setSkillLevels(int[] a) {
+        if(this.setupcomplete){
+            int diff = a[0]-this.getSkillLevels()[0];
+            if(diff > 0){
+                this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttributeBaseValue(Attributes.MAX_HEALTH)+0.2*diff);
+                this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE)+0.1*diff);
+            }
+        }
+        super.setSkillLevels(a);
+        this.combatmodifier=a[0];
 
+    }
     @Override
     int[] getSkillInfo() {
         return new int[]{1,2,3,3,4,5};
