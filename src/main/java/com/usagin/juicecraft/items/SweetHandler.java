@@ -61,6 +61,7 @@ public class SweetHandler {
             friend.mood=Mth.clamp(friend.mood-40,0,100);
         }
         else if(pStack.is(SAKISCOOKIE.get())){
+            friend.setFriendNorma(5,-1);
             friend.setHealth(friend.getHealth()+10);
             playVoice(friend,friend.getOnHeal());
             friend.setHungerMeter(Mth.clamp(friend.getHungerMeter()+10,0,100));

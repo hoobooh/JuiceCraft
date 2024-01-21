@@ -146,7 +146,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
 
     public boolean swimming = false;
 
-    public void attackAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void attackAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         if (pEntity.getAttackType() == 50) {
             if (pEntity.getAttackCounter() >= pEntity.getCounterMax() - 1) {
                 pEntity.attackCounterAnimState.stop();
@@ -163,33 +163,33 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         }
     }
 
-    public void bowAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void bowAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         animate(pEntity.drawBowAnimationState, this.animations.bowdraw(), pAgeInTicks);
     }
 
-    public void interactAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void interactAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         animate(pEntity.interactAnimState, this.animations.interact(), pAgeInTicks);
     }
 
-    public void deathAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void deathAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         animate(pEntity.deathStartAnimState, this.animations.deathstart(), pAgeInTicks);
         animate(pEntity.deathAnimState, this.animations.death(), pAgeInTicks);
     }
 
-    public void sitAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void sitAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         animate(pEntity.sitPatAnimState, this.animations.sitpat(), pAgeInTicks);
         animate(pEntity.sitAnimState, this.animations.sit(), pAgeInTicks);
         animate(pEntity.sitImpatientAnimState, this.animations.sitimpatient(), pAgeInTicks);
     }
 
-    public void patAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void patAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         if (pEntity.isembarassed > 0) {
             animate(pEntity.patAnimState, this.animations.patEmbarrased(), pAgeInTicks);
         } else {
             animate(pEntity.patAnimState, this.animations.patgrounded(), pAgeInTicks);
         }
     }
-    public void idleAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
+    public void idleAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
         animate(pEntity.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
         animate(pEntity.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);
         animate(pEntity.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
@@ -197,7 +197,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         animate(pEntity.snowballIdleTransitionAnimState, this.animations.snowballIdleTransition(), pAgeInTicks);
     }
 
-    public void swimAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void swimAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         if (pLimbSwingAmount > 0.1) {
             this.swimming = true;
             animate(pEntity.swimAnimState, this.animations.swimmove(), pAgeInTicks);
@@ -206,19 +206,19 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
             animate(pEntity.swimAnimState, this.animations.swim(), pAgeInTicks);
         }
     }
-    public void viewFlowerAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
+    public void viewFlowerAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
         animate(pEntity.viewFlowerAnimState, this.animations.viewflower(), pAgeInTicks);
     }
-    public void wetFlowerAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
+    public void wetFlowerAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
         animate(pEntity.wetAnimState, this.animations.wet(), pAgeInTicks);
     }
-    public void sleepAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
+    public void sleepAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
         animate(pEntity.sleepAnimState, this.animations.sleep(), pAgeInTicks);
     }
 
 
     @Override
-    public void setupAnim(Friend pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    public void setupAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         root().getAllParts().forEach(ModelPart::resetPose);
         if (!pEntity.getIsDying()) {
             if (pEntity.getPose() != SITTING) {

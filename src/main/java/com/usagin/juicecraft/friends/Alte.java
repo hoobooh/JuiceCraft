@@ -2,6 +2,8 @@ package com.usagin.juicecraft.friends;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.SkillManager;
+import com.usagin.juicecraft.ai.goals.FriendMeleeAttackGoal;
+import com.usagin.juicecraft.ai.goals.alte.AlteSparkGoal;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.alte.AlteDialogueManager;
 import net.minecraft.nbt.CompoundTag;
@@ -25,6 +27,8 @@ import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
@@ -51,6 +55,7 @@ public class Alte extends OldWarFriend{
                 this.sparkcooldown--;
             }
             for(EntityDataAccessor<Integer> accessor: counters){
+                //LOGGER.info(this.getAlteAnimCounter(ALTE_SPARKCOUNTER)+"");
                 this.decrementAlteAnimCounter(accessor);
             }
         }else{
@@ -100,15 +105,8 @@ public class Alte extends OldWarFriend{
         this.entityData.define(ALTE_HYPERSTARTCOUNTER,0);
         this.entityData.define(ALTE_HYPERENDCOUNTER,0);
         this.entityData.define(ALTE_HYPERWINDUPCOUNTER,0);
-        counters.add(ALTE_HYPERENDCOUNTER);
-        counters.add(ALTE_HYPERSTARTCOUNTER);
-        counters.add(ALTE_HYPERWINDUPCOUNTER);
-        counters.add(ALTE_RODSUMMONCOUNTER);
-        counters.add(ALTE_SPARKCOUNTER);
-        counters.add(ALTE_PUNISHERCOUNTER);
-        counters.add(ALTE_RODSHEATHCOUNTER);
     }
-    public static final ArrayList<EntityDataAccessor<Integer>> counters = new ArrayList<>();
+
     public static final EntityDataAccessor<Integer> ALTE_SPARKCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ALTE_RODSUMMONCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ALTE_RODSHEATHCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
@@ -116,6 +114,7 @@ public class Alte extends OldWarFriend{
     public static final EntityDataAccessor<Integer> ALTE_HYPERSTARTCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ALTE_HYPERWINDUPCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ALTE_HYPERENDCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
+    public static final List<EntityDataAccessor<Integer>> counters = Arrays.asList(ALTE_SPARKCOUNTER, ALTE_RODSUMMONCOUNTER, ALTE_RODSHEATHCOUNTER, ALTE_PUNISHERCOUNTER, ALTE_HYPERENDCOUNTER, ALTE_HYPERSTARTCOUNTER, ALTE_HYPERWINDUPCOUNTER);
     @Override
     int[] getSkillInfo() {
         return new int[]{1,2,3,3,4,5};
@@ -380,6 +379,6 @@ public class Alte extends OldWarFriend{
 
     @Override
     void registerAdditionalGoals() {
-
+        this.goalSelector.addGoal(5, new AlteSparkGoal(this));
     }
 }
