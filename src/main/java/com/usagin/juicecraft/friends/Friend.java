@@ -591,7 +591,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 int mod = this.combatmodifier;
                 int difficulty = 10*(1+mod)/(10+mod);
                 //int n = this.getRandom().nextInt(0,21);
-                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((6*this.getCombatMod()/21)+this.getRandom().nextInt(1,7),1,6)+3)/6;
+                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5*this.getCombatMod()/21)+this.getRandom().nextInt(1,7),1,6)+3)/6;
                 float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
                 if (pEntity instanceof LivingEntity) {
                     f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
