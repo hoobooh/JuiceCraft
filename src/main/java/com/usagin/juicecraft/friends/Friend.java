@@ -810,6 +810,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
         }
     }
+    public boolean shouldMoveArms(){
+        return this.getAttackCounter() <= 0 && !this.drawBowAnimationState.isStarted() && !this.swimAnimState.isStarted() && this.shakeAnimO == 0 && !this.snowballIdle();
+    }
+    public boolean shouldMoveLeftArm(){
+        return this.getAttackCounter() <= 0 && !this.drawBowAnimationState.isStarted() && !this.swimAnimState.isStarted() && this.shakeAnimO == 0 && this.snowballIdle();
+    }
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {

@@ -4,8 +4,13 @@ import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.SkillManager;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.alte.AlteDialogueManager;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -16,8 +21,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
@@ -37,6 +44,78 @@ public class Alte extends OldWarFriend{
     public boolean isUsingShockRod(){
         return false;
     }
+    public void tick(){
+        super.tick();
+        if(!this.level().isClientSide()){
+            if(this.sparkcooldown>0){
+                this.sparkcooldown--;
+            }
+            for(EntityDataAccessor<Integer> accessor: counters){
+                this.decrementAlteAnimCounter(accessor);
+            }
+        }else{
+            this.sparkAnimState.animateWhen(this.getAlteAnimCounter(ALTE_SPARKCOUNTER)>0,this.tickCount);
+        }
+
+    }
+    public int sparkcooldown;
+    @Override
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        pCompound.putInt("juicecraft.alte.sparkcooldown",this.sparkcooldown);
+    }
+    @Override
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        this.sparkcooldown=pCompound.getInt("juicecraft.alte.sparkcooldown");
+    }
+    public final AnimationState sparkAnimState = new AnimationState();
+    public final AnimationState rodSummonAnimState = new AnimationState();
+    public final AnimationState rodSheathAnimState = new AnimationState();
+    public final AnimationState punisherAnimState = new AnimationState();
+    public final AnimationState hyperStartAnimState = new AnimationState();
+    public final AnimationState hyperEndAnimState = new AnimationState();
+    public final AnimationState hyperIdleAnimState = new AnimationState();
+    public final AnimationState hyperShootAnimState = new AnimationState();
+    public final AnimationState hyperWindupAnimState = new AnimationState();
+    public int getAlteAnimCounter(EntityDataAccessor<Integer> accessor){
+        return this.getEntityData().get(accessor);
+    }
+    public void setAlteAnimCounter(EntityDataAccessor<Integer> accessor, int n){
+        this.getEntityData().set(accessor, n);
+    }
+    public void decrementAlteAnimCounter(EntityDataAccessor<Integer> accessor){
+        int temp = this.getAlteAnimCounter(accessor);
+        if(temp>0){
+            this.setAlteAnimCounter(accessor, temp-1);
+        }
+
+    }
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(ALTE_SPARKCOUNTER,0);
+        this.entityData.define(ALTE_RODSUMMONCOUNTER,0);
+        this.entityData.define(ALTE_RODSHEATHCOUNTER,0);
+        this.entityData.define(ALTE_PUNISHERCOUNTER,0);
+        this.entityData.define(ALTE_HYPERSTARTCOUNTER,0);
+        this.entityData.define(ALTE_HYPERENDCOUNTER,0);
+        this.entityData.define(ALTE_HYPERWINDUPCOUNTER,0);
+        counters.add(ALTE_HYPERENDCOUNTER);
+        counters.add(ALTE_HYPERSTARTCOUNTER);
+        counters.add(ALTE_HYPERWINDUPCOUNTER);
+        counters.add(ALTE_RODSUMMONCOUNTER);
+        counters.add(ALTE_SPARKCOUNTER);
+        counters.add(ALTE_PUNISHERCOUNTER);
+        counters.add(ALTE_RODSHEATHCOUNTER);
+    }
+    public static final ArrayList<EntityDataAccessor<Integer>> counters = new ArrayList<>();
+    public static final EntityDataAccessor<Integer> ALTE_SPARKCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> ALTE_RODSUMMONCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> ALTE_RODSHEATHCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> ALTE_PUNISHERCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> ALTE_HYPERSTARTCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> ALTE_HYPERWINDUPCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> ALTE_HYPERENDCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     @Override
     int[] getSkillInfo() {
         return new int[]{1,2,3,3,4,5};

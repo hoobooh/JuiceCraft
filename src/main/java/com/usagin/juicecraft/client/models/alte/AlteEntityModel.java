@@ -54,12 +54,16 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 		this.root().getChild("minigun").visible=b;
 		this.root().getChild("minigun2").visible=b;
 	}
+	public void togglePanel(boolean b){
+		this.root().getChild("panel").visible=b;
+	}
 	public void toggleShockRod(boolean b){
 		this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible=b;
 	}
 	public void defineAnimations(){
 		this.animations=new Animations(idleGrounded,idleTransition,patGrounded,sit,sitImpatient,sitPat,sleepingPose,deathLoop,deathStart,attackOne,attackTwo,attackThree,attackCounter,bowDraw,standingInspect,wetShake,viewFlower,swimLoop,interact,swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);
 	}
+
 	public void setupAnim(Friend alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 		if(alte instanceof Alte alt){
 			this.toggleArsenal(alt.isUsingHyper());
@@ -747,12 +751,6 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 				.texOffs(320, 617).addBox(-26.7487F, 1.8479F, -29.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(398, 458).addBox(-50.7487F, -13.1521F, -29.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(635, 292).addBox(-50.7487F, 8.8479F, -29.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(612, 353).addBox(-50.7487F, -15.1521F, -63.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(632, 379).addBox(-50.7487F, 8.8479F, -63.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(449, 175).addBox(-50.7487F, -13.1521F, -63.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(118, 612).addBox(-26.7487F, 1.8479F, -63.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(118, 601).addBox(-50.7487F, 1.8479F, -63.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(428, 175).addBox(-26.7487F, -13.1521F, -63.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(626, 34).addBox(-50.7487F, -15.1521F, -29.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(252, 582).addBox(-27.7487F, -12.1521F, -25.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(624, 594).addBox(-61.7487F, -18.1521F, 31.0F, 6.0F, 4.0F, 3.0F, new CubeDeformation(0.0F))
@@ -767,22 +765,10 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 				.texOffs(482, 530).addBox(-49.7487F, -10.1521F, 52.0F, 24.0F, 30.0F, 8.0F, new CubeDeformation(0.0F))
 				.texOffs(438, 304).addBox(-53.7487F, -18.1521F, 46.0F, 32.0F, 32.0F, 6.0F, new CubeDeformation(0.0F))
 				.texOffs(666, 509).addBox(-51.7487F, -4.1521F, -21.0F, 4.0F, 4.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(342, 478).addBox(-51.7487F, -4.1521F, -55.0F, 4.0F, 4.0F, 30.0F, new CubeDeformation(0.0F))
-				.texOffs(494, 226).addBox(-27.7487F, -4.1521F, -55.0F, 4.0F, 4.0F, 30.0F, new CubeDeformation(0.0F))
 				.texOffs(200, 699).addBox(-27.7487F, -4.1521F, -21.0F, 4.0F, 4.0F, 14.0F, new CubeDeformation(0.0F))
 				.texOffs(108, 700).addBox(-27.7487F, -12.1521F, -7.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(606, 701).addBox(-51.7487F, -12.1521F, -7.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(622, 40).addBox(-51.7487F, 7.8479F, -7.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(612, 337).addBox(-51.7487F, -16.1521F, -59.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(616, 171).addBox(-51.7487F, 7.8479F, -59.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(92, 700).addBox(-51.7487F, -12.1521F, -59.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(685, 447).addBox(-27.7487F, -12.1521F, -111.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(112, 656).addBox(-51.7487F, -12.1521F, -111.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(616, 163).addBox(-51.7487F, 7.8479F, -111.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(612, 329).addBox(-51.7487F, -16.1521F, -111.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(76, 700).addBox(-27.7487F, -12.1521F, -59.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(290, 0).addBox(-39.7487F, 7.8479F, -107.0F, 4.0F, 4.0F, 48.0F, new CubeDeformation(0.0F))
-				.texOffs(286, 184).addBox(-39.7487F, -16.1521F, -107.0F, 4.0F, 4.0F, 48.0F, new CubeDeformation(0.0F))
 				.texOffs(612, 345).addBox(-51.7487F, -16.1521F, -7.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(438, 342).addBox(-53.7487F, -18.1521F, -3.0F, 32.0F, 32.0F, 6.0F, new CubeDeformation(0.0F))
 				.texOffs(116, 286).addBox(-53.7487F, 3.8479F, 38.0F, 2.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
@@ -793,13 +779,8 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 				.texOffs(428, 132).addBox(-55.7487F, 7.8479F, 7.0F, 4.0F, 8.0F, 35.0F, new CubeDeformation(0.0F))
 				.texOffs(142, 418).addBox(-55.7487F, -20.1521F, 7.0F, 4.0F, 8.0F, 35.0F, new CubeDeformation(0.0F))
 				.texOffs(0, 142).addBox(-51.7487F, -20.1521F, 7.0F, 32.0F, 36.0F, 35.0F, new CubeDeformation(0.0F))
+				.texOffs(843, 550).addBox(-43.2513F, -23.1521F, -5.0F, 10.0F, 7.0F, 42.0F, new CubeDeformation(0.0F))
 				.texOffs(562, 76).addBox(-51.7487F, -16.1521F, 42.0F, 28.0F, 28.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(354, 593).addBox(-50.7487F, -15.1521F, -115.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(628, 422).addBox(-50.7487F, 8.8479F, -115.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(428, 132).addBox(-50.7487F, -13.1521F, -115.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(346, 570).addBox(-26.7487F, 1.8479F, -115.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(325, 570).addBox(-50.7487F, 1.8479F, -115.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(185, 426).addBox(-26.7487F, -13.1521F, -115.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(418, 568).addBox(-51.7487F, -16.1521F, 3.0F, 28.0F, 28.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-31.0F, -116.0F, -19.0F, 0.0F, 0.0F, -0.1745F));
 
 		PartDefinition barrel = minigun.addOrReplaceChild("barrel", CubeListBuilder.create().texOffs(714, 264).addBox(6.0F, 1.1F, -168.0F, 2.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
@@ -819,7 +800,29 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 				.texOffs(0, 418).addBox(-7.0F, -6.9F, -168.0F, 6.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
 				.texOffs(402, 794).addBox(-8.0F, 1.1F, -168.0F, 2.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
 				.texOffs(536, 796).addBox(-8.0F, -2.9F, -168.0F, 2.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
-				.texOffs(438, 266).addBox(-10.0F, -0.9F, -168.0F, 6.0F, 2.0F, 130.0F, new CubeDeformation(0.0F)), PartPose.offset(-37.7487F, -2.2521F, 35.0F));
+				.texOffs(438, 266).addBox(-10.0F, -0.9F, -168.0F, 6.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
+				.texOffs(612, 353).addBox(-13.0F, -12.9F, -101.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(632, 379).addBox(-13.0F, 11.1F, -101.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(449, 175).addBox(-13.0F, -10.9F, -101.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(118, 612).addBox(11.0F, 4.1F, -101.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(118, 601).addBox(-13.0F, 4.1F, -101.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(428, 175).addBox(11.0F, -10.9F, -101.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(612, 337).addBox(-14.0F, -13.9F, -97.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(616, 171).addBox(-14.0F, 10.1F, -97.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(92, 700).addBox(-14.0F, -9.9F, -97.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(76, 700).addBox(10.0F, -9.9F, -97.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(685, 447).addBox(10.0F, -9.9F, -146.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(112, 656).addBox(-14.0F, -9.9F, -146.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(616, 163).addBox(-14.0F, 10.1F, -146.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(612, 329).addBox(-14.0F, -13.9F, -146.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(354, 593).addBox(-13.0F, -12.9F, -150.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(628, 422).addBox(-13.0F, 11.1F, -150.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(428, 132).addBox(-13.0F, -10.9F, -150.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(346, 570).addBox(11.0F, 4.1F, -150.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(325, 570).addBox(-13.0F, 4.1F, -150.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(185, 426).addBox(11.0F, -10.9F, -150.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(829, 550).addBox(-10.5026F, -10.9F, -98.0F, 22.0F, 22.0F, 2.0F, new CubeDeformation(0.0F))
+				.texOffs(829, 550).addBox(-10.5026F, -10.9F, -147.0F, 22.0F, 22.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-37.7487F, -2.2521F, 35.0F));
 
 		PartDefinition minigun2 = customroot.addOrReplaceChild("minigun2", CubeListBuilder.create().texOffs(116, 213).addBox(35.7487F, -30.1521F, -24.0F, 4.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
 				.texOffs(0, 23).addBox(23.7487F, -32.1521F, -25.0F, 12.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
@@ -846,12 +849,6 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 				.texOffs(118, 550).addBox(24.7487F, 1.8479F, -29.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(22, 0).addBox(48.7487F, -13.1521F, -29.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(438, 38).addBox(24.7487F, 8.8479F, -29.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(350, 124).addBox(24.7487F, -15.1521F, -63.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(438, 388).addBox(24.7487F, 8.8479F, -63.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(235, 230).addBox(48.7487F, -13.1521F, -63.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(555, 145).addBox(24.7487F, 1.8479F, -63.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(556, 225).addBox(48.7487F, 1.8479F, -63.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(362, 52).addBox(24.7487F, -13.1521F, -63.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(410, 124).addBox(24.7487F, -15.1521F, -29.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(514, 306).addBox(23.7487F, -12.1521F, -25.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(452, 611).addBox(55.7487F, -18.1521F, 31.0F, 6.0F, 4.0F, 3.0F, new CubeDeformation(0.0F))
@@ -866,24 +863,13 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 				.texOffs(418, 530).addBox(25.7487F, -10.1521F, 52.0F, 24.0F, 30.0F, 8.0F, new CubeDeformation(0.0F))
 				.texOffs(438, 0).addBox(21.7487F, -18.1521F, 46.0F, 32.0F, 32.0F, 6.0F, new CubeDeformation(0.0F))
 				.texOffs(656, 70).addBox(47.7487F, -4.1521F, -21.0F, 4.0F, 4.0F, 14.0F, new CubeDeformation(0.0F))
-				.texOffs(344, 353).addBox(47.7487F, -4.1521F, -55.0F, 4.0F, 4.0F, 30.0F, new CubeDeformation(0.0F))
-				.texOffs(200, 473).addBox(23.7487F, -4.1521F, -55.0F, 4.0F, 4.0F, 30.0F, new CubeDeformation(0.0F))
 				.texOffs(664, 429).addBox(23.7487F, -4.1521F, -21.0F, 4.0F, 4.0F, 14.0F, new CubeDeformation(0.0F))
 				.texOffs(514, 339).addBox(23.7487F, -12.1521F, -7.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(544, 306).addBox(47.7487F, -12.1521F, -7.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(580, 386).addBox(23.7487F, 7.8479F, -7.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(476, 120).addBox(23.7487F, -16.1521F, -59.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(609, 192).addBox(23.7487F, 7.8479F, -59.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(544, 339).addBox(47.7487F, -12.1521F, -59.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(482, 568).addBox(23.7487F, -12.1521F, -111.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(552, 568).addBox(47.7487F, -12.1521F, -111.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(609, 200).addBox(23.7487F, 7.8479F, -111.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(142, 538).addBox(23.7487F, -16.1521F, -111.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(572, 400).addBox(23.7487F, -12.1521F, -59.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(142, 286).addBox(35.7487F, 7.8479F, -107.0F, 4.0F, 4.0F, 48.0F, new CubeDeformation(0.0F))
-				.texOffs(286, 132).addBox(35.7487F, -16.1521F, -107.0F, 4.0F, 4.0F, 48.0F, new CubeDeformation(0.0F))
 				.texOffs(206, 538).addBox(23.7487F, -16.1521F, -7.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(438, 266).addBox(21.7487F, -18.1521F, -3.0F, 32.0F, 32.0F, 6.0F, new CubeDeformation(0.0F))
+				.texOffs(843, 550).addBox(32.7487F, -23.1521F, -5.0F, 10.0F, 7.0F, 42.0F, new CubeDeformation(0.0F))
 				.texOffs(264, 0).addBox(51.7487F, 3.8479F, 38.0F, 2.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(551, 132).addBox(51.7487F, -12.1521F, 38.0F, 2.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(264, 44).addBox(51.7487F, 3.8479F, 7.0F, 2.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
@@ -893,12 +879,6 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 				.texOffs(341, 415).addBox(51.7487F, -20.1521F, 7.0F, 4.0F, 8.0F, 35.0F, new CubeDeformation(0.0F))
 				.texOffs(0, 0).addBox(19.7487F, -20.1521F, 7.0F, 32.0F, 36.0F, 35.0F, new CubeDeformation(0.0F))
 				.texOffs(562, 12).addBox(23.7487F, -16.1521F, 42.0F, 28.0F, 28.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(428, 256).addBox(24.7487F, -15.1521F, -115.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(484, 86).addBox(24.7487F, 8.8479F, -115.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(383, 52).addBox(48.7487F, -13.1521F, -115.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(556, 447).addBox(24.7487F, 1.8479F, -115.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(514, 568).addBox(48.7487F, 1.8479F, -115.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
-				.texOffs(142, 418).addBox(24.7487F, -13.1521F, -115.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
 				.texOffs(562, 44).addBox(23.7487F, -16.1521F, 3.0F, 28.0F, 28.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(31.0F, -116.0F, -19.0F, 0.0F, 0.0F, 0.1745F));
 
 		PartDefinition barrel2 = minigun2.addOrReplaceChild("barrel2", CubeListBuilder.create().texOffs(276, 660).addBox(-8.0F, 1.1F, -168.0F, 2.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
@@ -918,7 +898,29 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 				.texOffs(148, 0).addBox(1.0F, -6.9F, -168.0F, 6.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
 				.texOffs(438, 398).addBox(6.0F, 1.1F, -168.0F, 2.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
 				.texOffs(284, 528).addBox(6.0F, -2.9F, -168.0F, 2.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
-				.texOffs(144, 142).addBox(4.0F, -0.9F, -168.0F, 6.0F, 2.0F, 130.0F, new CubeDeformation(0.0F)), PartPose.offset(37.7487F, -2.2521F, 35.0F));
+				.texOffs(144, 142).addBox(4.0F, -0.9F, -168.0F, 6.0F, 2.0F, 130.0F, new CubeDeformation(0.0F))
+				.texOffs(350, 124).addBox(-13.0F, -12.9F, -101.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(438, 388).addBox(-13.0F, 11.1F, -101.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(235, 230).addBox(11.0F, -10.9F, -101.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(555, 145).addBox(-13.0F, 4.1F, -101.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(556, 225).addBox(11.0F, 4.1F, -101.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(362, 52).addBox(-13.0F, -10.9F, -101.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(476, 120).addBox(-14.0F, -13.9F, -97.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(609, 192).addBox(-14.0F, 10.1F, -97.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(544, 339).addBox(10.0F, -9.9F, -97.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(482, 568).addBox(-14.0F, -9.9F, -146.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(552, 568).addBox(10.0F, -9.9F, -146.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(609, 200).addBox(-14.0F, 10.1F, -146.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(142, 538).addBox(-14.0F, -13.9F, -146.0F, 28.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(572, 400).addBox(-14.0F, -9.9F, -97.0F, 4.0F, 20.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(428, 256).addBox(-13.0F, -12.9F, -150.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(484, 86).addBox(-13.0F, 11.1F, -150.0F, 26.0F, 2.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(383, 52).addBox(11.0F, -10.9F, -150.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(556, 447).addBox(-13.0F, 4.1F, -150.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(514, 568).addBox(11.0F, 4.1F, -150.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(142, 418).addBox(-13.0F, -10.9F, -150.0F, 2.0F, 7.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(829, 550).addBox(-11.0F, -10.9F, -147.0F, 22.0F, 22.0F, 2.0F, new CubeDeformation(0.0F))
+				.texOffs(829, 550).addBox(-11.0F, -10.9F, -98.0F, 22.0F, 22.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(37.7487F, -2.2521F, 35.0F));
 
 		return LayerDefinition.create(meshdefinition, 1024, 1024);
 	}
