@@ -2548,9 +2548,9 @@ public class AlteAnimation4 {
                         new Keyframe(1.5F, KeyframeAnimations.degreeVec(-370.0F, -20.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("panel", new AnimationChannel(AnimationChannel.Targets.POSITION,
-                        new Keyframe(0.7917F, KeyframeAnimations.posVec(144.0F, 24.0F, -132.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(1.125F, KeyframeAnimations.posVec(144.0F, 24.0F, -125.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(1.25F, KeyframeAnimations.posVec(144.0F, 24.0F, -132.0F), AnimationChannel.Interpolations.CATMULLROM)
+                        new Keyframe(0.7917F, KeyframeAnimations.posVec(144.0F, 60.0F, -132.0F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(1.125F, KeyframeAnimations.posVec(144.0F, 60.0F, -125.0F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(1.25F, KeyframeAnimations.posVec(144.0F, 60.0F, -132.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("panel", new AnimationChannel(AnimationChannel.Targets.SCALE,
                         new Keyframe(0.25F, KeyframeAnimations.scaleVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),

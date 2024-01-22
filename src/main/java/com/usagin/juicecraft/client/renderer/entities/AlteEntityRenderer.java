@@ -10,14 +10,12 @@ import com.usagin.juicecraft.client.renderer.FriendItemInHandLayer;
 import com.usagin.juicecraft.client.renderer.FriendItemOnBackLayer;
 import com.usagin.juicecraft.client.renderer.FriendRenderer;
 import com.usagin.juicecraft.friends.Alte;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -91,17 +89,18 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
         super.render(alte, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
 
         int n = alte.getAlteAnimCounter(Alte.ALTE_SPARKCOUNTER);
-        //if (n >= 5 && n <= 15) {
-            float lookAngleX = (float) alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEX);
-            float lookAngleY = (float) alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEY);
+        if (n >= 5 && n <= 15) {
+            float lookAngleX = alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEX) + (float) -Math.toRadians(30);
+            float lookAngleY = alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEY);
 
             float posX = (float) alte.getX();
-            float posY = (float) alte.getEyeY();
+            float posY = (float) alte.getEyeY() - 0.5F;
             float posZ = (float) alte.getZ();
             float originradius = 1;
-            float targetradius = 4;
+            float targetradius = 2;
             float effectmagnitude = (n - 10) * (n - 10) * -0.1F + 2.5F;
-            float eyeheight = alte.getEyeHeight();
+            int effectcount = (int) ((15 - n) / 3) + 1;
+            float eyeheight = alte.getEyeHeight() - 0.5F;
 
             float originX = posX + originradius * (float) Math.cos(lookAngleY);
             float originZ = posZ + originradius * (float) Math.sin(lookAngleY);
@@ -110,86 +109,75 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
             float targetX = posX + targetradius * (float) Math.cos(lookAngleY);
             float targetZ = posZ + targetradius * (float) Math.sin(lookAngleY);
             float targetY = posY + targetradius * (float) Math.sin(lookAngleX);
-
-            pPoseStack.pushPose();
-            pPoseStack.translate(0.0F, eyeheight, 0.0F);
-
-            //define initial vectors
-            Vec3 targetVec = new Vec3(targetX,targetY,targetZ);
-            Vec3 originVec = new Vec3(originX,originY,originZ);
+            Vec3 targetVec = new Vec3(targetX, targetY, targetZ);
+            Vec3 originVec = new Vec3(originX, originY, originZ);
             Vec3 netVec = targetVec.subtract(originVec);
+            float scale = 1;
+            for (int i = 0; i < effectcount; i++) {
+                pPoseStack.pushPose();
+                pPoseStack.translate(0.0F, eyeheight, 0.0F);
 
-            //normalizes the netvec for some reason
-            float f4 = (float) (netVec.length() + 1.0D);
-            netVec = netVec.normalize();
-            float f5 = (float) Math.acos(netVec.y);
-            float f6 = (float) Math.atan2(netVec.z, netVec.x);
+                //define initial vectors
 
-            //rotate posestack to match the look angle
-            pPoseStack.mulPose(Axis.YP.rotationDegrees((((float) Math.PI / 2F) - f6) * (180F / (float) Math.PI)));
-            pPoseStack.mulPose(Axis.XP.rotationDegrees(f5 * (180F / (float) Math.PI)));
 
-            float f7 = 0.05F * -1.5F;
-            float f8 = effectmagnitude * effectmagnitude;
+                //normalizes the netvec for some reason
+                float dist = (float) (netVec.length()) + i * 0.2F;
+                netVec = netVec.normalize();
+                float f5 = (float) Math.acos(netVec.y);
+                float f6 = (float) Math.atan2(netVec.z, netVec.x);
 
-            //define colors
-            int j = 64 + (int) (f8 * 191.0F);
-            int k = 32 + (int) (f8 * 191.0F);
-            int l = 128 - (int) (f8 * 64.0F);
+            /*float offsetradius = i*0.2F;
+            float offsetX = posX + offsetradius * (float) Math.cos(lookAngleY);
+            float offsetZ = posZ + offsetradius * (float) Math.sin(lookAngleY);
+            float offsetY = posY + offsetradius * (float) Math.sin(lookAngleX);
 
-            float f11 = Mth.cos(f7 + 2.3561945F) * 0.282F;
-            float f12 = Mth.sin(f7 + 2.3561945F) * 0.282F;
-            float f13 = Mth.cos(f7 + ((float) Math.PI / 4F)) * 0.282F;
-            float f14 = Mth.sin(f7 + ((float) Math.PI / 4F)) * 0.282F;
-            float f15 = Mth.cos(f7 + 3.926991F) * 0.282F;
-            float f16 = Mth.sin(f7 + 3.926991F) * 0.282F;
-            float f17 = Mth.cos(f7 + 5.4977875F) * 0.282F;
-            float f18 = Mth.sin(f7 + 5.4977875F) * 0.282F;
-            float f19 = Mth.cos(f7 + (float) Math.PI) * 0.2F;
-            float f20 = Mth.sin(f7 + (float) Math.PI) * 0.2F;
-            float f21 = Mth.cos(f7 + 0.0F) * 0.2F;
-            float f22 = Mth.sin(f7 + 0.0F) * 0.2F;
-            float f23 = Mth.cos(f7 + ((float) Math.PI / 2F)) * 0.2F;
-            float f24 = Mth.sin(f7 + ((float) Math.PI / 2F)) * 0.2F;
-            float f25 = Mth.cos(f7 + ((float) Math.PI * 1.5F)) * 0.2F;
-            float f26 = Mth.sin(f7 + ((float) Math.PI * 1.5F)) * 0.2F;
-            float f27 = 0.0F;
-            float f28 = 0.4999F;
-            float f29 = -1.0F;
-            float f30 = f4 * 2.5F + f29;
-            VertexConsumer vertexconsumer = pBuffer.getBuffer(BEAM_RENDER_TYPE);
-            PoseStack.Pose posestack$pose = pPoseStack.last();
+            Vec3 offsetVec = new Vec3(offsetX,offsetY,offsetZ);
+            Vec3 tempVec = offsetVec.subtract(originVec);
 
-            Matrix4f matrix4f = posestack$pose.pose();
-            Matrix3f matrix3f = posestack$pose.normal();
+            pPoseStack.translate(tempVec.x,tempVec.y,tempVec.z);*/
 
-            //each defines a point i think
-            vertex(vertexconsumer, matrix4f, matrix3f, f19, f4, f20, j, k, l, 0.4999F, f30);
-            vertex(vertexconsumer, matrix4f, matrix3f, f19, 0.0F, f20, j, k, l, 0.4999F, f29);
-            vertex(vertexconsumer, matrix4f, matrix3f, f21, 0.0F, f22, j, k, l, 0.0F, f29);
-            vertex(vertexconsumer, matrix4f, matrix3f, f21, f4, f22, j, k, l, 0.0F, f30);
-            vertex(vertexconsumer, matrix4f, matrix3f, f23, f4, f24, j, k, l, 0.4999F, f30);
-            vertex(vertexconsumer, matrix4f, matrix3f, f23, 0.0F, f24, j, k, l, 0.4999F, f29);
-            vertex(vertexconsumer, matrix4f, matrix3f, f25, 0.0F, f26, j, k, l, 0.0F, f29);
-            vertex(vertexconsumer, matrix4f, matrix3f, f25, f4, f26, j, k, l, 0.0F, f30);
-            float f31 = 0.0F;
-            if (alte.tickCount % 2 == 0) {
-                f31 = 0.5F;
+
+                //rotate posestack to match the look angle
+                pPoseStack.mulPose(Axis.YP.rotationDegrees((((float) Math.PI / 2F) - f6) * (180F / (float) Math.PI)));
+                pPoseStack.mulPose(Axis.XP.rotationDegrees(f5 * (135F / (float) Math.PI)));
+
+                VertexConsumer vertexconsumer = pBuffer.getBuffer(SPARK_RENDER_TYPE);
+                PoseStack.Pose posestack$pose = pPoseStack.last();
+
+                Matrix4f matrix4f = posestack$pose.pose();
+                Matrix3f matrix3f = posestack$pose.normal();
+
+                float sparkradius = 0.7F * effectmagnitude * scale;
+
+
+                vertex(vertexconsumer, matrix4f, matrix3f, -sparkradius, dist, -sparkradius, 255, 255, 255, 0, 0);
+                vertex(vertexconsumer, matrix4f, matrix3f, sparkradius, dist, -sparkradius, 255, 255, 255, 1, 0);
+                vertex(vertexconsumer, matrix4f, matrix3f, sparkradius, dist, sparkradius, 255, 255, 255, 1, 1);
+                vertex(vertexconsumer, matrix4f, matrix3f, -sparkradius, dist, sparkradius, 255, 255, 255, 0, 1);
+
+
+                scale *= 0.8;
+                pPoseStack.popPose();
             }
 
-            vertex(vertexconsumer, matrix4f, matrix3f, f11, f4, f12, j, k, l, 0.5F, f31 + 0.5F);
-            vertex(vertexconsumer, matrix4f, matrix3f, f13, f4, f14, j, k, l, 1.0F, f31 + 0.5F);
-            vertex(vertexconsumer, matrix4f, matrix3f, f17, f4, f18, j, k, l, 1.0F, f31);
-            vertex(vertexconsumer, matrix4f, matrix3f, f15, f4, f16, j, k, l, 0.5F, f31);
-            pPoseStack.popPose();
-        //}
+        }
     }
+
     private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, float pX, float pY, float pZ, int pRed, int pGreen, int pBlue, float pU, float pV) {
         pConsumer.vertex(pPose, pX, pY, pZ).color(pRed, pGreen, pBlue, 255).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(pNormal, 0.0F, 1.0F, 0.0F).endVertex();
     }
-    private static final ResourceLocation GUARDIAN_BEAM_LOCATION = new ResourceLocation("textures/entity/guardian_beam.png");
-    private static final RenderType BEAM_RENDER_TYPE = RenderType.entityCutoutNoCull(GUARDIAN_BEAM_LOCATION);
+
+    private static final ResourceLocation SPARK_BASE = new ResourceLocation(MODID, "textures/entities/alte/spark_0.png");
+    private static final ResourceLocation SPARK_BG0 = new ResourceLocation(MODID, "textures/entities/alte/spark_1.png");
+    private static final ResourceLocation SPARK_BG1 = new ResourceLocation(MODID, "textures/entities/alte/spark_2.png");
+    private static final ResourceLocation SPARK_BG2 = new ResourceLocation(MODID, "textures/entities/alte/spark_3.png");
+    private static final ResourceLocation SPARK_BG3 = new ResourceLocation(MODID, "textures/entities/alte/spark_4.png");
+    private static final RenderType SPARK_RENDER_TYPE = RenderType.entityCutoutNoCull(SPARK_BASE);
+    private static final RenderType SPARK_BG0_TYPE = RenderType.entityCutoutNoCull(SPARK_BG0);
+    private static final RenderType SPARK_BG1_TYPE = RenderType.entityCutoutNoCull(SPARK_BG1);
+    private static final RenderType SPARK_BG2_TYPE = RenderType.entityCutoutNoCull(SPARK_BG2);
+    private static final RenderType SPARK_BG3_TYPE = RenderType.entityCutoutNoCull(SPARK_BG3);
+
 
     private static final Logger LOGGER = LogUtils.getLogger();
 }
-
