@@ -99,6 +99,12 @@ public class Alte extends OldWarFriend{
         }
 
     }
+    public float getAlteLookAngle(EntityDataAccessor<Float> accessor){
+        return this.getEntityData().get(accessor);
+    }
+    public void setAlteLookAngle(EntityDataAccessor<Float> accessor, float f){
+        this.getEntityData().set(accessor, f);
+    }
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(ALTE_SPARKCOUNTER,0);
@@ -108,8 +114,11 @@ public class Alte extends OldWarFriend{
         this.entityData.define(ALTE_HYPERSTARTCOUNTER,0);
         this.entityData.define(ALTE_HYPERENDCOUNTER,0);
         this.entityData.define(ALTE_HYPERWINDUPCOUNTER,0);
+        this.entityData.define(ALTE_SPARKANGLEX, 0F);
+        this.entityData.define(ALTE_SPARKANGLEY, 0F);
     }
-
+    public static final EntityDataAccessor<Float> ALTE_SPARKANGLEY = SynchedEntityData.defineId(Alte.class,EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> ALTE_SPARKANGLEX = SynchedEntityData.defineId(Alte.class,EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> ALTE_SPARKCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ALTE_RODSUMMONCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ALTE_RODSHEATHCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);

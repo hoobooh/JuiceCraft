@@ -3,6 +3,8 @@ package com.usagin.juicecraft.ai.goals.alte;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Friend;
+import net.minecraft.client.renderer.entity.GuardianRenderer;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -11,7 +13,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
@@ -35,6 +39,9 @@ public class AlteSparkGoal extends Goal {
     }
     @Override
     public void start(){
+        this.alte.lookAt(this.target,360,360);
+        this.alte.setAlteLookAngle(ALTE_SPARKANGLEX, (float) Math.atan2(this.alte.getLookAngle().y, this.alte.getLookAngle().z));
+        this.alte.setAlteLookAngle(ALTE_SPARKANGLEY, (float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x));
         this.alte.getFriendNav().setShouldMove(false);
         this.alte.sparkcooldown = 3600 - (int) (1800*(1+(float) this.alte.getSkillLevels()[1])/(35+(float) this.alte.getSkillLevels()[1]));
         this.alte.setAlteAnimCounter(ALTE_SPARKCOUNTER,30);
@@ -49,7 +56,7 @@ public class AlteSparkGoal extends Goal {
         int n = this.alte.getAlteAnimCounter(ALTE_SPARKCOUNTER);
         if(n>=5 && n<=15){
             if(n==15){
-                //start particle effects
+
             }
             if(n%4==0){
                 LOGGER.info("HIT");
