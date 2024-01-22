@@ -48,6 +48,9 @@ public class Alte extends OldWarFriend{
     public boolean isUsingShockRod(){
         return false;
     }
+    public boolean isAttackLockout(){
+        return this.isUsingHyper() || this.getAlteAnimCounter(ALTE_SPARKCOUNTER)>0;
+    }
     public void tick(){
         super.tick();
         if(!this.level().isClientSide()){

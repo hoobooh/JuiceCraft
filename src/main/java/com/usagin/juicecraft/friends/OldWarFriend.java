@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.friends;
 
 import com.usagin.juicecraft.ai.awareness.SkillManager;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -24,14 +25,16 @@ public abstract class OldWarFriend extends Friend{
             this.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(this.WEAPONOFWAR);
 
             this.getAttribute(Attributes.ATTACK_DAMAGE).removePermanentModifier(WEAPONOFWARID);
-            this.WEAPONOFWAR = new AttributeModifier("WEAPONOFWAR", 0.1*this.getSkillLevels()[0], AttributeModifier.Operation.ADDITION);
+            this.WEAPONOFWAR = new AttributeModifier(WEAPONOFWARID, "WEAPONOFWAR", 0.1*this.getSkillLevels()[0], AttributeModifier.Operation.ADDITION);
             this.getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(this.WEAPONOFWAR);
 
             this.setCombatModifier(this.getSkillLevels()[0]);
+            this.setHealth(Mth.clamp(this.getHealth(), 0,this.getMaxHealth()));
         }else{
             this.getAttribute(Attributes.MAX_HEALTH).removePermanentModifier(WEAPONOFWARID);
             this.getAttribute(Attributes.ATTACK_DAMAGE).removePermanentModifier(WEAPONOFWARID);
             this.setCombatModifier(this.getCombatModifier() - this.getSkillLevels()[0]);
+            this.setHealth(Mth.clamp(this.getHealth(), 0,this.getMaxHealth()));
         }
     }
 }

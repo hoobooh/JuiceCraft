@@ -27,6 +27,7 @@ public class FriendSitGoal extends Goal {
     private static final Logger LOGGER = LogUtils.getLogger();
     public void start() {
         this.friend.getNavigation().stop();
+        this.friend.getFriendNav().setShouldMove(false);
         this.pose=this.friend.getPose();
         this.friend.setPose(Pose.SITTING);
         this.friend.reapplyPosition();
@@ -37,6 +38,7 @@ public class FriendSitGoal extends Goal {
     }
 
     public void stop() {
+        this.friend.getFriendNav().setShouldMove(true);
         this.friend.setPose(pose);
         this.friend.reapplyPosition();
         this.friend.refreshDimensions();

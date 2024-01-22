@@ -28,10 +28,14 @@ public class AlteSparkGoal extends Goal {
     @Override
     public boolean canUse() {
         this.target=this.alte.getTarget();
-        return this.alte.canDoThings() && this.target!=null && this.alte.getSkillEnabled()[1] && this.alte.sparkcooldown<=0;
+        if(this.target==null){
+            return false;
+        }
+        return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.sparkcooldown<=0 && this.alte.distanceTo(this.target)<4;
     }
     @Override
     public void start(){
+        this.alte.getFriendNav().setShouldMove(false);
         this.alte.sparkcooldown = 3600 - (int) (1800*(1+(float) this.alte.getSkillLevels()[1])/(35+(float) this.alte.getSkillLevels()[1]));
         this.alte.setAlteAnimCounter(ALTE_SPARKCOUNTER,30);
     }
@@ -99,5 +103,6 @@ public class AlteSparkGoal extends Goal {
     @Override
     public void stop(){
         this.target=null;
+        this.alte.getFriendNav().setShouldMove(true);
     }
 }

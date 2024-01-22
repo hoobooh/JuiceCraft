@@ -592,7 +592,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         boolean flag = false;
         if (pEntity != null) {
             if (this.distanceTo(pEntity) < 3) {
-                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5 * this.getCombatMod() / 10) + this.getRandom().nextInt(1, 7), 1, 6) + 3) / 6;
+                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getAttackType()/20 * (Mth.clamp((5 * this.getCombatMod() / 10) + this.getRandom().nextInt(1, 7), 1, 6) + 3) / 6 * 0.66F;
                 float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
                 if (pEntity instanceof LivingEntity) {
                     f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
@@ -603,7 +603,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 if (i > 0) {
                     pEntity.setSecondsOnFire(i * 4);
                 }
-
                 flag = pEntity.hurt(this.damageSources().mobAttack(this), f);
                 if (flag) {
                     if (f1 > 0.0F && pEntity instanceof LivingEntity) {
@@ -687,6 +686,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.isDying = false;
         this.playSound(RECOVERY.get(), 1, 1);
         this.playVoice(this.getRecovery());
+        this.getFriendNav().setShouldMove(true);
         this.spawnHorizontalParticles();
     }
 
@@ -1079,6 +1079,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
         }
         this.getEntityData().set(FRIEND_NORMA, n);
+    }
+    public FriendPathNavigation getFriendNav(){
+        return (FriendPathNavigation) this.navigation;
     }
 
     public void updateFriendNorma(float n, int source) {
@@ -1810,6 +1813,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean isAggressive() {
         return super.isAggressive();
     }
+    public boolean isAttackLockout(){
+        return false;
+    }
 
     @Override
     public void tick() {
@@ -1902,7 +1908,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             if (this.deathAnimCounter != 0) {
                 setDeathAnimCounter(this.deathAnimCounter - 1);
             }
-            if (isDying) {
+            if (this.isDying) {
+                this.getFriendNav().setShouldMove(false);
                 this.setTarget(null);
                 if (this.tickCount % 20 == 0) {
                     ServerLevel sLevel = (ServerLevel) this.level();

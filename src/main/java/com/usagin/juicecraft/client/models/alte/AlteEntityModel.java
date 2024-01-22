@@ -69,13 +69,16 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
     public void defineAnimations() {
         this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);
     }
-
+    public boolean shouldMoveHead(Alte friend){
+        return friend.getAlteAnimCounter(Alte.ALTE_SPARKCOUNTER) <= 0;
+    }
     @Override
     public void attackAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         this.animate(alte.sparkAnimState, spark, pAgeInTicks);
-
         boolean flag = alte.sparkAnimState.isStarted();
+        this.togglePanel(flag);
         if (!flag) {
+
             super.attackAnim(alte, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
         }
     }

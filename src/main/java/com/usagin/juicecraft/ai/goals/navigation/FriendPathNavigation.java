@@ -8,6 +8,7 @@ import net.minecraft.world.level.pathfinder.PathFinder;
 
 public class FriendPathNavigation extends GroundPathNavigation {
     final Friend friend;
+    public boolean shouldMove=true;
 
     public FriendPathNavigation(Friend pMob, Level pLevel) {
         super(pMob, pLevel);
@@ -23,5 +24,13 @@ public class FriendPathNavigation extends GroundPathNavigation {
     public void stop() {
         this.friend.chasingitem=false;
         super.stop();
+    }
+    public void setShouldMove(boolean b){
+        this.shouldMove=b;
+    }
+    @Override
+    public void tick(){
+        if(this.shouldMove){
+        super.tick();}
     }
 }

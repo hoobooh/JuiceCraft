@@ -2,6 +2,7 @@ package com.usagin.juicecraft.ai.goals;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.FriendFlee;
+import com.usagin.juicecraft.ai.goals.navigation.FriendPathNavigation;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -101,7 +102,8 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
                                 Block block = state.getBlock();
                                 //LOGGER.info(block.getName().getString() +" " + block.getClass().getSimpleName());
                                 if (block instanceof BushBlock) {
-                                    this.friend.getNavigation().stop();
+                                    this.friend.getFriendNav().stop();
+                                    this.friend.getFriendNav().setShouldMove(false);
                                     this.friend.lookAt(EntityAnchorArgument.Anchor.EYES, pos.getCenter());
                                     this.friend.playVoice(this.friend.getLaugh());
                                     this.friend.setViewFlower(60);
@@ -128,6 +130,8 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
                             }
                         }
                     }
+                }else if(this.friend.getViewFlower() == 1){
+                    this.friend.getFriendNav().setShouldMove(true);
                 }
                 if (this.friend.flowercooldown > 0) {
                     this.friend.flowercooldown--;

@@ -215,7 +215,9 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     public void sleepAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
         animate(pEntity.sleepAnimState, this.animations.sleep(), pAgeInTicks);
     }
-
+    public boolean shouldMoveHead(T friend){
+        return true;
+    }
 
     @Override
     public void setupAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
@@ -261,9 +263,9 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 this.bowAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
             }
             if (!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose() != SLEEPING && pEntity.animatestandingtimer <= 0) {
-                if ((pEntity.sleepAnimState.isStarted() && pLimbSwingAmount > 0.1)) {
+                if ((pEntity.sleepAnimState.isStarted() && pLimbSwingAmount > 0.1) && this.shouldMoveHead(pEntity)) {
                     this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
-                } else {
+                } else if (this.shouldMoveHead(pEntity)){
                     this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
                     this.parts.head().xRot = (pHeadPitch * (float) Math.PI / 180f);
                 }

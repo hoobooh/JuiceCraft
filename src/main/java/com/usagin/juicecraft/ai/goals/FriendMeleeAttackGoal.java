@@ -44,6 +44,10 @@ public class FriendMeleeAttackGoal extends MeleeAttackGoal {
             }
         }
     }
+    protected boolean canPerformAttack(LivingEntity pEntity) {
+        boolean flag = this.mob.isWithinMeleeAttackRange(pEntity);
+        return this.isTimeToAttack() && flag && this.mob.getSensing().hasLineOfSight(pEntity);
+    }
 
     @Override
     protected void resetAttackCooldown() {
@@ -52,7 +56,7 @@ public class FriendMeleeAttackGoal extends MeleeAttackGoal {
 
     @Override
     public boolean canUse() {
-        if (this.friend.getInSittingPose() || this.friend.isDying || this.friend.isHoldingThrowable()) {
+        if (this.friend.getInSittingPose() || this.friend.isDying || this.friend.isHoldingThrowable() || this.friend.isAttackLockout()) {
             return false;
         } else {
             return super.canUse() && !FriendFlee.willFriendFlee(this.friend);
@@ -62,6 +66,10 @@ public class FriendMeleeAttackGoal extends MeleeAttackGoal {
     @Override
     public void tick() {
         if (this.friend.canDoThings() && this.friend.runTimer <= 0 && this.canUse()) {
+            if(!this.friend.getBoundingBox().intersects(this.friend.getTarget().getBoundingBox())){
+                this.friend.getNavigation().stop();
+                this.friend.getNavigation().moveTo(this.friend.getTarget(),1);
+            }
             super.tick();
         }
     }
