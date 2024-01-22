@@ -91,15 +91,10 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
         super.render(alte, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
 
         int n = alte.getAlteAnimCounter(Alte.ALTE_SPARKCOUNTER);
-        {
-        float lookAngleX = (float) alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEX);
-        float lookAngleY = (float) alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEY);
-        LOGGER.info(lookAngleY +"");
-        }
         //if (n >= 5 && n <= 15) {
             float lookAngleX = (float) alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEX);
             float lookAngleY = (float) alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEY);
-            LOGGER.info(lookAngleY +"");
+
             float posX = (float) alte.getX();
             float posY = (float) alte.getEyeY();
             float posZ = (float) alte.getZ();
@@ -136,9 +131,12 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
 
             float f7 = 0.05F * -1.5F;
             float f8 = effectmagnitude * effectmagnitude;
+
+            //define colors
             int j = 64 + (int) (f8 * 191.0F);
             int k = 32 + (int) (f8 * 191.0F);
             int l = 128 - (int) (f8 * 64.0F);
+
             float f11 = Mth.cos(f7 + 2.3561945F) * 0.282F;
             float f12 = Mth.sin(f7 + 2.3561945F) * 0.282F;
             float f13 = Mth.cos(f7 + ((float) Math.PI / 4F)) * 0.282F;
@@ -161,8 +159,11 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
             float f30 = f4 * 2.5F + f29;
             VertexConsumer vertexconsumer = pBuffer.getBuffer(BEAM_RENDER_TYPE);
             PoseStack.Pose posestack$pose = pPoseStack.last();
+
             Matrix4f matrix4f = posestack$pose.pose();
             Matrix3f matrix3f = posestack$pose.normal();
+
+            //each defines a point i think
             vertex(vertexconsumer, matrix4f, matrix3f, f19, f4, f20, j, k, l, 0.4999F, f30);
             vertex(vertexconsumer, matrix4f, matrix3f, f19, 0.0F, f20, j, k, l, 0.4999F, f29);
             vertex(vertexconsumer, matrix4f, matrix3f, f21, 0.0F, f22, j, k, l, 0.0F, f29);
