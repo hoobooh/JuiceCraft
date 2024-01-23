@@ -1,10 +1,15 @@
 package com.usagin.juicecraft.ai.goals.alte;
 
+import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Friend;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.client.renderer.entity.GuardianRenderer;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -65,13 +70,37 @@ public class AlteSparkGoal extends Goal {
     public void tick() {
         int n = this.alte.getAlteAnimCounter(ALTE_SPARKCOUNTER);
         if (n >= 5 && n <= 15) {
-            if (n == 15) {
-
-            }
             if (n % 4 == 0) {
                 this.hurtAllTargets();
+                if(this.alte.level() instanceof ServerLevel level){
+
+                    this.spawnParticlesInSphere(20,0.5F,2,level, ParticleInit.ALTE_ENERGY_PARTICLE.get());
+                    this.spawnParticlesInSphere(5,1,2,level, ParticleInit.ALTE_LIGHTNING_PARTICLE.get());
+                }
             }
         }
+    }
+    public<T extends ParticleOptions> void spawnParticlesInSphere(int count, float radius,float distance, ServerLevel sLevel, T type){
+        float posX = (float) this.alte.getX();
+        float posY = (float) this.alte.getY() + 1.2F;
+        float posZ = (float) this.alte.getZ();
+        float lookAngleY=this.alte.getAlteLookAngle(ALTE_SPARKANGLEY);
+        float lookAngleX=this.alte.getAlteLookAngle(ALTE_SPARKANGLEX);
+
+        float targetX = posX + distance * (float) Math.cos(lookAngleY);
+        float targetZ = posZ + distance * (float) Math.sin(lookAngleY);
+        float targetY = posY + distance * (float) Math.sin(lookAngleX);
+
+
+        for(int i = 0; i < count; i++){
+            float y = 0;
+            float x = (float) (Math.cos(i))/2*radius;
+            float z = (float) (Math.sin(i))/2*radius;
+
+            sLevel.sendParticles(type,targetX + x,targetY + y,targetZ + z,1,0,0,0,0.5);
+
+        }
+
     }
 
     public void hurtAllTargets() {
