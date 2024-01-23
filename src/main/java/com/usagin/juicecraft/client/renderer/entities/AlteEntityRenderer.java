@@ -61,7 +61,7 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
             this.narrowlayer.visible = false;
             this.winklayer.visible = false;
             return ALTE_CLOSED;
-        } else if (pEntity.patCounter != 0 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive())) {
+        } else if (pEntity.patCounter != 0 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive()) || (pEntity.getAlteAnimCounter(Alte.ALTE_SPARKCOUNTER) >= 5 && pEntity.getAlteAnimCounter(Alte.ALTE_SPARKCOUNTER)<=15)) {
             this.openlayer.visible = false;
             this.narrowlayer.visible = false;
             this.winklayer.visible = true;
