@@ -10,6 +10,7 @@ import static net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS;
 
 public class AlteSoundInit {
     public static final DeferredRegister<SoundEvent> ALTE_SOUNDS = DeferredRegister.create(SOUND_EVENTS, MODID);
+    public static final RegistryObject<SoundEvent> ALTE_SPARK = registerFriendSoundEvent("alte_spark");
     public static final RegistryObject<SoundEvent> ALTE_ANGRY = registerFriendSoundEvent("alte_angry");
     public static final RegistryObject<SoundEvent> ALTE_ATTACK_0 = registerFriendSoundEvent("alte_attack_0");
     public static final RegistryObject<SoundEvent> ALTE_ATTACK_1 = registerFriendSoundEvent("alte_attack_1");

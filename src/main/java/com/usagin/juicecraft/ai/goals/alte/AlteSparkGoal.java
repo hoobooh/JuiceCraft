@@ -25,6 +25,9 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
+import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.ALTE_SPARK;
+import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.ELECTRIC_STATIC;
+import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.LASER_BLAST;
 import static com.usagin.juicecraft.friends.Alte.*;
 import static net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK;
 
@@ -44,16 +47,18 @@ public class AlteSparkGoal extends Goal {
         }
         return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.sparkcooldown <= 0 && this.alte.distanceTo(this.target) < 4;
     }
-
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
     @Override
     public void start() {
+        this.alte.playVoice(ALTE_SPARK.get());
         this.alte.lookAt(this.target, 360, 360);
-
+        this.alte.playSound(ELECTRIC_STATIC.get());
         this.alte.setAlteLookAngle(ALTE_SPARKANGLEX, (float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x)));
 
         this.alte.setAlteLookAngle(ALTE_SPARKANGLEY, (float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x));
 
-        LOGGER.info(Math.toDegrees(Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x))) + "");
 
         this.alte.getFriendNav().setShouldMove(false);
         this.alte.sparkcooldown = 3600 - (int) (1800 * (1 + (float) this.alte.getSkillLevels()[1]) / (35 + (float) this.alte.getSkillLevels()[1]));
@@ -62,14 +67,16 @@ public class AlteSparkGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        this.target = this.alte.getTarget();
-        return this.target != null && this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.getAlteAnimCounter(ALTE_SPARKCOUNTER) > 0;
+        return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.getAlteAnimCounter(ALTE_SPARKCOUNTER) > 0;
     }
 
     @Override
     public void tick() {
         int n = this.alte.getAlteAnimCounter(ALTE_SPARKCOUNTER);
         if (n >= 5 && n <= 15) {
+            if(n==15){
+                this.alte.playSound(LASER_BLAST.get());
+            }
             if (n % 4 == 0) {
                 this.hurtAllTargets();
                 if(this.alte.level() instanceof ServerLevel level){

@@ -51,15 +51,15 @@ public class Alte extends OldWarFriend{
     public boolean isAttackLockout(){
         return this.isUsingHyper() || this.getAlteAnimCounter(ALTE_SPARKCOUNTER)>0;
     }
+
     public void tick(){
         super.tick();
         if(!this.level().isClientSide()){
             if(this.sparkcooldown>0){
                 this.sparkcooldown--;
             }
-            for(EntityDataAccessor<Integer> accessor: counters){
-                //LOGGER.info(this.getAlteAnimCounter(ALTE_SPARKCOUNTER)+"");
-                this.decrementAlteAnimCounter(accessor);
+            for (EntityDataAccessor<Integer> counter : counters) {
+                this.decrementAlteAnimCounter(counter);
             }
         }else{
             this.sparkAnimState.animateWhen(this.getAlteAnimCounter(ALTE_SPARKCOUNTER)>0,this.tickCount);
@@ -127,6 +127,9 @@ public class Alte extends OldWarFriend{
     public static final EntityDataAccessor<Integer> ALTE_HYPERWINDUPCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ALTE_HYPERENDCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final List<EntityDataAccessor<Integer>> counters = Arrays.asList(ALTE_SPARKCOUNTER, ALTE_RODSUMMONCOUNTER, ALTE_RODSHEATHCOUNTER, ALTE_PUNISHERCOUNTER, ALTE_HYPERENDCOUNTER, ALTE_HYPERSTARTCOUNTER, ALTE_HYPERWINDUPCOUNTER);
+    public boolean additionalInspectConditions(){
+        return this.getAlteAnimCounter(ALTE_SPARKCOUNTER)<=0;
+    }
     @Override
     int[] getSkillInfo() {
         return new int[]{1,2,3,3,4,5};

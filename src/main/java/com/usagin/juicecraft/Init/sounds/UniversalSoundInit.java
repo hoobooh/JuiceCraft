@@ -23,6 +23,8 @@ public class UniversalSoundInit {
     public static final RegistryObject<SoundEvent> COUNTER_ATTACK = registerFriendSoundEvent("counter_attack");
     public static final RegistryObject<SoundEvent> NORMAUP = registerFriendSoundEvent("normaup");
     public static final RegistryObject<SoundEvent> GLITCH = registerFriendSoundEvent("friend_glitch");
+    public static final RegistryObject<SoundEvent> LASER_BLAST = registerFriendSoundEvent("laser_blast");
+    public static final RegistryObject<SoundEvent> ELECTRIC_STATIC = registerFriendSoundEvent("electric_static");
 
     public static final RegistryObject<SoundEvent> DICE_THROW = registerFriendSoundEvent("dicethrow");
     public static final RegistryObject<SoundEvent> MEMORY_WRITE = registerFriendSoundEvent("memory_write");

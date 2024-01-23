@@ -1,4 +1,14 @@
 {
+  "electric_static": {
+    "sounds": [
+      "juicecraft:electric_static"
+    ]
+  },
+  "laser_blast": {
+    "sounds": [
+      "juicecraft:laser_blast"
+    ]
+  },
   "memory_write": {
     "sounds": [
       "juicecraft:memory_write"
@@ -65,10 +75,11 @@
     ]
   },
 
-
-
-
-
+  "alte_spark": {
+    "sounds": [
+      "juicecraft:alte_spark"
+    ]
+  },
   "alte_angry": {
     "sounds": [
       "juicecraft:alte_angry"

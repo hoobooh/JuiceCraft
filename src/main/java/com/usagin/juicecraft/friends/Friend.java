@@ -1816,6 +1816,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean isAttackLockout(){
         return false;
     }
+    public boolean additionalInspectConditions(){
+        return true;
+    }
 
     @Override
     public void tick() {
@@ -1850,7 +1853,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
             if (this.tickCount % 160 == 0) {
                 this.updateGear();
-                if (!this.isUsingItem() && this.random.nextBoolean() && this.random.nextBoolean() && this.animatestandingtimer <= 0 && this.idleCounter == 20 && !this.getFriendWeapon().isEmpty()) {
+                if (!this.isUsingItem() && this.random.nextBoolean() && this.random.nextBoolean() && this.animatestandingtimer <= 0 && this.idleCounter == 20 && !this.getFriendWeapon().isEmpty() && this.additionalInspectConditions()) {
                     this.animatestandingtimer = 80;
                 }
             }
