@@ -1589,7 +1589,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         return InteractionResult.SUCCESS;
                     } else if ((!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && !pPlayer.isCrouching()) && (!this.isInWater() || this.onGround())) {
                         this.setFriendInSittingPose(!this.getInSittingPose());
-                        if (sleeping() && animateSleep()) {
+                        if (sleepy() && animateSleep()) {
                             this.setPose(Pose.SLEEPING);
                         } else {
                             this.setPose(STANDING);
@@ -1655,7 +1655,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         return InteractionResult.SUCCESS;
                     } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
                         this.setFriendInSittingPose(!this.getInSittingPose());
-                        if (sleeping() && animateSleep()) {
+                        if (sleepy() && animateSleep()) {
                             this.setPose(Pose.SLEEPING);
                         } else {
                             this.setPose(STANDING);
@@ -1676,7 +1676,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             return InteractionResult.PASS;
         }
     }
-
+    public boolean lockLookAround(){
+        return this.getAttackCounter() <= 0;
+    }
     @Override
     public void aiStep() {
         super.aiStep();
@@ -1799,7 +1801,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return this.isHoldingThrowable() && !this.isDescending() && this.canDoThings() && this.shakeAnimO == 0;
     }
 
-    public boolean sleeping() {
+    public boolean sleepy() {
         return idle() && !this.day();
     }
 

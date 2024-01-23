@@ -3,27 +3,21 @@ package com.usagin.juicecraft.ai.goals;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.DoubleBlockCombiner;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BedPart;
 
 import static com.usagin.juicecraft.Init.ParticleInit.SLEEPY;
-import static net.minecraft.world.level.block.HorizontalDirectionalBlock.*;
+
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.ArrayList;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
 import static net.minecraft.world.level.block.BedBlock.PART;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.OCCUPIED;
 
@@ -61,7 +55,7 @@ public class FriendSleepGoal extends Goal {
     public void tick() {
         if (this.canUse()) {
             if (this.friend.getFeetBlockState().isBed(this.friend.level(), new BlockPos(this.friend.getBlockX(), this.friend.getBlockY() - 1, this.friend.getBlockZ()), null)) {
-                if (this.friend.sleeping() && this.friend.getPose()!=Pose.SLEEPING && !this.friend.getInSittingPose() && !this.friend.getFeetBlockState().getValue(OCCUPIED)) {
+                if (this.friend.sleepy() && this.friend.getPose()!=Pose.SLEEPING && !this.friend.getInSittingPose() && !this.friend.getFeetBlockState().getValue(OCCUPIED)) {
                     moveToBed(this.friend.getOnPos(), this.friend.getFeetBlockState());
                     this.friend.setDeltaMovement(Vec3.ZERO);
                     this.friend.setPose(Pose.SLEEPING);

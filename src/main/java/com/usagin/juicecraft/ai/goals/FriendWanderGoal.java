@@ -17,7 +17,7 @@ public class FriendWanderGoal extends WaterAvoidingRandomStrollGoal {
     private static final Logger LOGGER = LogUtils.getLogger();
     @Override
     public void start(){
-        if(friend.patCounter==0 && this.friend.canDoThings() && !friend.sleeping() && friend.day()){
+        if(friend.patCounter==0 && this.friend.canDoThings() && !friend.sleepy() && friend.day()){
             super.start();
         }
     }

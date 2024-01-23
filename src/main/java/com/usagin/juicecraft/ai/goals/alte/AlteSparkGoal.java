@@ -52,7 +52,7 @@ public class AlteSparkGoal extends Goal {
     }
     @Override
     public void start() {
-        this.alte.setYBodyRot(this.alte.getYHeadRot());
+
         this.alte.playVoice(ALTE_SPARK.get());
         this.alte.lookAt(this.target, 360, 360);
         this.alte.playSound(ELECTRIC_STATIC.get());

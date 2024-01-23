@@ -1,8 +1,6 @@
 package com.usagin.juicecraft.friends;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
-import com.usagin.juicecraft.ai.awareness.SkillManager;
-import com.usagin.juicecraft.ai.goals.FriendMeleeAttackGoal;
 import com.usagin.juicecraft.ai.goals.alte.AlteSparkGoal;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.alte.AlteDialogueManager;
@@ -11,29 +9,18 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
-import org.checkerframework.checker.units.qual.A;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
-import static com.usagin.juicecraft.Init.sounds.SoraSoundInit.*;
-import static com.usagin.juicecraft.Init.sounds.SoraSoundInit.SORA_HURT4;
 
 public class Alte extends OldWarFriend{
     public Alte(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {
@@ -130,6 +117,9 @@ public class Alte extends OldWarFriend{
     public boolean additionalInspectConditions(){
         return this.getAlteAnimCounter(ALTE_SPARKCOUNTER)<=0;
     }
+    public boolean lockLookAround(){
+        return this.getAlteAnimCounter(ALTE_SPARKCOUNTER) <=0 && super.lockLookAround();
+    }
     @Override
     int[] getSkillInfo() {
         return new int[]{1,2,3,3,4,5};
@@ -205,7 +195,7 @@ public class Alte extends OldWarFriend{
 
     @Override
     public SoundEvent getIdle() {
-        if(this.sleeping() && this.animateSleep() && !this.getInSittingPose()){
+        if(this.sleepy() && this.animateSleep() && !this.getInSittingPose()){
             return null;
         }
         if(this.isAggressive()){
