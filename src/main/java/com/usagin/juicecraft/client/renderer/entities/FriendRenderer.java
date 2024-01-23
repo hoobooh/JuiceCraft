@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.client.renderer;
+package com.usagin.juicecraft.client.renderer.entities;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

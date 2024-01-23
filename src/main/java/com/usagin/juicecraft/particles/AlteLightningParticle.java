@@ -14,20 +14,19 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 
+import java.util.SplittableRandom;
 
-public class SuguriverseParticleMed extends SonicBoomParticle {
-    public SuguriverseParticleMed(ClientLevel pLevel, double pX, double pY, double pZ, double pQuadSizeMultiplier, SpriteSet spriteset) {
+
+public class AlteLightningParticle extends SonicBoomParticle {
+    public static final SplittableRandom random = new SplittableRandom();
+    public AlteLightningParticle(ClientLevel pLevel, double pX, double pY, double pZ, double pQuadSizeMultiplier, SpriteSet spriteset) {
         super(pLevel, pX, pY, pZ,pQuadSizeMultiplier, spriteset);
-        this.lifetime=15;
+        this.lifetime=10;
         this.friction=0.8F;
-        this.quadSize*=0.8F;
-        this.lifetime*=pLevel.random.nextInt(1,3);
+        this.quadSize*=0.2F;
+
         this.setSpriteFromAge(spriteset);
-        //SplittableRandom random = new SplittableRandom();
-        //randomized colors if wanted
-        /*(this.rCol=random.nextFloat(255);
-        this.gCol=random.nextFloat(255);
-        this.bCol=random.nextFloat(255);*/
+        this.lifetime*=random.nextFloat(0.5F,1.5F);
     }
     @Override
     public void tick(){
@@ -66,7 +65,7 @@ public class SuguriverseParticleMed extends SonicBoomParticle {
         float f7 = this.getU1();
         float f4 = this.getV0();
         float f5 = this.getV1();
-        int j = 15728640;
+        int j = 15728880;
         pBuffer.vertex(avector3f[0].x(), avector3f[0].y(), avector3f[0].z()).uv(f7, f5).color(1, 1, 1, this.alpha).uv2(j).endVertex();
         pBuffer.vertex(avector3f[1].x(), avector3f[1].y(), avector3f[1].z()).uv(f7, f4).color(1, 1, 1, this.alpha).uv2(j).endVertex();
         pBuffer.vertex(avector3f[2].x(), avector3f[2].y(), avector3f[2].z()).uv(f6, f4).color(1, 1, 1, this.alpha).uv2(j).endVertex();
@@ -85,7 +84,7 @@ public class SuguriverseParticleMed extends SonicBoomParticle {
         @Nullable
         @Override
         public Particle createParticle(SimpleParticleType pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
-            return new SuguriverseParticleMed(pLevel, pX,pY,pZ, pXSpeed,this.sprites);
+            return new AlteLightningParticle(pLevel, pX,pY,pZ, pXSpeed,this.sprites);
         }
     }
 }

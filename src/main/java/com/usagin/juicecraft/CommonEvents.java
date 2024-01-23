@@ -47,7 +47,7 @@ public class CommonEvents {
         Minecraft.getInstance().particleEngine.register(ParticleInit.DICESIX.get(), SleepyParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.GLITCH_PARTICLE.get(), GlitchParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_ENERGY_PARTICLE.get(), EnergyParticle.Provider::new);
-        Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_LIGHTNING_PARTICLE.get(), SuguriverseParticleMed.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_LIGHTNING_PARTICLE.get(), AlteLightningParticle.Provider::new);
 
     }
     @SubscribeEvent

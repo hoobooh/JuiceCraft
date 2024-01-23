@@ -38,18 +38,7 @@ public class EnergyParticle extends TextureSheetParticle {
     }
 
     public int getLightColor(float pPartialTick) {
-        int i = super.getLightColor(pPartialTick);
-        float f = (float)this.age / (float)this.lifetime;
-        f *= f;
-        f *= f;
-        int j = i & 255;
-        int k = i >> 16 & 255;
-        k += (int)(f * 15.0F * 16.0F);
-        if (k > 240) {
-            k = 240;
-        }
-
-        return j | k << 16;
+        return 15728880;
     }
 
     public void tick() {

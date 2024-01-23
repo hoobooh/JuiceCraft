@@ -74,13 +74,29 @@ public class AlteSparkGoal extends Goal {
                 this.hurtAllTargets();
                 if(this.alte.level() instanceof ServerLevel level){
 
-                    this.spawnParticlesInSphere(20,0.5F,2,level, ParticleInit.ALTE_ENERGY_PARTICLE.get());
-                    this.spawnParticlesInSphere(5,1,2,level, ParticleInit.ALTE_LIGHTNING_PARTICLE.get());
+                    this.spawnParticlesInSphere(10,0.5F,2,level, ParticleInit.ALTE_ENERGY_PARTICLE.get(),0);
+                    this.spawnParticlesInRandomSpread(10,1,2,level, ParticleInit.ALTE_LIGHTNING_PARTICLE.get());
                 }
             }
         }
     }
-    public<T extends ParticleOptions> void spawnParticlesInSphere(int count, float radius,float distance, ServerLevel sLevel, T type){
+    public<T extends ParticleOptions> void spawnParticlesInRandomSpread(int count, float radius,float distance, ServerLevel sLevel, T type){
+        float posX = (float) this.alte.getX();
+        float posY = (float) this.alte.getY() + 1.2F;
+        float posZ = (float) this.alte.getZ();
+        float lookAngleY=this.alte.getAlteLookAngle(ALTE_SPARKANGLEY);
+        float lookAngleX=this.alte.getAlteLookAngle(ALTE_SPARKANGLEX);
+
+        float targetX = posX + distance * (float) Math.cos(lookAngleY);
+        float targetZ = posZ + distance * (float) Math.sin(lookAngleY);
+        float targetY = posY + distance * (float) Math.sin(lookAngleX);
+
+        sLevel.sendParticles(type,targetX,targetY,targetZ,count,radius,radius,radius,1);
+    }
+    public<T extends ParticleOptions> void spawnParticlesInSphere(int count, float radius,float distance, ServerLevel sLevel, T type, float yOffset){
+        if(count<1){
+            return;
+        }
         float posX = (float) this.alte.getX();
         float posY = (float) this.alte.getY() + 1.2F;
         float posZ = (float) this.alte.getZ();
@@ -92,14 +108,20 @@ public class AlteSparkGoal extends Goal {
         float targetY = posY + distance * (float) Math.sin(lookAngleX);
 
 
-        for(int i = 0; i < count; i++){
-            float y = 0;
-            float x = (float) (Math.cos(i))/2*radius;
-            float z = (float) (Math.sin(i))/2*radius;
 
-            sLevel.sendParticles(type,targetX + x,targetY + y,targetZ + z,1,0,0,0,0.5);
+        for(int i = 0; i < count; i++){
+            float x = (float) (Math.sin(i))/2*radius;
+            float z = (float) (Math.cos(i))/2*radius;
+            if(this.alte.getRandom().nextBoolean()){
+                x=-x;
+                z=-z;
+            }
+            sLevel.sendParticles(type,targetX + x,targetY + yOffset,targetZ + z,1,0,0,0,0.5);
 
         }
+
+        this.spawnParticlesInSphere((int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset+0.3F);
+        this.spawnParticlesInSphere((int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset-0.3F);
 
     }
 

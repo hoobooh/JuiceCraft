@@ -1,27 +1,20 @@
 package com.usagin.juicecraft.client.renderer.entities;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.logging.LogUtils;
 import com.mojang.math.Axis;
 import com.usagin.juicecraft.client.models.alte.AlteEntityModel;
 import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
 import com.usagin.juicecraft.client.renderer.FriendItemInHandLayer;
 import com.usagin.juicecraft.client.renderer.FriendItemOnBackLayer;
-import com.usagin.juicecraft.client.renderer.FriendRenderer;
 import com.usagin.juicecraft.friends.Alte;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
