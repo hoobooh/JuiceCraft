@@ -6,6 +6,7 @@ import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.client.renderer.entity.GuardianRenderer;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -22,6 +23,7 @@ import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -34,6 +36,7 @@ import static net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK;
 public class AlteSparkGoal extends Goal {
     protected final Alte alte;
     protected LivingEntity target;
+    Vec3 lookangle;
 
     public AlteSparkGoal(Alte alte) {
         this.alte = alte;
@@ -60,6 +63,7 @@ public class AlteSparkGoal extends Goal {
 
         this.alte.setAlteLookAngle(ALTE_SPARKANGLEY, (float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x));
 
+        this.alte.getFriendNav().stop();
 
         this.alte.getFriendNav().setShouldMove(false);
         this.alte.sparkcooldown = 3600 - (int) (1800 * (1 + (float) this.alte.getSkillLevels()[1]) / (35 + (float) this.alte.getSkillLevels()[1]));
@@ -73,6 +77,9 @@ public class AlteSparkGoal extends Goal {
 
     @Override
     public void tick() {
+        //Vec3 angle = Vec3.directionFromRotation(this.alte.getAlteLookAngle(ALTE_SPARKANGLEX),this.alte.getAlteLookAngle(ALTE_SPARKANGLEY));
+        //this.alte.getLookControl().setLookAt(angle);
+
         int n = this.alte.getAlteAnimCounter(ALTE_SPARKCOUNTER);
         if (n >= 5 && n <= 15) {
             if(n==15){

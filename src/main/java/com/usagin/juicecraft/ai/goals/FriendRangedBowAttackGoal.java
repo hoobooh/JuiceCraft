@@ -18,9 +18,11 @@ public class FriendRangedBowAttackGoal<T extends Friend> extends RangedBowAttack
         return this.mob.canDoThings() && this.mob.getTarget() != null && this.isHoldingBow();
     }
     public void start(){
+        this.mob.getFriendNav().setShouldMove(false);
         super.start();
     }
     public void stop(){
         super.stop();
+        this.mob.getFriendNav().setShouldMove(true);
     }
 }

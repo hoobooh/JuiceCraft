@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.ai.goals;
 
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.ai.ShellMeleeGoal;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.FriendFlee;
 import com.usagin.juicecraft.friends.Friend;
@@ -13,7 +14,7 @@ import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.particles.SuguriverseParticleLarge.LOGGER;
 
-public class FriendMeleeAttackGoal extends MeleeAttackGoal {
+public class FriendMeleeAttackGoal extends ShellMeleeGoal {
     private int ticksUntilNextAttack;
     Friend friend;
 

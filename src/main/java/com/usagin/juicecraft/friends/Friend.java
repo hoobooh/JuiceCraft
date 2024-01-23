@@ -63,6 +63,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.PlantType;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -1332,6 +1333,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.entityData.define(FRIEND_SWIMCOUNTER, this.startfloattimer);
         this.entityData.define(FRIEND_COMBATMOD, this.combatmodifier);
     }
+
 
     public static final EntityDataAccessor<Integer> FRIEND_COMBATMOD = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SWIMCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);

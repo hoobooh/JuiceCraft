@@ -72,6 +72,12 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
     public boolean shouldMoveHead(Alte friend){
         return friend.getAlteAnimCounter(Alte.ALTE_SPARKCOUNTER) <= 0;
     }
+
+    public void bowAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        if(pEntity.getAlteAnimCounter(Alte.ALTE_SPARKCOUNTER) <=0){
+            super.bowAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
+        }
+    }
     @Override
     public void attackAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         this.animate(alte.sparkAnimState, spark, pAgeInTicks);
