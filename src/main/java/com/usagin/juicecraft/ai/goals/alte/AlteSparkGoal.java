@@ -3,14 +3,7 @@ package com.usagin.juicecraft.ai.goals.alte;
 import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Alte;
-import com.usagin.juicecraft.friends.Friend;
-import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
-import net.minecraft.client.renderer.entity.GuardianRenderer;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,9 +12,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.Guardian;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -31,7 +21,6 @@ import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.ALTE_SPARK;
 import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.ELECTRIC_STATIC;
 import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.LASER_BLAST;
 import static com.usagin.juicecraft.friends.Alte.*;
-import static net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK;
 
 public class AlteSparkGoal extends Goal {
     protected final Alte alte;
@@ -67,12 +56,12 @@ public class AlteSparkGoal extends Goal {
 
         this.alte.getFriendNav().setShouldMove(false);
         this.alte.sparkcooldown = 3600 - (int) (1800 * (1 + (float) this.alte.getSkillLevels()[1]) / (35 + (float) this.alte.getSkillLevels()[1]));
-        this.alte.setAlteAnimCounter(ALTE_SPARKCOUNTER, 30);
+        this.alte.setAlteSyncInt(ALTE_SPARKCOUNTER, 30);
     }
 
     @Override
     public boolean canContinueToUse() {
-        return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.getAlteAnimCounter(ALTE_SPARKCOUNTER) > 0;
+        return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.getAlteSyncInt(ALTE_SPARKCOUNTER) > 0;
     }
 
     @Override
@@ -80,7 +69,7 @@ public class AlteSparkGoal extends Goal {
         //Vec3 angle = Vec3.directionFromRotation(this.alte.getAlteLookAngle(ALTE_SPARKANGLEX),this.alte.getAlteLookAngle(ALTE_SPARKANGLEY));
         //this.alte.getLookControl().setLookAt(angle);
 
-        int n = this.alte.getAlteAnimCounter(ALTE_SPARKCOUNTER);
+        int n = this.alte.getAlteSyncInt(ALTE_SPARKCOUNTER);
         if (n >= 5 && n <= 15) {
             if(n==15){
                 this.alte.playSound(LASER_BLAST.get());

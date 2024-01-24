@@ -1,18 +1,13 @@
 package com.usagin.juicecraft.ai.goals;
 
 import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.ai.ShellMeleeGoal;
-import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.FriendFlee;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-
-import static com.usagin.juicecraft.particles.SuguriverseParticleLarge.LOGGER;
 
 public class FriendMeleeAttackGoal extends ShellMeleeGoal {
     private int ticksUntilNextAttack;

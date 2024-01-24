@@ -33,17 +33,7 @@ public class CommonLiveEvents {
     public static void onFriendHurt(LivingAttackEvent event) {
         if (event.getEntity() instanceof Friend friend) {
             if (!friend.level().isClientSide()) {
-                if (event.getSource().getEntity() != null && !friend.isDying) {
-                    if (friend.getAttackType() == 50 && friend.getAttackCounter() > friend.getCounterTiming()/friend.getAttackSpeed()) {
-                        event.setCanceled(true);
-                    } else if (FriendDefense.shouldDefendAgainst(friend)) {
-                        friend.setAttackCounter(34);
-                        friend.setAttackType(50);
-                        friend.playTimedVoice(friend.getEvade());
-                        friend.playSound(COUNTER_BLOCK.get());
-                        event.setCanceled(true);
-                    }
-                }
+                friend.tryCounter(event);
                 if (!event.isCanceled()) {
                     if (event.getAmount() >= friend.getHealth()) {
                         friend.setTarget(null);

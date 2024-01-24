@@ -2,6 +2,7 @@ package com.usagin.juicecraft.friends;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.ai.awareness.FriendDefense;
 import com.usagin.juicecraft.ai.goals.FriendLonelyGoal;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
@@ -62,6 +63,8 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.PlantType;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
@@ -1796,7 +1799,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public Queue<BlockPos> farmqueue = new LinkedList<>();
 
     public boolean idle() {
-        return !this.isHoldingThrowable() && !this.walkAnimation.isMoving() && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0;
+        return !this.isHoldingThrowable() && this.walkAnimation.speed() < 0.1F && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0;
     }
 
     public boolean snowballIdle() {
@@ -1823,7 +1826,20 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean additionalInspectConditions(){
         return true;
     }
-
+    public void tryCounter(LivingAttackEvent event){
+        if (event.getSource().getEntity() != null && !this.isDying && !this.isAttackLockout()) {
+            if (this.getAttackType() == 50 && this.getAttackCounter() > this.getCounterTiming()/this.getAttackSpeed()) {
+                event.setCanceled(true);
+            } else if (FriendDefense.shouldDefendAgainst(this)) {
+                LOGGER.info("HIT");
+                this.setAttackCounter(34);
+                this.setAttackType(50);
+                this.playTimedVoice(this.getEvade());
+                this.playSound(COUNTER_BLOCK.get());
+                event.setCanceled(true);
+            }
+        }
+    }
     @Override
     public void tick() {
         this.setupcomplete = true;
@@ -1847,9 +1863,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.aggroCounter--;
         }
         if (level().isClientSide()) {
-            if (this.getPose() == STANDING && !idle() && !snowballIdle() && idleCounter > 0) {
-                this.idleCounter = 0;
-            }
+
             if (this.level().getGameTime() % 150 == 0 && this.getInSittingPose()) {
                 this.impatientCounter = 100;
             } else if (!this.getInSittingPose() || this.patCounter != 0) {
@@ -1867,10 +1881,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             if (this.getPose() == STANDING && (this.idle() || this.snowballIdle()) && idleCounter < 20) {
                 this.idleCounter++;
             }
+            //LOGGER.info(this.isAttackLockout() +"");
+            if ((this.getPose() == STANDING && !idle() && !snowballIdle() && idleCounter > 0) || this.isAttackLockout()) {
+                this.idleCounter = 0;
+            }
             if ((this.getAttackCounter() > 0 && this.getAttackType() != 60) || this.shakeAnimO > 0) {
                 this.idleCounter = 0;
             }
-            //LOGGER.info((idle() && this.idleCounter == 20 && this.patCounter == 0 ) +"");
             this.snowballThrowAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() > 0 && this.getAttackType() == 60, this.tickCount);
             this.attackAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType() != 50 && this.getAttackType() != 60, this.tickCount);
             this.attackCounterAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType() == 50, this.tickCount);

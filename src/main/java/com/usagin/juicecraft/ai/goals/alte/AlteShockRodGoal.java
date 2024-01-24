@@ -4,6 +4,10 @@ import com.usagin.juicecraft.friends.Alte;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SnowballItem;
 
 public class AlteShockRodGoal extends Goal {
     protected final Alte alte;
@@ -15,18 +19,23 @@ public class AlteShockRodGoal extends Goal {
     @Override
     public boolean canUse() {
         this.target=this.alte.getTarget();
-        return this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.rodcooldown >= 12000 && this.alte.getPose()!= Pose.SLEEPING && this.target!=null && !this.alte.areAnimationsBusy();
+        Item item = this.alte.getFriendWeapon().getItem();
+        boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
+        return !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.getAlteSyncInt(Alte.ALTE_RODCOOLDOWN) >= 12000 && this.alte.getPose()!= Pose.SLEEPING && this.target!=null && !this.alte.areAnimationsBusy() && !flag;
     }
     @Override
     public boolean canContinueToUse(){
-        return this.alte.getRodDuration() > this.alte.rodcooldown && this.alte.canDoThings();
+        Item item = this.alte.getFriendWeapon().getItem();
+        boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
+        return this.alte.getRodDuration() > this.alte.getAlteSyncInt(Alte.ALTE_RODCOOLDOWN) && !this.alte.getIsDying()&&!flag;
     }
     @Override
     public void start(){
-
+        this.alte.setAlteSyncInt(Alte.ALTE_RODCOOLDOWN,0);
+        this.alte.setAlteSyncInt(Alte.ALTE_RODSUMMONCOUNTER,30);
     }
     @Override
     public void stop(){
-
+        this.alte.setAlteSyncInt(Alte.ALTE_RODSHEATHCOUNTER,25);
     }
 }

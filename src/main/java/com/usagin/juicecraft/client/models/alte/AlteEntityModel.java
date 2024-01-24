@@ -7,24 +7,19 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.usagin.juicecraft.JuiceCraft;
 import com.usagin.juicecraft.client.models.FriendEntityModel;
 import com.usagin.juicecraft.friends.Alte;
-import com.usagin.juicecraft.friends.Friend;
-import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BowItem;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
 
 import static com.usagin.juicecraft.client.animation.AlteAnimation.*;
-import static com.usagin.juicecraft.client.animation.AlteAnimation2.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation3.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation4.*;
-import static com.usagin.juicecraft.client.animation.testanims.*;
 
 public class AlteEntityModel extends FriendEntityModel<Alte> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
@@ -70,23 +65,48 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
         this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);
     }
     public boolean shouldMoveHead(Alte friend){
-        return friend.getAlteAnimCounter(Alte.ALTE_SPARKCOUNTER) <= 0;
+        return friend.getAlteSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0;
     }
 
     public void bowAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if(pEntity.getAlteAnimCounter(Alte.ALTE_SPARKCOUNTER) <=0){
+        if(pEntity.getAlteSyncInt(Alte.ALTE_SPARKCOUNTER) <=0){
             super.bowAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
         }
     }
     @Override
     public void attackAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         this.animate(alte.sparkAnimState, spark, pAgeInTicks);
-        boolean flag = alte.sparkAnimState.isStarted();
-        this.togglePanel(flag);
+        boolean flag = alte.areAnimationsBusy();
+        this.togglePanel(alte.sparkAnimState.isStarted());
+        this.animate(alte.rodSummonAnimState,shockrodStart,pAgeInTicks);
+        this.animate(alte.rodSheathAnimState,shockrodEnd,pAgeInTicks);
         if (!flag) {
 
             super.attackAnim(alte, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
         }
+    }
+    public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
+        if(this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible){
+            pPoseStack.scale(0,0,0);
+        }else{
+            super.translateToHand(pSide, pPoseStack);
+        }
+    }
+    public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
+        if(this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible){
+            pPoseStack.scale(0,0,0);
+        }else{
+            super.translateToBack(pPoseStack, pItemStack);
+        }
+    }
+    public void idleAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
+        if(!pEntity.areAnimationsBusy()){
+        animate(pEntity.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
+        if(!pEntity.areAnimationsBusy()){
+        animate(pEntity.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);}
+        animate(pEntity.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
+        animate(pEntity.snowballIdleAnimState, this.animations.snowballIdle(), pAgeInTicks);
+        animate(pEntity.snowballIdleTransitionAnimState, this.animations.snowballIdleTransition(), pAgeInTicks);}
     }
     @Override
     public void setupAnim(Alte alt, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {

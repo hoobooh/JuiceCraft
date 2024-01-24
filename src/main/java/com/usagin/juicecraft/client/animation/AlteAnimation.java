@@ -344,7 +344,7 @@ public class AlteAnimation {
                         ))
                         .build();
 
-                public static final AnimationDefinition idleTransition = AnimationDefinition.Builder.withLength(1.0F).looping()
+                public static final AnimationDefinition idleTransition = AnimationDefinition.Builder.withLength(1.0F)
                         .addAnimation("rightleg", new AnimationChannel(AnimationChannel.Targets.ROTATION,
                                 new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
                                 new Keyframe(0.25F, KeyframeAnimations.degreeVec(-15.0047F, -2.4905F, 0.218F), AnimationChannel.Interpolations.CATMULLROM),
