@@ -33,10 +33,10 @@ public class Alte extends OldWarFriend{
         return false;
     }
     public boolean isUsingShockRod(){
-        return false;
+        return this.rodcooldown < this.getRodDuration();
     }
     public boolean isAttackLockout(){
-        return this.isUsingHyper() || this.getAlteAnimCounter(ALTE_SPARKCOUNTER)>0;
+        return this.isUsingHyper() || this.areAnimationsBusy();
     }
 
     public void tick(){
@@ -44,6 +44,9 @@ public class Alte extends OldWarFriend{
         if(!this.level().isClientSide()){
             if(this.sparkcooldown>0){
                 this.sparkcooldown--;
+            }
+            if(this.rodcooldown < 12000){
+                this.rodcooldown++;
             }
             for (EntityDataAccessor<Integer> counter : counters) {
                 this.decrementAlteAnimCounter(counter);
@@ -53,16 +56,38 @@ public class Alte extends OldWarFriend{
         }
 
     }
-    public int sparkcooldown;
+    public boolean areAnimationsBusy(){
+        for(EntityDataAccessor<Integer> access: counters){
+            if(this.getAlteAnimCounter(access)>0){
+                return false;
+            }
+
+        }
+        return true;
+    }
+    public float getRodMod(){
+        return (float)this.getSkillLevels()[2]/10 + 1;
+    }
+    public int getRodDuration(){
+        return 400 + (int) (this.getRodMod()*100);
+    }
+    public int sparkcooldown=0;
+    public int rodcooldown=0;
+    public int punishercooldown=0;
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
+
         pCompound.putInt("juicecraft.alte.sparkcooldown",this.sparkcooldown);
+        pCompound.putInt("juicecraft.alte.rodcooldown",this.rodcooldown);
+        pCompound.putInt("juicecraft.alte.punishercooldown",this.punishercooldown);
     }
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         this.sparkcooldown=pCompound.getInt("juicecraft.alte.sparkcooldown");
+        this.rodcooldown=pCompound.getInt("juicecraft.alte.rodcooldown");
+        this.punishercooldown=pCompound.getInt("juicecraft.alte.punishercooldown");
     }
     public final AnimationState sparkAnimState = new AnimationState();
     public final AnimationState rodSummonAnimState = new AnimationState();
