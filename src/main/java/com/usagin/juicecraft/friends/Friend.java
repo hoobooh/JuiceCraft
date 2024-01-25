@@ -564,11 +564,14 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
         }
         this.playVoice(this.getAttack());
-        if (!this.inventory.getItem(1).isEmpty()) {
+        if (!this.inventory.getItem(1).isEmpty() || this.hasShellWeapon()) {
             this.playSound(this.getHitSound(), 0.5F, 1);
         }
         this.inventory.getItem(1).hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
         this.updateGear();
+    }
+    public boolean hasShellWeapon(){
+        return false;
     }
 
     SoundEvent getHitSound() {

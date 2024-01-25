@@ -38,6 +38,9 @@ public class Alte extends OldWarFriend{
         int n = this.getAlteSyncInt(ALTE_RODCOOLDOWN);
         return (n < this.getRodDuration() && n > 1) || (this.getAlteSyncInt(ALTE_RODSHEATHCOUNTER)>0);
     }
+    public boolean hasShellWeapon(){
+        return this.isUsingShockRod();
+    }
     public boolean isAttackLockout(){
         return this.isUsingHyper() || this.areAnimationsBusy();
     }
