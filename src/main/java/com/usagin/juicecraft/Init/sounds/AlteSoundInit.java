@@ -83,6 +83,7 @@ public class AlteSoundInit {
     public static final RegistryObject<SoundEvent> ALTE_WIN_3 = registerFriendSoundEvent("alte_win_3");
     public static final RegistryObject<SoundEvent> ALTE_DRAW = registerFriendSoundEvent("alte_draw");
     public static final RegistryObject<SoundEvent> ALTE_SHEATHE = registerFriendSoundEvent("alte_sheathe");
+    public static final RegistryObject<SoundEvent> ALTE_ROD_START = registerFriendSoundEvent("alte_rod_start");
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
 

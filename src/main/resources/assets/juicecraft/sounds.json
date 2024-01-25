@@ -1,4 +1,9 @@
 {
+  "alte_rod_start": {
+    "sounds": [
+      "juicecraft:alte_rod_start"
+    ]
+  },
   "critical_hit": {
     "sounds": [
       "juicecraft:critical_hit"
