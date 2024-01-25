@@ -558,8 +558,11 @@ public class FriendNodeEvaluator extends NodeEvaluator {
         BlockPathTypes type = blockstate.getBlockPathType(pLevel, pPos, null);
         if (type != null) return type;
         Block block = blockstate.getBlock();
+        try{
         if(block.isLadder(blockstate, tempmob.level(), pPos, tempmob)){
             return BlockPathTypes.WALKABLE;
+        }}catch(Exception e){
+            //i dont know why this sometimes NPE
         }
         if (blockstate.isAir()) {
             return BlockPathTypes.OPEN;

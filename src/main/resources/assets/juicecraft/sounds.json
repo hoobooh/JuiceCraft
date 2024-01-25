@@ -1,4 +1,14 @@
 {
+  "critical_hit": {
+    "sounds": [
+      "juicecraft:critical_hit"
+    ]
+  },
+  "alte_draw": {
+    "sounds": [
+      "juicecraft:alte_draw"
+    ]
+  },
   "electric_static": {
     "sounds": [
       "juicecraft:electric_static"

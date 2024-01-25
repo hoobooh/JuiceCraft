@@ -81,6 +81,7 @@ public class AlteSoundInit {
     public static final RegistryObject<SoundEvent> ALTE_WIN_1 = registerFriendSoundEvent("alte_win_1");
     public static final RegistryObject<SoundEvent> ALTE_WIN_2 = registerFriendSoundEvent("alte_win_2");
     public static final RegistryObject<SoundEvent> ALTE_WIN_3 = registerFriendSoundEvent("alte_win_3");
+    public static final RegistryObject<SoundEvent> ALTE_DRAW = registerFriendSoundEvent("alte_draw");
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
 

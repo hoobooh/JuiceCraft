@@ -1,16 +1,22 @@
 package com.usagin.juicecraft.friends;
 
+import com.usagin.juicecraft.Init.ParticleInit;
+import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
+import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.goals.alte.AlteShockRodGoal;
 import com.usagin.juicecraft.ai.goals.alte.AlteSparkGoal;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.alte.AlteDialogueManager;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.AnimationState;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -34,7 +40,6 @@ public class Alte extends OldWarFriend{
         return false;
     }
     public boolean isUsingShockRod(){
-        //LOGGER.info(this.getAlteSyncInt(ALTE_RODCOOLDOWN) +"");
         int n = this.getAlteSyncInt(ALTE_RODCOOLDOWN);
         return (n < this.getRodDuration() && n > 1) || (this.getAlteSyncInt(ALTE_RODSHEATHCOUNTER)>0);
     }
@@ -43,6 +48,56 @@ public class Alte extends OldWarFriend{
     }
     public boolean isAttackLockout(){
         return this.isUsingHyper() || this.areAnimationsBusy();
+    }
+    @Override
+    public SoundEvent getHitSound(){
+        if(this.isUsingShockRod()){
+            return UniversalSoundInit.CRITICAL_HIT.get();
+
+        }else{
+            return super.getHitSound();
+        }
+    }
+    @Override
+    public boolean doHurtTarget(Entity pEntity) {
+        if(this.getAttackCounter()>0 && this.isUsingShockRod()){
+            if(!this.level().isClientSide()){
+                this.playSound(UniversalSoundInit.ELECTRIC_STATIC.get(), 0.1F, 0.6F);
+                this.spawnParticlesInSphereAtEntity(pEntity,4,2,2,(ServerLevel) this.level(),ParticleInit.ALTE_ENERGY_PARTICLE.get(),0);
+                this.spawnParticlesInRandomSpreadAtEntity(pEntity,4,2,2,(ServerLevel) this.level(),ParticleInit.ALTE_LIGHTNING_PARTICLE.get());
+            }
+        }
+        return super.doHurtTarget(pEntity);
+    }
+    public<T extends ParticleOptions> void spawnParticlesInRandomSpreadAtEntity(Entity entity, int count, float radius,float distance, ServerLevel sLevel, T type){
+        float targetX = (float) entity.getX();
+        float targetZ = (float) entity.getZ();
+        float targetY = (float) entity.getEyeY();
+
+        sLevel.sendParticles(type,targetX,targetY,targetZ,count,radius,radius,radius,1);
+    }
+    public<T extends ParticleOptions> void spawnParticlesInSphereAtEntity(Entity entity, int count, float radius, float distance, ServerLevel sLevel, T type, float yOffset){
+        if(count<1){
+            return;
+        }
+        float targetX = (float) entity.getX();
+        float targetZ = (float) entity.getZ();
+        float targetY = (float) entity.getEyeY();
+
+        for(int i = 0; i < count; i++){
+            float x = (float) (Math.sin(i))/2*radius;
+            float z = (float) (Math.cos(i))/2*radius;
+            if(this.getRandom().nextBoolean()){
+                x=-x;
+                z=-z;
+            }
+            sLevel.sendParticles(type,targetX + x,targetY + yOffset,targetZ + z,1,0,0,0,0.5);
+
+        }
+
+        this.spawnParticlesInSphereAtEntity(entity, (int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset+0.3F);
+        this.spawnParticlesInSphereAtEntity(entity, (int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset-0.3F);
+
     }
 
     public void tick(){
@@ -82,7 +137,8 @@ public class Alte extends OldWarFriend{
         return 400 + (int) (this.getRodMod()*100);
     }
     public int sparkcooldown=0;
-    public int rodcooldown=0;
+    public int rodcooldown=12000;
+
     public int punishercooldown=0;
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -95,9 +151,10 @@ public class Alte extends OldWarFriend{
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-
+        if(pCompound.contains("juicecraft.alte.rodcooldown")){
+            this.setAlteRodCooldown(pCompound.getInt("juicecraft.alte.rodcooldown"));
+        }
         this.sparkcooldown=pCompound.getInt("juicecraft.alte.sparkcooldown");
-        this.setAlteRodCooldown(pCompound.getInt("juicecraft.alte.rodcooldown"));
         this.punishercooldown=pCompound.getInt("juicecraft.alte.punishercooldown");
     }
     public final AnimationState sparkAnimState = new AnimationState();
@@ -143,7 +200,7 @@ public class Alte extends OldWarFriend{
         this.entityData.define(ALTE_HYPERWINDUPCOUNTER,0);
         this.entityData.define(ALTE_SPARKANGLEX, 0F);
         this.entityData.define(ALTE_SPARKANGLEY, 0F);
-        this.entityData.define(ALTE_RODCOOLDOWN,0);
+        this.entityData.define(ALTE_RODCOOLDOWN,12000);
     }
     public static final EntityDataAccessor<Integer> ALTE_RODCOOLDOWN = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> ALTE_SPARKANGLEY = SynchedEntityData.defineId(Alte.class,EntityDataSerializers.FLOAT);

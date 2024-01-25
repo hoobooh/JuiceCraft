@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.ai.goals.alte;
 
 import com.usagin.juicecraft.Init.ParticleInit;
+import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Alte;
 import net.minecraft.core.particles.ParticleOptions;
@@ -44,7 +45,6 @@ public class AlteSparkGoal extends Goal {
     }
     @Override
     public void start() {
-
         this.alte.playVoice(ALTE_SPARK.get());
         this.alte.lookAt(this.target, 360, 360);
         this.alte.playSound(ELECTRIC_STATIC.get());

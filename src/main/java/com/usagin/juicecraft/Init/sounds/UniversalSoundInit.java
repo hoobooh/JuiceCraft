@@ -28,8 +28,8 @@ public class UniversalSoundInit {
 
     public static final RegistryObject<SoundEvent> DICE_THROW = registerFriendSoundEvent("dicethrow");
     public static final RegistryObject<SoundEvent> MEMORY_WRITE = registerFriendSoundEvent("memory_write");
+    public static final RegistryObject<SoundEvent> CRITICAL_HIT = registerFriendSoundEvent("critical_hit");
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
-        LOGGER.info("sounds/"+name);
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, name)));
     }
 }
