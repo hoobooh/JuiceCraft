@@ -60,7 +60,7 @@ public class FriendMeleeAttackGoal extends ShellMeleeGoal {
     @Override
     public void tick() {
         if(!this.friend.level().isClientSide()){
-        if (this.friend.canDoThings() && this.friend.runTimer <= 0) {
+        if (this.friend.canDoThings() && this.friend.runTimer <= 0 && this.friend.getTarget() != null) {
             if(!this.friend.getBoundingBox().intersects(this.friend.getTarget().getBoundingBox())){
                 this.friend.getNavigation().stop();
                 this.friend.getNavigation().moveTo(this.friend.getTarget(),1);
