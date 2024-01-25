@@ -375,6 +375,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public boolean wantsToPickUp(ItemStack pStack) {
 
+
         if (this.getFriendItemPickup() == 0) {
             return true;
         } else if (this.getFriendItemPickup() == 1) {
