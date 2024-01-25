@@ -52,7 +52,7 @@ public class FriendMeleeAttackGoal extends ShellMeleeGoal {
 
     @Override
     public boolean canUse() {
-        if (this.friend.getInSittingPose() || this.friend.isDying || this.friend.isHoldingThrowable() || this.friend.isAttackLockout()) {
+        if (this.friend.getInSittingPose() || this.friend.isDying || this.friend.isHoldingThrowable() || this.friend.isAttackLockedOut()) {
             return false;
         } else {
             return super.canUse() && !FriendFlee.willFriendFlee(this.friend);

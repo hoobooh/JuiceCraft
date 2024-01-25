@@ -64,9 +64,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -590,7 +588,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         float mod = this.getCombatModifier();
         return 10 * (1 + mod) / (10 + mod);
     }
-
+    public float getGenericDamageMod(){
+        return 1F;
+    }
     @Override
     public boolean doHurtTarget(Entity pEntity) {
         if (pEntity.level() instanceof ServerLevel t) {
@@ -599,7 +599,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         boolean flag = false;
         if (pEntity != null) {
             if (this.distanceTo(pEntity) < 3) {
-                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getAttackType()/20 * (Mth.clamp((5 * this.getCombatMod() / 10) + this.getRandom().nextInt(1, 7), 1, 6) + 3) / 6 * 0.66F;
+                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getGenericDamageMod() * this.getAttackType()/20 * (Mth.clamp((5 * this.getCombatMod() / 10) + this.getRandom().nextInt(1, 7), 1, 6) + 3) / 6 * 0.66F;
                 float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
                 if (pEntity instanceof LivingEntity) {
                     f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
@@ -1823,18 +1823,17 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean isAggressive() {
         return super.isAggressive();
     }
-    public boolean isAttackLockout(){
+    public boolean isAttackLockedOut(){
         return false;
     }
     public boolean additionalInspectConditions(){
         return true;
     }
     public void tryCounter(LivingAttackEvent event){
-        if (event.getSource().getEntity() != null && !this.isDying && !this.isAttackLockout()) {
+        if (event.getSource().getEntity() != null && !this.isDying && !this.isAttackLockedOut()) {
             if (this.getAttackType() == 50 && this.getAttackCounter() > this.getCounterTiming()/this.getAttackSpeed()) {
                 event.setCanceled(true);
             } else if (FriendDefense.shouldDefendAgainst(this)) {
-                LOGGER.info("HIT");
                 this.setAttackCounter(34);
                 this.setAttackType(50);
                 this.playTimedVoice(this.getEvade());
@@ -1885,7 +1884,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.idleCounter++;
             }
             //LOGGER.info(this.isAttackLockout() +"");
-            if ((this.getPose() == STANDING && !idle() && !snowballIdle() && idleCounter > 0) || this.isAttackLockout()) {
+            if ((this.getPose() == STANDING && !idle() && !snowballIdle() && idleCounter > 0) || this.isAttackLockedOut()) {
                 this.idleCounter = 0;
             }
             if ((this.getAttackCounter() > 0 && this.getAttackType() != 60) || this.shakeAnimO > 0) {

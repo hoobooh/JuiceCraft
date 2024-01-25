@@ -160,7 +160,8 @@ public class AlteSparkGoal extends Goal {
         boolean flag;
         if (pEntity != null) {
             if (this.alte.distanceTo(pEntity) < 8) {
-                float f = 4 * (1 + (float) this.alte.getSkillLevels()[1]) / (20 + (float) this.alte.getSkillLevels()[1]) * (float) this.alte.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5 * this.alte.getCombatMod() / 10) + this.alte.getRandom().nextInt(1, 7), 1, 6) + 3) / 6;
+                float f = (0.020F * this.alte.getSkillLevels()[1] + 1) * (float) this.alte.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5 * this.alte.getCombatMod() / 10) + this.alte.getRandom().nextInt(1, 7), 1, 6) + 3) / 6;
+                LOGGER.info(f +"");
                 flag = pEntity.hurt(this.alte.damageSources().mobAttack(this.alte), f);
                 if (flag) {
                     this.alte.setLastHurtMob(pEntity);

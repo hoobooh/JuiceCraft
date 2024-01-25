@@ -15,10 +15,9 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
@@ -49,7 +48,7 @@ public class Alte extends OldWarFriend{
     public boolean shouldMoveLeftArm() {
         return this.getAlteSyncInt(ALTE_RODSHEATHCOUNTER) <= 0 && super.shouldMoveLeftArm();
     }
-    public boolean isAttackLockout(){
+    public boolean isAttackLockedOut(){
         return this.isUsingHyper() || this.areAnimationsBusy();
     }
     @Override
@@ -61,6 +60,12 @@ public class Alte extends OldWarFriend{
             return super.getHitSound();
         }
     }
+    public float getGenericDamageMod(){
+        if(this.isUsingShockRod()){
+            return this.getSkillLevels()[2] * 0.05F +1;
+        }
+        return 1F;
+    }
     @Override
     public boolean doHurtTarget(Entity pEntity) {
         if(this.getAttackCounter()>0 && this.isUsingShockRod()){
@@ -68,6 +73,10 @@ public class Alte extends OldWarFriend{
                 this.playSound(UniversalSoundInit.ELECTRIC_STATIC.get(), 0.1F, 0.6F);
                 this.spawnParticlesInSphereAtEntity(pEntity,4,2,2,(ServerLevel) this.level(),ParticleInit.ALTE_ENERGY_PARTICLE.get(),0);
                 this.spawnParticlesInRandomSpreadAtEntity(pEntity,4,2,2,(ServerLevel) this.level(),ParticleInit.ALTE_LIGHTNING_PARTICLE.get());
+            }
+            if(pEntity instanceof LivingEntity entity){
+                entity.setSecondsOnFire(entity.getRemainingFireTicks() + 10);
+                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,40,(int) this.getGenericDamageMod() + 1));
             }
         }
         return super.doHurtTarget(pEntity);
