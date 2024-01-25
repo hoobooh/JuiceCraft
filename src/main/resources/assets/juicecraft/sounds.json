@@ -9,6 +9,11 @@
       "juicecraft:alte_draw"
     ]
   },
+  "alte_sheathe": {
+    "sounds": [
+      "juicecraft:alte_sheathe"
+    ]
+  },
   "electric_static": {
     "sounds": [
       "juicecraft:electric_static"

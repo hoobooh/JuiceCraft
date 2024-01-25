@@ -356,7 +356,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.levelup").getString());
             this.playSound(SoundEvents.PLAYER_LEVELUP, 1, 1);
             this.setSkillPoints(this.getSkillPoints() + ((int) (afterxp / 100) - ((int) (currentxp / 100))));
-            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getMaxHealth() + 0.2 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
+            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttributeBaseValue(Attributes.MAX_HEALTH) + 0.2 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
             this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) + 0.1 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
             this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) + 0.1 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
             this.playVoice(this.getModuleEquip());
@@ -2032,6 +2032,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
 
     public int aggroCounter = 0;
+    protected void actuallyHurt(@NotNull DamageSource pSource, float pAmount){
+        this.playVoice(this.getHurt(pAmount));
+        this.mood -= (int) (3 * this.getPeaceAffinityModifier());
+        super.actuallyHurt(pSource, pAmount);
+    }
 
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
@@ -2039,8 +2044,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (this.isInvulnerableTo(pSource)) {
             return false;
         } else {
-            this.playVoice(this.getHurt(pAmount));
-            this.mood -= (int) (3 * this.getPeaceAffinityModifier());
             this.setFriendInSittingPose(false);
             Entity entity = pSource.getEntity();
             if (!this.level().isClientSide) {

@@ -52,6 +52,9 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
         this.root().getChild("minigun").visible = b;
         this.root().getChild("minigun2").visible = b;
     }
+    public void togglePowerRing(boolean b){
+        this.root().getChild("powerring").visible = b;
+    }
 
     public void togglePanel(boolean b) {
         this.root().getChild("panel").visible = b;
@@ -79,6 +82,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
         boolean flag = alte.areAnimationsBusy();
         this.togglePanel(alte.sparkAnimState.isStarted());
         this.animate(alte.rodSummonAnimState,shockrodStart,pAgeInTicks);
+        this.togglePowerRing(alte.rodSummonAnimState.isStarted());
         this.animate(alte.rodSheathAnimState,shockrodEnd,pAgeInTicks);
         if (!flag) {
 

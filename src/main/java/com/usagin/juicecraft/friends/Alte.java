@@ -46,6 +46,9 @@ public class Alte extends OldWarFriend{
     public boolean hasShellWeapon(){
         return this.isUsingShockRod();
     }
+    public boolean shouldMoveLeftArm() {
+        return this.getAlteSyncInt(ALTE_RODSHEATHCOUNTER) <= 0 && super.shouldMoveLeftArm();
+    }
     public boolean isAttackLockout(){
         return this.isUsingHyper() || this.areAnimationsBusy();
     }
