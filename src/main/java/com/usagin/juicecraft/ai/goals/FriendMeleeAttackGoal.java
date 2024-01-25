@@ -9,6 +9,8 @@ import net.minecraft.world.entity.PathfinderMob;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import static com.usagin.juicecraft.friends.Friend.LOGGER;
+
 public class FriendMeleeAttackGoal extends ShellMeleeGoal {
     private int ticksUntilNextAttack;
     Friend friend;
@@ -32,17 +34,13 @@ public class FriendMeleeAttackGoal extends ShellMeleeGoal {
 
     @Override
     protected void checkAndPerformAttack(@NotNull LivingEntity pTarget) {
-        Logger LOGGER = LogUtils.getLogger();
         if (this.canPerformAttack(pTarget) && this.mob instanceof Friend pFriend) {
-            if (pFriend.getAttackCounter() == 0) {
-                this.resetAttackCooldown();
                 pFriend.swing(InteractionHand.MAIN_HAND);
-            }
         }
     }
     protected boolean canPerformAttack(LivingEntity pEntity) {
         boolean flag = this.mob.isWithinMeleeAttackRange(pEntity);
-        return this.isTimeToAttack() && flag && this.mob.getSensing().hasLineOfSight(pEntity);
+        return flag && this.mob.getSensing().hasLineOfSight(pEntity);
     }
 
     @Override
@@ -61,11 +59,14 @@ public class FriendMeleeAttackGoal extends ShellMeleeGoal {
 
     @Override
     public void tick() {
-        if (this.friend.canDoThings() && this.friend.runTimer <= 0 && this.canUse()) {
+        if(!this.friend.level().isClientSide()){
+        if (this.friend.canDoThings() && this.friend.runTimer <= 0) {
             if(!this.friend.getBoundingBox().intersects(this.friend.getTarget().getBoundingBox())){
                 this.friend.getNavigation().stop();
                 this.friend.getNavigation().moveTo(this.friend.getTarget(),1);
             }
+            super.tick();
+        }}else{
             super.tick();
         }
     }

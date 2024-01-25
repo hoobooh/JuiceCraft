@@ -6,6 +6,7 @@ import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.client.particle.HeartParticle;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
@@ -35,7 +36,7 @@ public class FriendHitAndRunGoal extends Goal {
     public boolean canUse() {
         if(friend.getTarget()!=null && this.friend.canDoThings() && this.friend.runTimer>30 && FriendDefense.shouldDefendAgainst(this.friend)){
             this.target = this.friend.getTarget();
-                Vec3 vec3 = DefaultRandomPos.getPosAway(this.friend, 16, 7, this.target.position());
+                Vec3 vec3 = this.findRandomAwayPos();
                 if (vec3 == null) {
                     return false;
                 } else if (this.friend.distanceToSqr(vec3.x, vec3.y, vec3.z) < this.target.distanceToSqr(this.friend)) {
@@ -46,6 +47,27 @@ public class FriendHitAndRunGoal extends Goal {
                 }
         }
         return false;
+    }
+    Vec3 findRandomAwayPos(){
+        Vec3 temp = this.nearbyVec(new Vec3(this.target.getX(),this.target.getY(),this.target.getZ()));
+        for(int n=0;n<40;n++){
+            if(verifyMove(temp)){
+                if(temp.distanceToSqr(this.target.position()) > 140  ){
+                    //LOGGER.info(temp.distanceToSqr(this.target.position()) +"");
+                    return temp;
+                }
+                temp=this.nearbyVec(temp);
+
+            }
+        }
+        return temp;
+    }
+    boolean verifyMove(Vec3 vec3){
+        return this.friend.getNavigation().moveTo(vec3.x,vec3.y,vec3.z,1);
+    }
+    Vec3 nearbyVec(Vec3 vec3){
+        RandomSource random = this.friend.getRandom();
+        return new Vec3(vec3.x+random.nextInt(-1,2),vec3.y+random.nextInt(0,2),vec3.z+random.nextInt(-1,2));
     }
     @Override
     public boolean canContinueToUse(){

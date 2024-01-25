@@ -528,7 +528,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public void doHurtTarget() {
-        this.runTimer = 35;
+        if(FriendDefense.shouldDefendAgainst(this)){
+            this.runTimer = 35;
+        }
         AABB hitTracer = new AABB(this.getX() - 1.8, this.getY(), this.getZ() - 1.8, this.getX() + 1.8, this.getY() + 2, this.getZ() + 1.8);
         List<Entity> entityList = this.level().getEntities(this, hitTracer);
         if (this.getTarget() != null) {
@@ -2108,7 +2110,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     @Override
     public void swing(InteractionHand pHand, boolean pUpdateSelf) {
         ItemStack stack = this.getItemInHand(pHand);
-        if (this.getAttackCounter() == 0 && !this.getIsDying()) {
+        if (this.getAttackCounter() <= 0 && !this.getIsDying() && !this.isAttackLockedOut()) {
             if (!stack.isEmpty()) {
                 this.doMeleeAttack();
             } else {
