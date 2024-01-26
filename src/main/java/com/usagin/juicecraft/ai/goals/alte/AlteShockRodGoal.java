@@ -42,6 +42,14 @@ public class AlteShockRodGoal extends Goal {
     @Override
     public void stop(){
         this.alte.playSound(AlteSoundInit.ALTE_SHEATHE.get(),2,1);
+        this.alte.setAlteSyncInt(Alte.ALTE_RODSUMMONCOUNTER,0);
         this.alte.setAlteSyncInt(Alte.ALTE_RODSHEATHCOUNTER,25);
+    }
+    @Override
+    public void tick(){
+        if(this.alte.getAlteSyncInt(Alte.ALTE_PUNISHERCOUNTER)==1){
+            this.alte.playSound(AlteSoundInit.ALTE_DRAW.get(),2,1);
+            this.alte.setAlteSyncInt(Alte.ALTE_RODSUMMONCOUNTER,30);
+        }
     }
 }

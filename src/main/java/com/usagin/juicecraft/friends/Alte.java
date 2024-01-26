@@ -41,7 +41,7 @@ public class Alte extends OldWarFriend{
     }
     public boolean isUsingShockRod(){
         int n = this.getAlteSyncInt(ALTE_RODCOOLDOWN);
-        return (n < this.getRodDuration() && n > 1) || (this.getAlteSyncInt(ALTE_RODSHEATHCOUNTER)>0) || this.getAlteSyncInt(ALTE_PUNISHERCOUNTER)>0;
+        return (n < this.getRodDuration() && n > 1) || (this.getAlteSyncInt(ALTE_RODSHEATHCOUNTER)>0) || (this.getAlteSyncInt(ALTE_PUNISHERCOUNTER)>0 && this.getAlteSyncInt(ALTE_PUNISHERCOUNTER)<10);
     }
     public boolean hasShellWeapon(){
         return this.isUsingShockRod();
@@ -233,7 +233,7 @@ public class Alte extends OldWarFriend{
         return this.getAlteSyncInt(ALTE_SPARKCOUNTER)<=0;
     }
     public boolean lockLookAround(){
-        return this.getAlteSyncInt(ALTE_SPARKCOUNTER) <=0 && super.lockLookAround();
+        return this.areAnimationsBusy() && super.lockLookAround();
     }
     @Override
     int[] getSkillInfo() {

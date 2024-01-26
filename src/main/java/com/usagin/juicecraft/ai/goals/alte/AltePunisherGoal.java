@@ -1,6 +1,8 @@
 package com.usagin.juicecraft.ai.goals.alte;
 
 import com.usagin.juicecraft.Init.ParticleInit;
+import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
+import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Friend;
@@ -74,7 +76,9 @@ public class AltePunisherGoal extends Goal {
 
     @Override
     public void start() {
+        this.alte.playVoice(AlteSoundInit.ALTE_PUNISHER_VOICE.get());
         this.alte.getFriendNav().setShouldMove(false);
+        this.alte.playSound(AlteSoundInit.ALTE_PUNISHER.get());
         this.alte.punishercooldown=2400;
         this.alte.setAlteSyncInt(Alte.ALTE_PUNISHERCOUNTER, 65);
         this.target = this.findPriorityTarget();
@@ -127,7 +131,7 @@ public class AltePunisherGoal extends Goal {
     }
 
     public void hurtAllTargets(float knockbackmod) {
-        AABB hitbox = this.alte.getBoundingBox().inflate(3);
+        AABB hitbox = this.alte.getBoundingBox().inflate(1);
         List<Entity> entityList = this.alte.level().getEntities(this.alte, hitbox);
         this.alte.lookAt(this.target, 60, 60);
 
@@ -167,9 +171,9 @@ public class AltePunisherGoal extends Goal {
                     f += EnchantmentHelper.getDamageBonus(this.alte.getFriendWeapon(), ((LivingEntity) pEntity).getMobType());
                     f1 += (float) EnchantmentHelper.getKnockbackBonus(this.alte);
                 }
-                LOGGER.info(f + "");
                 flag = pEntity.hurt(this.alte.damageSources().mobAttack(this.alte), f);
                 if (flag) {
+                    pEntity.playSound(UniversalSoundInit.CRITICAL_HIT.get(),0.1F,1);
                     this.alte.setLastHurtMob(pEntity);
                     if (pEntity instanceof LivingEntity entity) {
                         entity.knockback((double) (f1 * 0.5F), (double) Mth.sin(this.alte.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(this.alte.getYRot() * ((float) Math.PI / 180F))));

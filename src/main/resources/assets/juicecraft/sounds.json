@@ -1,4 +1,14 @@
 {
+  "alte_punisher_voice": {
+    "sounds": [
+      "juicecraft:alte_punisher_voice"
+    ]
+  },
+  "alte_punisher": {
+    "sounds": [
+      "juicecraft:alte_punisher"
+    ]
+  },
   "alte_rod_start": {
     "sounds": [
       "juicecraft:alte_rod_start"
