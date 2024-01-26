@@ -11,6 +11,7 @@ import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.alte.AlteDialogueManager;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
+import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.RECOVERY;
 
 public class Alte extends OldWarFriend{
     public Alte(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {
@@ -51,6 +53,24 @@ public class Alte extends OldWarFriend{
     }
     public boolean isAttackLockedOut(){
         return this.isUsingHyper() || this.areAnimationsBusy();
+    }
+    void doDyingEvent() {
+        if(this.selfdestructcooldown<=0 && this.getSkillEnabled()[4]){
+            this.doSelfDestruct();
+        }else{
+        super.doDyingEvent();}
+    }
+    public int selfdestructcooldown = 0;
+    void doSelfDestruct(){
+        this.selfdestructcooldown=24000;
+        this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.closecall").getString());
+        this.setHealth(this.getMaxHealth() / 2);
+        this.deathCounter = 7 - recoveryDifficulty;
+        this.getEntityData().set(FRIEND_ISDYING, false);
+        this.isDying = false;
+        this.playSound(RECOVERY.get(), 1, 1);
+        this.playVoice(this.getRecovery());
+        this.getFriendNav().setShouldMove(true);
     }
     @Override
     public SoundEvent getHitSound(){
@@ -119,6 +139,9 @@ public class Alte extends OldWarFriend{
         super.tick();
         //LOGGER.info(this.getAlteSyncInt(ALTE_RODCOOLDOWN) +"");
         if(!this.level().isClientSide()){
+            if(this.selfdestructcooldown>0){
+                this.selfdestructcooldown--;
+            }
             if(this.sparkcooldown>0){
                 this.sparkcooldown--;
             }
@@ -163,6 +186,7 @@ public class Alte extends OldWarFriend{
         pCompound.putInt("juicecraft.alte.sparkcooldown",this.sparkcooldown);
         pCompound.putInt("juicecraft.alte.rodcooldown",this.getAlteSyncInt(ALTE_RODCOOLDOWN));
         pCompound.putInt("juicecraft.alte.punishercooldown",this.punishercooldown);
+        pCompound.putInt("juicecraft.alte.selfdestructcooldown",this.selfdestructcooldown);
     }
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -172,6 +196,7 @@ public class Alte extends OldWarFriend{
         }
         this.sparkcooldown=pCompound.getInt("juicecraft.alte.sparkcooldown");
         this.punishercooldown=pCompound.getInt("juicecraft.alte.punishercooldown");
+        this.selfdestructcooldown=pCompound.getInt("juicecraft.alte.selfdestructcooldown");
     }
     public final AnimationState sparkAnimState = new AnimationState();
     public final AnimationState rodSummonAnimState = new AnimationState();
