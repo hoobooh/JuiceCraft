@@ -129,10 +129,15 @@ public class AltePunisherGoal extends Goal {
         if (pEntity != null) {
             if (this.alte.distanceTo(pEntity) < 8) {
                 float f = (0.020F * this.alte.getSkillLevels()[3] + 1) * (float) this.alte.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5 * this.alte.getCombatMod() / 10) + this.alte.getRandom().nextInt(1, 7), 1, 6) + 3) / 6;
+                if(pEntity.equals(this.target)){
+                    f*=3;
+                }
                 flag = pEntity.hurt(this.alte.damageSources().mobAttack(this.alte), f);
+                float f1 = knockbackmod * (float) this.alte.getAttributeValue(Attributes.ATTACK_KNOCKBACK) * (0.020F * this.alte.getSkillLevels()[3] + 1);
                 if (flag) {
                     this.alte.setLastHurtMob(pEntity);
                     if (pEntity instanceof LivingEntity entity) {
+                        entity.knockback((double) (f1 * 0.5F), (double) Mth.sin(this.alte.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(this.alte.getYRot() * ((float) Math.PI / 180F))));
                         int mod = 1 + (int) (4 * (1 + (float) this.alte.getSkillLevels()[3]) / (100 + (float) this.alte.getSkillLevels()[3]));
                         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * mod, mod), this.alte);
                     }
