@@ -245,7 +245,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
             this.attackAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
 
             if (!pEntity.getInSittingPose()) {
-                if (!pEntity.isSprinting() && !pEntity.isSwimming() && !pEntity.idle() && pEntity.walkAnimation.isMoving()) {
+                if (!pEntity.isSprinting() && !pEntity.isSwimming() && !pEntity.idle() && pEntity.walkAnimation.isMoving() && pEntity.shouldMoveLegs()) {
                     this.parts.rightleg().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
                     this.parts.leftleg().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
                     if (pEntity.shouldMoveArms()) {

@@ -66,7 +66,7 @@ public class FriendFollowGoal extends Goal {
                 return false;
             } else {
                 this.owner = livingentity;
-                return !this.tamable.getInSittingPose();
+                return !this.tamable.getInSittingPose() && this.tamable.shouldFollow();
             }
         }
     }

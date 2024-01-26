@@ -515,7 +515,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public void playTimedVoice(SoundEvent sound) {
         if (this.soundCounter >= 50) {
-            this.playVoice(sound);
+            this.playVoice(sound,true);
         }
     }
 
@@ -593,6 +593,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
     public float getGenericDamageMod(){
         return 1F;
+    }
+    public boolean shouldMoveLegs(){
+        return false;
+    }
+    public boolean shouldFollow(){
+        return !this.isAttackLockedOut();
     }
     @Override
     public boolean doHurtTarget(Entity pEntity) {
@@ -677,13 +683,17 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.updateFriendNorma(0.02F, 0);
         }
     }
-
-    public void playVoice(SoundEvent sound) {
+    public int quicksoundcounter=0;
+    public void playVoice(SoundEvent sound){
+        this.playVoice(sound, false);
+    }
+    public void playVoice(SoundEvent sound, boolean extended) {
         if (!this.level().isClientSide()) {
             this.soundCounter = 0;
-            if (sound != null) {
+            if (sound != null && (this.quicksoundcounter==0 || extended)) {
                 this.broadcastVoiceToNearby(sound.getLocation().getNamespace() + "." + sound.getLocation().getPath());
                 this.playSound(sound, this.volume, 1);
+                this.quicksoundcounter=10;
             }
         }
     }
@@ -1773,6 +1783,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (soundCounter < 50) {
             soundCounter++;
         }
+        if(this.quicksoundcounter>0){
+            this.quicksoundcounter--;
+        }
         blinkCounter--;
     }
 
@@ -2035,11 +2048,15 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public int aggroCounter = 0;
     protected void actuallyHurt(@NotNull DamageSource pSource, float pAmount){
+        if(!this.isInvulnerableTo(pSource)){
+            LOGGER.info("HIT");
         this.playVoice(this.getHurt(pAmount));
         this.mood -= (int) (3 * this.getPeaceAffinityModifier());
-        super.actuallyHurt(pSource, pAmount);
+        super.actuallyHurt(pSource, pAmount);}
     }
-
+    public boolean canBeSeenAsEnemy() {
+        return this.canBeSeenByAnyone();
+    }
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
         boolean b;

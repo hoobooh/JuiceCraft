@@ -17,11 +17,16 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SnowballItem;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 
 import java.util.List;
+
+import static com.usagin.juicecraft.friends.Alte.ALTE_SPARKANGLEX;
+import static com.usagin.juicecraft.friends.Alte.ALTE_SPARKANGLEY;
+import static com.usagin.juicecraft.friends.Friend.LOGGER;
 
 public class AltePunisherGoal extends Goal {
     protected final Alte alte;
@@ -36,7 +41,10 @@ public class AltePunisherGoal extends Goal {
         this.target = this.alte.getTarget();
         Item item = this.alte.getFriendWeapon().getItem();
         boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
-        return this.alte.getSkillEnabled()[3] && this.alte.getSkillEnabled()[2] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.punishercooldown <= 0 && this.alte.getPose() != Pose.SLEEPING && this.target != null && !this.alte.areAnimationsBusy() && !flag;
+        if(this.target==null){
+            return false;
+        }
+        return this.alte.getSkillEnabled()[3] && this.alte.getSkillEnabled()[2] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.punishercooldown <= 0 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy() && !flag && this.alte.distanceTo(this.target)<20;
     }
 
     protected LivingEntity findPriorityTarget() {
@@ -46,7 +54,7 @@ public class AltePunisherGoal extends Goal {
         for (Entity e : list) {
             if (e instanceof LivingEntity ent) {
                 if (EnemyEvaluator.shouldDoHurtTarget(this.alte, ent)) {
-                    if (this.alte.distanceTo(finalTarget) < this.alte.distanceTo(ent)) {
+                    if (this.alte.distanceTo(finalTarget) < this.alte.distanceTo(ent) && this.alte.distanceTo(ent) < 20) {
                         if (this.alte.level().clip(new ClipContext(this.alte.position(), ent.position(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.alte)).getType() == HitResult.Type.MISS) {
                             finalTarget = ent;
                         }
@@ -66,29 +74,50 @@ public class AltePunisherGoal extends Goal {
 
     @Override
     public void start() {
+        this.alte.getFriendNav().setShouldMove(false);
+        this.alte.punishercooldown=2400;
         this.alte.setAlteSyncInt(Alte.ALTE_PUNISHERCOUNTER, 65);
         this.target = this.findPriorityTarget();
         this.alte.setTarget(this.target);
         this.alte.setAggressive(true);
         this.alte.setInvulnerable(true);
+        this.alte.lookAt(this.target,360,360);
+        this.lookanglex=(float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
+        this.lookangley=(float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x);
     }
 
     @Override
     public void stop() {
+        this.alte.getFriendNav().setShouldMove(true);
         this.alte.setAggressive(false);
         this.alte.setInvulnerable(false);
     }
-
+    @Override
+    public boolean requiresUpdateEveryTick(){
+        return true;
+    }
+    float lookanglex;
+    float lookangley;
+    public void moveTowardsTarget(float speed){
+        float targetX = speed * (float) Math.cos(this.lookangley);
+        float targetZ = speed * (float) Math.sin(this.lookangley);
+        float targetY = speed * (float) Math.sin(this.lookanglex);
+        this.alte.setDeltaMovement(this.alte.getDeltaMovement().add(targetX,targetY,targetZ));
+    }
     @Override
     public void tick() {
         int n = this.alte.getAlteSyncInt(Alte.ALTE_PUNISHERCOUNTER);
         if (this.alte.level() instanceof ServerLevel level) {
+
+
             if (n == 42) { //unsheathe effects
                 this.alte.spawnParticlesInSphereAtEntity(this.alte, 5, 2, 0, level, ParticleInit.ALTE_ENERGY_PARTICLE.get(), 0);
             } else if (n <= 30 && n >= 26) { //main charge
-                this.hurtAllTargets((n-30F)/-5 + 1);
+                this.moveTowardsTarget(1);
+                this.hurtAllTargets((n-30F)/-8 + 1);
                 this.alte.spawnParticlesInSphereAtEntity(this.alte, 3, 0.5F, 0, level, ParticleInit.ALTE_ENERGY_PARTICLE.get(), 0);
             } else if (n <= 26 && n >= 20) { //recovery
+                this.moveTowardsTarget(0.2F);
                 if (n % 2 == 0) {
                     this.hurtAllTargets(0.5F);
                     this.alte.spawnParticlesInRandomSpreadAtEntity(this.alte, 5, 0.5F, 0, level, ParticleInit.ALTE_LIGHTNING_PARTICLE.get());
@@ -130,10 +159,16 @@ public class AltePunisherGoal extends Goal {
             if (this.alte.distanceTo(pEntity) < 8) {
                 float f = (0.020F * this.alte.getSkillLevels()[3] + 1) * (float) this.alte.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5 * this.alte.getCombatMod() / 10) + this.alte.getRandom().nextInt(1, 7), 1, 6) + 3) / 6;
                 if(pEntity.equals(this.target)){
-                    f*=3;
+                    f*=2;
                 }
-                flag = pEntity.hurt(this.alte.damageSources().mobAttack(this.alte), f);
+
                 float f1 = knockbackmod * (float) this.alte.getAttributeValue(Attributes.ATTACK_KNOCKBACK) * (0.020F * this.alte.getSkillLevels()[3] + 1);
+                if (pEntity instanceof LivingEntity) {
+                    f += EnchantmentHelper.getDamageBonus(this.alte.getFriendWeapon(), ((LivingEntity) pEntity).getMobType());
+                    f1 += (float) EnchantmentHelper.getKnockbackBonus(this.alte);
+                }
+                LOGGER.info(f + "");
+                flag = pEntity.hurt(this.alte.damageSources().mobAttack(this.alte), f);
                 if (flag) {
                     this.alte.setLastHurtMob(pEntity);
                     if (pEntity instanceof LivingEntity entity) {

@@ -4,6 +4,7 @@ import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
 import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
+import com.usagin.juicecraft.ai.goals.alte.AltePunisherGoal;
 import com.usagin.juicecraft.ai.goals.alte.AlteShockRodGoal;
 import com.usagin.juicecraft.ai.goals.alte.AlteSparkGoal;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
@@ -111,7 +112,9 @@ public class Alte extends OldWarFriend{
         this.spawnParticlesInSphereAtEntity(entity, (int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset-0.3F);
 
     }
-
+    public boolean shouldMoveLegs(){
+        return !this.isUsingHyper() && this.getAlteSyncInt(ALTE_PUNISHERCOUNTER)<=0;
+    }
     public void tick(){
         super.tick();
         //LOGGER.info(this.getAlteSyncInt(ALTE_RODCOOLDOWN) +"");
@@ -130,6 +133,7 @@ public class Alte extends OldWarFriend{
             this.sparkAnimState.animateWhen(this.getAlteSyncInt(ALTE_SPARKCOUNTER)>0,this.tickCount);
             this.rodSummonAnimState.animateWhen(this.getAlteSyncInt(ALTE_RODSUMMONCOUNTER)>0,this.tickCount);
             this.rodSheathAnimState.animateWhen(this.getAlteSyncInt(ALTE_RODSHEATHCOUNTER)>0,this.tickCount);
+            this.punisherAnimState.animateWhen(this.getAlteSyncInt(ALTE_PUNISHERCOUNTER)>0,this.tickCount);
         }
 
     }
@@ -497,5 +501,6 @@ public class Alte extends OldWarFriend{
     void registerAdditionalGoals() {
         this.goalSelector.addGoal(5, new AlteSparkGoal(this));
         this.goalSelector.addGoal(5, new AlteShockRodGoal(this));
+        this.goalSelector.addGoal(5, new AltePunisherGoal(this));
     }
 }
