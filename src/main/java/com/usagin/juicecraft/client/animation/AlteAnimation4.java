@@ -2840,4 +2840,5 @@ public class AlteAnimation4 {
                         new Keyframe(0.5417F, KeyframeAnimations.scaleVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
                 ))
                 .build();
+
 }

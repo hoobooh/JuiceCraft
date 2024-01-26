@@ -82,10 +82,12 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
         boolean flag = alte.areAnimationsBusy();
         this.togglePanel(alte.sparkAnimState.isStarted());
         this.animate(alte.rodSummonAnimState,shockrodStart,pAgeInTicks);
-        this.togglePowerRing(alte.rodSummonAnimState.isStarted());
+        this.togglePowerRing(alte.rodSummonAnimState.isStarted() || alte.punisherAnimState.isStarted());
         this.animate(alte.rodSheathAnimState,shockrodEnd,pAgeInTicks);
-        if (!flag) {
+        this.animate(alte.punisherAnimState,punisher,pAgeInTicks);
 
+
+        if (!flag) {
             super.attackAnim(alte, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
         }
     }
