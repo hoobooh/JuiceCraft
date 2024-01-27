@@ -85,7 +85,6 @@ public class FriendMenu extends AbstractContainerMenu {
                     pFriend.playTimedVoice(pFriend.getEquip());
                     pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
                 }
-                pFriend.setFriendWeapon(pStack);
                 this.setChanged();
             }
             public int getMaxStackSize() {

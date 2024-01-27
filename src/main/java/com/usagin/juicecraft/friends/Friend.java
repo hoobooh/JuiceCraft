@@ -478,9 +478,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (itemstack.isEmpty()) {
             pItemEntity.discard();
         }
-        if (!this.level().isClientSide()) {
-            this.setFriendWeapon(this.inventory.getItem(1));
-        }
     }
 
     void doMeleeAttack() {
@@ -940,7 +937,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             if (j < this.inventory.getContainerSize()) {
                 this.inventory.setItem(j, ItemStack.of(compoundtag));
             }
-            this.setFriendWeapon(this.inventory.getItem(1));
         }
         UUID uuid;
         if (pCompound.hasUUID("Owner")) {
@@ -994,7 +990,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.goalSelector.removeGoal(crossbowGoal);
                 this.goalSelector.removeGoal(bowGoal);
             }
-            this.setFriendWeapon(this.inventory.getItem(1));
         }
         if (!this.getFriendWeapon().isEmpty()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, this.getFriendWeapon());
@@ -1077,12 +1072,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return CombatSettings.decodeHash(this.getEntityData().get(FRIEND_COMBATSETTINGS));
     }
 
-    public void setFriendWeapon(ItemStack wep) {
-        this.getEntityData().set(FRIEND_WEAPON, wep);
-    }
-
     public ItemStack getFriendWeapon() {
-        return this.getEntityData().get(FRIEND_WEAPON);
+        return this.inventory.getItem(1);
     }
 
     public void setFriendNorma(float n, int source) {
