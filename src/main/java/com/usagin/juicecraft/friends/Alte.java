@@ -22,12 +22,15 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static com.usagin.juicecraft.Init.ParticleInit.ALTE_SELFDESTRUCT_PARTICLE;
+import static com.usagin.juicecraft.Init.ParticleInit.SUGURIVERSE_LARGE;
 import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
 import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.RECOVERY;
 
@@ -54,21 +57,30 @@ public class Alte extends OldWarFriend{
     public boolean isAttackLockedOut(){
         return this.isUsingHyper() || this.areAnimationsBusy();
     }
-    void doDyingEvent() {
+    public void doDeathEvent() {
         if(this.selfdestructcooldown<=0 && this.getSkillEnabled()[4]){
-            this.doSelfDestruct();
+            this.doSelfDestructStart();
         }else{
-        super.doDyingEvent();}
+        super.doDeathEvent();   }
     }
     public int selfdestructcooldown = 0;
+    void doSelfDestructStart(){
+        this.primed=true;
+        this.playSound(ALTE_SELFDESTRUCT.get());
+        if(this.level() instanceof ServerLevel level){
+            level.sendParticles(ALTE_SELFDESTRUCT_PARTICLE.get(),this.getX(),this.getEyeY(),this.getZ(),1,0,0,0,1);
+        }
+    }
     void doSelfDestruct(){
+        this.level().explode(this,this.getX(),this.getY(),this.getZ(),10+this.getSkillLevels()[4],true,Level.ExplosionInteraction.MOB);
+        this.selfdestructtimer=40;
+        this.primed=false;
         this.selfdestructcooldown=24000;
         this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.closecall").getString());
         this.setHealth(this.getMaxHealth() / 2);
         this.deathCounter = 7 - recoveryDifficulty;
         this.getEntityData().set(FRIEND_ISDYING, false);
         this.isDying = false;
-        this.playSound(RECOVERY.get(), 1, 1);
         this.playVoice(this.getRecovery());
         this.getFriendNav().setShouldMove(true);
     }
@@ -135,6 +147,8 @@ public class Alte extends OldWarFriend{
     public boolean shouldMoveLegs(){
         return !this.isUsingHyper() && this.getAlteSyncInt(ALTE_PUNISHERCOUNTER)<=0;
     }
+    public int selfdestructtimer=40;
+    public boolean primed = false;
     public void tick(){
         super.tick();
         //LOGGER.info(this.getAlteSyncInt(ALTE_RODCOOLDOWN) +"");
@@ -150,6 +164,13 @@ public class Alte extends OldWarFriend{
             }
             for (EntityDataAccessor<Integer> counter : counters) {
                 this.decrementAlteAnimCounter(counter);
+            }
+            if(this.primed){
+                if(this.selfdestructtimer<=0){
+                    this.doSelfDestruct();
+                }else {
+                    this.selfdestructtimer--;
+                }
             }
         }else{
             //LOGGER.info(this.getAlteSyncInt(ALTE_RODSHEATHCOUNTER) +"");

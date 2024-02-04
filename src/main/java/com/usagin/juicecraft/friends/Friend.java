@@ -19,6 +19,7 @@ import com.usagin.juicecraft.items.ModuleItem;
 import com.usagin.juicecraft.items.SweetItem;
 import com.usagin.juicecraft.items.SweetHandler;
 import com.usagin.juicecraft.particles.DiceHandler;
+import net.minecraft.client.renderer.entity.CreeperRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

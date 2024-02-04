@@ -4,6 +4,11 @@
       "juicecraft:alte_punisher_voice"
     ]
   },
+  "alte_selfdestruct": {
+    "sounds": [
+      "juicecraft:alte_selfdestruct"
+    ]
+  },
   "alte_punisher": {
     "sounds": [
       "juicecraft:alte_punisher"

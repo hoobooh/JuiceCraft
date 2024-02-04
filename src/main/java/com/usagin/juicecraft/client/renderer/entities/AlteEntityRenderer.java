@@ -56,7 +56,7 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull Alte pEntity) {
-        if (pEntity.getPose() == Pose.SLEEPING || pEntity.blinkCounter <= 6 || (pEntity.shakeAnimO > 0 && pEntity.shakeAnimO < 2) || pEntity.shakeAnimO > 3) {
+        if (pEntity.getPose() == Pose.SLEEPING || pEntity.blinkCounter <= 6 || (pEntity.shakeAnimO > 0 && pEntity.shakeAnimO < 2) || pEntity.shakeAnimO > 3 || pEntity.deathAnimState.isStarted()) {
             this.openlayer.visible = false;
             this.narrowlayer.visible = false;
             this.winklayer.visible = false;

@@ -37,7 +37,7 @@ public class CommonEvents {
     }
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event){
-        Minecraft.getInstance().particleEngine.register(ParticleInit.SUGURIVERSE_LARGE.get(), SuguriverseParticleLarge.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.SUGURIVERSE_LARGE.get(), SuguriverseParticleLarge.SugPartProvider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.SLEEPY.get(), SleepyParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.DICEONE.get(), SleepyParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.DICETWO.get(), SleepyParticle.Provider::new);
@@ -48,6 +48,7 @@ public class CommonEvents {
         Minecraft.getInstance().particleEngine.register(ParticleInit.GLITCH_PARTICLE.get(), GlitchParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_ENERGY_PARTICLE.get(), EnergyParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_LIGHTNING_PARTICLE.get(), AlteLightningParticle.Provider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_SELFDESTRUCT_PARTICLE.get(), AlteSelfDestructParticle.SelfDestructProvider::new);
 
     }
     @SubscribeEvent
