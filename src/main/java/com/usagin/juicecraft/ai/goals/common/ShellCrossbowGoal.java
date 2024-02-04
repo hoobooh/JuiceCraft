@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.ai.goals;
+package com.usagin.juicecraft.ai.goals.common;
 
 import java.util.EnumSet;
 

@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.ai.goals;
+package com.usagin.juicecraft.ai.goals.common;
 
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.InteractionHand;

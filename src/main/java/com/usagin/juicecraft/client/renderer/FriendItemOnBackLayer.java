@@ -29,7 +29,8 @@ public class FriendItemOnBackLayer<T extends Friend, M extends FriendEntityModel
         if (!itemstack.isEmpty() || !itemstack1.isEmpty()) {
             pPoseStack.pushPose();
             if(pLivingEntity.aggroCounter==0 && pLivingEntity.getAttackCounter()==0 && pLivingEntity.animatestandingtimer==0 && !pLivingEntity.isHoldingThrowable()) {
-                this.renderBackWithItem(pLivingEntity, itemstack1, pPoseStack, pBuffer, pPackedLight);
+                if(pLivingEntity.shouldShowWeapon()){
+                this.renderBackWithItem(pLivingEntity, itemstack1, pPoseStack, pBuffer, pPackedLight);}
             }
             pPoseStack.popPose();
         }

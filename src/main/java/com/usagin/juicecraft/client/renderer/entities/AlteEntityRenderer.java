@@ -61,7 +61,7 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
             this.narrowlayer.visible = false;
             this.winklayer.visible = false;
             return ALTE_CLOSED;
-        } else if (pEntity.patCounter != 0 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive()) || (pEntity.getAlteSyncInt(Alte.ALTE_SPARKCOUNTER) >= 5 && pEntity.getAlteSyncInt(Alte.ALTE_SPARKCOUNTER)<=15)) {
+        } else if (pEntity.patCounter != 0 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive()) || (pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER) >= 5 && pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER)<=15)) {
             this.openlayer.visible = false;
             this.narrowlayer.visible = false;
             this.winklayer.visible = true;
@@ -82,7 +82,7 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
     public void render(@NotNull Alte alte, float pEntityYaw, float pPartialTicks, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight) {
         super.render(alte, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
 
-        int n = alte.getAlteSyncInt(Alte.ALTE_SPARKCOUNTER);
+        int n = alte.getSyncInt(Alte.ALTE_SPARKCOUNTER);
         if (n >= 5 && n <= 15) {
             float lookAngleX = alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEX) + (float) -Math.toRadians(30);
             float lookAngleY = alte.getAlteLookAngle(Alte.ALTE_SPARKANGLEY);

@@ -1,7 +1,6 @@
 package com.usagin.juicecraft.ai.goals.alte;
 
 import com.usagin.juicecraft.Init.ParticleInit;
-import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Alte;
 import net.minecraft.core.particles.ParticleOptions;
@@ -56,12 +55,12 @@ public class AlteSparkGoal extends Goal {
 
         this.alte.getFriendNav().setShouldMove(false);
         this.alte.sparkcooldown = 3600 - (int) (1800 * (1 + (float) this.alte.getSkillLevels()[1]) / (35 + (float) this.alte.getSkillLevels()[1]));
-        this.alte.setAlteSyncInt(ALTE_SPARKCOUNTER, 30);
+        this.alte.setSyncInt(ALTE_SPARKCOUNTER, 30);
     }
 
     @Override
     public boolean canContinueToUse() {
-        return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.getAlteSyncInt(ALTE_SPARKCOUNTER) > 0;
+        return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.getSyncInt(ALTE_SPARKCOUNTER) > 0;
     }
 
     @Override
@@ -69,7 +68,7 @@ public class AlteSparkGoal extends Goal {
         //Vec3 angle = Vec3.directionFromRotation(this.alte.getAlteLookAngle(ALTE_SPARKANGLEX),this.alte.getAlteLookAngle(ALTE_SPARKANGLEY));
         //this.alte.getLookControl().setLookAt(angle);
 
-        int n = this.alte.getAlteSyncInt(ALTE_SPARKCOUNTER);
+        int n = this.alte.getSyncInt(ALTE_SPARKCOUNTER);
         if (n >= 5 && n <= 15) {
             if(n==15){
                 this.alte.playSound(LASER_BLAST.get());

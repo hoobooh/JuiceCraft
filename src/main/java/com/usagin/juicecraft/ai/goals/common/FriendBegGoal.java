@@ -1,18 +1,10 @@
-package com.usagin.juicecraft.ai.goals;
+package com.usagin.juicecraft.ai.goals.common;
 
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
-import java.util.EnumSet;
 
 public class FriendBegGoal extends FriendLonelyGoal{
     private final Friend friend;

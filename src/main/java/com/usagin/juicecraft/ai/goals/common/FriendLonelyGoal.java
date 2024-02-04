@@ -1,10 +1,6 @@
-package com.usagin.juicecraft.ai.goals;
+package com.usagin.juicecraft.ai.goals.common;
 
-import com.usagin.juicecraft.ai.goals.FriendFollowGoal;
 import com.usagin.juicecraft.friends.Friend;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.ai.goal.Goal;
-
 
 
 public class FriendLonelyGoal extends FriendFollowGoal {

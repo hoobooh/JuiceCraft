@@ -1,4 +1,4 @@
-package com.usagin.juicecraft.ai.goals;
+package com.usagin.juicecraft.ai.goals.common;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;

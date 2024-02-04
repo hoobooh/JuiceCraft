@@ -3,11 +3,10 @@ package com.usagin.juicecraft.friends;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.ai.awareness.FriendDefense;
-import com.usagin.juicecraft.ai.goals.FriendLonelyGoal;
+import com.usagin.juicecraft.ai.goals.common.*;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.SkillManager;
-import com.usagin.juicecraft.ai.goals.*;
 import com.usagin.juicecraft.client.menu.FriendMenu;
 import com.usagin.juicecraft.client.menu.FriendMenuProvider;
 import com.usagin.juicecraft.Init.ItemInit;
@@ -19,7 +18,6 @@ import com.usagin.juicecraft.items.ModuleItem;
 import com.usagin.juicecraft.items.SweetItem;
 import com.usagin.juicecraft.items.SweetHandler;
 import com.usagin.juicecraft.particles.DiceHandler;
-import net.minecraft.client.renderer.entity.CreeperRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -56,6 +54,7 @@ import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.MendingEnchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -371,7 +370,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     abstract int[] getSkillInfo();
 
     public boolean canDoThings() {
-        return !this.getInSittingPose() && !this.isDying;
+        return !this.getInSittingPose() && !this.isDying && this.getVehicle()==null;
     }
 
     public boolean wantsToPickUp(ItemStack pStack) {
@@ -1240,9 +1239,17 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.eventlog = s;
         this.getEntityData().set(FRIEND_EVENTLOG, s);
     }
-
+    public boolean hasActivator(){
+        return !this.inventory.getItem(0).isEmpty();
+    }
+    public boolean isActivatorCharging(){
+        if(this.hasActivator()){
+            return this.inventory.getItem(0).isDamaged();
+        }
+        return false;
+    }
     public void appendEventLog(String s) {
-        if (this.getEventLog().length() > 500   0) {
+        if (this.getEventLog().length() > 5000) {
             this.setEventLog(this.getEventLog().substring(1000));
         }
         this.eventlog = this.eventlog + s + "\n";
@@ -1692,6 +1699,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean lockLookAround(){
         return this.getAttackCounter() <= 0;
     }
+    public boolean shouldShowWeapon(){
+        return true;
+    }
     @Override
     public void aiStep() {
         super.aiStep();
@@ -1850,10 +1860,25 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
         }
     }
+    public int getSyncInt(EntityDataAccessor<Integer> accessor){
+        return this.getEntityData().get(accessor);
+    }
+    public void setSyncInt(EntityDataAccessor<Integer> accessor, int n){
+        this.getEntityData().set(accessor, n);
+    }
+    public void setSyncBoolean(EntityDataAccessor<Boolean> accessor, boolean n){
+        this.getEntityData().set(accessor, n);
+    }
+    public boolean getSyncBoolean(EntityDataAccessor<Boolean> accessor){
+        return this.getEntityData().get(accessor);
+    }
     @Override
     public void tick() {
         this.setupcomplete = true;
         super.tick();
+        if(this.isActivatorCharging()){
+            this.inventory.getItem(1).setDamageValue(this.inventory.getItem(1).getDamageValue()+1);
+        }
         if (this.patCounter > 0) {
             this.idleCounter = 0;
             this.patCounter--;

@@ -68,11 +68,11 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
         this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);
     }
     public boolean shouldMoveHead(Alte friend){
-        return friend.getAlteSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0;
+        return friend.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0;
     }
 
     public void bowAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if(pEntity.getAlteSyncInt(Alte.ALTE_SPARKCOUNTER) <=0){
+        if(pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER) <=0){
             super.bowAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
         }
     }

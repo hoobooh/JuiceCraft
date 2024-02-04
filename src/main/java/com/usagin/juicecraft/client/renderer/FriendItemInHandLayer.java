@@ -33,8 +33,9 @@ public class FriendItemInHandLayer<T extends Friend, M extends EntityModel<T> & 
         if (!itemstack.isEmpty() || !itemstack1.isEmpty()) {
             pPoseStack.pushPose();
             if(!pLivingEntity.getInSittingPose() && (pLivingEntity.aggroCounter>0 || pLivingEntity.getAttackCounter()>0) || pLivingEntity.animatestandingtimer>0 || pLivingEntity.isHoldingThrowable()){
+                if(pLivingEntity.shouldShowWeapon()){
                 this.renderArmWithItem(pLivingEntity, itemstack1, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, HumanoidArm.RIGHT, pPoseStack, pBuffer, pPackedLight);
-                this.renderArmWithItem(pLivingEntity, itemstack, ItemDisplayContext.THIRD_PERSON_LEFT_HAND, HumanoidArm.LEFT, pPoseStack, pBuffer, pPackedLight);
+                this.renderArmWithItem(pLivingEntity, itemstack, ItemDisplayContext.THIRD_PERSON_LEFT_HAND, HumanoidArm.LEFT, pPoseStack, pBuffer, pPackedLight);}
             }
             pPoseStack.popPose();
         }

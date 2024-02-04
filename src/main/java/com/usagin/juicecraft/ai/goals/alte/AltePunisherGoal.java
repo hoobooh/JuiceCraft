@@ -5,7 +5,6 @@ import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
 import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Alte;
-import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -25,10 +24,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 
 import java.util.List;
-
-import static com.usagin.juicecraft.friends.Alte.ALTE_SPARKANGLEX;
-import static com.usagin.juicecraft.friends.Alte.ALTE_SPARKANGLEY;
-import static com.usagin.juicecraft.friends.Friend.LOGGER;
 
 public class AltePunisherGoal extends Goal {
     protected final Alte alte;
@@ -71,7 +66,7 @@ public class AltePunisherGoal extends Goal {
     public boolean canContinueToUse() {
         Item item = this.alte.getFriendWeapon().getItem();
         boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
-        return this.alte.canDoThings() && this.alte.getAlteSyncInt(Alte.ALTE_PUNISHERCOUNTER) > 0 && !flag;
+        return this.alte.canDoThings() && this.alte.getSyncInt(Alte.ALTE_PUNISHERCOUNTER) > 0 && !flag;
     }
 
     @Override
@@ -80,7 +75,7 @@ public class AltePunisherGoal extends Goal {
         this.alte.getFriendNav().setShouldMove(false);
         this.alte.playSound(AlteSoundInit.ALTE_PUNISHER.get());
         this.alte.punishercooldown=2400;
-        this.alte.setAlteSyncInt(Alte.ALTE_PUNISHERCOUNTER, 65);
+        this.alte.setSyncInt(Alte.ALTE_PUNISHERCOUNTER, 65);
         this.target = this.findPriorityTarget();
         this.alte.setTarget(this.target);
         this.alte.setAggressive(true);
@@ -110,7 +105,7 @@ public class AltePunisherGoal extends Goal {
     }
     @Override
     public void tick() {
-        int n = this.alte.getAlteSyncInt(Alte.ALTE_PUNISHERCOUNTER);
+        int n = this.alte.getSyncInt(Alte.ALTE_PUNISHERCOUNTER);
         if (this.alte.level() instanceof ServerLevel level) {
 
 
