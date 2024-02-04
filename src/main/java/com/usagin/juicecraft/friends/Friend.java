@@ -1242,8 +1242,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public void appendEventLog(String s) {
-        if (this.getEventLog().length() > 5000) {
-            this.setEventLog("");
+        if (this.getEventLog().length() > 500   0) {
+            this.setEventLog(this.getEventLog().substring(1000));
         }
         this.eventlog = this.eventlog + s + "\n";
         this.getEntityData().set(FRIEND_EVENTLOG, this.eventlog);
