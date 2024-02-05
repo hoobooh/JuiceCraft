@@ -3,6 +3,7 @@ package com.usagin.juicecraft.friends;
 import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
+import com.usagin.juicecraft.ai.goals.alte.AlteHyperGoal;
 import com.usagin.juicecraft.ai.goals.alte.AltePunisherGoal;
 import com.usagin.juicecraft.ai.goals.alte.AlteShockRodGoal;
 import com.usagin.juicecraft.ai.goals.alte.AlteSparkGoal;
@@ -38,12 +39,11 @@ public class Alte extends OldWarFriend{
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 25).add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.ATTACK_DAMAGE, 3).add(ForgeMod.SWIM_SPEED.get(),3);
     }
     public boolean usinghyper=false;
-    public boolean shooting=false;
     public boolean isUsingHyper(){
-        return this.getSyncBoolean(ALTE_USINGHYPER) || this.getSyncInt(ALTE_HYPERWINDUPCOUNTER)>0;
+        return this.getSyncBoolean(ALTE_USINGHYPER) || (this.getSyncInt(ALTE_HYPERSTARTCOUNTER)>0  && this.getSyncInt(ALTE_HYPERSTARTCOUNTER)<80)|| this.getSyncInt(ALTE_HYPERENDCOUNTER)>0;
     }
     public boolean shouldShowWeapon(){
-        return !this.isUsingHyper() && this.getSyncInt(ALTE_HYPERSTARTCOUNTER) <=0 && this.getSyncInt(ALTE_HYPERENDCOUNTER) <=0;
+        return !this.isUsingHyper();
     }
     public boolean isUsingShockRod(){
         int n = this.getSyncInt(ALTE_RODCOOLDOWN);
@@ -165,6 +165,7 @@ public class Alte extends OldWarFriend{
             }
             for (EntityDataAccessor<Integer> counter : counters) {
                 this.decrementAlteAnimCounter(counter);
+                //LOGGER.info(this.getSyncInt(ALTE_HYPERENDCOUNTER)+"");
             }
             if(this.primed){
                 if(this.selfdestructtimer<=0){
@@ -173,12 +174,21 @@ public class Alte extends OldWarFriend{
                     this.selfdestructtimer--;
                 }
             }
+            if(hypermeter<24000){
+                hypermeter++;
+            }
         }else{
             //LOGGER.info(this.getAlteSyncInt(ALTE_RODSHEATHCOUNTER) +"");
             this.sparkAnimState.animateWhen(this.getSyncInt(ALTE_SPARKCOUNTER)>0,this.tickCount);
             this.rodSummonAnimState.animateWhen(this.getSyncInt(ALTE_RODSUMMONCOUNTER)>0,this.tickCount);
             this.rodSheathAnimState.animateWhen(this.getSyncInt(ALTE_RODSHEATHCOUNTER)>0,this.tickCount);
             this.punisherAnimState.animateWhen(this.getSyncInt(ALTE_PUNISHERCOUNTER)>0,this.tickCount);
+            this.hyperStartAnimState.animateWhen(this.getSyncInt(ALTE_HYPERSTARTCOUNTER)>0,this.tickCount);
+            this.hyperEndAnimState.animateWhen(this.getSyncInt(ALTE_HYPERENDCOUNTER)>0,this.tickCount);
+            this.hyperIdleAnimState.animateWhen(this.idleAnimState.isStarted() && this.getSyncBoolean(ALTE_USINGHYPER),this.tickCount);
+            this.hyperWindupAnimState.animateWhen(this.getSyncInt(ALTE_HYPERWINDUPCOUNTER)>0,this.tickCount);
+            this.hyperRelaxAnimState.animateWhen(this.getSyncInt(ALTE_HYPERRELAXCOUNTER)>0,this.tickCount);
+            this.hyperShootAnimState.animateWhen(this.getSyncBoolean(ALTE_SHOOTING),this.tickCount);
         }
 
     }
@@ -201,10 +211,12 @@ public class Alte extends OldWarFriend{
     public int rodcooldown=12000;
 
     public int punishercooldown=0;
+    public int hypermeter=24000;
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
 
+        pCompound.putInt("juicecraft.alte.hypermeter",this.hypermeter);
         pCompound.putInt("juicecraft.alte.sparkcooldown",this.sparkcooldown);
         pCompound.putInt("juicecraft.alte.rodcooldown",this.getSyncInt(ALTE_RODCOOLDOWN));
         pCompound.putInt("juicecraft.alte.punishercooldown",this.punishercooldown);
@@ -217,6 +229,7 @@ public class Alte extends OldWarFriend{
         if(pCompound.contains("juicecraft.alte.rodcooldown")){
             this.setAlteRodCooldown(pCompound.getInt("juicecraft.alte.rodcooldown"));
         }
+        this.hypermeter=pCompound.getInt("juicecraft.alte.hypermeter");
         this.sparkcooldown=pCompound.getInt("juicecraft.alte.sparkcooldown");
         this.punishercooldown=pCompound.getInt("juicecraft.alte.punishercooldown");
         this.selfdestructcooldown=pCompound.getInt("juicecraft.alte.selfdestructcooldown");
@@ -230,6 +243,7 @@ public class Alte extends OldWarFriend{
     public final AnimationState hyperEndAnimState = new AnimationState();
     public final AnimationState hyperIdleAnimState = new AnimationState();
     public final AnimationState hyperShootAnimState = new AnimationState();
+    public final AnimationState hyperRelaxAnimState = new AnimationState();
     public final AnimationState hyperWindupAnimState = new AnimationState();
 
     public void setAlteRodCooldown(int n){
@@ -267,7 +281,9 @@ public class Alte extends OldWarFriend{
         this.entityData.define(ALTE_RODCOOLDOWN,12000);
         this.entityData.define(ALTE_USINGHYPER,false);
         this.entityData.define(ALTE_HYPERRELAXCOUNTER,0);
+        this.entityData.define(ALTE_SHOOTING,false);
     }
+    public static final EntityDataAccessor<Boolean> ALTE_SHOOTING = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> ALTE_USINGHYPER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> ALTE_RODCOOLDOWN = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> ALTE_SPARKANGLEY = SynchedEntityData.defineId(Alte.class,EntityDataSerializers.FLOAT);
@@ -554,5 +570,6 @@ public class Alte extends OldWarFriend{
         this.goalSelector.addGoal(5, new AlteSparkGoal(this));
         this.goalSelector.addGoal(5, new AlteShockRodGoal(this));
         this.goalSelector.addGoal(5, new AltePunisherGoal(this));
+        this.goalSelector.addGoal(5, new AlteHyperGoal(this));
     }
 }

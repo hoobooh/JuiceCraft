@@ -5,6 +5,7 @@ package com.usagin.juicecraft.client.models.alte;// Made with Blockbench 4.8.3
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.usagin.juicecraft.JuiceCraft;
+import com.usagin.juicecraft.client.animation.AlteAnimation2;
 import com.usagin.juicecraft.client.models.FriendEntityModel;
 import com.usagin.juicecraft.friends.Alte;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -18,8 +19,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static com.usagin.juicecraft.client.animation.AlteAnimation.*;
+import static com.usagin.juicecraft.client.animation.AlteAnimation2.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation3.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation4.*;
+import static com.usagin.juicecraft.friends.Alte.ALTE_SHOOTING;
 
 public class AlteEntityModel extends FriendEntityModel<Alte> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
@@ -52,7 +55,8 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
         this.root().getChild("minigun").visible = b;
         this.root().getChild("minigun2").visible = b;
     }
-    public void togglePowerRing(boolean b){
+
+    public void togglePowerRing(boolean b) {
         this.root().getChild("powerring").visible = b;
     }
 
@@ -67,53 +71,73 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
     public void defineAnimations() {
         this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);
     }
-    public boolean shouldMoveHead(Alte friend){
+
+    public boolean shouldMoveHead(Alte friend) {
         return friend.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0;
     }
 
     public void bowAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if(pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER) <=0){
+        if (pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0) {
             super.bowAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
         }
     }
+
     @Override
     public void attackAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        this.animate(alte.sparkAnimState, spark, pAgeInTicks);
-        boolean flag = alte.areAnimationsBusy();
-        this.togglePanel(alte.sparkAnimState.isStarted());
-        this.animate(alte.rodSummonAnimState,shockrodStart,pAgeInTicks);
-        this.togglePowerRing(alte.rodSummonAnimState.isStarted() || alte.punisherAnimState.isStarted());
-        this.animate(alte.rodSheathAnimState,shockrodEnd,pAgeInTicks);
-        this.animate(alte.punisherAnimState,punisher,pAgeInTicks);
+            this.animate(alte.hyperShootAnimState, hyperShoot, pAgeInTicks);
+            if(!alte.hyperShootAnimState.isStarted()){
+            this.animate(alte.hyperStartAnimState,hyperStart,pAgeInTicks);
+            this.animate(alte.hyperEndAnimState,hyperEnd,pAgeInTicks);
+            this.animate(alte.hyperWindupAnimState,hyperWindup,pAgeInTicks);
+            this.animate(alte.hyperRelaxAnimState,hyperRecovery,pAgeInTicks);
+            this.animate(alte.sparkAnimState, spark, pAgeInTicks);
+            boolean flag = alte.areAnimationsBusy();
+            this.togglePanel(alte.sparkAnimState.isStarted());
+            this.animate(alte.rodSummonAnimState, shockrodStart, pAgeInTicks);
+            this.togglePowerRing(alte.rodSummonAnimState.isStarted() || alte.punisherAnimState.isStarted());
+            this.animate(alte.rodSheathAnimState, shockrodEnd, pAgeInTicks);
+            this.animate(alte.punisherAnimState, punisher, pAgeInTicks);
 
 
-        if (!flag) {
-            super.attackAnim(alte, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
+            if (!flag) {
+                super.attackAnim(alte, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
+            }
         }
     }
+
     public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
-        if(this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible){
-            pPoseStack.scale(0,0,0);
-        }else{
+        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
+            pPoseStack.scale(0, 0, 0);
+        } else {
             super.translateToHand(pSide, pPoseStack);
         }
     }
+
     public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
-        if(this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible){
-            pPoseStack.scale(0,0,0);
-        }else{
+        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
+            pPoseStack.scale(0, 0, 0);
+        } else {
             super.translateToBack(pPoseStack, pItemStack);
         }
     }
-    public void idleAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
-        if(!pEntity.areAnimationsBusy()){
-        animate(pEntity.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
-        if(!pEntity.areAnimationsBusy()){
-        animate(pEntity.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);}
-        animate(pEntity.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
-        animate(pEntity.snowballIdleAnimState, this.animations.snowballIdle(), pAgeInTicks);
-        animate(pEntity.snowballIdleTransitionAnimState, this.animations.snowballIdleTransition(), pAgeInTicks);}
+
+    public void idleAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        if (alte.isUsingHyper()) {
+            if(!alte.areAnimationsBusy()){
+                animate(alte.hyperIdleAnimState, hyperIdle, pAgeInTicks);
+            }
+        } else {
+            if (!alte.areAnimationsBusy()) {
+                animate(alte.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
+                animate(alte.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);
+                animate(alte.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
+                animate(alte.snowballIdleAnimState, this.animations.snowballIdle(), pAgeInTicks);
+                animate(alte.snowballIdleTransitionAnimState, this.animations.snowballIdleTransition(), pAgeInTicks);
+            }
+        }
+
     }
+
     @Override
     public void setupAnim(Alte alt, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         this.toggleArsenal(alt.isUsingHyper());

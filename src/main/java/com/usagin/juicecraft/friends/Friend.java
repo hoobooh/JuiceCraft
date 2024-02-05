@@ -705,6 +705,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.playVoice(this.getRecovery());
         this.getFriendNav().setShouldMove(true);
         this.spawnHorizontalParticles();
+        this.setInvulnerable(false);
     }
 
     void doDyingEvent() {
@@ -970,6 +971,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public void updateGear() {
         if (!this.level().isClientSide()) {
+            this.getEntityData().set(FRIEND_WEAPON,this.inventory.getItem(1));
             if (this.inventory.getItem(1).getItem() instanceof BowItem) {
                 this.goalSelector.removeGoal(this.bowGoal);
                 this.goalSelector.removeGoal(this.crossbowGoal);
@@ -1073,7 +1075,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public ItemStack getFriendWeapon() {
-        return this.inventory.getItem(1);
+        return this.getEntityData().get(FRIEND_WEAPON);
     }
 
     public void setFriendNorma(float n, int source) {
@@ -1242,12 +1244,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean hasActivator(){
         return !this.inventory.getItem(0).isEmpty();
     }
-    public boolean isActivatorCharging(){
-        if(this.hasActivator()){
-            return this.inventory.getItem(0).isDamaged();
-        }
-        return false;
-    }
     public void appendEventLog(String s) {
         if (this.getEventLog().length() > 5000) {
             this.setEventLog(this.getEventLog().substring(1000));
@@ -1352,7 +1348,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.entityData.define(FRIEND_COMBATMOD, this.combatmodifier);
     }
 
-
+    public static final EntityDataAccessor<ItemStack> FRIEND_WEAPON = SynchedEntityData.defineId(Friend.class,EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Integer> FRIEND_COMBATMOD = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SWIMCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_PLACECOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
@@ -1364,7 +1360,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public static final EntityDataAccessor<Boolean> FRIEND_ISWANDERING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> FRIEND_SPECIALSENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SKILLPOINTS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    //public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS1 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS2 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS3 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
@@ -1384,7 +1379,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public static final EntityDataAccessor<Integer> FRIEND_ATTACKTYPE = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> FRIEND_NORMA = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> FRIEND_LEVEL = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<ItemStack> FRIEND_WEAPON = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Optional<BlockPos>> SLEEPING_POS_ID = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
 
     protected void setFlag(int pFlagId, boolean pValue) {
@@ -1702,6 +1696,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean shouldShowWeapon(){
         return true;
     }
+    public ItemStack getMainHandItem() {
+        return this.getFriendWeapon();
+    }
+
+    public ItemStack getOffhandItem() {
+        return this.getItemBySlot(EquipmentSlot.OFFHAND);
+    }
     @Override
     public void aiStep() {
         super.aiStep();
@@ -1876,9 +1877,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public void tick() {
         this.setupcomplete = true;
         super.tick();
-        if(this.isActivatorCharging()){
-            this.inventory.getItem(1).setDamageValue(this.inventory.getItem(1).getDamageValue()+1);
-        }
         if (this.patCounter > 0) {
             this.idleCounter = 0;
             this.patCounter--;
@@ -1968,6 +1966,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 setDeathAnimCounter(this.deathAnimCounter - 1);
             }
             if (this.isDying) {
+                this.setInvulnerable(true);
                 this.getFriendNav().setShouldMove(false);
                 this.setTarget(null);
                 if (this.tickCount % 20 == 0) {
