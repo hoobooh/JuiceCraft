@@ -2,6 +2,9 @@ package com.usagin.juicecraft.ai.goals.alte;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Alte;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
+import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -19,6 +22,7 @@ import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SnowballItem;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -85,9 +89,16 @@ public class AlteHyperGoal extends Goal {
         float targetX = (float) (this.alte.getX() + targetradius * (float) Math.cos(lookAngleY));
         float targetZ = (float) (this.alte.getZ() + targetradius * (float) Math.sin(lookAngleY));
         float targetY = (float) (this.alte.getEyeY() + targetradius * (float) Math.sin(lookAngleX));
+        float backX = (float) (this.alte.getX() + targetradius * (float) Math.cos(lookAngleY + Math.PI));
+        float backZ = (float) (this.alte.getZ() + targetradius * (float) Math.sin(lookAngleY  + Math.PI));
+        float backY = (float) (this.alte.getEyeY() + targetradius * (float) Math.sin(lookAngleX  + Math.PI));
         double d1 = targetX - this.alte.getX();
         double d2 = targetY - snowball.getY();
         double d3 = targetZ - this.alte.getZ();
+        double d4 = backX - this.alte.getX();
+        double d5 = backY - snowball.getY();
+        double d6 = backZ - this.alte.getZ();
+        //this.alte.setDeltaMovement(this.alte.getDeltaMovement().add(new Vec3(d4/1000,d5/1000,d6/1000)));
         //double d4 = Math.sqrt(d1 * d1 + d3 * d3) * (double)0.2F;
         snowball.shoot(d1, d2, d3, 1.6F, 12.0F);
         this.alte.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1);
@@ -99,13 +110,29 @@ public class AlteHyperGoal extends Goal {
     public boolean markforstart=false;
     @Override
     public void tick() {
+        if(this.alte.level() instanceof ServerLevel level){
+            int l = Mth.floor(this.alte.getYRot() * 256.0F / 360.0F);
+            int k1 = Mth.floor(this.alte.getXRot() * 256.0F / 360.0F);
+            level.getChunkSource().broadcastAndSend(this.alte,new ClientboundMoveEntityPacket.Rot(this.alte.getId(),(byte) l,(byte) k1,this.alte.onGround()));
+        }
         this.target = this.alte.getTarget();
         this.alte.hypermeter-=this.getHyperCost()+1;
-
         if (this.alte.getSyncBoolean(ALTE_USINGHYPER)) {
             if(this.markforstart){this.markforstart=false;}else{
             if (this.target != null && this.alte.hypermeter > 70) {
+                this.alte.getLookControl().setLookAt(this.target);
                 this.alte.lookAt(this.target, 30, 30);
+                float targetradius=2;
+                float lookAngleX=(float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
+                float lookAngleY=(float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x);
+                float backX = (float) (this.alte.getX() + targetradius * (float) Math.cos(lookAngleY));
+                float backZ = (float) (this.alte.getZ() + targetradius * (float) Math.sin(lookAngleY));
+                float backY = (float) (this.alte.getEyeY() + targetradius * (float) Math.sin(lookAngleX));
+                double d4 = backX - this.alte.getX();
+                double d5 = backY - this.alte.getY();
+                double d6 = backZ - this.alte.getZ();
+                //this.alte.setDeltaMovement(this.alte.getDeltaMovement().add(new Vec3(d4/2000,d5/2000,d6/2000)));
+
                 if (this.alte.getSyncBoolean(ALTE_SHOOTING)) {
                     this.alte.setAggressive(true);
                     this.shootMiniguns();

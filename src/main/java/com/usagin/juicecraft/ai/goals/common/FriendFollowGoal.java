@@ -113,7 +113,8 @@ public class FriendFollowGoal extends Goal {
      * Keep ticking a continuous task that has already been started
      */
     public void tick() {
-            this.tamable.getLookControl().setLookAt(this.owner, 10.0F, (float) this.tamable.getMaxHeadXRot());
+            if(!this.tamable.lockLookAround()){
+            this.tamable.getLookControl().setLookAt(this.owner, 10.0F, (float) this.tamable.getMaxHeadXRot());}
             if (--this.timeToRecalcPath <= 0) {
                 this.timeToRecalcPath = this.adjustedTickDelay(10);
                 if (this.tamable.distanceToSqr(this.owner) >= 400.0D) {

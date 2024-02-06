@@ -301,7 +301,7 @@ public class Alte extends OldWarFriend{
         return this.getSyncInt(ALTE_SPARKCOUNTER)<=0;
     }
     public boolean lockLookAround(){
-        return this.areAnimationsBusy() && super.lockLookAround();
+        return this.areAnimationsBusy() && super.lockLookAround() && this.getSyncBoolean(ALTE_SHOOTING);
     }
     @Override
     int[] getSkillInfo() {

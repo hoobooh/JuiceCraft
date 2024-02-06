@@ -26,7 +26,7 @@ public class FriendRandomLookAroundGoal extends RandomLookAroundGoal
     }
     @Override
     public boolean canUse(){
-        if(this.friend.isDying || this.friend.lockLookAround() || this.friend.getPose() == Pose.SLEEPING){return false;}else{return super.canUse();}
+        if(this.friend.lockLookAround() || this.friend.isDying || this.friend.lockLookAround() || this.friend.getPose() == Pose.SLEEPING){return false;}else{return super.canUse();}
     }
     public boolean canContinueToUse() {
         if(this.friend.isDying || this.friend.lockLookAround() || this.friend.getPose() == Pose.SLEEPING){return false;}else{return super.canContinueToUse();}
