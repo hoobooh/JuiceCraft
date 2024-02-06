@@ -23,6 +23,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -1702,6 +1703,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public ItemStack getOffhandItem() {
         return this.getItemBySlot(EquipmentSlot.OFFHAND);
+    }
+    public void synchronizeLookAngle(){
+        if(this.level() instanceof ServerLevel level){
+            int l = Mth.floor(this.getYRot() * 256.0F / 360.0F);
+            int k1 = Mth.floor(this.getXRot() * 256.0F / 360.0F);
+            level.getChunkSource().broadcastAndSend(this,new ClientboundMoveEntityPacket.Rot(this.getId(),(byte) l,(byte) k1,this.onGround()));
+        }
     }
     @Override
     public void aiStep() {

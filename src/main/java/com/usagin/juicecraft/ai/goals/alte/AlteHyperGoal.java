@@ -110,11 +110,7 @@ public class AlteHyperGoal extends Goal {
     public boolean markforstart=false;
     @Override
     public void tick() {
-        if(this.alte.level() instanceof ServerLevel level){
-            int l = Mth.floor(this.alte.getYRot() * 256.0F / 360.0F);
-            int k1 = Mth.floor(this.alte.getXRot() * 256.0F / 360.0F);
-            level.getChunkSource().broadcastAndSend(this.alte,new ClientboundMoveEntityPacket.Rot(this.alte.getId(),(byte) l,(byte) k1,this.alte.onGround()));
-        }
+        this.alte.synchronizeLookAngle();
         this.target = this.alte.getTarget();
         this.alte.hypermeter-=this.getHyperCost()+1;
         if (this.alte.getSyncBoolean(ALTE_USINGHYPER)) {
