@@ -1081,9 +1081,7 @@ public class AlteAnimation3 {
                 .addAnimation("lowersleeve3", new AnimationChannel(AnimationChannel.Targets.SCALE,
                         new Keyframe(0.0F, KeyframeAnimations.scaleVec(1.001F, 1.0F, 0.86F), AnimationChannel.Interpolations.LINEAR)
                 ))
-                .build();
-
-        public static final AnimationDefinition hyperStart = AnimationDefinition.Builder.withLength(6.0F).looping()
+                .build();public static final AnimationDefinition hyperStart = AnimationDefinition.Builder.withLength(6.0F).looping()
                 .addAnimation("head", new AnimationChannel(AnimationChannel.Targets.ROTATION,
                         new Keyframe(2.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
                         new Keyframe(2.25F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
@@ -2054,9 +2052,9 @@ public class AlteAnimation3 {
                         new Keyframe(1.0F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
                         new Keyframe(3.2917F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
                         new Keyframe(4.125F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.2917F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.6667F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.8333F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
+                        new Keyframe(4.2917F, KeyframeAnimations.posVec(0.0F, 0.0F, 10.0F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.6667F, KeyframeAnimations.posVec(0.0F, 0.0F, 10.0F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.8333F, KeyframeAnimations.posVec(0.0F, 0.0F, 30.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("powerring", new AnimationChannel(AnimationChannel.Targets.SCALE,
                         new Keyframe(0.0F, KeyframeAnimations.scaleVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
@@ -2077,22 +2075,22 @@ public class AlteAnimation3 {
                         new Keyframe(5.0833F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("minigun", new AnimationChannel(AnimationChannel.Targets.POSITION,
-                        new Keyframe(4.0833F, KeyframeAnimations.posVec(-10.0F, -10.0F, 19.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.25F, KeyframeAnimations.posVec(21.0F, 6.0F, -27.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.375F, KeyframeAnimations.posVec(25.0F, 7.0F, -29.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.4583F, KeyframeAnimations.posVec(25.0F, 7.0F, -30.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.5417F, KeyframeAnimations.posVec(25.0F, 7.0F, -29.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.7083F, KeyframeAnimations.posVec(21.0F, 6.0F, -27.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.75F, KeyframeAnimations.posVec(11.98F, 5.79F, -21.33F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.7917F, KeyframeAnimations.posVec(3.07F, 5.3F, -10.7F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.8333F, KeyframeAnimations.posVec(0.0F, 2.0F, -1.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.9583F, KeyframeAnimations.posVec(-0.19F, 0.79F, 1.11F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(5.0833F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
+                        new Keyframe(4.0833F, KeyframeAnimations.posVec(-10.0F, -10.0F, 39.0F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.25F, KeyframeAnimations.posVec(21.0F, 7.0F, -13.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.375F, KeyframeAnimations.posVec(25.0F, 9.0F, -15.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.4583F, KeyframeAnimations.posVec(26.0F, 9.0F, -16.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.5417F, KeyframeAnimations.posVec(25.0F, 9.0F, -15.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.7083F, KeyframeAnimations.posVec(21.0F, 8.0F, -12.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.75F, KeyframeAnimations.posVec(11.98F, 5.79F, -4.33F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.7917F, KeyframeAnimations.posVec(3.07F, 4.3F, 9.3F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.8333F, KeyframeAnimations.posVec(0.0F, 0.0F, 20.0F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.9583F, KeyframeAnimations.posVec(-0.19F, -1.21F, 23.11F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(5.0833F, KeyframeAnimations.posVec(0.0F, -1.0F, 21.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("minigun", new AnimationChannel(AnimationChannel.Targets.SCALE,
                         new Keyframe(4.0833F, KeyframeAnimations.scaleVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.25F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 0.5F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.7083F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 0.5F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.25F, KeyframeAnimations.scaleVec(1.2F, 1.2F, 0.5F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.7083F, KeyframeAnimations.scaleVec(1.2F, 1.2F, 0.5F), AnimationChannel.Interpolations.CATMULLROM),
                         new Keyframe(4.8333F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 1.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("barrel", new AnimationChannel(AnimationChannel.Targets.ROTATION,
@@ -2109,22 +2107,23 @@ public class AlteAnimation3 {
                         new Keyframe(5.0833F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("minigun2", new AnimationChannel(AnimationChannel.Targets.POSITION,
-                        new Keyframe(4.0833F, KeyframeAnimations.posVec(13.0F, -10.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.25F, KeyframeAnimations.posVec(-21.0F, 8.0F, -33.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.375F, KeyframeAnimations.posVec(-26.0F, 9.0F, -35.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.4583F, KeyframeAnimations.posVec(-26.0F, 9.0F, -36.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.5417F, KeyframeAnimations.posVec(-26.0F, 9.0F, -35.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.7083F, KeyframeAnimations.posVec(-21.0F, 8.0F, -33.0F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.75F, KeyframeAnimations.posVec(-10.33F, 8.5F, -25.96F), AnimationChannel.Interpolations.LINEAR),
-                        new Keyframe(4.7917F, KeyframeAnimations.posVec(-2.04F, 6.33F, -11.7F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.8333F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.9583F, KeyframeAnimations.posVec(0.13F, -1.4F, 1.73F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(5.0833F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
+                        new Keyframe(4.0833F, KeyframeAnimations.posVec(13.0F, -10.0F, 39.0F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.25F, KeyframeAnimations.posVec(-21.0F, 10.0F, -18.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.375F, KeyframeAnimations.posVec(-26.2F, 11.0F, -21.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.4583F, KeyframeAnimations.posVec(-27.0F, 11.0F, -21.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.5417F, KeyframeAnimations.posVec(-26.0F, 11.0F, -20.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.625F, KeyframeAnimations.posVec(-24.5F, 10.5F, -19.5F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.7083F, KeyframeAnimations.posVec(-21.0F, 9.0F, -17.0F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.75F, KeyframeAnimations.posVec(-10.33F, 8.5F, -8.96F), AnimationChannel.Interpolations.LINEAR),
+                        new Keyframe(4.7917F, KeyframeAnimations.posVec(-2.04F, 5.33F, 7.3F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.8333F, KeyframeAnimations.posVec(0.0F, -1.0F, 21.0F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.9583F, KeyframeAnimations.posVec(0.13F, -3.4F, 23.73F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(5.0833F, KeyframeAnimations.posVec(0.0F, -2.0F, 21.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("minigun2", new AnimationChannel(AnimationChannel.Targets.SCALE,
                         new Keyframe(4.0833F, KeyframeAnimations.scaleVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.25F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 0.5F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.7083F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 0.5F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.25F, KeyframeAnimations.scaleVec(1.2F, 1.2F, 0.5F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.7083F, KeyframeAnimations.scaleVec(1.2F, 1.2F, 0.5F), AnimationChannel.Interpolations.CATMULLROM),
                         new Keyframe(4.8333F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 1.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("barrel2", new AnimationChannel(AnimationChannel.Targets.ROTATION,
@@ -2257,4 +2256,5 @@ public class AlteAnimation3 {
                         new Keyframe(4.0F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 0.8F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .build();
+
 }

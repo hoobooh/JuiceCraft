@@ -40,14 +40,14 @@ public class Alte extends OldWarFriend{
     }
     public boolean usinghyper=false;
     public boolean isUsingHyper(){
-        return this.getSyncBoolean(ALTE_USINGHYPER) || (this.getSyncInt(ALTE_HYPERSTARTCOUNTER)>0  && this.getSyncInt(ALTE_HYPERSTARTCOUNTER)<80)|| this.getSyncInt(ALTE_HYPERENDCOUNTER)>0;
+        return this.getSyncBoolean(ALTE_USINGHYPER) || (this.getSyncInt(ALTE_HYPERSTARTCOUNTER)>0  && this.getSyncInt(ALTE_HYPERSTARTCOUNTER)<110)|| this.getSyncInt(ALTE_HYPERENDCOUNTER)>0;
     }
     public boolean shouldShowWeapon(){
         return !this.isUsingHyper();
     }
     public boolean isUsingShockRod(){
         int n = this.getSyncInt(ALTE_RODCOOLDOWN);
-        return (n < this.getRodDuration() && n > 1) || (this.getSyncInt(ALTE_RODSHEATHCOUNTER)>0) || (this.getSyncInt(ALTE_PUNISHERCOUNTER)>0 && this.getSyncInt(ALTE_PUNISHERCOUNTER)<10);
+        return ((n < this.getRodDuration() && n > 1) || (this.getSyncInt(ALTE_RODSHEATHCOUNTER)>0) || (this.getSyncInt(ALTE_PUNISHERCOUNTER)>0 && this.getSyncInt(ALTE_PUNISHERCOUNTER)<10)) && !this.isUsingHyper();
     }
     public boolean hasShellWeapon(){
         return this.isUsingShockRod();
@@ -185,7 +185,7 @@ public class Alte extends OldWarFriend{
             this.punisherAnimState.animateWhen(this.getSyncInt(ALTE_PUNISHERCOUNTER)>0,this.tickCount);
             this.hyperStartAnimState.animateWhen(this.getSyncInt(ALTE_HYPERSTARTCOUNTER)>0,this.tickCount);
             this.hyperEndAnimState.animateWhen(this.getSyncInt(ALTE_HYPERENDCOUNTER)>0,this.tickCount);
-            this.hyperIdleAnimState.animateWhen(this.idleAnimState.isStarted() && this.getSyncBoolean(ALTE_USINGHYPER),this.tickCount);
+            this.hyperIdleAnimState.animateWhen(idle() && this.getSyncBoolean(ALTE_USINGHYPER) && !this.areAnimationsBusy(),this.tickCount);
             this.hyperWindupAnimState.animateWhen(this.getSyncInt(ALTE_HYPERWINDUPCOUNTER)>0,this.tickCount);
             this.hyperRelaxAnimState.animateWhen(this.getSyncInt(ALTE_HYPERRELAXCOUNTER)>0,this.tickCount);
             this.hyperShootAnimState.animateWhen(this.getSyncBoolean(ALTE_SHOOTING),this.tickCount);

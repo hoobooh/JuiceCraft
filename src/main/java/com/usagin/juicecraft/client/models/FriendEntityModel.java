@@ -8,10 +8,7 @@ import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HierarchicalModel;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
@@ -19,8 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
 import static net.minecraft.world.entity.Pose.SITTING;
@@ -215,7 +210,10 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     public void sleepAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
         animate(pEntity.sleepAnimState, this.animations.sleep(), pAgeInTicks);
     }
-    public boolean shouldMoveHead(T friend){
+    public boolean shouldMoveHeadY(T friend){
+        return true;
+    }
+    public boolean shouldMoveHeadX(T friend){
         return true;
     }
 
@@ -263,11 +261,12 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
                 this.bowAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
             }
             if (!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose() != SLEEPING && pEntity.animatestandingtimer <= 0) {
-                if ((pEntity.sleepAnimState.isStarted() && pLimbSwingAmount > 0.1) && this.shouldMoveHead(pEntity)) {
+                if ((pEntity.sleepAnimState.isStarted() && pLimbSwingAmount > 0.1) && this.shouldMoveHeadY(pEntity)) {
                     this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
-                } else if (this.shouldMoveHead(pEntity)){
+                } else if (this.shouldMoveHeadY(pEntity)){
                     this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
-                    this.parts.head().xRot = (pHeadPitch * (float) Math.PI / 180f);
+                    if(this.shouldMoveHeadX(pEntity)){
+                    this.parts.head().xRot = (pHeadPitch * (float) Math.PI / 180f);}
                 }
 
             }

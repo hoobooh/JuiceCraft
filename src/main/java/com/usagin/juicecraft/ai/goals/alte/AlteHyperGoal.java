@@ -38,12 +38,15 @@ public class AlteHyperGoal extends Goal {
     }
     @Override
     public boolean canUse() {
+        if(this.alte.isUsingHyper()){
+            return true;
+        }
         this.target = this.alte.getTarget();
         if (this.target == null) {
             return false;
         }
         //LOGGER.info(this.alte.getSyncInt(ALTE_HYPERSTARTCOUNTER) + " START " + this.alte.getSyncInt(ALTE_HYPERENDCOUNTER) +"");
-        return (this.alte.getSkillEnabled()[5] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.hypermeter>=24000 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy()) || this.alte.isUsingHyper();
+        return (this.alte.getSkillEnabled()[5] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.hypermeter>=24000 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy());
     }
 
     @Override
@@ -65,6 +68,7 @@ public class AlteHyperGoal extends Goal {
     @Override
     public void stop() {
         this.alte.setInvulnerable(false);
+        this.alte.setAggressive(false);
         this.alte.getFriendNav().setShouldMove(true);
         //this.alte.setSyncInt(ALTE_HYPERENDCOUNTER, 60);
         this.alte.setAlteUsingHyper(false);
@@ -75,12 +79,17 @@ public class AlteHyperGoal extends Goal {
     public void shootMiniguns(){
         Snowball snowball = new Snowball(this.alte.level(), this.alte);
         snowball.setNoGravity(true);
-        double d0 = this.target.getEyeY() - (double)1.1F;
-        double d1 = this.target.getX() - this.alte.getX();
-        double d2 = d0 - snowball.getY();
-        double d3 = this.target.getZ() - this.alte.getZ();
-        double d4 = Math.sqrt(d1 * d1 + d3 * d3) * (double)0.2F;
-        snowball.shoot(d1, d2 + d4, d3, 1.6F, 12.0F);
+        float targetradius=2;
+        float lookAngleX=(float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
+        float lookAngleY=(float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x);
+        float targetX = (float) (this.alte.getX() + targetradius * (float) Math.cos(lookAngleY));
+        float targetZ = (float) (this.alte.getZ() + targetradius * (float) Math.sin(lookAngleY));
+        float targetY = (float) (this.alte.getEyeY() + targetradius * (float) Math.sin(lookAngleX));
+        double d1 = targetX - this.alte.getX();
+        double d2 = targetY - snowball.getY();
+        double d3 = targetZ - this.alte.getZ();
+        //double d4 = Math.sqrt(d1 * d1 + d3 * d3) * (double)0.2F;
+        snowball.shoot(d1, d2, d3, 1.6F, 12.0F);
         this.alte.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1);
         this.alte.level().addFreshEntity(snowball);
     }
@@ -98,9 +107,11 @@ public class AlteHyperGoal extends Goal {
             if (this.target != null && this.alte.hypermeter > 70) {
                 this.alte.lookAt(this.target, 30, 30);
                 if (this.alte.getSyncBoolean(ALTE_SHOOTING)) {
+                    this.alte.setAggressive(true);
                     this.shootMiniguns();
                     this.shootPanels();
                 } else {
+                    this.alte.setAggressive(false);
                     if (this.alte.getSyncInt(ALTE_HYPERWINDUPCOUNTER) <= 0 && this.alte.getSyncInt(ALTE_HYPERRELAXCOUNTER) <= 0) {
                         this.alte.setSyncInt(ALTE_HYPERWINDUPCOUNTER, 20);
                         //this.alte.playSound(ALTE_HYPER_WINDUP.get());
@@ -114,6 +125,7 @@ public class AlteHyperGoal extends Goal {
                     this.alte.setSyncInt(ALTE_HYPERENDCOUNTER, 60);
                 }
                 else if (this.alte.getSyncBoolean(ALTE_SHOOTING)) {
+                    this.alte.setAggressive(false);
                     this.alte.setSyncBoolean(ALTE_SHOOTING,false);
                     if (this.alte.getSyncInt(ALTE_HYPERRELAXCOUNTER) <= 0) {
                         this.alte.setSyncInt(ALTE_HYPERRELAXCOUNTER, 20);
@@ -159,6 +171,6 @@ public class AlteHyperGoal extends Goal {
 
     public int getHyperCost() {
         float x = this.getHyperMod();
-        return (int) (11 - (x * 10) / (x + 10) * 4);
+        return (int) ((11 - (x * 10) / (x + 10)) * 4);
     }
 }
