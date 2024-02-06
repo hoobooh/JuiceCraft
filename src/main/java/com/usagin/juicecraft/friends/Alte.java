@@ -185,7 +185,7 @@ public class Alte extends OldWarFriend{
             this.punisherAnimState.animateWhen(this.getSyncInt(ALTE_PUNISHERCOUNTER)>0,this.tickCount);
             this.hyperStartAnimState.animateWhen(this.getSyncInt(ALTE_HYPERSTARTCOUNTER)>0,this.tickCount);
             this.hyperEndAnimState.animateWhen(this.getSyncInt(ALTE_HYPERENDCOUNTER)>0,this.tickCount);
-            this.hyperIdleAnimState.animateWhen(idle() && this.getSyncBoolean(ALTE_USINGHYPER) && !this.areAnimationsBusy(),this.tickCount);
+            this.hyperIdleAnimState.animateWhen(!this.isAggressive() && this.getSyncBoolean(ALTE_USINGHYPER) && !this.areAnimationsBusy(),this.tickCount);
             this.hyperWindupAnimState.animateWhen(this.getSyncInt(ALTE_HYPERWINDUPCOUNTER)>0,this.tickCount);
             this.hyperRelaxAnimState.animateWhen(this.getSyncInt(ALTE_HYPERRELAXCOUNTER)>0,this.tickCount);
             this.hyperShootAnimState.animateWhen(this.getSyncBoolean(ALTE_SHOOTING),this.tickCount);

@@ -81,28 +81,55 @@ public class AlteHyperGoal extends Goal {
 
     public boolean hadTarget = false;
     public void shootMiniguns(){
-        Snowball snowball = new Snowball(this.alte.level(), this.alte);
-        snowball.setNoGravity(true);
-        float targetradius=2;
+
+
+        float targetradius=1.5F;
         float lookAngleX=(float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
         float lookAngleY=(float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x);
-        float targetX = (float) (this.alte.getX() + targetradius * (float) Math.cos(lookAngleY));
-        float targetZ = (float) (this.alte.getZ() + targetradius * (float) Math.sin(lookAngleY));
-        float targetY = (float) (this.alte.getEyeY() + targetradius * (float) Math.sin(lookAngleX));
-        float backX = (float) (this.alte.getX() + targetradius * (float) Math.cos(lookAngleY + Math.PI));
-        float backZ = (float) (this.alte.getZ() + targetradius * (float) Math.sin(lookAngleY  + Math.PI));
-        float backY = (float) (this.alte.getEyeY() + targetradius * (float) Math.sin(lookAngleX  + Math.PI));
-        double d1 = targetX - this.alte.getX();
-        double d2 = targetY - snowball.getY();
-        double d3 = targetZ - this.alte.getZ();
-        double d4 = backX - this.alte.getX();
-        double d5 = backY - snowball.getY();
-        double d6 = backZ - this.alte.getZ();
-        //this.alte.setDeltaMovement(this.alte.getDeltaMovement().add(new Vec3(d4/1000,d5/1000,d6/1000)));
-        //double d4 = Math.sqrt(d1 * d1 + d3 * d3) * (double)0.2F;
+        float mini1dist=0.7F;
+        float originX1 = (float) (this.alte.getX() + mini1dist * (float) Math.cos(lookAngleY + Math.PI/2));
+        float originZ1 = (float) (this.alte.getZ() + mini1dist * (float) Math.sin(lookAngleY + Math.PI/2));
+        float originY1 = (float) (this.alte.getEyeY()-0.35F + mini1dist * (float) Math.sin(lookAngleX));
+
+        originX1 = (float) (originX1 + targetradius * (float) Math.cos(lookAngleY));
+        originZ1 = (float) (originZ1 + targetradius * (float) Math.sin(lookAngleY));
+        originY1 = (float) (originY1 + targetradius * (float) Math.sin(lookAngleX));
+
+        Snowball snowball = new Snowball(this.alte.level(), originX1,originY1,originZ1);
+        snowball.setNoGravity(true);
+
+        float targetX1 = (float) (originX1 + 1 * (float) Math.cos(lookAngleY));
+        float targetZ1 = (float) (originZ1 + 1 * (float) Math.sin(lookAngleY));
+        float targetY1 = (float) (originY1 + 1 * (float) Math.sin(lookAngleX));
+        double d1 = targetX1 - originX1;
+        double d2 = targetY1 - snowball.getY();
+        double d3 = targetZ1 - originZ1;
         snowball.shoot(d1, d2, d3, 1.6F, 12.0F);
         this.alte.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1);
         this.alte.level().addFreshEntity(snowball);
+
+        lookAngleX=(float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
+        lookAngleY=(float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x);
+        originX1 = (float) (this.alte.getX() + mini1dist * (float) Math.cos(lookAngleY - Math.PI/2));
+        originZ1 = (float) (this.alte.getZ() + mini1dist * (float) Math.sin(lookAngleY - Math.PI/2));
+        originY1 = (float) (this.alte.getEyeY()-0.4F + mini1dist * (float) Math.sin(lookAngleX));
+
+        originX1 = (float) (originX1 + targetradius * (float) Math.cos(lookAngleY));
+        originZ1 = (float) (originZ1 + targetradius * (float) Math.sin(lookAngleY));
+        originY1 = (float) (originY1 + targetradius * (float) Math.sin(lookAngleX));
+
+        snowball = new Snowball(this.alte.level(), originX1,originY1,originZ1);
+        snowball.setNoGravity(true);
+
+        targetX1 = (float) (originX1 + 1 * (float) Math.cos(lookAngleY));
+        targetZ1 = (float) (originZ1 + 1 * (float) Math.sin(lookAngleY));
+        targetY1 = (float) (originY1 + 1 * (float) Math.sin(lookAngleX));
+        d1 = targetX1 - originX1;
+        d2 = targetY1 - snowball.getY();
+        d3 = targetZ1 - originZ1;
+        snowball.shoot(d1, d2, d3, 1.6F, 12.0F);
+        this.alte.level().addFreshEntity(snowball);
+
     }
     public void shootPanels(){
 
@@ -118,17 +145,6 @@ public class AlteHyperGoal extends Goal {
             if (this.target != null && this.alte.hypermeter > 70) {
                 this.alte.getLookControl().setLookAt(this.target);
                 this.alte.lookAt(this.target, 30, 30);
-                float targetradius=2;
-                float lookAngleX=(float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
-                float lookAngleY=(float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x);
-                float backX = (float) (this.alte.getX() + targetradius * (float) Math.cos(lookAngleY));
-                float backZ = (float) (this.alte.getZ() + targetradius * (float) Math.sin(lookAngleY));
-                float backY = (float) (this.alte.getEyeY() + targetradius * (float) Math.sin(lookAngleX));
-                double d4 = backX - this.alte.getX();
-                double d5 = backY - this.alte.getY();
-                double d6 = backZ - this.alte.getZ();
-                //this.alte.setDeltaMovement(this.alte.getDeltaMovement().add(new Vec3(d4/2000,d5/2000,d6/2000)));
-
                 if (this.alte.getSyncBoolean(ALTE_SHOOTING)) {
                     this.alte.setAggressive(true);
                     this.shootMiniguns();
