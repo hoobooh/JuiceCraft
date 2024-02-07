@@ -131,7 +131,22 @@ public class AlteHyperGoal extends Goal {
         this.alte.level().addFreshEntity(snowball);
 
     }
+    int panelcooldown=0;
     public void shootPanels(){
+        //1
+        //3
+        //6
+        //9
+        //
+        if(this.panelcooldown==1 || this.panelcooldown==9 || this.panelcooldown==16){
+
+        }else if(this.panelcooldown==3 || this.panelcooldown==11 || this.panelcooldown==19){
+
+        }else if(this.panelcooldown==6 || this.panelcooldown==14){
+
+        }else if(this.panelcooldown==20){
+            this.panelcooldown=0;
+        }
 
     }
     public boolean markforstart=false;
@@ -149,7 +164,9 @@ public class AlteHyperGoal extends Goal {
                     this.alte.setAggressive(true);
                     this.shootMiniguns();
                     this.shootPanels();
+                    this.panelcooldown++;
                 } else {
+                    this.panelcooldown=0;
                     this.alte.setAggressive(false);
                     if (this.alte.getSyncInt(ALTE_HYPERWINDUPCOUNTER) <= 0 && this.alte.getSyncInt(ALTE_HYPERRELAXCOUNTER) <= 0) {
                         this.alte.setSyncInt(ALTE_HYPERWINDUPCOUNTER, 20);
