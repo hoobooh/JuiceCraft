@@ -849,7 +849,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         //render friend
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate(0, 0, 0);
-        renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos + 13, this.topPos + 18, this.leftPos + 88, this.topPos + 170, 55, 0.20F, pMouseX, pMouseY, this.friend);
+        renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos + 7, this.topPos + 30, this.leftPos + 90, this.topPos + 173, 55, 0.20F, pMouseX, pMouseY, this.friend);
         pGuiGraphics.pose().popPose();
 
         //hide gear icons if there is gear there

@@ -22,6 +22,7 @@ public class ParticleInit {
     public static final RegistryObject<SimpleParticleType> ALTE_ENERGY_PARTICLE = PARTICLES.register("alteenergyparticle", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> ALTE_LIGHTNING_PARTICLE = PARTICLES.register("altelightningparticle", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> ALTE_SELFDESTRUCT_PARTICLE = PARTICLES.register("alteselfdestructparticle", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> ALTE_IMPACT_PARTICLE = PARTICLES.register("alteimpactparticle", () -> new SimpleParticleType(true));
 
     public static final RegistryObject<SimpleParticleType> ALTE_GUNFLASH = PARTICLES.register("altegunflashparticle", () -> new SimpleParticleType(true));
 }

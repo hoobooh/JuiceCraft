@@ -12,6 +12,6 @@ public class FriendRangedCrossbowAttackGoal extends ShellCrossbowGoal {
         this.mob = pMob;
     }
     public boolean canUse() {
-        return this.mob.canDoThings() && this.mob.getTarget() != null && this.mob.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof CrossbowItem && this.isValidTarget();
+        return this.mob.canDoThings() && this.mob.getTarget() != null && this.mob.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof CrossbowItem && this.isValidTarget()  && !this.mob.isAttackLockedOut();
     }
 }

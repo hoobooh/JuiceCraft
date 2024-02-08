@@ -33,6 +33,7 @@ import static com.usagin.juicecraft.Init.ItemInit.ITEMS;
 import static com.usagin.juicecraft.Init.JuiceCreativeTab.CREATIVE_MODE_TABS;
 import static com.usagin.juicecraft.Init.MenuInit.MENUS;
 import static com.usagin.juicecraft.Init.ParticleInit.PARTICLES;
+import static com.usagin.juicecraft.Init.ProjectileInit.PROJECTILES;
 import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.SOUNDS;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -74,6 +75,7 @@ public class JuiceCraft
         MENUS.register(modEventBus);
         ENTITIES.register(modEventBus);
         PARTICLES.register(modEventBus);
+        PROJECTILES.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
 

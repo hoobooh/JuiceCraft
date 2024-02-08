@@ -92,7 +92,7 @@ public class CommonLiveEvents {
 
             //when friend kills something
 
-            if (event.getSource().getDirectEntity() instanceof Friend pFriend) {
+            if (event.getSource().getEntity() instanceof Friend pFriend) {
                 if (event.getEntity() instanceof Enemy) {
                     pFriend.setFriendEnemiesKilled(pFriend.getFriendEnemiesKilled() + 1);
                 }

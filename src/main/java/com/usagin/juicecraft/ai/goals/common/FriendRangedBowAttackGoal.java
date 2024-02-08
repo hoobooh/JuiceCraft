@@ -15,7 +15,7 @@ public class FriendRangedBowAttackGoal<T extends Friend> extends RangedBowAttack
         this.mob = pMob;
     }
     public boolean canUse() {
-        return this.mob.canDoThings() && this.mob.getTarget() != null && this.isHoldingBow();
+        return this.mob.canDoThings() && this.mob.getTarget() != null && this.isHoldingBow() && !this.mob.isAttackLockedOut();
     }
     public void start(){
         this.mob.getFriendNav().setShouldMove(false);

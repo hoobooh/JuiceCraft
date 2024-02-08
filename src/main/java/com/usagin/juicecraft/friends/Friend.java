@@ -88,6 +88,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int flowercooldown = 300;
     public int viewflower = 0;
     public int itempickup = 0;
+    int maxnorma=0;
     double[] normaprogress = new double[9];
     double[] normacaps = new double[]{0.1, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1};
     public int[] skillinfo = new int[6];
@@ -843,6 +844,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
+        pCompound.putInt("juicecraft.maxnorma",this.maxnorma);
         pCompound.putInt("juicecraft.itempickup", this.getFriendItemPickup());
         pCompound.putInt("juicecraft.timesincelastpat", this.timesincelastpat);
         pCompound.putIntArray("juicecraft.normaprogress", new int[]{(int) (this.normaprogress[0] * 10000), (int) (this.normaprogress[1] * 10000), (int) (this.normaprogress[2] * 10000), (int) (this.normaprogress[3] * 10000), (int) (this.normaprogress[4] * 10000), (int) (this.normaprogress[5] * 10000), (int) (this.normaprogress[6] * 10000), (int) (this.normaprogress[7] * 10000)});
@@ -902,6 +904,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
         super.readAdditionalSaveData(pCompound);
         this.initializeNew();
+        this.maxnorma=pCompound.getInt("juicecraft.maxnorma");
         int[] temp2 = pCompound.getIntArray("juicecraft.normaprogress");
         this.setTimeSinceLastPat(pCompound.getInt("juicecraft.timesincelastpat"));
         this.setFriendItemPickup(pCompound.getInt("juicecraft.itempickup"));
@@ -1084,10 +1087,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         int orig = (int) this.getFriendNorma();
         int newone = (int) n;
         if (this.setupcomplete) {
-            if (newone > orig && newone < 5 && newone > 1) {
+            if (newone > orig && newone < 5 && newone > 1 && newone > maxnorma) {
+                this.maxnorma=newone;
                 this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma" + newone).getString());
                 this.playSound(NORMAUP.get(), 1, 1);
-            } else if (newone > orig && newone == 5 && this.getOwner() != null) {
+            } else if (newone > orig && newone == 5 && this.getOwner() != null && newone > maxnorma) {
+                this.maxnorma=newone;
                 this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma5.0").getString() + this.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma5.1").getString());
                 this.playSound(NORMAUP.get(), 1, 1);
             }

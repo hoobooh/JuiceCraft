@@ -3,7 +3,6 @@ package com.usagin.juicecraft.particles;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -47,9 +46,9 @@ public class EnergyParticle extends TextureSheetParticle {
         this.setAlpha(((float) this.lifetime-this.age)/this.lifetime);
     }
     @OnlyIn(Dist.CLIENT)
-    public static class Provider implements ParticleProvider<SimpleParticleType> {
+    public static class AlteEnergyProvider implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
-        public Provider(SpriteSet spriteSet){
+        public AlteEnergyProvider(SpriteSet spriteSet){
             this.sprites=spriteSet;
         }
 

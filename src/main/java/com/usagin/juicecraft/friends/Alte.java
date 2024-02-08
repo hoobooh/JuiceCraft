@@ -221,7 +221,7 @@ public class Alte extends OldWarFriend{
         pCompound.putInt("juicecraft.alte.rodcooldown",this.getSyncInt(ALTE_RODCOOLDOWN));
         pCompound.putInt("juicecraft.alte.punishercooldown",this.punishercooldown);
         pCompound.putInt("juicecraft.alte.selfdestructcooldown",this.selfdestructcooldown);
-        pCompound.putBoolean("juicecraft.alte.usinghyper",this.usinghyper);
+        pCompound.putBoolean("juicecraft.alte.usinghyper",this.getSyncBoolean(ALTE_USINGHYPER));
     }
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -233,7 +233,7 @@ public class Alte extends OldWarFriend{
         this.sparkcooldown=pCompound.getInt("juicecraft.alte.sparkcooldown");
         this.punishercooldown=pCompound.getInt("juicecraft.alte.punishercooldown");
         this.selfdestructcooldown=pCompound.getInt("juicecraft.alte.selfdestructcooldown");
-        this.setSyncBoolean(ALTE_USINGHYPER,pCompound.getBoolean("juicecraft.alte.usinghyper"));
+        this.setAlteUsingHyper(pCompound.getBoolean("juicecraft.alte.usinghyper"));
     }
     public final AnimationState sparkAnimState = new AnimationState();
     public final AnimationState rodSummonAnimState = new AnimationState();
