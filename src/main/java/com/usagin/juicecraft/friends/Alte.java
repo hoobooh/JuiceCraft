@@ -61,6 +61,11 @@ public class Alte extends OldWarFriend{
     public boolean shouldMoveLeftArm() {
         return this.getSyncInt(ALTE_RODSHEATHCOUNTER) <= 0 && super.shouldMoveLeftArm();
     }
+    public void setFriendInSittingPose(boolean sit) {
+        if(!this.isUsingHyper()){
+            super.setFriendInSittingPose(sit);
+        }
+    }
     public boolean isAttackLockedOut(){
         return this.isUsingHyper() || this.areAnimationsBusy();
     }

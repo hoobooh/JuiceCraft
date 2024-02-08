@@ -89,6 +89,12 @@ public class AlteSoundInit {
     public static final RegistryObject<SoundEvent> ALTE_SELFDESTRUCT = registerFriendSoundEvent("alte_selfdestruct");
     public static final RegistryObject<SoundEvent> ALTE_MINIGUN = registerFriendSoundEvent("alte_minigun");
     public static final RegistryObject<SoundEvent> ALTE_PANEL = registerFriendSoundEvent("alte_panel");
+    public static final RegistryObject<SoundEvent> ALTE_HYPERSTART = registerFriendSoundEvent("alte_hyperstart");
+    public static final RegistryObject<SoundEvent> ALTE_HYPERWINDUP = registerFriendSoundEvent("alte_hyperwindup");
+    public static final RegistryObject<SoundEvent> ALTE_HYPERMINIGUNSPIN = registerFriendSoundEvent("alte_hyperminigunspin");
+    public static final RegistryObject<SoundEvent> ALTE_HYPERRELAX = registerFriendSoundEvent("alte_hyperrelax");
+    public static final RegistryObject<SoundEvent> ALTE_HYPEREND = registerFriendSoundEvent("alte_hyperend");
+    public static final RegistryObject<SoundEvent> ALTE_SHOCKWAVE = registerFriendSoundEvent("alte_shockwave");
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
 

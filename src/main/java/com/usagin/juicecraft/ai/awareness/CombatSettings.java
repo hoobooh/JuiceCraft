@@ -2,6 +2,7 @@ package com.usagin.juicecraft.ai.awareness;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.friends.Friend;
+import net.minecraft.world.entity.LivingEntity;
 import org.slf4j.Logger;
 
 import java.io.Serializable;
@@ -32,11 +33,18 @@ public class CombatSettings implements Serializable {
         this.defense=e;
     }
     public boolean getHyperCondition(Friend pFriend){
-        switch(this.hyperCondition){
-            case 0: //use when owner is <25%
-            case 1: //use when self is <25%
-            case 2: //use based on enemy difficulty rating
-            case 3: //use whenever possible.
+        if(this.hyperCondition==0){
+            if(pFriend.getOwner() !=null){
+                return pFriend.getOwner().getHealth()/pFriend.getOwner().getMaxHealth() > 0.25F;
+            }
+        }else if(this.hyperCondition==1){
+            return pFriend.getHealth()/pFriend.getMaxHealth()>0.25F;
+        }else if(this.hyperCondition==2){
+            if(pFriend.getTarget()!=null){
+                return EnemyEvaluator.evaluate(pFriend.getTarget()) > pFriend.getFriendExperience()/2;
+            }
+        }else{
+            return true;
         }
         return false;
     }

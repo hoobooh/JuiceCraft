@@ -1,4 +1,30 @@
 {
+  "alte_shockwave": {
+    "sounds": [
+      "juicecraft:alte_shockwave"
+    ]
+  },
+  "alte_hyperstart": {
+    "sounds": [
+      "juicecraft:alte_hyperstart"
+    ]
+  },"alte_hyperwindup": {
+  "sounds": [
+    "juicecraft:alte_hyperwindup"
+  ]
+},"alte_hyperrelax": {
+  "sounds": [
+    "juicecraft:alte_hyperrelax"
+  ]
+},"alte_hyperminigunspin": {
+  "sounds": [
+    "juicecraft:alte_hyperminigunspin"
+  ]
+},"alte_hyperend": {
+  "sounds": [
+    "juicecraft:alte_hyperend"
+  ]
+},
   "alte_punisher_voice": {
     "sounds": [
       "juicecraft:alte_punisher_voice"

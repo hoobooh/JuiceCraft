@@ -31,6 +31,7 @@ import java.util.List;
 
 import static com.usagin.juicecraft.Init.ParticleInit.ALTE_ENERGY_PARTICLE;
 import static com.usagin.juicecraft.Init.ParticleInit.ALTE_LIGHTNING_PARTICLE;
+import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
 import static com.usagin.juicecraft.friends.Alte.*;
 
 public class AlteHyperGoal extends Goal {
@@ -49,10 +50,9 @@ public class AlteHyperGoal extends Goal {
             return true;
         }
         this.target = this.alte.getTarget();
-        if (this.target == null) {
+        if (this.target == null || !this.alte.getCombatSettings().getHyperCondition(this.alte)) {
             return false;
         }
-        //LOGGER.info(this.alte.getSyncInt(ALTE_HYPERSTARTCOUNTER) + " START " + this.alte.getSyncInt(ALTE_HYPERENDCOUNTER) +"");
         return (this.alte.getSkillEnabled()[5] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.hypermeter>=24000 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy());
     }
 
@@ -68,7 +68,7 @@ public class AlteHyperGoal extends Goal {
         this.alte.setInvulnerable(true);
         if (!this.alte.isUsingHyper()) {
             this.alte.setSyncInt(ALTE_HYPERSTARTCOUNTER, 120);
-            //this.alte.playSound(ALTE_HYPERSTART.get());
+            this.alte.playSound(ALTE_HYPERSTART.get());
         }
     }
 
@@ -77,12 +77,11 @@ public class AlteHyperGoal extends Goal {
         this.alte.setInvulnerable(false);
         this.alte.setAggressive(false);
         this.alte.getFriendNav().setShouldMove(true);
-        //this.alte.setSyncInt(ALTE_HYPERENDCOUNTER, 60);
-        //this.alte.playSound(ALTE_HYPEREND.get());
     }
 
     public boolean hadTarget = false;
     public void shootMiniguns(){
+        this.alte.playSound(ALTE_HYPERMINIGUNSPIN.get());
         if(this.alte.tickCount%2==0){
         this.alte.playSound(AlteSoundInit.ALTE_MINIGUN.get());}
 
@@ -215,6 +214,9 @@ public class AlteHyperGoal extends Goal {
 
         float lookAngleX=(float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
         float lookAngleY=(float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x);
+        if(this.panelcooldown==10){
+            this.alte.playSound(ALTE_SHOCKWAVE.get());
+        }
         if(this.panelcooldown==1 || this.panelcooldown==9 || this.panelcooldown==16){
             this.panelOne(lookAngleY,lookAngleX,1);
             this.panelFour(lookAngleY,lookAngleX,1);
@@ -258,7 +260,7 @@ public class AlteHyperGoal extends Goal {
                     this.alte.setAggressive(false);
                     if (this.alte.getSyncInt(ALTE_HYPERWINDUPCOUNTER) <= 0 && this.alte.getSyncInt(ALTE_HYPERRELAXCOUNTER) <= 0) {
                         this.alte.setSyncInt(ALTE_HYPERWINDUPCOUNTER, 20);
-                        //this.alte.playSound(ALTE_HYPER_WINDUP.get());
+                        this.alte.playSound(ALTE_HYPERWINDUP.get());
                     } else if (this.alte.getSyncInt(ALTE_HYPERWINDUPCOUNTER) == 1) {
                         this.alte.setSyncBoolean(ALTE_SHOOTING,true);
                     }
@@ -267,13 +269,14 @@ public class AlteHyperGoal extends Goal {
             } else {
                 if(this.alte.hypermeter<70 && this.alte.getSyncInt(ALTE_HYPERENDCOUNTER) <=0){
                     this.alte.setSyncInt(ALTE_HYPERENDCOUNTER, 60);
+                    this.alte.playSound(ALTE_HYPEREND.get());
                 }
                 else if (this.alte.getSyncBoolean(ALTE_SHOOTING)) {
                     this.alte.setAggressive(false);
                     this.alte.setSyncBoolean(ALTE_SHOOTING,false);
                     if (this.alte.getSyncInt(ALTE_HYPERRELAXCOUNTER) <= 0) {
                         this.alte.setSyncInt(ALTE_HYPERRELAXCOUNTER, 20);
-                        //this.alte.playSound(ALTE_HYPER_RELAX.get());
+                        this.alte.playSound(ALTE_HYPERRELAX.get());
                     }
                 }
             }}
