@@ -1,10 +1,13 @@
 package com.usagin.juicecraft.Init;
 
 import com.usagin.juicecraft.items.SweetItem;
+import net.minecraft.ChatFormatting;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -27,5 +30,8 @@ public class ItemInit {
     public static final RegistryObject<Item> SAKISCOOKIE = ITEMS.register("sakiscookie", () -> new SweetItem(new Item.Properties().food((new FoodProperties.Builder()).nutrition(8).saturationMod(3F).effect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 600, 2),1F).build())));
     public static final RegistryObject<Item> RAWSEAGULL = ITEMS.register("rawseagull", () -> new SweetItem(new Item.Properties().food((new FoodProperties.Builder()).nutrition(3).saturationMod(1F).effect(new MobEffectInstance(MobEffects.HUNGER, 400, 1),1F).build())));
     public static final RegistryObject<Item> COOKEDSEAGULL = ITEMS.register("cookedseagull", () -> new SweetItem(new Item.Properties().food((new FoodProperties.Builder()).nutrition(6).saturationMod(3F).effect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 400, 1),0.17F).build())));
+
+    //SPAWN EGGS
+    public static final RegistryObject<Item> ALTE_SPAWN_EGG = ITEMS.register("alte_spawn_egg", () ->  new ForgeSpawnEggItem(EntityInit.ALTE, ChatFormatting.LIGHT_PURPLE.getColor(),ChatFormatting.DARK_PURPLE.getColor(),new Item.Properties()));
 
 }

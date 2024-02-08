@@ -41,7 +41,7 @@ public class AlteMinigunProjectile extends FriendEnergyProjectile {
         Friend alte = (Friend) this.getOwner();
         int i = 0;
         if(alte!=null){
-            i = (int)(10*alte.getSkillLevels()[5]);
+            i = (int)(10+alte.getSkillLevels()[5]);
         }
         entity.hurt(this.damageSources().thrown(this, this.getOwner()), (float)i);
     }

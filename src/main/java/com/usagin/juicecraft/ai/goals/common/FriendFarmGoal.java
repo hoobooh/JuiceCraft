@@ -30,7 +30,6 @@ public class FriendFarmGoal extends Goal {
         return !this.friend.farmqueue.isEmpty() && this.friend.canDoThings() && this.friend.getPose() != Pose.SLEEPING;
     }
     public void start() {
-        LOGGER.info("HIT");
         while (!this.friend.farmqueue.isEmpty()) {
             BlockPos temppos = this.friend.farmqueue.poll();
             if (this.friend.distanceToSqr(temppos.getX(), temppos.getY(), temppos.getZ()) < 20) {

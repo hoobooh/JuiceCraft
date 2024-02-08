@@ -2117,7 +2117,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int aggroCounter = 0;
     protected void actuallyHurt(@NotNull DamageSource pSource, float pAmount){
         if(!this.isInvulnerableTo(pSource)){
-            LOGGER.info("HIT");
         this.playVoice(this.getHurt(pAmount));
         this.mood -= (int) (3 * this.getPeaceAffinityModifier());
         super.actuallyHurt(pSource, pAmount);}

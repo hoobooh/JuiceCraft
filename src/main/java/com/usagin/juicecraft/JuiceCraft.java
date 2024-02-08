@@ -71,12 +71,12 @@ public class JuiceCraft
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
-        ITEMS.register(modEventBus);
         MENUS.register(modEventBus);
         ENTITIES.register(modEventBus);
         PARTICLES.register(modEventBus);
         PROJECTILES.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
+        ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
