@@ -17,9 +17,12 @@ import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.items.ModuleItem;
 import com.usagin.juicecraft.items.SweetItem;
 import com.usagin.juicecraft.items.SweetHandler;
+import com.usagin.juicecraft.network.CircleParticlePacketHandler;
+import com.usagin.juicecraft.network.ToClientCircleParticlePacket;
 import com.usagin.juicecraft.particles.DiceHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -374,7 +377,39 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean canDoThings() {
         return !this.getInSittingPose() && !this.isDying && this.getVehicle()==null;
     }
+    public<T extends ParticleOptions> void spawnParticlesInRandomSpreadAtEntity(Entity entity, int count, float radius, float distance, ServerLevel sLevel, T type){
+        float targetX = (float) entity.getX();
+        float targetZ = (float) entity.getZ();
+        float targetY = (float) entity.getEyeY();
 
+        sLevel.sendParticles(type,targetX,targetY,targetZ,count,radius,radius,radius,1);
+    }
+    public<T extends ParticleOptions> void spawnParticlesInUpFacingCircle(Entity entity, float radius, T type){
+        CircleParticlePacketHandler.sendToClient(new ToClientCircleParticlePacket(entity.getId(),radius,type),this);
+    }
+    public<T extends ParticleOptions> void spawnParticlesInSphereAtEntity(Entity entity, int count, float radius, float distance, ServerLevel sLevel, T type, float yOffset){
+        if(count<1){
+            return;
+        }
+        float targetX = (float) entity.getX();
+        float targetZ = (float) entity.getZ();
+        float targetY = (float) entity.getEyeY();
+
+        for(int i = 0; i < count; i++){
+            float x = (float) (Math.sin(i))/2*radius;
+            float z = (float) (Math.cos(i))/2*radius;
+            if(this.getRandom().nextBoolean()){
+                x=-x;
+                z=-z;
+            }
+            sLevel.sendParticles(type,targetX + x,targetY + yOffset,targetZ + z,1,0,0,0,0.5);
+
+        }
+
+        this.spawnParticlesInSphereAtEntity(entity, (int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset+0.3F);
+        this.spawnParticlesInSphereAtEntity(entity, (int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset-0.3F);
+
+    }
     public boolean wantsToPickUp(ItemStack pStack) {
 
 
@@ -1715,6 +1750,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             int k1 = Mth.floor(this.getXRot() * 256.0F / 360.0F);
             level.getChunkSource().broadcastAndSend(this,new ClientboundMoveEntityPacket.Rot(this.getId(),(byte) l,(byte) k1,this.onGround()));
         }
+    }
+    public void alignBodyWithHeadAngle(){
+        this.yBodyRot = this.yHeadRot;
+        this.yBodyRotO = this.yHeadRotO;
     }
     @Override
     public void aiStep() {

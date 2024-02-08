@@ -45,6 +45,6 @@ public class FriendSitGoal extends Goal {
     }
     @Override
     public boolean canUse() {
-        return (friend.getInSittingPose()&&!friend.isDying&&!friend.isFallFlying()&&(!friend.isInWater() || friend.onGround()));
+        return (!friend.isAttackLockedOut() && friend.getInSittingPose()&&!friend.isDying&&!friend.isFallFlying()&&(!friend.isInWater() || friend.onGround()));
     }
 }

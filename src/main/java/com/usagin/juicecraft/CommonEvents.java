@@ -68,6 +68,7 @@ public class CommonEvents {
             PlaySoundPacketHandler.register();
             UpdateSkillPacketHandler.register();
             ItemPickupPacketHandler.register();
+            CircleParticlePacketHandler.register();
         });
     }
 

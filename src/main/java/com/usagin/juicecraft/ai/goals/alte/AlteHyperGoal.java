@@ -228,6 +228,7 @@ public class AlteHyperGoal extends Goal {
             this.panelTwo(lookAngleY,lookAngleX,-1);
             this.alte.playSound(AlteSoundInit.ALTE_PANEL.get());
         }else if(this.panelcooldown==20){
+            this.shockwave();
             this.panelcooldown=0;
         }
 
@@ -245,7 +246,8 @@ public class AlteHyperGoal extends Goal {
             if(this.markforstart){this.markforstart=false;}else{
             if (this.target != null && this.alte.hypermeter > 70) {
                 this.alte.getLookControl().setLookAt(this.target);
-                this.alte.lookAt(this.target, 30, 30);
+                this.alte.lookAt(this.target, 10, 10);
+                this.alte.alignBodyWithHeadAngle();
                 if (this.alte.getSyncBoolean(ALTE_SHOOTING)) {
                     this.alte.setAggressive(true);
                     this.shootMiniguns();
@@ -283,27 +285,30 @@ public class AlteHyperGoal extends Goal {
                     this.alte.setAlteUsingHyper(true);
                     this.markforstart=true;
                 } else {
-                    if (n == 24) {
-                        AABB knockback = this.alte.getBoundingBox().inflate(4);
-                        List<Entity> list = this.alte.level().getEntities(this.alte, knockback);
-                        for (Entity entity : list) {
-                            if (entity instanceof LivingEntity ent) {
-                                if (EnemyEvaluator.shouldDoHurtTarget(this.alte, ent)) {
-                                    ent.knockback(3, Mth.sin(this.alte.getYRot() * ((float) Math.PI / 180F)), (-Mth.cos(this.alte.getYRot() * ((float) Math.PI / 180F))));
-                                    ent.hurt(this.alte.damageSources().mobAttack(this.alte), 0.1F);
-                                    ent.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 3));
-                                    if (this.alte.level() instanceof ServerLevel level) {
-                                        this.alte.spawnParticlesInRandomSpreadAtEntity(ent, 3, 0.5F, 0, level, ALTE_LIGHTNING_PARTICLE.get());
-                                    }
-                                }
-                            }
-                        }
-                        if (this.alte.level() instanceof ServerLevel level) {
-                            this.alte.spawnParticlesInSphereAtEntity(this.alte, 5, 1, 0, level, ALTE_ENERGY_PARTICLE.get(), 0);
-                        }
+                    if (n == 96) {
+                        this.shockwave();
                     }
                 }
             }
+        }
+    }
+    public void shockwave(){
+        AABB knockback = this.alte.getBoundingBox().inflate(4);
+        List<Entity> list = this.alte.level().getEntities(this.alte, knockback);
+        for (Entity entity : list) {
+            if (entity instanceof LivingEntity ent) {
+                if (EnemyEvaluator.shouldDoHurtTarget(this.alte, ent)) {
+                    ent.knockback(3, Mth.sin(this.alte.getYRot() * ((float) Math.PI / 180F)), (-Mth.cos(this.alte.getYRot() * ((float) Math.PI / 180F))));
+                    ent.hurt(this.alte.damageSources().mobAttack(this.alte), 0.1F);
+                    ent.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 3));
+                    if (this.alte.level() instanceof ServerLevel level) {
+                        this.alte.spawnParticlesInRandomSpreadAtEntity(ent, 3, 0.5F, 0, level, ALTE_LIGHTNING_PARTICLE.get());
+                    }
+                }
+            }
+        }
+        if (this.alte.level() instanceof ServerLevel level) {
+            this.alte.spawnParticlesInUpFacingCircle(this.alte, 1.5F, ALTE_ENERGY_PARTICLE.get());
         }
     }
 

@@ -9,6 +9,8 @@ import com.usagin.juicecraft.ai.goals.alte.AlteShockRodGoal;
 import com.usagin.juicecraft.ai.goals.alte.AlteSparkGoal;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.alte.AlteDialogueManager;
+import com.usagin.juicecraft.network.CircleParticlePacketHandler;
+import com.usagin.juicecraft.network.ToClientCircleParticlePacket;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,11 +19,14 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
 
@@ -84,6 +89,7 @@ public class Alte extends OldWarFriend{
         this.getEntityData().set(FRIEND_ISDYING, false);
         this.isDying = false;
         this.playVoice(this.getRecovery());
+        this.setInvulnerable(false);
         this.getFriendNav().setShouldMove(true);
     }
     @Override
@@ -115,36 +121,6 @@ public class Alte extends OldWarFriend{
             }
         }
         return super.doHurtTarget(pEntity);
-    }
-    public<T extends ParticleOptions> void spawnParticlesInRandomSpreadAtEntity(Entity entity, int count, float radius,float distance, ServerLevel sLevel, T type){
-        float targetX = (float) entity.getX();
-        float targetZ = (float) entity.getZ();
-        float targetY = (float) entity.getEyeY();
-
-        sLevel.sendParticles(type,targetX,targetY,targetZ,count,radius,radius,radius,1);
-    }
-    public<T extends ParticleOptions> void spawnParticlesInSphereAtEntity(Entity entity, int count, float radius, float distance, ServerLevel sLevel, T type, float yOffset){
-        if(count<1){
-            return;
-        }
-        float targetX = (float) entity.getX();
-        float targetZ = (float) entity.getZ();
-        float targetY = (float) entity.getEyeY();
-
-        for(int i = 0; i < count; i++){
-            float x = (float) (Math.sin(i))/2*radius;
-            float z = (float) (Math.cos(i))/2*radius;
-            if(this.getRandom().nextBoolean()){
-                x=-x;
-                z=-z;
-            }
-            sLevel.sendParticles(type,targetX + x,targetY + yOffset,targetZ + z,1,0,0,0,0.5);
-
-        }
-
-        this.spawnParticlesInSphereAtEntity(entity, (int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset+0.3F);
-        this.spawnParticlesInSphereAtEntity(entity, (int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset-0.3F);
-
     }
     public boolean shouldMoveLegs(){
         return !this.isUsingHyper() && this.getSyncInt(ALTE_PUNISHERCOUNTER)<=0;

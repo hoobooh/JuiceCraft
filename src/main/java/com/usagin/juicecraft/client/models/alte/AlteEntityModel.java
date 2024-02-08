@@ -147,8 +147,11 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 
     @Override
     public void setupAnim(Alte alt, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-
         super.setupAnim(alt, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
+        if(alt.isUsingHyper()){
+            this.root().yRot=this.parts.head().yRot;
+            this.parts.head().yRot=0;
+        }
         this.toggleArsenal(alt.isUsingHyper());
         this.toggleShockRod(alt.isUsingShockRod());
     }
