@@ -3,6 +3,15 @@
     "sounds": [
       "juicecraft:alte_punisher_voice"
     ]
+  },"alte_minigun": {
+  "sounds": [
+    "juicecraft:alte_minigun"
+  ]
+},
+  "alte_panel": {
+    "sounds": [
+      "juicecraft:alte_panel"
+    ]
   },
   "alte_selfdestruct": {
     "sounds": [

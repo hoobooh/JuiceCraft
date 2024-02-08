@@ -32,7 +32,7 @@ public class AlteSelfDestructParticle extends AlteLightningParticle{
         }
         @Nullable
         @Override
-        public Particle createParticle(SimpleParticleType pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {LOGGER.info("HJIT");
+        public Particle createParticle(SimpleParticleType pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
             return new AlteSelfDestructParticle(pLevel, pX,pY,pZ, pXSpeed,this.sprites);
         }
     }

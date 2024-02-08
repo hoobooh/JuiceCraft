@@ -44,8 +44,5 @@ public abstract class FriendProjectile extends ThrowableProjectile {
     @Override
     public void tick(){
         super.tick();
-        if(this.tickCount>400){
-            this.kill();
-        }
     }
 }

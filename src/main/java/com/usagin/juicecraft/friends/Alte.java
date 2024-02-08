@@ -28,6 +28,7 @@ import net.minecraftforge.common.ForgeMod;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.usagin.juicecraft.Init.ParticleInit.ALTE_LIGHTNING_PARTICLE;
 import static com.usagin.juicecraft.Init.ParticleInit.ALTE_SELFDESTRUCT_PARTICLE;
 import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
 
@@ -171,6 +172,9 @@ public class Alte extends OldWarFriend{
                 if(this.selfdestructtimer<=0){
                     this.doSelfDestruct();
                 }else {
+                    if(this.tickCount%3==0){
+                        this.spawnParticlesInRandomSpreadAtEntity(this,3,0.5F,0,(ServerLevel) this.level(),ALTE_LIGHTNING_PARTICLE.get());
+                    }
                     this.selfdestructtimer--;
                 }
             }

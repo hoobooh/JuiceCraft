@@ -1,5 +1,7 @@
 package com.usagin.juicecraft.ai.goals.alte;
 
+import com.usagin.juicecraft.Init.ParticleInit;
+import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.projectiles.*;
@@ -81,7 +83,8 @@ public class AlteHyperGoal extends Goal {
 
     public boolean hadTarget = false;
     public void shootMiniguns(){
-
+        if(this.alte.tickCount%2==0){
+        this.alte.playSound(AlteSoundInit.ALTE_MINIGUN.get());}
 
         float targetradius=1.5F;
         float lookAngleX=(float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
@@ -89,15 +92,18 @@ public class AlteHyperGoal extends Goal {
         float mini1dist=0.7F;
         float originX1 = (float) (this.alte.getX() + mini1dist * (float) Math.cos(lookAngleY + Math.PI/2));
         float originZ1 = (float) (this.alte.getZ() + mini1dist * (float) Math.sin(lookAngleY + Math.PI/2));
-        float originY1 = (float) (this.alte.getEyeY()-0.35F + mini1dist * (float) Math.sin(lookAngleX));
+        float originY1 = (float) (this.alte.getEyeY()-0.55F + mini1dist * (float) Math.sin(lookAngleX));
 
         originX1 = (float) (originX1 + targetradius * (float) Math.cos(lookAngleY));
         originZ1 = (float) (originZ1 + targetradius * (float) Math.sin(lookAngleY));
         originY1 = (float) (originY1 + targetradius * (float) Math.sin(lookAngleX));
 
+
         AlteMinigunProjectile snowball = new AlteMinigunProjectile(this.alte, originX1,originY1,originZ1);
         snowball.setNoGravity(true);
-
+        if(this.alte.level() instanceof ServerLevel level && this.alte.tickCount%2==0){
+            level.sendParticles(ParticleInit.ALTE_GUNFLASH.get(),originX1,originY1,originZ1,1,0,0,0,0);
+        }
         float targetX1 = (float) (originX1 + 1 * (float) Math.cos(lookAngleY));
         float targetZ1 = (float) (originZ1 + 1 * (float) Math.sin(lookAngleY));
         float targetY1 = (float) (originY1 + 1 * (float) Math.sin(lookAngleX));
@@ -105,12 +111,11 @@ public class AlteHyperGoal extends Goal {
         double d2 = targetY1 - snowball.getY();
         double d3 = targetZ1 - originZ1;
         snowball.shoot(d1, d2, d3, 1.6F, 12.0F);
-        this.alte.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1);
         this.alte.level().addFreshEntity(snowball);
 
         originX1 = (float) (this.alte.getX() + mini1dist * (float) Math.cos(lookAngleY - Math.PI/2));
         originZ1 = (float) (this.alte.getZ() + mini1dist * (float) Math.sin(lookAngleY - Math.PI/2));
-        originY1 = (float) (this.alte.getEyeY()-0.35F + mini1dist * (float) Math.sin(lookAngleX));
+        originY1 = (float) (this.alte.getEyeY()-0.55F + mini1dist * (float) Math.sin(lookAngleX));
 
         originX1 = (float) (originX1 + targetradius * (float) Math.cos(lookAngleY));
         originZ1 = (float) (originZ1 + targetradius * (float) Math.sin(lookAngleY));
@@ -118,7 +123,9 @@ public class AlteHyperGoal extends Goal {
 
         snowball = new AlteMinigunProjectile(this.alte, originX1,originY1,originZ1);
         snowball.setNoGravity(true);
-
+        if(this.alte.level() instanceof ServerLevel level  && this.alte.tickCount%2==0){
+            level.sendParticles(ParticleInit.ALTE_GUNFLASH.get(),originX1,originY1,originZ1,1,0,0,0,0);
+        }
         targetX1 = (float) (originX1 + 1 * (float) Math.cos(lookAngleY));
         targetZ1 = (float) (originZ1 + 1 * (float) Math.sin(lookAngleY));
         targetY1 = (float) (originY1 + 1 * (float) Math.sin(lookAngleX));
@@ -152,7 +159,6 @@ public class AlteHyperGoal extends Goal {
         double d2 = targetY1 - snowball.getY();
         double d3 = targetZ1 - originZ1;
         snowball.shoot(d1, d2, d3, 1.6F, 12.0F);
-        this.alte.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1);
         this.alte.level().addFreshEntity(snowball);
     }
     public void panelFour(float lookAngleY, float lookAngleX, int mod){
@@ -178,7 +184,6 @@ public class AlteHyperGoal extends Goal {
         double d2 = targetY1 - snowball.getY();
         double d3 = targetZ1 - originZ1;
         snowball.shoot(d1, d2, d3, 1.6F, 12.0F);
-        this.alte.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1);
         this.alte.level().addFreshEntity(snowball);
     }
     public void panelTwo(float lookAngleY, float lookAngleX, int mod){
@@ -204,7 +209,6 @@ public class AlteHyperGoal extends Goal {
         double d2 = targetY1 - snowball.getY();
         double d3 = targetZ1 - originZ1;
         snowball.shoot(d1, d2, d3, 1.6F, 12.0F);
-        this.alte.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1);
         this.alte.level().addFreshEntity(snowball);
     }
     public void shootPanels(){
@@ -214,12 +218,15 @@ public class AlteHyperGoal extends Goal {
         if(this.panelcooldown==1 || this.panelcooldown==9 || this.panelcooldown==16){
             this.panelOne(lookAngleY,lookAngleX,1);
             this.panelFour(lookAngleY,lookAngleX,1);
+            this.alte.playSound(AlteSoundInit.ALTE_PANEL.get());
         }else if(this.panelcooldown==3 || this.panelcooldown==11 || this.panelcooldown==19){
             this.panelOne(lookAngleY,lookAngleX,-1);
             this.panelFour(lookAngleY,lookAngleX,-1);
+            this.alte.playSound(AlteSoundInit.ALTE_PANEL.get());
         }else if(this.panelcooldown==6 || this.panelcooldown==14){
             this.panelTwo(lookAngleY,lookAngleX,1);
             this.panelTwo(lookAngleY,lookAngleX,-1);
+            this.alte.playSound(AlteSoundInit.ALTE_PANEL.get());
         }else if(this.panelcooldown==20){
             this.panelcooldown=0;
         }

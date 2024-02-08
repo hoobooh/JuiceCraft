@@ -87,6 +87,8 @@ public class AlteSoundInit {
     public static final RegistryObject<SoundEvent> ALTE_PUNISHER = registerFriendSoundEvent("alte_punisher");
     public static final RegistryObject<SoundEvent> ALTE_PUNISHER_VOICE = registerFriendSoundEvent("alte_punisher_voice");
     public static final RegistryObject<SoundEvent> ALTE_SELFDESTRUCT = registerFriendSoundEvent("alte_selfdestruct");
+    public static final RegistryObject<SoundEvent> ALTE_MINIGUN = registerFriendSoundEvent("alte_minigun");
+    public static final RegistryObject<SoundEvent> ALTE_PANEL = registerFriendSoundEvent("alte_panel");
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
 

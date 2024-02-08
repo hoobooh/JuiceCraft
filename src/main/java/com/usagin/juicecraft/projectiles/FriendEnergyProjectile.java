@@ -35,4 +35,10 @@ public abstract class FriendEnergyProjectile extends FriendProjectile{
         }
 
     }
+    public void tick(){
+        super.tick();
+        if(this.tickCount>400){
+            this.kill();
+        }
+    }
 }
