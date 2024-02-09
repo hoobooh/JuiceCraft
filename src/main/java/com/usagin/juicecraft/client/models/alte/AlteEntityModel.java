@@ -130,7 +130,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
     }
     public void idleAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         if (alte.isUsingHyper()) {
-            if(!alte.areAnimationsBusy()){
+            if(!alte.areAnimationsBusy() && !alte.hyperShootAnimState.isStarted()){
                 animate(alte.hyperIdleAnimState, hyperIdle, pAgeInTicks);
             }
         } else {

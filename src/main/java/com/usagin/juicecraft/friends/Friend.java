@@ -2124,6 +2124,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean canBeSeenAsEnemy() {
         return this.canBeSeenByAnyone();
     }
+    public void playSound(SoundEvent pSound, float pVolume, float pPitch) {
+        super.playSound(SoundEvent.createFixedRangeEvent(pSound.getLocation(),64), pVolume, pPitch);
+
+    }
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
         boolean b;
