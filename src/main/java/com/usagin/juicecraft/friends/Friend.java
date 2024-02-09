@@ -1171,7 +1171,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     protected void registerGoals() {
         this.goalSelector.addGoal(8, new FriendLonelyGoal(this, 1, false));
         this.goalSelector.addGoal(1, new FriendFloatGoal(this));
-        this.goalSelector.addGoal(4, new OpenDoorGoal(this, true));
+        this.goalSelector.addGoal(4, new FriendOpenDoorGoal(this, true));
         this.goalSelector.addGoal(4, new FriendLadderClimbGoal(this));
         this.goalSelector.addGoal(5, new FriendMeleeAttackGoal(this, 1.0D, true));
         this.goalSelector.addGoal(6, new FriendSleepGoal(this));
