@@ -166,7 +166,7 @@ public class AltePunisherGoal extends Goal {
                     f += EnchantmentHelper.getDamageBonus(this.alte.getFriendWeapon(), ((LivingEntity) pEntity).getMobType());
                     f1 += (float) EnchantmentHelper.getKnockbackBonus(this.alte);
                 }
-                flag = pEntity.hurt(this.alte.damageSources().mobAttack(this.alte), f);
+                flag = pEntity.hurt(this.alte.damageSources().explosion(this.alte,this.alte), f);
                 if (flag) {
                     pEntity.playSound(UniversalSoundInit.CRITICAL_HIT.get(),0.1F,1);
                     this.alte.setLastHurtMob(pEntity);
