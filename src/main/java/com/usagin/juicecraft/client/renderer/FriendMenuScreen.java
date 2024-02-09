@@ -92,6 +92,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
     WidgetSprites speechConnectorSprite = new WidgetSprites(SPEECH_CONNECTOR_BEFORE, SPEECH_CONNECTOR_AFTER);
     FriendScrollWidget scrollWidget;
     FriendButton itempickupButton;
+    ResourceLocation friendtheme;
 
     public FriendMenuScreen(FriendMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -972,11 +973,15 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
         pGuiGraphics.blit(MAINTEXTURE, this.leftPos - 1, this.topPos - 1, -1000, 0, 0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
 
+
+
         //render friend
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate(0, 0, 0);
         renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos + 7, this.topPos + 30, this.leftPos + 90, this.topPos + 173, 55, 0.20F, pMouseX, pMouseY, this.friend);
         pGuiGraphics.pose().popPose();
+
+        pGuiGraphics.blit(FRIEND_THEME, this.leftPos - 19, this.topPos - 20, -1000, 0, 0, 420, 300,420, 300);
 
         //hide gear icons if there is gear there
         for (int i = 0; i < 4; i++) {
