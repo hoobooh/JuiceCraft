@@ -60,8 +60,9 @@ public class EnemyEvaluator {
         int effectCount = pEntity.getActiveEffects().size();
         double armor = pEntity.getArmorValue();
         boolean familiar = pEntity.getMobType() != MobType.UNDEFINED;
-        danger += 1.04 * Mth.clamp(health, 1, Math.abs(health)) * Mth.clamp(armor, 1, Math.abs(armor));
-        danger += attack * 10;
+        danger += 0.54 * Mth.clamp(health, 1, Math.abs(health)) * Mth.clamp(armor, 1, Math.abs(armor));
+        danger*=attack+1;
+        danger += attack * 20;
         danger += (speed) * 20;
         danger += size * size;
         danger *= (effectCount / 2 + 1);
