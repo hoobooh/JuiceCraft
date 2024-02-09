@@ -11,7 +11,6 @@ import static com.usagin.juicecraft.JuiceCraft.MODID;
 import static net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS;
 
 public class UniversalSoundInit {
-    static Logger LOGGER = LogUtils.getLogger();
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(SOUND_EVENTS, MODID);
     public static final RegistryObject<SoundEvent> RECOVERY = registerFriendSoundEvent("friend_recovery");
     public static final RegistryObject<SoundEvent> FRIEND_DEATH = registerFriendSoundEvent("friend_death");
@@ -25,11 +24,12 @@ public class UniversalSoundInit {
     public static final RegistryObject<SoundEvent> GLITCH = registerFriendSoundEvent("friend_glitch");
     public static final RegistryObject<SoundEvent> LASER_BLAST = registerFriendSoundEvent("laser_blast");
     public static final RegistryObject<SoundEvent> ELECTRIC_STATIC = registerFriendSoundEvent("electric_static");
-
     public static final RegistryObject<SoundEvent> DICE_THROW = registerFriendSoundEvent("dicethrow");
     public static final RegistryObject<SoundEvent> MEMORY_WRITE = registerFriendSoundEvent("memory_write");
     public static final RegistryObject<SoundEvent> CRITICAL_HIT = registerFriendSoundEvent("critical_hit");
-    public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
+    static Logger LOGGER = LogUtils.getLogger();
+
+    public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, name)));
     }
 }

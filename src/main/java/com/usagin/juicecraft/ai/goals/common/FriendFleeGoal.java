@@ -8,7 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
@@ -16,19 +15,20 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 
 public class FriendFleeGoal extends Goal {
-    Friend friend;
-    LivingEntity target;
-    public FriendFleeGoal(Friend friend){
-        this.friend=friend;
-        this.pathNav=friend.getNavigation();
-    }
+    private static final Logger LOGGER = LogUtils.getLogger();
+    protected final PathNavigation pathNav;
     @Nullable
     protected Path path;
-    protected final PathNavigation pathNav;
-    private static final Logger LOGGER = LogUtils.getLogger();
+    Friend friend;
+    LivingEntity target;
+    public FriendFleeGoal(Friend friend) {
+        this.friend = friend;
+        this.pathNav = friend.getNavigation();
+    }
+
     @Override
     public boolean canUse() {
-        if(friend.getTarget()!=null && this.friend.canDoThings() && FriendFlee.willFriendFlee(this.friend)){
+        if (friend.getTarget() != null && this.friend.canDoThings() && FriendFlee.willFriendFlee(this.friend)) {
             this.target = this.friend.getTarget();
             Vec3 vec3 = this.findRandomAwayPos();
             if (vec3 == null) {
@@ -42,50 +42,58 @@ public class FriendFleeGoal extends Goal {
         }
         return false;
     }
-    Vec3 findRandomAwayPos(){
-        Vec3 temp = this.nearbyVec(new Vec3(this.target.getX(),this.target.getY(),this.target.getZ()));
-        for(int n=0;n<40;n++){
-            if(verifyMove(temp)){
-                if(temp.distanceToSqr(this.target.position()) > 140  ){
+
+    Vec3 findRandomAwayPos() {
+        Vec3 temp = this.nearbyVec(new Vec3(this.target.getX(), this.target.getY(), this.target.getZ()));
+        for (int n = 0; n < 40; n++) {
+            if (verifyMove(temp)) {
+                if (temp.distanceToSqr(this.target.position()) > 140) {
                     //LOGGER.info(temp.distanceToSqr(this.target.position()) +"");
                     return temp;
                 }
-                temp=this.nearbyVec(temp);
+                temp = this.nearbyVec(temp);
 
             }
         }
         return temp;
     }
-    boolean verifyMove(Vec3 vec3){
-        return this.friend.getNavigation().moveTo(vec3.x,vec3.y,vec3.z,1);
-    }
-    Vec3 nearbyVec(Vec3 vec3){
+
+    Vec3 nearbyVec(Vec3 vec3) {
         RandomSource random = this.friend.getRandom();
-        return new Vec3(vec3.x+random.nextInt(-1,2),vec3.y+random.nextInt(0,2),vec3.z+random.nextInt(-1,2));
+        return new Vec3(vec3.x + random.nextInt(-1, 2), vec3.y + random.nextInt(0, 2), vec3.z + random.nextInt(-1, 2));
     }
+
+    boolean verifyMove(Vec3 vec3) {
+        return this.friend.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1);
+    }
+
     @Override
-    public boolean canContinueToUse(){
-        return friend.getTarget()!=null && this.friend.canDoThings();
+    public boolean canContinueToUse() {
+        return friend.getTarget() != null && this.friend.canDoThings();
     }
+
     public boolean isInterruptable() {
         return false;
     }
+
     @Override
-    public void start(){
+    public void start() {
         this.friend.playVoice(this.friend.getFlee());
         this.pathNav.stop();
         this.pathNav.moveTo(this.path, this.friend.getAttributeValue(Attributes.MOVEMENT_SPEED));
     }
+
     @Override
-    public void tick(){
+    public void stop() {
+        this.target = null;
+    }
+
+    @Override
+    public void tick() {
         if (this.friend.distanceToSqr(this.target) < 5.0D) {
             this.friend.getNavigation().setSpeedModifier(1.3);
         } else {
             this.friend.getNavigation().setSpeedModifier(1);
         }
-    }
-    @Override
-    public void stop(){
-        this.target=null;
     }
 }

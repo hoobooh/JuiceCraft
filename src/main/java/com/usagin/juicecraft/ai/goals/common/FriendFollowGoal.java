@@ -3,8 +3,6 @@ package com.usagin.juicecraft.ai.goals.common;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
@@ -23,15 +21,15 @@ public class FriendFollowGoal extends Goal {
     private static final int MAX_HORIZONTAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 3;
     private static final int MAX_VERTICAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 1;
     private final Friend tamable;
-    public LivingEntity owner;
     private final LevelReader level;
     private final double speedModifier;
     private final PathNavigation navigation;
-    private int timeToRecalcPath;
     private final float stopDistance;
     private final float startDistance;
-    private float oldWaterCost;
     private final boolean canFly;
+    public LivingEntity owner;
+    private int timeToRecalcPath;
+    private float oldWaterCost;
 
     public FriendFollowGoal(Friend pTamable, double pSpeedModifier, float pStartDistance, float pStopDistance, boolean pCanFly) {
         this.tamable = pTamable;
@@ -86,10 +84,6 @@ public class FriendFollowGoal extends Goal {
         }
     }
 
-    private boolean unableToMove() {
-        return this.tamable.isOrderedToSit() || this.tamable.isPassenger() || this.tamable.isLeashed();
-    }
-
     /**
      * Execute a one shot task or start executing a continuous task
      */
@@ -113,17 +107,18 @@ public class FriendFollowGoal extends Goal {
      * Keep ticking a continuous task that has already been started
      */
     public void tick() {
-            if(!this.tamable.lockLookAround()){
-            this.tamable.getLookControl().setLookAt(this.owner, 10.0F, (float) this.tamable.getMaxHeadXRot());}
-            if (--this.timeToRecalcPath <= 0) {
-                this.timeToRecalcPath = this.adjustedTickDelay(10);
-                if (this.tamable.distanceToSqr(this.owner) >= 400.0D) {
-                    this.teleportToOwner();
-                } else {
-                    this.navigation.moveTo(this.owner, this.speedModifier);
-                }
-
+        if (!this.tamable.lockLookAround()) {
+            this.tamable.getLookControl().setLookAt(this.owner, 10.0F, (float) this.tamable.getMaxHeadXRot());
+        }
+        if (--this.timeToRecalcPath <= 0) {
+            this.timeToRecalcPath = this.adjustedTickDelay(10);
+            if (this.tamable.distanceToSqr(this.owner) >= 400.0D) {
+                this.teleportToOwner();
+            } else {
+                this.navigation.moveTo(this.owner, this.speedModifier);
             }
+
+        }
     }
 
     private void teleportToOwner() {
@@ -141,13 +136,17 @@ public class FriendFollowGoal extends Goal {
 
     }
 
+    private int randomIntInclusive(int pMin, int pMax) {
+        return this.tamable.getRandom().nextInt(pMax - pMin + 1) + pMin;
+    }
+
     private boolean maybeTeleportTo(int pX, int pY, int pZ) {
         if (Math.abs((double) pX - this.owner.getX()) < 2.0D && Math.abs((double) pZ - this.owner.getZ()) < 2.0D) {
             return false;
         } else if (!this.canTeleportTo(new BlockPos(pX, pY, pZ))) {
             return false;
         } else {
-            this.tamable.moveTo((double) pX + 0.5D, (double) pY, (double) pZ + 0.5D, this.tamable.getYRot(), this.tamable.getXRot());
+            this.tamable.moveTo((double) pX + 0.5D, pY, (double) pZ + 0.5D, this.tamable.getYRot(), this.tamable.getXRot());
             this.navigation.stop();
             return true;
         }
@@ -168,7 +167,7 @@ public class FriendFollowGoal extends Goal {
         }
     }
 
-    private int randomIntInclusive(int pMin, int pMax) {
-        return this.tamable.getRandom().nextInt(pMax - pMin + 1) + pMin;
+    private boolean unableToMove() {
+        return this.tamable.isOrderedToSit() || this.tamable.isPassenger() || this.tamable.isLeashed();
     }
 }

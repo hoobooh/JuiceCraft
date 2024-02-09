@@ -12,11 +12,13 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class FriendMenuProvider implements MenuProvider {
-    Friend friend;
     private static final Logger LOGGER = LogUtils.getLogger();
-    public FriendMenuProvider(Friend f){
-        this.friend=f;
+    Friend friend;
+
+    public FriendMenuProvider(Friend f) {
+        this.friend = f;
     }
+
     @Override
     public @NotNull Component getDisplayName() {
         return Component.literal("");

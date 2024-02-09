@@ -15,7 +15,8 @@ public enum DialogueEnums {
     COMMENT_HEALTH,
     COMMENT_HUNGER,
     COMMENT_AREA_DANGER;
-    public enum Responses{
+
+    public enum Responses {
         GENERIC_ACCEPT,
         GENERIC_REJECT,
         DISAPPROVAL,

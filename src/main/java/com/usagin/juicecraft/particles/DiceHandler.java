@@ -1,13 +1,11 @@
 package com.usagin.juicecraft.particles;
 
-import net.minecraft.client.particle.Particle;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 
 import static com.usagin.juicecraft.Init.ParticleInit.*;
 
 public class DiceHandler {
-    public static SimpleParticleType getDice(int n){
+    public static SimpleParticleType getDice(int n) {
         return switch (n) {
             case 0 -> DICEONE.get();
             case 1 -> DICETWO.get();

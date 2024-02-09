@@ -3,14 +3,6 @@ package com.usagin.juicecraft.ai.goals.navigation;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.util.profiling.metrics.MetricCategory;
@@ -18,12 +10,17 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.PathNavigationRegion;
 import net.minecraft.world.level.pathfinder.*;
 
-public class FriendPathfinder extends PathFinder{
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class FriendPathfinder extends PathFinder {
     private static final float FUDGING = 1.5F;
+    private static final boolean DEBUG = false;
     private final Node[] neighbors = new Node[100];
     private final int maxVisitedNodes;
     private final NodeEvaluator nodeEvaluator;
-    private static final boolean DEBUG = false;
     private final BinaryHeap openSet = new BinaryHeap();
 
     public FriendPathfinder(NodeEvaluator pNodeEvaluator, int pMaxVisitedNodes) {
@@ -45,7 +42,7 @@ public class FriendPathfinder extends PathFinder{
             return null;
         } else {
             Map<Target, BlockPos> map = pTargetPositions.stream().collect(Collectors.toMap((p_77448_) -> {
-                return this.nodeEvaluator.getGoal((double)p_77448_.getX(), (double)p_77448_.getY(), (double)p_77448_.getZ());
+                return this.nodeEvaluator.getGoal(p_77448_.getX(), p_77448_.getY(), p_77448_.getZ());
             }, Function.identity()));
             Path path = this.findPath(pRegion.getProfiler(), node, map, pMaxRange, pAccuracy, pSearchDepthMultiplier);
             this.nodeEvaluator.done();
@@ -66,9 +63,9 @@ public class FriendPathfinder extends PathFinder{
         Set<Node> set1 = ImmutableSet.of();
         int i = 0;
         Set<Target> set2 = Sets.newHashSetWithExpectedSize(set.size());
-        int j = (int)((float)this.maxVisitedNodes * pSearchDepthMultiplier);
+        int j = (int) ((float) this.maxVisitedNodes * pSearchDepthMultiplier);
 
-        while(!this.openSet.isEmpty()) {
+        while (!this.openSet.isEmpty()) {
             ++i;
             if (i >= j) {
                 break;
@@ -77,8 +74,8 @@ public class FriendPathfinder extends PathFinder{
             Node node = this.openSet.pop();
             node.closed = true;
 
-            for(Target target : set) {
-                if (node.distanceManhattan(target) <= (float)pAccuracy) {
+            for (Target target : set) {
+                if (node.distanceManhattan(target) <= (float) pAccuracy) {
                     target.setReached();
                     set2.add(target);
                 }
@@ -91,9 +88,9 @@ public class FriendPathfinder extends PathFinder{
             if (!(node.distanceTo(pNode) >= pMaxRange)) {
                 int k = this.nodeEvaluator.getNeighbors(this.neighbors, node);
 
-                for(int l = 0; l < k; ++l) {
+                for (int l = 0; l < k; ++l) {
                     Node node1 = this.neighbors[l];
-                    if(node1!=null){
+                    if (node1 != null) {
                         float f = this.distance(node, node1);
                         node1.walkedDistance = node.walkedDistance + f;
                         float f1 = node.g + f + node1.costMalus;
@@ -122,14 +119,10 @@ public class FriendPathfinder extends PathFinder{
         return optional.isEmpty() ? null : optional.get();
     }
 
-    protected float distance(Node pFirst, Node pSecond) {
-        return pFirst.distanceTo(pSecond);
-    }
-
     private float getBestH(Node pNode, Set<Target> pTargets) {
         float f = Float.MAX_VALUE;
 
-        for(Target target : pTargets) {
+        for (Target target : pTargets) {
             float f1 = pNode.distanceTo(target);
             target.updateBest(f1, pNode);
             f = Math.min(f1, f);
@@ -146,11 +139,15 @@ public class FriendPathfinder extends PathFinder{
         Node node = pPoint;
         list.add(0, pPoint);
 
-        while(node.cameFrom != null) {
+        while (node.cameFrom != null) {
             node = node.cameFrom;
             list.add(0, node);
         }
 
         return new Path(list, pTargetPos, pReachesTarget);
+    }
+
+    protected float distance(Node pFirst, Node pSecond) {
+        return pFirst.distanceTo(pSecond);
     }
 }

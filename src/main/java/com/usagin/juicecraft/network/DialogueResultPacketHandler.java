@@ -10,14 +10,16 @@ import net.minecraftforge.network.SimpleChannel;
 public class DialogueResultPacketHandler {
     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
             new ResourceLocation(JuiceCraft.MODID, "dialogueresults")).simpleChannel();
-    public static void register(){
+
+    public static void register() {
         INSTANCE.messageBuilder(ToServerDialogueResultPacket.class, NetworkDirection.PLAY_TO_SERVER.ordinal())
                 .encoder(ToServerDialogueResultPacket::encode)
                 .decoder(ToServerDialogueResultPacket::new)
                 .consumerMainThread(ToServerDialogueResultPacket::handle)
                 .add();
     }
-    public static void sendToServer(Object packet){
+
+    public static void sendToServer(Object packet) {
         INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
     }
 }

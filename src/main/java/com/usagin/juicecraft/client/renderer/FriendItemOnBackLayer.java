@@ -16,11 +16,12 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class FriendItemOnBackLayer<T extends Friend, M extends FriendEntityModel<T> & ArmedModel> extends RenderLayer<T, M> {
+    private final ItemInHandRenderer itemInHandRenderer;
+
     public FriendItemOnBackLayer(RenderLayerParent<T, M> pRenderer, ItemInHandRenderer pItemInHandRenderer) {
         super(pRenderer);
         this.itemInHandRenderer = pItemInHandRenderer;
     }
-    private final ItemInHandRenderer itemInHandRenderer;
 
     public void render(@NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         boolean flag = pLivingEntity.getMainArm() == HumanoidArm.RIGHT;
@@ -28,9 +29,10 @@ public class FriendItemOnBackLayer<T extends Friend, M extends FriendEntityModel
         ItemStack itemstack1 = flag ? pLivingEntity.getMainHandItem() : pLivingEntity.getOffhandItem();
         if (!itemstack.isEmpty() || !itemstack1.isEmpty()) {
             pPoseStack.pushPose();
-            if(pLivingEntity.aggroCounter==0 && pLivingEntity.getAttackCounter()==0 && pLivingEntity.animatestandingtimer==0 && !pLivingEntity.isHoldingThrowable()) {
-                if(pLivingEntity.shouldShowWeapon()){
-                this.renderBackWithItem(pLivingEntity, itemstack1, pPoseStack, pBuffer, pPackedLight);}
+            if (pLivingEntity.aggroCounter == 0 && pLivingEntity.getAttackCounter() == 0 && pLivingEntity.animatestandingtimer == 0 && !pLivingEntity.isHoldingThrowable()) {
+                if (pLivingEntity.shouldShowWeapon()) {
+                    this.renderBackWithItem(pLivingEntity, itemstack1, pPoseStack, pBuffer, pPackedLight);
+                }
             }
             pPoseStack.popPose();
         }

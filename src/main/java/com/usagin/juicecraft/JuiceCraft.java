@@ -38,29 +38,26 @@ import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.SOUNDS;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(JuiceCraft.MODID)
-public class JuiceCraft
-{
+public class JuiceCraft {
     // Define mod id in SoraEntityModel common place for everything to reference
     public static final String MODID = "juicecraft";
-    // Directly reference SoraEntityModel slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
     // Create SoraEntityModel Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    // Create SoraEntityModel Deferred Register to hold Items which will all be registered under the "examplemod" namespace
-    // Create SoraEntityModel Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
-
     // Creates SoraEntityModel new Block with the id "examplemod:example_block", combining the namespace and path
     public static final RegistryObject<Block> EXAMPLE_BLOCK = BLOCKS.register("example_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
+    // Create SoraEntityModel Deferred Register to hold Items which will all be registered under the "examplemod" namespace
+    // Create SoraEntityModel Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
     // Creates SoraEntityModel new BlockItem with the id "examplemod:example_block", combining the namespace and path
     public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block", () -> new BlockItem(EXAMPLE_BLOCK.get(), new Item.Properties()));
+    // Directly reference SoraEntityModel slf4j logger
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     // Creates SoraEntityModel new food item with the id "examplemod:example_id", nutrition 1 and saturation 2
 
     //public static final RegistryObject<Item> ORANGE = ITEMS.register("orange.png", () -> new Item(new Item.Properties().food((new FoodProperties.Builder()).nutrition(1).saturationMod(1F).build())));
 
     // Creates SoraEntityModel creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
-    public JuiceCraft()
-    {
+    public JuiceCraft() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Register the commonSetup method for modloading
@@ -89,8 +86,7 @@ public class JuiceCraft
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event)
-    {
+    private void commonSetup(final FMLCommonSetupEvent event) {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
 
@@ -103,27 +99,23 @@ public class JuiceCraft
     }
 
     // Add the example block item to the building blocks tab
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
             event.accept(EXAMPLE_BLOCK_ITEM);
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event)
-    {
+    public void onServerStarting(ServerStartingEvent event) {
         // Do something when the server starts
         LOGGER.info("HELLO from server starting");
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
+    public static class ClientModEvents {
         @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event)
-        {
+        public static void onClientSetup(FMLClientSetupEvent event) {
             // Some client setup code
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());

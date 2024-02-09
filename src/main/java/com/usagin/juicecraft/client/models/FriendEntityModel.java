@@ -22,35 +22,19 @@ import static net.minecraft.world.entity.Pose.SITTING;
 import static net.minecraft.world.entity.Pose.SLEEPING;
 
 public abstract class FriendEntityModel<T extends Friend> extends HierarchicalModel<T> implements ArmedModel {
-    Logger LOGGER = LogUtils.getLogger();
     public ModelParts parts;
     public Animations animations;
+    public boolean swimming = false;
+    Logger LOGGER = LogUtils.getLogger();
 
     public FriendEntityModel(ModelPart root) {
         defineParts(root);
         defineAnimations();
     }
 
-    public abstract void defineAnimations();
-
     public abstract void defineParts(ModelPart root);
 
-    public record Animations(AnimationDefinition idlegrounded, AnimationDefinition idletransition,
-                             AnimationDefinition patgrounded, AnimationDefinition sit, AnimationDefinition sitimpatient,
-                             AnimationDefinition sitpat, AnimationDefinition sleep, AnimationDefinition death,
-                             AnimationDefinition deathstart, AnimationDefinition attackone,
-                             AnimationDefinition attacktwo, AnimationDefinition attackthree,
-                             AnimationDefinition counter, AnimationDefinition bowdraw,
-                             AnimationDefinition standinginspect, AnimationDefinition wet,
-                             AnimationDefinition viewflower, AnimationDefinition swim, AnimationDefinition interact,
-                             AnimationDefinition swimmove, AnimationDefinition snowballIdle,
-                             AnimationDefinition snowballThrow, AnimationDefinition snowballIdleTransition,
-                             AnimationDefinition patEmbarrased) {
-    }
-
-    public record ModelParts(ModelPart customroot, ModelPart head, ModelPart leftarm, ModelPart rightarm,
-                             ModelPart leftleg, ModelPart rightleg, ModelPart chest) {
-    }
+    public abstract void defineAnimations();
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
@@ -59,6 +43,11 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         poseStack.translate(0, 1.245 / 0.17, 0);
         parts.customroot().render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
         poseStack.popPose();
+    }
+
+    @Override
+    public ModelPart root() {
+        return this.parts.customroot();
     }
 
     public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
@@ -96,6 +85,18 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
 
     }
 
+    public void translateAndRotate(PoseStack pPoseStack, ModelPart part) {
+        pPoseStack.translate(part.x * 0.17 / 16.0F, part.y * 0.17 / 16.0F, part.z * 0.17 / 16.0F);
+        if (part.xRot != 0.0F || part.yRot != 0.0F || part.zRot != 0.0F) {
+            pPoseStack.mulPose((new Quaternionf()).rotationZYX(part.zRot, part.yRot, part.xRot));
+        }
+
+        if (part.xScale != 1.0F || part.yScale != 1.0F || part.zScale != 1.0F) {
+            pPoseStack.scale(part.xScale, part.yScale, part.zScale);
+        }
+
+    }
+
     public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
         ModelPart hip = this.root().getChild("hip");
         ModelPart holster = hip.getChild("weaponholster");
@@ -120,101 +121,6 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         // pPoseStack.translate(-0.3, 1, 0);
 
         pPoseStack.scale(0.883F, 0.883F, 0.883F);
-    }
-
-    public void translateAndRotate(PoseStack pPoseStack, ModelPart part) {
-        pPoseStack.translate(part.x * 0.17 / 16.0F, part.y * 0.17 / 16.0F, part.z * 0.17 / 16.0F);
-        if (part.xRot != 0.0F || part.yRot != 0.0F || part.zRot != 0.0F) {
-            pPoseStack.mulPose((new Quaternionf()).rotationZYX(part.zRot, part.yRot, part.xRot));
-        }
-
-        if (part.xScale != 1.0F || part.yScale != 1.0F || part.zScale != 1.0F) {
-            pPoseStack.scale(part.xScale, part.yScale, part.zScale);
-        }
-
-    }
-
-    @Override
-    public ModelPart root() {
-        return this.parts.customroot();
-    }
-
-    public boolean swimming = false;
-
-    public void attackAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if (pEntity.getAttackType() == 50) {
-            if (pEntity.getAttackCounter() >= pEntity.getCounterMax() - 1) {
-                pEntity.attackCounterAnimState.stop();
-            }
-            animate(pEntity.attackCounterAnimState, this.animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
-        } else if (pEntity.getAttackType() == 40) {
-            animate(pEntity.attackAnimState, this.animations.attackone(), pAgeInTicks, (float) pEntity.getAttackSpeed());
-        } else if (pEntity.getAttackType() == 20) {
-            animate(pEntity.attackAnimState, this.animations.attacktwo(), pAgeInTicks, (float) pEntity.getAttackSpeed());
-        } else if (pEntity.getAttackType() == 10) {
-            animate(pEntity.attackAnimState, this.animations.attackthree(), pAgeInTicks, (float) pEntity.getAttackSpeed());
-        } else if (pEntity.getAttackType() == 60) {
-            animate(pEntity.snowballThrowAnimState, this.animations.snowballThrow(), pAgeInTicks, (float) pEntity.getAttackSpeed());
-        }
-    }
-
-    public void bowAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        animate(pEntity.drawBowAnimationState, this.animations.bowdraw(), pAgeInTicks);
-    }
-
-    public void interactAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        animate(pEntity.interactAnimState, this.animations.interact(), pAgeInTicks);
-    }
-
-    public void deathAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        animate(pEntity.deathStartAnimState, this.animations.deathstart(), pAgeInTicks);
-        animate(pEntity.deathAnimState, this.animations.death(), pAgeInTicks);
-    }
-
-    public void sitAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        animate(pEntity.sitPatAnimState, this.animations.sitpat(), pAgeInTicks);
-        animate(pEntity.sitAnimState, this.animations.sit(), pAgeInTicks);
-        animate(pEntity.sitImpatientAnimState, this.animations.sitimpatient(), pAgeInTicks);
-    }
-
-    public void patAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if (pEntity.isembarassed > 0) {
-            animate(pEntity.patAnimState, this.animations.patEmbarrased(), pAgeInTicks);
-        } else {
-            animate(pEntity.patAnimState, this.animations.patgrounded(), pAgeInTicks);
-        }
-    }
-    public void idleAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
-        animate(pEntity.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
-        animate(pEntity.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);
-        animate(pEntity.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
-        animate(pEntity.snowballIdleAnimState, this.animations.snowballIdle(), pAgeInTicks);
-        animate(pEntity.snowballIdleTransitionAnimState, this.animations.snowballIdleTransition(), pAgeInTicks);
-    }
-
-    public void swimAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if (pLimbSwingAmount > 0.1) {
-            this.swimming = true;
-            animate(pEntity.swimAnimState, this.animations.swimmove(), pAgeInTicks);
-        } else {
-            this.swimming = false;
-            animate(pEntity.swimAnimState, this.animations.swim(), pAgeInTicks);
-        }
-    }
-    public void viewFlowerAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
-        animate(pEntity.viewFlowerAnimState, this.animations.viewflower(), pAgeInTicks);
-    }
-    public void wetFlowerAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
-        animate(pEntity.wetAnimState, this.animations.wet(), pAgeInTicks);
-    }
-    public void sleepAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch){
-        animate(pEntity.sleepAnimState, this.animations.sleep(), pAgeInTicks);
-    }
-    public boolean shouldMoveHeadY(T friend){
-        return true;
-    }
-    public boolean shouldMoveHeadX(T friend){
-        return true;
     }
 
     @Override
@@ -263,10 +169,11 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
             if (!pEntity.sitImpatientAnimState.isStarted() && pEntity.getPose() != SLEEPING && pEntity.animatestandingtimer <= 0) {
                 if ((pEntity.sleepAnimState.isStarted() && pLimbSwingAmount > 0.1) && this.shouldMoveHeadY(pEntity)) {
                     this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
-                } else if (this.shouldMoveHeadY(pEntity)){
+                } else if (this.shouldMoveHeadY(pEntity)) {
                     this.parts.head().yRot = (pNetHeadYaw * (float) Math.PI / 180f);
-                    if(this.shouldMoveHeadX(pEntity)){
-                    this.parts.head().xRot = (pHeadPitch * (float) Math.PI / 180f);}
+                    if (this.shouldMoveHeadX(pEntity)) {
+                        this.parts.head().xRot = (pHeadPitch * (float) Math.PI / 180f);
+                    }
                 }
 
             }
@@ -277,5 +184,104 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
             this.deathAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
         }
 
+    }
+
+    public void sleepAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        animate(pEntity.sleepAnimState, this.animations.sleep(), pAgeInTicks);
+    }
+
+    public void wetFlowerAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        animate(pEntity.wetAnimState, this.animations.wet(), pAgeInTicks);
+    }
+
+    public void viewFlowerAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        animate(pEntity.viewFlowerAnimState, this.animations.viewflower(), pAgeInTicks);
+    }
+
+    public void idleAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        animate(pEntity.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
+        animate(pEntity.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);
+        animate(pEntity.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
+        animate(pEntity.snowballIdleAnimState, this.animations.snowballIdle(), pAgeInTicks);
+        animate(pEntity.snowballIdleTransitionAnimState, this.animations.snowballIdleTransition(), pAgeInTicks);
+    }
+
+    public void swimAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        if (pLimbSwingAmount > 0.1) {
+            this.swimming = true;
+            animate(pEntity.swimAnimState, this.animations.swimmove(), pAgeInTicks);
+        } else {
+            this.swimming = false;
+            animate(pEntity.swimAnimState, this.animations.swim(), pAgeInTicks);
+        }
+    }
+
+    public void patAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        if (pEntity.isembarassed > 0) {
+            animate(pEntity.patAnimState, this.animations.patEmbarrased(), pAgeInTicks);
+        } else {
+            animate(pEntity.patAnimState, this.animations.patgrounded(), pAgeInTicks);
+        }
+    }
+
+    public void sitAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        animate(pEntity.sitPatAnimState, this.animations.sitpat(), pAgeInTicks);
+        animate(pEntity.sitAnimState, this.animations.sit(), pAgeInTicks);
+        animate(pEntity.sitImpatientAnimState, this.animations.sitimpatient(), pAgeInTicks);
+    }
+
+    public void attackAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        if (pEntity.getAttackType() == 50) {
+            if (pEntity.getAttackCounter() >= pEntity.getCounterMax() - 1) {
+                pEntity.attackCounterAnimState.stop();
+            }
+            animate(pEntity.attackCounterAnimState, this.animations.counter(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+        } else if (pEntity.getAttackType() == 40) {
+            animate(pEntity.attackAnimState, this.animations.attackone(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+        } else if (pEntity.getAttackType() == 20) {
+            animate(pEntity.attackAnimState, this.animations.attacktwo(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+        } else if (pEntity.getAttackType() == 10) {
+            animate(pEntity.attackAnimState, this.animations.attackthree(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+        } else if (pEntity.getAttackType() == 60) {
+            animate(pEntity.snowballThrowAnimState, this.animations.snowballThrow(), pAgeInTicks, (float) pEntity.getAttackSpeed());
+        }
+    }
+
+    public void bowAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        animate(pEntity.drawBowAnimationState, this.animations.bowdraw(), pAgeInTicks);
+    }
+
+    public boolean shouldMoveHeadY(T friend) {
+        return true;
+    }
+
+    public boolean shouldMoveHeadX(T friend) {
+        return true;
+    }
+
+    public void interactAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        animate(pEntity.interactAnimState, this.animations.interact(), pAgeInTicks);
+    }
+
+    public void deathAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        animate(pEntity.deathStartAnimState, this.animations.deathstart(), pAgeInTicks);
+        animate(pEntity.deathAnimState, this.animations.death(), pAgeInTicks);
+    }
+
+    public record Animations(AnimationDefinition idlegrounded, AnimationDefinition idletransition,
+                             AnimationDefinition patgrounded, AnimationDefinition sit, AnimationDefinition sitimpatient,
+                             AnimationDefinition sitpat, AnimationDefinition sleep, AnimationDefinition death,
+                             AnimationDefinition deathstart, AnimationDefinition attackone,
+                             AnimationDefinition attacktwo, AnimationDefinition attackthree,
+                             AnimationDefinition counter, AnimationDefinition bowdraw,
+                             AnimationDefinition standinginspect, AnimationDefinition wet,
+                             AnimationDefinition viewflower, AnimationDefinition swim, AnimationDefinition interact,
+                             AnimationDefinition swimmove, AnimationDefinition snowballIdle,
+                             AnimationDefinition snowballThrow, AnimationDefinition snowballIdleTransition,
+                             AnimationDefinition patEmbarrased) {
+    }
+
+    public record ModelParts(ModelPart customroot, ModelPart head, ModelPart leftarm, ModelPart rightarm,
+                             ModelPart leftleg, ModelPart rightleg, ModelPart chest) {
     }
 }

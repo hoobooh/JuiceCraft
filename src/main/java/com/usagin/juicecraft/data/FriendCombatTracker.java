@@ -1,21 +1,17 @@
 package com.usagin.juicecraft.data;
 
 import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nullable;
-
 import com.usagin.juicecraft.friends.Friend;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
 
 public class FriendCombatTracker extends CombatTracker {
     public static final int RESET_DAMAGE_STATUS_TIME = 100;
@@ -31,7 +27,7 @@ public class FriendCombatTracker extends CombatTracker {
 
     public FriendCombatTracker(LivingEntity pMob) {
         super(pMob);
-        this.mob=pMob;
+        this.mob = pMob;
     }
 
     public void recordDamage(DamageSource pSource, float pDamage) {
@@ -52,40 +48,6 @@ public class FriendCombatTracker extends CombatTracker {
 
     private static boolean shouldEnterCombat(DamageSource pSource) {
         return pSource.getEntity() instanceof LivingEntity;
-    }
-
-    private Component getMessageForAssistedFall(Entity pEntity, Component pEntityDisplayName, String pHasWeaponTranslationKey, String pNoWeaponTranslationKey) {
-        ItemStack itemstack1;
-        if (pEntity instanceof LivingEntity livingentity) {
-            itemstack1 = livingentity.getMainHandItem();
-        } else {
-            itemstack1 = ItemStack.EMPTY;
-        }
-
-        ItemStack itemstack = itemstack1;
-        return !itemstack.isEmpty() && itemstack.hasCustomHoverName() ? Component.translatable(pHasWeaponTranslationKey, this.mob.getDisplayName(), pEntityDisplayName, itemstack.getDisplayName()) : Component.translatable(pNoWeaponTranslationKey, this.mob.getDisplayName(), pEntityDisplayName);
-    }
-
-    private Component getFallMessage(CombatEntry pCombatEntry, @Nullable Entity pEntity) {
-        DamageSource damagesource = pCombatEntry.source();
-        if (!damagesource.is(DamageTypeTags.IS_FALL) && !damagesource.is(DamageTypeTags.ALWAYS_MOST_SIGNIFICANT_FALL)) {
-            Component component1 = getDisplayName(pEntity);
-            Entity entity = damagesource.getEntity();
-            Component component = getDisplayName(entity);
-            if (component != null && !component.equals(component1)) {
-                return this.getMessageForAssistedFall(entity, component, "death.fell.assist.item", "death.fell.assist");
-            } else {
-                return (Component)(component1 != null ? this.getMessageForAssistedFall(pEntity, component1, "death.fell.finish.item", "death.fell.finish") : Component.translatable("death.fell.killer", this.mob.getDisplayName()));
-            }
-        } else {
-            FallLocation falllocation = Objects.requireNonNullElse(pCombatEntry.fallLocation(), FallLocation.GENERIC);
-            return Component.translatable(falllocation.languageKey(), this.mob.getDisplayName());
-        }
-    }
-
-    @Nullable
-    private static Component getDisplayName(@Nullable Entity pEntity) {
-        return pEntity == null ? null : pEntity.getDisplayName();
     }
 
     public Component getDeathMessage() {
@@ -116,7 +78,7 @@ public class FriendCombatTracker extends CombatTracker {
         float f = 0.0F;
         float f1 = 0.0F;
 
-        for(int i = 0; i < this.entries.size(); ++i) {
+        for (int i = 0; i < this.entries.size(); ++i) {
             CombatEntry combatentry2 = this.entries.get(i);
             CombatEntry combatentry3 = i > 0 ? this.entries.get(i - 1) : null;
             DamageSource damagesource = combatentry2.source();
@@ -143,6 +105,40 @@ public class FriendCombatTracker extends CombatTracker {
         } else {
             return f > 5.0F && combatentry1 != null ? combatentry1 : null;
         }
+    }
+
+    private Component getFallMessage(CombatEntry pCombatEntry, @Nullable Entity pEntity) {
+        DamageSource damagesource = pCombatEntry.source();
+        if (!damagesource.is(DamageTypeTags.IS_FALL) && !damagesource.is(DamageTypeTags.ALWAYS_MOST_SIGNIFICANT_FALL)) {
+            Component component1 = getDisplayName(pEntity);
+            Entity entity = damagesource.getEntity();
+            Component component = getDisplayName(entity);
+            if (component != null && !component.equals(component1)) {
+                return this.getMessageForAssistedFall(entity, component, "death.fell.assist.item", "death.fell.assist");
+            } else {
+                return component1 != null ? this.getMessageForAssistedFall(pEntity, component1, "death.fell.finish.item", "death.fell.finish") : Component.translatable("death.fell.killer", this.mob.getDisplayName());
+            }
+        } else {
+            FallLocation falllocation = Objects.requireNonNullElse(pCombatEntry.fallLocation(), FallLocation.GENERIC);
+            return Component.translatable(falllocation.languageKey(), this.mob.getDisplayName());
+        }
+    }
+
+    @Nullable
+    private static Component getDisplayName(@Nullable Entity pEntity) {
+        return pEntity == null ? null : pEntity.getDisplayName();
+    }
+
+    private Component getMessageForAssistedFall(Entity pEntity, Component pEntityDisplayName, String pHasWeaponTranslationKey, String pNoWeaponTranslationKey) {
+        ItemStack itemstack1;
+        if (pEntity instanceof LivingEntity livingentity) {
+            itemstack1 = livingentity.getMainHandItem();
+        } else {
+            itemstack1 = ItemStack.EMPTY;
+        }
+
+        ItemStack itemstack = itemstack1;
+        return !itemstack.isEmpty() && itemstack.hasCustomHoverName() ? Component.translatable(pHasWeaponTranslationKey, this.mob.getDisplayName(), pEntityDisplayName, itemstack.getDisplayName()) : Component.translatable(pNoWeaponTranslationKey, this.mob.getDisplayName(), pEntityDisplayName);
     }
 
     public int getCombatDuration() {

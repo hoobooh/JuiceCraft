@@ -10,21 +10,28 @@ import org.jetbrains.annotations.NotNull;
 public class EnergyParticle extends TextureSheetParticle {
 
     private final SpriteSet sprites;
+
     EnergyParticle(ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed, SpriteSet spriteSet) {
         super(pLevel, pX, pY, pZ, 0.0D, 0.0D, 0.0D);
         this.friction = 0.7F;
         this.gravity = 0;
-        this.xd *= (double)0.1F;
-        this.yd *= (double)0.1F;
-        this.zd *= (double)0.1F;
+        this.xd *= 0.1F;
+        this.yd *= 0.1F;
+        this.zd *= 0.1F;
         this.xd += pXSpeed * 0.4D;
         this.yd += pYSpeed * 0.4D;
         this.zd += pZSpeed * 0.4D;
         this.quadSize *= 0.8F;
-        this.lifetime = 3 * Math.max((int)(6.0D / (Math.random() * 0.8D + 0.6D)), 1);
+        this.lifetime = 3 * Math.max((int) (6.0D / (Math.random() * 0.8D + 0.6D)), 1);
         this.hasPhysics = false;
-        this.sprites=spriteSet;
+        this.sprites = spriteSet;
         this.setSpriteFromAge(spriteSet);
+    }
+
+    public void tick() {
+        super.tick();
+        this.setSpriteFromAge(sprites);
+        this.setAlpha(((float) this.lifetime - this.age) / this.lifetime);
     }
 
     public @NotNull ParticleRenderType getRenderType() {
@@ -40,16 +47,12 @@ public class EnergyParticle extends TextureSheetParticle {
         return 15728880;
     }
 
-    public void tick() {
-        super.tick();
-        this.setSpriteFromAge(sprites);
-        this.setAlpha(((float) this.lifetime-this.age)/this.lifetime);
-    }
     @OnlyIn(Dist.CLIENT)
     public static class AlteEnergyProvider implements ParticleProvider<SimpleParticleType> {
         private final SpriteSet sprites;
-        public AlteEnergyProvider(SpriteSet spriteSet){
-            this.sprites=spriteSet;
+
+        public AlteEnergyProvider(SpriteSet spriteSet) {
+            this.sprites = spriteSet;
         }
 
         public Particle createParticle(SimpleParticleType pType, ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {

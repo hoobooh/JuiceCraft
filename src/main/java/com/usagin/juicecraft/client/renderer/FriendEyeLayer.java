@@ -12,31 +12,28 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Quaternionf;
 import org.slf4j.Logger;
 
-import static com.usagin.juicecraft.JuiceCraft.MODID;
-
 public class FriendEyeLayer<T extends Entity, M extends EntityModel<T>> extends EyesLayer<T, M> {
+    private static final Logger LOGGER = LogUtils.getLogger();
     public boolean visible = false;
     public ResourceLocation location;
     public RenderType rendertype;
 
-    public FriendEyeLayer(RenderLayerParent<T,M> pRenderer, ResourceLocation location) {
+    public FriendEyeLayer(RenderLayerParent<T, M> pRenderer, ResourceLocation location) {
         super(pRenderer);
-        this.location=location;
-        this.rendertype= RenderType.eyes(location);
-    }
-    private static final Logger LOGGER = LogUtils.getLogger();
-
-    public @NotNull RenderType renderType() {
-        return this.rendertype;
+        this.location = location;
+        this.rendertype = RenderType.eyes(location);
     }
 
     public void render(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if(this.visible){
+        if (this.visible) {
             VertexConsumer vertexconsumer = pBuffer.getBuffer(this.renderType());
             this.getParentModel().renderToBuffer(pPoseStack, vertexconsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         }
+    }
+
+    public @NotNull RenderType renderType() {
+        return this.rendertype;
     }
 }

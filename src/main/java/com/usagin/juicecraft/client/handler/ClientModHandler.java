@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 @Mod.EventBusSubscriber(modid = JuiceCraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientModHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
+
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {

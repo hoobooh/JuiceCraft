@@ -13,32 +13,36 @@ import org.slf4j.Logger;
 import java.util.Objects;
 
 public class ToServerCombatSettingsPacket {
-    private final int combatSettings;
-    private Friend friend;
-    private final int id;
     private static final Logger LOGGER = LogUtils.getLogger();
-    public ToServerCombatSettingsPacket(int settings, int id){
-        this.combatSettings=settings;
-        this.id=id;
+    private final int combatSettings;
+    private final int id;
+    private Friend friend;
+
+    //should be same order as write apparently
+    public ToServerCombatSettingsPacket(FriendlyByteBuf buffer) {
+        this(buffer.readInt(), buffer.readVarInt());
+    }
+
+    public ToServerCombatSettingsPacket(int settings, int id) {
+        this.combatSettings = settings;
+        this.id = id;
 
     }
-    public void encode(FriendlyByteBuf buffer){
+
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeInt(this.combatSettings);
         buffer.writeVarInt(this.id);
     }
 
-    //should be same order as write apparently
-    public ToServerCombatSettingsPacket(FriendlyByteBuf buffer){
-        this(buffer.readInt(), buffer.readVarInt());
-    }
     //menu should close in time in case of level change, shouldnt be any sync issues
-    public void handle(CustomPayloadEvent.Context context){
+    public void handle(CustomPayloadEvent.Context context) {
         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
-        this.friend=decodeBuffer(level, this.id);
-        if(friend!=null){
-            if(friend.getOwner()!=null) {
+        this.friend = decodeBuffer(level, this.id);
+        if (friend != null) {
+            if (friend.getOwner() != null) {
                 this.friend.appendEventLog(friend.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu." + this.friend.getFriendName().toLowerCase() + ".eventlog.changesettings").getString());
-            }this.friend.combatSettings= CombatSettings.decodeHash(this.combatSettings);
+            }
+            this.friend.combatSettings = CombatSettings.decodeHash(this.combatSettings);
             this.friend.updateCombatSettings();
             context.setPacketHandled(true);
         }

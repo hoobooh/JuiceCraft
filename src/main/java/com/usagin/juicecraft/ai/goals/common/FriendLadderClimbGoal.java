@@ -2,30 +2,18 @@ package com.usagin.juicecraft.ai.goals.common;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.friends.Friend;
-import net.minecraft.client.particle.HeartParticle;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.LadderBlock;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.level.pathfinder.PathFinder;
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
-
-import java.util.Objects;
-
-import static net.minecraft.world.level.block.Blocks.LADDER;
 
 public class FriendLadderClimbGoal extends Goal {
 
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Friend friend;
     double yMotion = 0;
-    private static final Logger LOGGER = LogUtils.getLogger();
     int yMod = 2;
     int soundcounter = 15;
     Path path;
@@ -34,9 +22,14 @@ public class FriendLadderClimbGoal extends Goal {
     public FriendLadderClimbGoal(Friend pFriend) {
         this.friend = pFriend;
     }
-    public void start(){
-        this.friend.setDeltaMovement(this.friend.getDeltaMovement().multiply(1,0,1));
+
+    boolean isLadder(Node pNode) {
+        BlockPos pPos = new BlockPos(pNode.x, pNode.y, pNode.z);
+        return this.friend.level().getBlockState(pPos).getBlock().isLadder(friend.level().getBlockState(pPos), this.friend.level(), pPos, this.friend);
+    }    public void start() {
+        this.friend.setDeltaMovement(this.friend.getDeltaMovement().multiply(1, 0, 1));
     }
+
     @Override
     public boolean canUse() {
         if (!this.friend.canDoThings()) {
@@ -50,6 +43,7 @@ public class FriendLadderClimbGoal extends Goal {
             }
         }
     }
+
     public boolean canContinueToUse() {
         if (!this.friend.canDoThings()) {
             return false;
@@ -71,11 +65,11 @@ public class FriendLadderClimbGoal extends Goal {
                     level.sendParticles(ParticleTypes.HEART,node.x,node.y,node.z,1,0,0,0,1);
                 }
             }*/
-            if(this.friend.getOnPos().equals(this.path.getNextNodePos())){
+            if (this.friend.getOnPos().equals(this.path.getNextNodePos())) {
                 this.path.advance();
             }
             try {
-                if (this.path.getNextNodePos().getY() + 1> this.friend.getY() || this.friend.horizontalCollision) {
+                if (this.path.getNextNodePos().getY() + 1 > this.friend.getY() || this.friend.horizontalCollision) {
                     //need enough momentum to clear a two block ladder
                     //LOGGER.info("HIT");
                     this.yMotion = 0.17;
@@ -99,7 +93,7 @@ public class FriendLadderClimbGoal extends Goal {
                 } else {
                     this.soundcounter--;
                 }
-                this.friend.setDeltaMovement(this.friend.getDeltaMovement().multiply(1,0,1));
+                this.friend.setDeltaMovement(this.friend.getDeltaMovement().multiply(1, 0, 1));
                 this.friend.setDeltaMovement(this.friend.getDeltaMovement().add(0, this.yMotion, 0));
             } else {
                 this.yMotion = 0;
@@ -114,8 +108,5 @@ public class FriendLadderClimbGoal extends Goal {
         return this.friend.level().getBlockState(pPos).getBlock().isLadder(friend.level().getBlockState(pPos), this.friend.level(), pPos, this.friend);
     }
 
-    boolean isLadder(Node pNode) {
-        BlockPos pPos = new BlockPos(pNode.x, pNode.y, pNode.z);
-        return this.friend.level().getBlockState(pPos).getBlock().isLadder(friend.level().getBlockState(pPos), this.friend.level(), pPos, this.friend);
-    }
+
 }

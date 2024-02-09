@@ -7,7 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
 
@@ -25,24 +24,27 @@ public abstract class FriendProjectile extends ThrowableProjectile {
     }
 
     protected boolean canHitEntity(Entity pTarget) {
-        if(this.getOwner() instanceof Friend friend && pTarget instanceof LivingEntity livingEntity){
-            if(EnemyEvaluator.shouldDoHurtTarget(friend,livingEntity)){
+        if (this.getOwner() instanceof Friend friend && pTarget instanceof LivingEntity livingEntity) {
+            if (EnemyEvaluator.shouldDoHurtTarget(friend, livingEntity)) {
                 return super.canHitEntity(pTarget);
-            }else{
+            } else {
                 return false;
             }
         }
         return super.canHitEntity(pTarget);
     }
+
     public abstract ResourceLocation getTexture();
+
     public abstract RenderType getRenderType();
 
     @Override
     protected void defineSynchedData() {
 
     }
+
     @Override
-    public void tick(){
+    public void tick() {
         super.tick();
     }
 }

@@ -5,7 +5,6 @@ package com.usagin.juicecraft.client.models.alte;// Made with Blockbench 4.8.3
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.usagin.juicecraft.JuiceCraft;
-import com.usagin.juicecraft.client.animation.AlteAnimation2;
 import com.usagin.juicecraft.client.models.FriendEntityModel;
 import com.usagin.juicecraft.friends.Alte;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -22,7 +21,6 @@ import static com.usagin.juicecraft.client.animation.AlteAnimation.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation2.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation3.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation4.*;
-import static com.usagin.juicecraft.friends.Alte.ALTE_SHOOTING;
 
 public class AlteEntityModel extends FriendEntityModel<Alte> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
@@ -31,131 +29,6 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
     public AlteEntityModel(ModelPart root) {
         super(root);
     }
-
-    public void defineParts(ModelPart root) {
-        ModelPart customroot = root.getChild("customroot");
-        ModelPart chest = root.getChild("customroot").getChild("hip").getChild("waist").getChild("chest");
-        ModelPart head = chest.getChild("neck").getChild("head");
-        ModelPart leftarm = chest.getChild("leftarm");
-        ModelPart rightarm = chest.getChild("rightarm");
-        ModelPart leftleg = root.getChild("customroot").getChild("hip").getChild("butt").getChild("leftleg");
-        ModelPart rightleg = root.getChild("customroot").getChild("hip").getChild("butt").getChild("rightleg");
-
-        this.parts = new ModelParts(customroot, head, leftarm, rightarm, leftleg, rightleg, chest);
-    }
-
-    public void toggleArsenal(boolean b) {
-        this.root().getChild("panel").visible = b;
-        this.root().getChild("panel2").visible = b;
-        this.root().getChild("panel3").visible = b;
-        this.root().getChild("panel4").visible = b;
-        this.root().getChild("panel5").visible = b;
-        this.root().getChild("panel6").visible = b;
-        this.root().getChild("powerring").visible = b;
-        this.root().getChild("minigun").visible = b;
-        this.root().getChild("minigun2").visible = b;
-    }
-
-    public void togglePowerRing(boolean b) {
-        this.root().getChild("powerring").visible = b;
-    }
-
-    public void togglePanel(boolean b) {
-        this.root().getChild("panel").visible = b;
-    }
-
-    public void toggleShockRod(boolean b) {
-        this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible = b;
-    }
-
-    public void defineAnimations() {
-        this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);
-    }
-
-    public boolean shouldMoveHeadY(Alte friend) {
-        return friend.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0;
-    }
-    public boolean shouldMoveHeadX(Alte friend){
-        return !friend.isUsingHyper() && friend.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0;
-    }
-
-    public void bowAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if (pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0) {
-            super.bowAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
-        }
-    }
-
-    @Override
-    public void attackAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-            this.animate(alte.hyperShootAnimState, hyperShoot, pAgeInTicks);
-            if(!alte.hyperShootAnimState.isStarted()){
-            this.animate(alte.hyperStartAnimState,hyperStart,pAgeInTicks);
-            this.animate(alte.hyperEndAnimState,hyperEnd,pAgeInTicks);
-            this.animate(alte.hyperWindupAnimState,hyperWindup,pAgeInTicks);
-            this.animate(alte.hyperRelaxAnimState,hyperRecovery,pAgeInTicks);
-            this.animate(alte.sparkAnimState, spark, pAgeInTicks);
-            boolean flag = alte.areAnimationsBusy();
-            this.togglePanel(alte.sparkAnimState.isStarted());
-            this.animate(alte.rodSummonAnimState, shockrodStart, pAgeInTicks);
-            this.togglePowerRing(alte.rodSummonAnimState.isStarted() || alte.punisherAnimState.isStarted());
-            this.animate(alte.rodSheathAnimState, shockrodEnd, pAgeInTicks);
-            this.animate(alte.punisherAnimState, punisher, pAgeInTicks);
-
-
-            if (!flag) {
-                super.attackAnim(alte, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
-            }
-        }
-    }
-
-    public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
-        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
-            pPoseStack.scale(0, 0, 0);
-        } else {
-            super.translateToHand(pSide, pPoseStack);
-        }
-    }
-
-    public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
-        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
-            pPoseStack.scale(0, 0, 0);
-        } else {
-            super.translateToBack(pPoseStack, pItemStack);
-        }
-    }
-    public void patAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if(!pEntity.isUsingHyper()){
-            super.patAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
-        }
-    }
-    public void idleAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        if (alte.isUsingHyper()) {
-            if(!alte.areAnimationsBusy() && !alte.hyperShootAnimState.isStarted()){
-                animate(alte.hyperIdleAnimState, hyperIdle, pAgeInTicks);
-            }
-        } else {
-            if (!alte.areAnimationsBusy()) {
-                animate(alte.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
-                animate(alte.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);
-                animate(alte.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
-                animate(alte.snowballIdleAnimState, this.animations.snowballIdle(), pAgeInTicks);
-                animate(alte.snowballIdleTransitionAnimState, this.animations.snowballIdleTransition(), pAgeInTicks);
-            }
-        }
-
-    }
-
-    @Override
-    public void setupAnim(Alte alt, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        super.setupAnim(alt, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
-        if(alt.isUsingHyper()){
-            this.root().yRot=this.parts.head().yRot;
-            this.parts.head().yRot=0;
-        }
-        this.toggleArsenal(alt.isUsingHyper());
-        this.toggleShockRod(alt.isUsingShockRod());
-    }
-
 
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = new MeshDefinition();
@@ -1004,6 +877,133 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
                 .texOffs(829, 550).addBox(-11.0F, -10.9F, -98.0F, 22.0F, 22.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(37.7487F, -2.2521F, 35.0F));
 
         return LayerDefinition.create(meshdefinition, 1024, 1024);
+    }
+
+    public void defineAnimations() {
+        this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);
+    }
+
+    public void defineParts(ModelPart root) {
+        ModelPart customroot = root.getChild("customroot");
+        ModelPart chest = root.getChild("customroot").getChild("hip").getChild("waist").getChild("chest");
+        ModelPart head = chest.getChild("neck").getChild("head");
+        ModelPart leftarm = chest.getChild("leftarm");
+        ModelPart rightarm = chest.getChild("rightarm");
+        ModelPart leftleg = root.getChild("customroot").getChild("hip").getChild("butt").getChild("leftleg");
+        ModelPart rightleg = root.getChild("customroot").getChild("hip").getChild("butt").getChild("rightleg");
+
+        this.parts = new ModelParts(customroot, head, leftarm, rightarm, leftleg, rightleg, chest);
+    }
+
+    public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
+        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
+            pPoseStack.scale(0, 0, 0);
+        } else {
+            super.translateToHand(pSide, pPoseStack);
+        }
+    }
+
+    public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
+        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
+            pPoseStack.scale(0, 0, 0);
+        } else {
+            super.translateToBack(pPoseStack, pItemStack);
+        }
+    }
+
+    @Override
+    public void attackAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        this.animate(alte.hyperShootAnimState, hyperShoot, pAgeInTicks);
+        if (!alte.hyperShootAnimState.isStarted()) {
+            this.animate(alte.hyperStartAnimState, hyperStart, pAgeInTicks);
+            this.animate(alte.hyperEndAnimState, hyperEnd, pAgeInTicks);
+            this.animate(alte.hyperWindupAnimState, hyperWindup, pAgeInTicks);
+            this.animate(alte.hyperRelaxAnimState, hyperRecovery, pAgeInTicks);
+            this.animate(alte.sparkAnimState, spark, pAgeInTicks);
+            boolean flag = alte.areAnimationsBusy();
+            this.togglePanel(alte.sparkAnimState.isStarted());
+            this.animate(alte.rodSummonAnimState, shockrodStart, pAgeInTicks);
+            this.togglePowerRing(alte.rodSummonAnimState.isStarted() || alte.punisherAnimState.isStarted());
+            this.animate(alte.rodSheathAnimState, shockrodEnd, pAgeInTicks);
+            this.animate(alte.punisherAnimState, punisher, pAgeInTicks);
+
+
+            if (!flag) {
+                super.attackAnim(alte, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
+            }
+        }
+    }
+
+    public void togglePanel(boolean b) {
+        this.root().getChild("panel").visible = b;
+    }
+
+    public void togglePowerRing(boolean b) {
+        this.root().getChild("powerring").visible = b;
+    }
+
+    public void bowAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        if (pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0) {
+            super.bowAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
+        }
+    }
+
+    public void patAnim(Alte pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        if (!pEntity.isUsingHyper()) {
+            super.patAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
+        }
+    }
+
+    public void idleAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        if (alte.isUsingHyper()) {
+            if (!alte.areAnimationsBusy() && !alte.hyperShootAnimState.isStarted()) {
+                animate(alte.hyperIdleAnimState, hyperIdle, pAgeInTicks);
+            }
+        } else {
+            if (!alte.areAnimationsBusy()) {
+                animate(alte.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
+                animate(alte.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);
+                animate(alte.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
+                animate(alte.snowballIdleAnimState, this.animations.snowballIdle(), pAgeInTicks);
+                animate(alte.snowballIdleTransitionAnimState, this.animations.snowballIdleTransition(), pAgeInTicks);
+            }
+        }
+
+    }
+
+    public boolean shouldMoveHeadY(Alte friend) {
+        return friend.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0;
+    }
+
+    public boolean shouldMoveHeadX(Alte friend) {
+        return !friend.isUsingHyper() && friend.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 0;
+    }
+
+    @Override
+    public void setupAnim(Alte alt, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        super.setupAnim(alt, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);
+        if (alt.isUsingHyper()) {
+            this.root().yRot = this.parts.head().yRot;
+            this.parts.head().yRot = 0;
+        }
+        this.toggleArsenal(alt.isUsingHyper());
+        this.toggleShockRod(alt.isUsingShockRod());
+    }
+
+    public void toggleArsenal(boolean b) {
+        this.root().getChild("panel").visible = b;
+        this.root().getChild("panel2").visible = b;
+        this.root().getChild("panel3").visible = b;
+        this.root().getChild("panel4").visible = b;
+        this.root().getChild("panel5").visible = b;
+        this.root().getChild("panel6").visible = b;
+        this.root().getChild("powerring").visible = b;
+        this.root().getChild("minigun").visible = b;
+        this.root().getChild("minigun2").visible = b;
+    }
+
+    public void toggleShockRod(boolean b) {
+        this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible = b;
     }
 
 }

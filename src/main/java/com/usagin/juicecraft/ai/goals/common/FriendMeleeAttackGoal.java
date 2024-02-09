@@ -8,40 +8,12 @@ import net.minecraft.world.entity.PathfinderMob;
 import org.jetbrains.annotations.NotNull;
 
 public class FriendMeleeAttackGoal extends ShellMeleeGoal {
-    private int ticksUntilNextAttack;
     Friend friend;
+    private int ticksUntilNextAttack;
 
     public FriendMeleeAttackGoal(PathfinderMob pMob, double pSpeedModifier, boolean pFollowingTargetEvenIfNotSeen) {
         super(pMob, pSpeedModifier, pFollowingTargetEvenIfNotSeen);
         this.friend = (Friend) pMob;
-    }
-
-    @Override
-    public void start() {
-        if (!this.friend.isDying) {
-            this.friend.playVoice(((Friend) this.mob).getBattle());
-            super.start();
-        }
-    }
-
-    protected boolean isTimeToAttack() {
-        return true;
-    }
-
-    @Override
-    protected void checkAndPerformAttack(@NotNull LivingEntity pTarget) {
-        if (this.canPerformAttack(pTarget) && this.mob instanceof Friend pFriend) {
-                pFriend.swing(InteractionHand.MAIN_HAND);
-        }
-    }
-    protected boolean canPerformAttack(LivingEntity pEntity) {
-        boolean flag = this.mob.isWithinMeleeAttackRange(pEntity);
-        return flag && this.mob.getSensing().hasLineOfSight(pEntity);
-    }
-
-    @Override
-    protected void resetAttackCooldown() {
-        this.ticksUntilNextAttack = this.adjustedTickDelay(0);
     }
 
     @Override
@@ -54,16 +26,10 @@ public class FriendMeleeAttackGoal extends ShellMeleeGoal {
     }
 
     @Override
-    public void tick() {
-        if(!this.friend.level().isClientSide()){
-        if (this.friend.canDoThings() && this.friend.runTimer <= 0 && this.friend.getTarget() != null) {
-            if(!this.friend.getBoundingBox().intersects(this.friend.getTarget().getBoundingBox())){
-                this.friend.getNavigation().stop();
-                this.friend.getNavigation().moveTo(this.friend.getTarget(),1);
-            }
-            super.tick();
-        }}else{
-            super.tick();
+    public void start() {
+        if (!this.friend.isDying) {
+            this.friend.playVoice(((Friend) this.mob).getBattle());
+            super.start();
         }
     }
 
@@ -71,5 +37,41 @@ public class FriendMeleeAttackGoal extends ShellMeleeGoal {
     public void stop() {
 
         super.stop();
+    }
+
+    @Override
+    public void tick() {
+        if (!this.friend.level().isClientSide()) {
+            if (this.friend.canDoThings() && this.friend.runTimer <= 0 && this.friend.getTarget() != null) {
+                if (!this.friend.getBoundingBox().intersects(this.friend.getTarget().getBoundingBox())) {
+                    this.friend.getNavigation().stop();
+                    this.friend.getNavigation().moveTo(this.friend.getTarget(), 1);
+                }
+                super.tick();
+            }
+        } else {
+            super.tick();
+        }
+    }
+
+    @Override
+    protected void checkAndPerformAttack(@NotNull LivingEntity pTarget) {
+        if (this.canPerformAttack(pTarget) && this.mob instanceof Friend pFriend) {
+            pFriend.swing(InteractionHand.MAIN_HAND);
+        }
+    }
+
+    protected boolean canPerformAttack(LivingEntity pEntity) {
+        boolean flag = this.mob.isWithinMeleeAttackRange(pEntity);
+        return flag && this.mob.getSensing().hasLineOfSight(pEntity);
+    }
+
+    protected boolean isTimeToAttack() {
+        return true;
+    }
+
+    @Override
+    protected void resetAttackCooldown() {
+        this.ticksUntilNextAttack = this.adjustedTickDelay(0);
     }
 }

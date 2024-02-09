@@ -9,7 +9,6 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,12 +17,14 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-public class FriendItemInHandLayer<T extends Friend, M extends EntityModel<T> & ArmedModel> extends RenderLayer<T,M> {
+public class FriendItemInHandLayer<T extends Friend, M extends EntityModel<T> & ArmedModel> extends RenderLayer<T, M> {
     private final ItemInHandRenderer itemInHandRenderer;
-    public FriendItemInHandLayer(RenderLayerParent<T,M> pRenderer, ItemInHandRenderer pItemInHandRenderer) {
+
+    public FriendItemInHandLayer(RenderLayerParent<T, M> pRenderer, ItemInHandRenderer pItemInHandRenderer) {
         super(pRenderer);
         this.itemInHandRenderer = pItemInHandRenderer;
     }
+
     @Override
     public void render(@NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         boolean flag = pLivingEntity.getMainArm() == HumanoidArm.RIGHT;
@@ -32,10 +33,11 @@ public class FriendItemInHandLayer<T extends Friend, M extends EntityModel<T> & 
         Logger LOGGER = LogUtils.getLogger();
         if (!itemstack.isEmpty() || !itemstack1.isEmpty()) {
             pPoseStack.pushPose();
-            if(!pLivingEntity.getInSittingPose() && (pLivingEntity.aggroCounter>0 || pLivingEntity.getAttackCounter()>0) || pLivingEntity.animatestandingtimer>0 || pLivingEntity.isHoldingThrowable()){
-                if(pLivingEntity.shouldShowWeapon()){
-                this.renderArmWithItem(pLivingEntity, itemstack1, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, HumanoidArm.RIGHT, pPoseStack, pBuffer, pPackedLight);
-                this.renderArmWithItem(pLivingEntity, itemstack, ItemDisplayContext.THIRD_PERSON_LEFT_HAND, HumanoidArm.LEFT, pPoseStack, pBuffer, pPackedLight);}
+            if (!pLivingEntity.getInSittingPose() && (pLivingEntity.aggroCounter > 0 || pLivingEntity.getAttackCounter() > 0) || pLivingEntity.animatestandingtimer > 0 || pLivingEntity.isHoldingThrowable()) {
+                if (pLivingEntity.shouldShowWeapon()) {
+                    this.renderArmWithItem(pLivingEntity, itemstack1, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, HumanoidArm.RIGHT, pPoseStack, pBuffer, pPackedLight);
+                    this.renderArmWithItem(pLivingEntity, itemstack, ItemDisplayContext.THIRD_PERSON_LEFT_HAND, HumanoidArm.LEFT, pPoseStack, pBuffer, pPackedLight);
+                }
             }
             pPoseStack.popPose();
         }

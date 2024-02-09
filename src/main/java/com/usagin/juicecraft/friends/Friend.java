@@ -2,21 +2,22 @@ package com.usagin.juicecraft.friends;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
-import com.usagin.juicecraft.ai.awareness.FriendDefense;
-import com.usagin.juicecraft.ai.goals.common.*;
-import com.usagin.juicecraft.ai.awareness.CombatSettings;
-import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
-import com.usagin.juicecraft.ai.awareness.SkillManager;
-import com.usagin.juicecraft.client.menu.FriendMenu;
-import com.usagin.juicecraft.client.menu.FriendMenuProvider;
 import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.Seagull;
-import com.usagin.juicecraft.data.*;
+import com.usagin.juicecraft.ai.awareness.CombatSettings;
+import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
+import com.usagin.juicecraft.ai.awareness.FriendDefense;
+import com.usagin.juicecraft.ai.awareness.SkillManager;
+import com.usagin.juicecraft.ai.goals.common.*;
 import com.usagin.juicecraft.ai.goals.navigation.FriendPathNavigation;
+import com.usagin.juicecraft.client.menu.FriendMenu;
+import com.usagin.juicecraft.client.menu.FriendMenuProvider;
+import com.usagin.juicecraft.data.FriendCombatTracker;
+import com.usagin.juicecraft.data.SumikaMemory;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.items.ModuleItem;
-import com.usagin.juicecraft.items.SweetItem;
 import com.usagin.juicecraft.items.SweetHandler;
+import com.usagin.juicecraft.items.SweetItem;
 import com.usagin.juicecraft.network.CircleParticlePacketHandler;
 import com.usagin.juicecraft.network.ToClientCircleParticlePacket;
 import com.usagin.juicecraft.particles.DiceHandler;
@@ -37,14 +38,17 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
-import net.minecraft.world.damagesource.*;
+import net.minecraft.world.damagesource.CombatTracker;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.goal.target.*;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
+import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.CrossbowAttackMob;
@@ -59,9 +63,9 @@ import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.MendingEnchantment;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
@@ -86,18 +90,39 @@ import static net.minecraft.world.item.Items.AIR;
 import static net.minecraft.world.item.Items.COOKIE;
 
 public abstract class Friend extends FakeWolf implements ContainerListener, MenuProvider, RangedAttackMob, CrossbowAttackMob {
-    int captureDifficulty;
-    int hungerMeter;
-    public int snoozeCounter = 40;
-    public int flowercooldown = 300;
-    public int viewflower = 0;
-    public int itempickup = 0;
-    int maxnorma=0;
-    double[] normaprogress = new double[9];
-    double[] normacaps = new double[]{0.1, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1};
-    public int[] skillinfo = new int[6];
-    int[] specialDialogueEnabled = {0, 0, 0};
-    public Creeper fleeTarget = null;
+    public static final EntityDataAccessor<ItemStack> FRIEND_WEAPON = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.ITEM_STACK);
+    public static final EntityDataAccessor<Integer> FRIEND_COMBATMOD = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SWIMCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_PLACECOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_VIEWFLOWER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_ITEMPICKUP = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_TIMESINCEPAT = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<String> FRIEND_EVENTLOG = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Boolean> FRIEND_ISFARMING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> FRIEND_ISWANDERING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> FRIEND_SPECIALSENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLPOINTS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS1 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS2 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS3 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS4 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS5 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS6 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_SKILLENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_COMBATSETTINGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> FRIEND_ISDYING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> FRIEND_ISSITTING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> FRIEND_ATTACKCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_HUNGERMETER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_ITEMSCOLLECTED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_ENEMIESKILLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_DEATHCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FRIEND_ATTACKTYPE = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Float> FRIEND_NORMA = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> FRIEND_LEVEL = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.FLOAT);
+    public static final Logger LOGGER = LogUtils.getLogger();
+    private static final EntityDataAccessor<Byte> DATA_ID_FLAGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Optional<BlockPos>> SLEEPING_POS_ID = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
     public final AnimationState idleAnimState = new AnimationState();
     public final AnimationState patAnimState = new AnimationState();
     public final AnimationState idleAnimStartState = new AnimationState();
@@ -116,10 +141,17 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public final AnimationState swimAnimState = new AnimationState();
     public final AnimationState interactAnimState = new AnimationState();
     public final AnimationState snowballIdleAnimState = new AnimationState();
-
     public final AnimationState snowballIdleTransitionAnimState = new AnimationState();
-
     public final AnimationState snowballThrowAnimState = new AnimationState();
+    public final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
+    public final FriendRangedCrossbowAttackGoal crossbowGoal = new FriendRangedCrossbowAttackGoal(this, 1.0D, 20);
+    public final FriendThrowSnowballGoal snowballGoal = new FriendThrowSnowballGoal(this);
+    public int snoozeCounter = 40;
+    public int flowercooldown = 300;
+    public int viewflower = 0;
+    public int itempickup = 0;
+    public int[] skillinfo = new int[6];
+    public Creeper fleeTarget = null;
     public int combatmodifier = 0;
     public int placecounter = 0;
     public int timesincelastpat = 0;
@@ -128,19 +160,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int[] skillLevels = new int[6];
     public boolean[] skillEnabled = new boolean[]{false, false, false, false, false, false};
     public Map<Pose, EntityDimensions> POSES = ImmutableMap.<Pose, EntityDimensions>builder().put(STANDING, EntityDimensions.scalable(0.6F, 1.8F)).put(SITTING, EntityDimensions.scalable(0.6F, 1.1F)).put(Pose.SLEEPING, EntityDimensions.scalable(0.6F, 0.5F)).put(SWIMMING, EntityDimensions.scalable(0.6F, 0.9F)).build();
-    public final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
-    public final FriendRangedCrossbowAttackGoal crossbowGoal = new FriendRangedCrossbowAttackGoal(this, 1.0D, 20);
-    public final FriendThrowSnowballGoal snowballGoal = new FriendThrowSnowballGoal(this);
-
     public int impatientCounter = 0;
     public int runTimer = 0;
     public int animatestandingtimer = 0;
     public int skillPoints = 0;
     public int deathAnimCounter;
-    private int enemiesKilled = 0;
-    private int itemsCollected = 0;
-    private float experience = 0;
-    private float norma = 1;
     public int aggression;
     public int mood;
     public boolean isDying = false;
@@ -156,24 +180,45 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int patCounter = 20;
     public int idleCounter = 0;
     public int deathTimer = 199;
+    public float volume = 0.5F;
+    public SimpleContainer inventory = new SimpleContainer(16);
+    public CombatSettings combatSettings;
+    public boolean setupcomplete;
+    public int quicksoundcounter = 0;
+    public DamageSource deathSource;
+    public boolean attackplayertoo = false;
+    public int isembarassed = 0;
+    public Queue<BlockPos> farmqueue = new LinkedList<>();
+    public int aggroCounter = 0;
+    public int startfloattimer = 0;
+    int captureDifficulty;
+    int hungerMeter;
+    int maxnorma = 0;
+    double[] normaprogress = new double[9];
+    double[] normacaps = new double[]{0.1, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1};
+    int[] specialDialogueEnabled = {0, 0, 0};
     int invRows;
     boolean isArmorable;
     boolean isModular;
     String name;
     boolean isShaking;
-    public float volume = 0.5F;
-    public SimpleContainer inventory = new SimpleContainer(16);
     int[] dialogueTree = new int[300];
-    public CombatSettings combatSettings;
-    public boolean setupcomplete;
-
-    public String getFriendName() {
-        return this.name;
-    }
+    FriendCombatTracker combatTracker = new FriendCombatTracker(this);
+    float maxhealth;
+    float mvspeed;
+    float atkdmg;
+    int socialInteraction;
+    int n = 5;
+    boolean wasDay = false;
+    private int enemiesKilled = 0;
+    private int itemsCollected = 0;
+    private float experience = 0;
+    private float norma = 1;
+    private net.minecraftforge.common.util.LazyOptional<?> itemHandler = null;
 
     public Friend(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.setupcomplete=false;
+        this.setupcomplete = false;
         initializeNew();
         if (this.level().isClientSide()) {
             this.inventory.setItem(1, this.getFriendWeapon());
@@ -201,12 +246,43 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.createInventory();
     }
 
-    @Override
-    protected @NotNull PathNavigation createNavigation(Level pLevel) {
-        return new FriendPathNavigation(this, pLevel);
+    public ItemStack getFriendWeapon() {
+        return this.getEntityData().get(FRIEND_WEAPON);
     }
 
-    private net.minecraftforge.common.util.LazyOptional<?> itemHandler = null;
+    public void setFriendNorma(float n, int source) {
+        this.norma = n;
+        int orig = (int) this.getFriendNorma();
+        int newone = (int) n;
+        if (this.setupcomplete) {
+            if (newone > orig && newone < 5 && newone > 1 && newone > maxnorma) {
+                this.maxnorma = newone;
+                this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma" + newone).getString());
+                this.playSound(NORMAUP.get(), 1, 1);
+            } else if (newone > orig && newone == 5 && this.getOwner() != null && newone > maxnorma) {
+                this.maxnorma = newone;
+                this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma5.0").getString() + this.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma5.1").getString());
+                this.playSound(NORMAUP.get(), 1, 1);
+            }
+        }
+        this.getEntityData().set(FRIEND_NORMA, n);
+    }
+
+    abstract void setRecoveryDifficulty();
+
+    abstract void setCaptureDifficulty();
+
+    abstract void setAggression();
+
+    abstract void setName();
+
+    abstract void setInventoryRows();
+
+    abstract void setArmorableModular();
+
+    public void setSkillInfo() {
+        this.skillinfo = this.getSkillInfo();
+    }
 
     protected void createInventory() {
         SimpleContainer simplecontainer = this.inventory;
@@ -227,190 +303,79 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this.inventory));
     }
 
-    @Override
-    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
-        if (this.isAlive() && capability == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
-            return itemHandler.cast();
-        return super.getCapability(capability, facing);
+    public float getFriendNorma() {
+        return this.getEntityData().get(FRIEND_NORMA);
     }
 
-    protected AbstractArrow getArrow(ItemStack pArrowStack, float pVelocity) {
-        return ProjectileUtil.getMobArrow(this, pArrowStack, pVelocity);
-    }
-
-    public double getAttackSpeed() {
-        try {
-            double temp = -3;
-            for (AttributeModifier mod : this.getFriendWeapon().getItem().getDefaultAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_SPEED)) {
-                if (mod.getName().equals("Weapon modifier")) {
-                    temp = mod.getAmount();
-                    break;
-                }
-            }
-            temp += 4;
-            //LOGGER.info(this.combatmodifier + "BASE");
-            //LOGGER.info(this.getCombatMod() +"MOD");
-            return temp / 1.6 * Mth.clamp(1 + 0.05 * this.getCombatMod(), 0.1, 1.5);
-        } catch (Exception e) {
-            return 0.625 * Mth.clamp(1 + 0.05 * this.getCombatMod(), 0.1, 1.5);
+    public void appendEventLog(String s) {
+        if (this.getEventLog().length() > 5000) {
+            this.setEventLog(this.getEventLog().substring(1000));
         }
+        this.eventlog = this.eventlog + s + "\n";
+        this.getEntityData().set(FRIEND_EVENTLOG, this.eventlog);
     }
 
-    @Override
-    public void setChargingCrossbow(boolean pChargingCrossbow) {
-        //
-    }
-
-    @Override
-    public void shootCrossbowProjectile(LivingEntity pTarget, ItemStack pCrossbowStack, Projectile pProjectile, float pProjectileAngle) {
-        //pCrossbowStack.shrink(1);
-        //this.shootCrossbowProjectile(this, pTarget, pProjectile, pProjectileAngle, 1.6F);
-    }
-
-    @Override
-    public void onCrossbowAttackPerformed() {
-        //this.noActionTime = 0;
-    }
-
-    public boolean isHoldingThrowable() {
-        return this.getMainHandItem().getItem() instanceof SnowballItem;
-    }
-
-    public void throwSnowball() {
-        ItemStack itemstack = this.getItemInHand(InteractionHand.MAIN_HAND);
-        if (!this.level().isClientSide) {
-            this.playVoice(this.getAttack());
-            this.playSound(SoundEvents.SNOWBALL_THROW);
-            Snowball snowball = new Snowball(this.level(), this);
-            snowball.setItem(itemstack);
-            if (this.getTarget() != null) {
-                this.lookAt(this.getTarget(), 360, 360);
-            }
-            float xrot = this.getXRot();
-            float yrot = this.getYRot();
-            snowball.shootFromRotation(this, xrot, yrot, 0.0F, 1.5F, 0.8F);
-            this.level().addFreshEntity(snowball);
-        }
-        itemstack.shrink(1);
-    }
-
-    public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
-        boolean flag = false;
-        ItemStack ammo = null;
-        for (int i = 1; i < this.inventory.getContainerSize(); i++) {
-            if (this.inventory.getItem(i).getItem() instanceof ArrowItem) {
-                ammo = this.inventory.getItem(i);
-                flag = true;
-                break;
-            }
-        }
-        if (flag) {
-            AbstractArrow abstractarrow = this.getArrow(ammo, pDistanceFactor);
-            if (this.getMainHandItem().getItem() instanceof net.minecraft.world.item.BowItem)
-                abstractarrow = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrow);
-            double d0 = pTarget.getX() - this.getX();
-            double d1 = pTarget.getY(0.3333333333333333D) - abstractarrow.getY();
-            double d2 = pTarget.getZ() - this.getZ();
-            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-            abstractarrow.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - this.level().getDifficulty().getId() * 4));
-            this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level().addFreshEntity(abstractarrow);
-            this.getMainHandItem().hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(EquipmentSlot.MAINHAND));
-            this.playVoice(this.getAttack());
-            ammo.setCount(ammo.getCount() - 1);
-        } else {
-            this.playVoice(this.getRecoveryFail());
-        }
-    }
-
-    public void broadcastBreakEvent(EquipmentSlot pSlot) {
-        if (pSlot == EquipmentSlot.MAINHAND) {
-            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.breakweapon").getString());
-        }
-        super.broadcastBreakEvent(pSlot);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        if (itemHandler != null) {
-            net.minecraftforge.common.util.LazyOptional<?> oldHandler = itemHandler;
-            itemHandler = null;
-            oldHandler.invalidate();
-        }
-    }
-
-    public double getPeaceAffinityModifier() {
-        return (100 - this.aggression) * 0.01;
-    }
-
-    public double getCombatAffinityModifier() {
-        return (this.aggression) * 0.01;
-    }
-
-    public double getTravelAffinityModifier() {
-        return (100 - Math.abs(this.aggression - 50)) * 0.01;
-    }
-
-    public void increaseEXP(double gain) {
-        float currentxp = this.getFriendExperience();
-        float nextlevel = 100 * (((int) (currentxp / 100)) + 1);
-        float afterxp = currentxp + (float) gain;
-        if (afterxp >= nextlevel) {
-            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.levelup").getString());
-            this.playSound(SoundEvents.PLAYER_LEVELUP, 1, 1);
-            this.setSkillPoints(this.getSkillPoints() + ((int) (afterxp / 100) - ((int) (currentxp / 100))));
-            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttributeBaseValue(Attributes.MAX_HEALTH) + 0.2 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
-            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) + 0.1 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
-            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) + 0.1 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
-            this.playVoice(this.getModuleEquip());
-            this.spawnHorizontalParticles();
-        }
-        this.setFriendExperience(afterxp);
-    }
-
-    public void setSkillInfo() {
-        this.skillinfo = this.getSkillInfo();
+    public String getFriendName() {
+        return this.name;
     }
 
     abstract int[] getSkillInfo();
 
-    public boolean canDoThings() {
-        return !this.getInSittingPose() && !this.isDying && this.getVehicle()==null;
+    public int getInventoryRows() {
+        return this.invRows;
     }
-    public<T extends ParticleOptions> void spawnParticlesInRandomSpreadAtEntity(Entity entity, int count, float radius, float distance, ServerLevel sLevel, T type){
-        float targetX = (float) entity.getX();
-        float targetZ = (float) entity.getZ();
-        float targetY = (float) entity.getEyeY();
 
-        sLevel.sendParticles(type,targetX,targetY,targetZ,count,radius,radius,radius,1);
-    }
-    public<T extends ParticleOptions> void spawnParticlesInUpFacingCircle(Entity entity, float radius, T type){
-        CircleParticlePacketHandler.sendToClient(new ToClientCircleParticlePacket(entity.getId(),radius,type),this);
-    }
-    public<T extends ParticleOptions> void spawnParticlesInSphereAtEntity(Entity entity, int count, float radius, float distance, ServerLevel sLevel, T type, float yOffset){
-        if(count<1){
-            return;
+    protected void updateContainerEquipment() {
+        if (!this.level().isClientSide) {
+            this.setFlag(4, !this.inventory.getItem(0).isEmpty());
         }
-        float targetX = (float) entity.getX();
-        float targetZ = (float) entity.getZ();
-        float targetY = (float) entity.getEyeY();
+    }
 
-        for(int i = 0; i < count; i++){
-            float x = (float) (Math.sin(i))/2*radius;
-            float z = (float) (Math.cos(i))/2*radius;
-            if(this.getRandom().nextBoolean()){
-                x=-x;
-                z=-z;
-            }
-            sLevel.sendParticles(type,targetX + x,targetY + yOffset,targetZ + z,1,0,0,0,0.5);
+    public String getEventLog() {
+        return this.getEntityData().get(FRIEND_EVENTLOG);
+    }
 
+    public void setEventLog(String s) {
+        this.eventlog = s;
+        this.getEntityData().set(FRIEND_EVENTLOG, s);
+    }
+
+    protected void setFlag(int pFlagId, boolean pValue) {
+        byte b0 = this.entityData.get(DATA_ID_FLAGS);
+
+        if (pValue) {
+            this.entityData.set(DATA_ID_FLAGS, (byte) (b0 | pFlagId));
+        } else {
+            this.entityData.set(DATA_ID_FLAGS, (byte) (b0 & ~pFlagId));
         }
 
-        this.spawnParticlesInSphereAtEntity(entity, (int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset+0.3F);
-        this.spawnParticlesInSphereAtEntity(entity, (int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset-0.3F);
-
     }
+
+    @Override
+    protected @NotNull PathNavigation createNavigation(Level pLevel) {
+        return new FriendPathNavigation(this, pLevel);
+    }
+
+    @Override
+    public void playAmbientSound() {
+        //do nothing
+    }
+
+    protected void pickUpItem(ItemEntity pItemEntity) {
+        this.chasingitem = false;
+        ItemStack itemstack = pItemEntity.getItem();
+        ItemStack copy = itemstack.copy();
+        this.onItemPickup(pItemEntity);
+        this.take(pItemEntity, itemstack.getCount());
+        this.playTimedVoice(this.getEquip());
+        this.moveItemToEmptySlots(this.inventory, itemstack);
+
+        itemstack.shrink(copy.getCount() - itemstack.getCount());
+        if (itemstack.isEmpty()) {
+            pItemEntity.discard();
+        }
+    }
+
     public boolean wantsToPickUp(ItemStack pStack) {
 
 
@@ -425,6 +390,40 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         } else return false;
         return false;
     }
+
+    public boolean canPickUpLoot() {
+        return true;
+    }
+
+    @Override
+    public boolean isLeftHanded() {
+        return false;
+    }
+
+    public boolean isAggressive() {
+        return super.isAggressive();
+    }
+
+    protected @NotNull AABB getAttackBoundingBox() {
+        return super.getAttackBoundingBox().inflate(1.5, 0.0D, 1.5);
+    }
+
+    public int getFriendItemPickup() {
+        return this.getEntityData().get(FRIEND_ITEMPICKUP);
+    }
+
+    public void setFriendItemPickup(int n) {
+        this.itempickup = n;
+        this.getEntityData().set(FRIEND_ITEMPICKUP, n);
+    }
+
+    public void playTimedVoice(SoundEvent sound) {
+        if (this.soundCounter >= 50) {
+            this.playVoice(sound, true);
+        }
+    }
+
+    public abstract SoundEvent getEquip();
 
     private void moveItemToEmptySlots(SimpleContainer inventory, ItemStack pStack) {
         EquipmentSlot equipmentSlot = getEquipmentSlotForItem(pStack);
@@ -475,17 +474,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         Block.popResource(this.level(), this.getOnPos(), pStack);
     }
 
-    private void moveItemsBetweenStacks(SimpleContainer inventory, ItemStack pStack, ItemStack pOther) {
-        int i = Math.min(inventory.getMaxStackSize(), pOther.getMaxStackSize());
-        int j = Math.min(pStack.getCount(), i - pOther.getCount());
-        if (j > 0) {
-            pOther.grow(j);
-            pStack.shrink(j);
-            inventory.setChanged();
-        }
-
-    }
-
     private void moveItemToOccupiedSlotsWithSameType(SimpleContainer inventory, ItemStack pStack) {
         for (int i = 7; i < inventory.getContainerSize(); ++i) {
             ItemStack itemstack = inventory.getItem(i);
@@ -499,23 +487,172 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     }
 
-    public boolean canPickUpLoot() {
-        return true;
+    private void moveItemsBetweenStacks(SimpleContainer inventory, ItemStack pStack, ItemStack pOther) {
+        int i = Math.min(inventory.getMaxStackSize(), pOther.getMaxStackSize());
+        int j = Math.min(pStack.getCount(), i - pOther.getCount());
+        if (j > 0) {
+            pOther.grow(j);
+            pStack.shrink(j);
+            inventory.setChanged();
+        }
+
     }
 
-    protected void pickUpItem(ItemEntity pItemEntity) {
-        this.chasingitem = false;
-        ItemStack itemstack = pItemEntity.getItem();
-        ItemStack copy = itemstack.copy();
-        this.onItemPickup(pItemEntity);
-        this.take(pItemEntity, itemstack.getCount());
-        this.playTimedVoice(this.getEquip());
-        this.moveItemToEmptySlots(this.inventory, itemstack);
+    @Override
+    public void setChargingCrossbow(boolean pChargingCrossbow) {
+        //
+    }
 
-        itemstack.shrink(copy.getCount() - itemstack.getCount());
-        if (itemstack.isEmpty()) {
-            pItemEntity.discard();
+    @Override
+    public void shootCrossbowProjectile(LivingEntity pTarget, ItemStack pCrossbowStack, Projectile pProjectile, float pProjectileAngle) {
+        //pCrossbowStack.shrink(1);
+        //this.shootCrossbowProjectile(this, pTarget, pProjectile, pProjectileAngle, 1.6F);
+    }
+
+    @Override
+    public void onCrossbowAttackPerformed() {
+        //this.noActionTime = 0;
+    }
+
+    public void throwSnowball() {
+        ItemStack itemstack = this.getItemInHand(InteractionHand.MAIN_HAND);
+        if (!this.level().isClientSide) {
+            this.playVoice(this.getAttack());
+            this.playSound(SoundEvents.SNOWBALL_THROW);
+            Snowball snowball = new Snowball(this.level(), this);
+            snowball.setItem(itemstack);
+            if (this.getTarget() != null) {
+                this.lookAt(this.getTarget(), 360, 360);
+            }
+            float xrot = this.getXRot();
+            float yrot = this.getYRot();
+            snowball.shootFromRotation(this, xrot, yrot, 0.0F, 1.5F, 0.8F);
+            this.level().addFreshEntity(snowball);
         }
+        itemstack.shrink(1);
+    }
+
+    public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
+        boolean flag = false;
+        ItemStack ammo = null;
+        for (int i = 1; i < this.inventory.getContainerSize(); i++) {
+            if (this.inventory.getItem(i).getItem() instanceof ArrowItem) {
+                ammo = this.inventory.getItem(i);
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            AbstractArrow abstractarrow = this.getArrow(ammo, pDistanceFactor);
+            if (this.getMainHandItem().getItem() instanceof net.minecraft.world.item.BowItem)
+                abstractarrow = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrow);
+            double d0 = pTarget.getX() - this.getX();
+            double d1 = pTarget.getY(0.3333333333333333D) - abstractarrow.getY();
+            double d2 = pTarget.getZ() - this.getZ();
+            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+            abstractarrow.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - this.level().getDifficulty().getId() * 4));
+            this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+            this.level().addFreshEntity(abstractarrow);
+            this.getMainHandItem().hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+            this.playVoice(this.getAttack());
+            ammo.setCount(ammo.getCount() - 1);
+        } else {
+            this.playVoice(this.getRecoveryFail());
+        }
+    }
+
+    protected AbstractArrow getArrow(ItemStack pArrowStack, float pVelocity) {
+        return ProjectileUtil.getMobArrow(this, pArrowStack, pVelocity);
+    }
+
+    public void playVoice(SoundEvent sound) {
+        this.playVoice(sound, false);
+    }
+
+    public abstract SoundEvent getAttack();
+
+    public abstract SoundEvent getRecoveryFail();
+
+    public void playVoice(SoundEvent sound, boolean extended) {
+        if (!this.level().isClientSide()) {
+            this.soundCounter = 0;
+            if (sound != null && (this.quicksoundcounter == 0 || extended)) {
+                this.broadcastVoiceToNearby(sound.getLocation().getNamespace() + "." + sound.getLocation().getPath());
+                this.playSound(sound, this.volume, 1);
+                this.quicksoundcounter = 10;
+            }
+        }
+    }
+
+    public void broadcastVoiceToNearby(String string) {
+        AABB nearby = new AABB(this.getX() - 5, this.getY() - 5, this.getZ() - 5, this.getX() + 5, this.getY() + 5, this.getZ() + 5);
+        List<Entity> entityList = this.level().getEntities(this, nearby);
+        for (Entity e : entityList) {
+            if (e instanceof Player pPlayer) {
+                pPlayer.displayClientMessage(Component.literal(this.getName().getString() + ": " + Component.translatable(string).getString()), true);
+            }
+        }
+    }
+
+    public double getCombatAffinityModifier() {
+        return (this.aggression) * 0.01;
+    }
+
+    public double getTravelAffinityModifier() {
+        return (100 - Math.abs(this.aggression - 50)) * 0.01;
+    }
+
+    public void increaseEXP(double gain) {
+        float currentxp = this.getFriendExperience();
+        float nextlevel = 100 * (((int) (currentxp / 100)) + 1);
+        float afterxp = currentxp + (float) gain;
+        if (afterxp >= nextlevel) {
+            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.levelup").getString());
+            this.playSound(SoundEvents.PLAYER_LEVELUP, 1, 1);
+            this.setSkillPoints(this.getSkillPoints() + ((int) (afterxp / 100) - ((int) (currentxp / 100))));
+            this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.getAttributeBaseValue(Attributes.MAX_HEALTH) + 0.2 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
+            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) + 0.1 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
+            this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) + 0.1 * ((int) (afterxp / 100) - ((int) (currentxp / 100))));
+            this.playVoice(this.getModuleEquip());
+            this.spawnHorizontalParticles();
+        }
+        this.setFriendExperience(afterxp);
+    }
+
+    public <T extends ParticleOptions> void spawnParticlesInRandomSpreadAtEntity(Entity entity, int count, float radius, float distance, ServerLevel sLevel, T type) {
+        float targetX = (float) entity.getX();
+        float targetZ = (float) entity.getZ();
+        float targetY = (float) entity.getEyeY();
+
+        sLevel.sendParticles(type, targetX, targetY, targetZ, count, radius, radius, radius, 1);
+    }
+
+    public <T extends ParticleOptions> void spawnParticlesInUpFacingCircle(Entity entity, float radius, T type) {
+        CircleParticlePacketHandler.sendToClient(new ToClientCircleParticlePacket(entity.getId(), radius, type), this);
+    }
+
+    public <T extends ParticleOptions> void spawnParticlesInSphereAtEntity(Entity entity, int count, float radius, float distance, ServerLevel sLevel, T type, float yOffset) {
+        if (count < 1) {
+            return;
+        }
+        float targetX = (float) entity.getX();
+        float targetZ = (float) entity.getZ();
+        float targetY = (float) entity.getEyeY();
+
+        for (int i = 0; i < count; i++) {
+            float x = (float) (Math.sin(i)) / 2 * radius;
+            float z = (float) (Math.cos(i)) / 2 * radius;
+            if (this.getRandom().nextBoolean()) {
+                x = -x;
+                z = -z;
+            }
+            sLevel.sendParticles(type, targetX + x, targetY + yOffset, targetZ + z, 1, 0, 0, 0, 0.5);
+
+        }
+
+        this.spawnParticlesInSphereAtEntity(entity, (int) (count * 0.8), radius * 0.8F, distance, sLevel, type, yOffset + 0.3F);
+        this.spawnParticlesInSphereAtEntity(entity, (int) (count * 0.8), radius * 0.8F, distance, sLevel, type, yOffset - 0.3F);
+
     }
 
     void doMeleeAttack() {
@@ -548,10 +685,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
     }
 
-    public void playTimedVoice(SoundEvent sound) {
-        if (this.soundCounter >= 50) {
-            this.playVoice(sound,true);
-        }
+    public int getAttackType() {
+        return this.getEntityData().get(FRIEND_ATTACKTYPE);
     }
 
     public void setAttackType(int attackType) {
@@ -559,12 +694,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.getEntityData().set(FRIEND_ATTACKTYPE, attackType);
     }
 
-    public int getAttackType() {
-        return this.getEntityData().get(FRIEND_ATTACKTYPE);
-    }
-
     public void doHurtTarget() {
-        if(FriendDefense.shouldDefendAgainst(this)){
+        if (FriendDefense.shouldDefendAgainst(this)) {
             this.runTimer = 35;
         }
         AABB hitTracer = new AABB(this.getX() - 1.8, this.getY(), this.getZ() - 1.8, this.getX() + 1.8, this.getY() + 2, this.getZ() + 1.8);
@@ -606,7 +737,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.inventory.getItem(1).hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
         this.updateGear();
     }
-    public boolean hasShellWeapon(){
+
+    public boolean hasShellWeapon() {
         return false;
     }
 
@@ -622,74 +754,21 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
     }
 
-    public float getCombatMod() {
-        float mod = this.getCombatModifier();
-        return 10 * (1 + mod) / (10 + mod);
-    }
-    public float getGenericDamageMod(){
+    public float getGenericDamageMod() {
         return 1F;
     }
-    public boolean shouldMoveLegs(){
+
+    public boolean shouldMoveLegs() {
         return false;
     }
-    public boolean shouldFollow(){
+
+    public boolean shouldFollow() {
         return !this.isAttackLockedOut();
     }
-    @Override
-    public boolean doHurtTarget(Entity pEntity) {
-        if (pEntity.level() instanceof ServerLevel t) {
-            t.sendParticles(SWEEP_ATTACK, pEntity.getX(), pEntity.getY() + 1, pEntity.getZ(), 1, 0.2, 0.2, 0.2, 0.3);
-        }
-        boolean flag = false;
-        if (pEntity != null) {
-            if (this.distanceTo(pEntity) < 3) {
-                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getGenericDamageMod() * this.getAttackType()/20 * (Mth.clamp((5 * this.getCombatMod() / 10) + this.getRandom().nextInt(1, 7), 1, 6) + 3) / 6 * 0.66F;
-                float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-                if (pEntity instanceof LivingEntity) {
-                    f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
-                    f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
-                }
 
-                int i = EnchantmentHelper.getFireAspect(this);
-                if (i > 0) {
-                    pEntity.setSecondsOnFire(i * 4);
-                }
-                flag = pEntity.hurt(this.damageSources().mobAttack(this), f);
-                if (flag) {
-                    if (f1 > 0.0F && pEntity instanceof LivingEntity) {
-                        ((LivingEntity) pEntity).knockback((double) (f1 * 0.5F), (double) Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
-                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
-                    }
-
-                    this.doEnchantDamageEffects(this, pEntity);
-                    this.setLastHurtMob(pEntity);
-                }
-            }
-        }
-        return flag;
+    public boolean isAttackLockedOut() {
+        return false;
     }
-
-    public void broadcastVoiceToNearby(String string) {
-        AABB nearby = new AABB(this.getX() - 5, this.getY() - 5, this.getZ() - 5, this.getX() + 5, this.getY() + 5, this.getZ() + 5);
-        List<Entity> entityList = this.level().getEntities(this, nearby);
-        for (Entity e : entityList) {
-            if (e instanceof Player pPlayer) {
-                pPlayer.displayClientMessage(Component.literal(this.getName().getString() + ": " + Component.translatable(string).getString()), true);
-            }
-        }
-    }
-
-    abstract void setInventoryRows();
-
-    abstract void setArmorableModular();
-
-    abstract void setName();
-
-    abstract void setAggression();
-
-    abstract void setCaptureDifficulty();
-
-    abstract void setRecoveryDifficulty();
 
     public int getRecoveryDifficulty() {
         this.setRecoveryDifficulty();
@@ -718,20 +797,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.updateFriendNorma(0.02F, 0);
         }
     }
-    public int quicksoundcounter=0;
-    public void playVoice(SoundEvent sound){
-        this.playVoice(sound, false);
-    }
-    public void playVoice(SoundEvent sound, boolean extended) {
-        if (!this.level().isClientSide()) {
-            this.soundCounter = 0;
-            if (sound != null && (this.quicksoundcounter==0 || extended)) {
-                this.broadcastVoiceToNearby(sound.getLocation().getNamespace() + "." + sound.getLocation().getPath());
-                this.playSound(sound, this.volume, 1);
-                this.quicksoundcounter=10;
-            }
-        }
-    }
 
     void doRecoveryEvent() {
         this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.closecall").getString());
@@ -753,8 +818,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
     }
 
-    public DamageSource deathSource;
-
     public void doDeathEvent() {
         this.spawnHorizontalParticles();
         this.playSound(FRIEND_DEATH.get(), 1, 1);
@@ -767,13 +830,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.setRemoved(RemovalReason.KILLED);
     }
 
-    FriendCombatTracker combatTracker = new FriendCombatTracker(this);
-
-    @Override
-    public @NotNull CombatTracker getCombatTracker() {
-        return this.combatTracker;
-    }
-
     public abstract SoundEvent getDeath();
 
     public abstract SoundEvent getOnKill();
@@ -784,17 +840,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public abstract SoundEvent getFlee();
 
-    public abstract SoundEvent getIdle();
-
     public abstract SoundEvent getInjured();
 
     public abstract SoundEvent getInteract();
 
     public abstract SoundEvent getPat();
-
-    public abstract SoundEvent getHurt(float dmg);
-
-    public abstract SoundEvent getAttack();
 
     public abstract SoundEvent getEvade();
 
@@ -802,25 +852,15 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     abstract public SoundEvent getHyperEquip();
 
-
     public abstract SoundEvent getHyperUse();
 
     public abstract SoundEvent getRecovery();
 
     public abstract SoundEvent getOnHeal();
 
-    public abstract SoundEvent getRecoveryFail();
-
     public abstract SoundEvent getWarning();
 
-    public abstract SoundEvent getEquip();
-
     public abstract SoundEvent getModuleEquip();
-
-    float maxhealth;
-    float mvspeed;
-    float atkdmg;
-
 
     public boolean isArmorable() {
         return this.isArmorable;
@@ -842,45 +882,366 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return this.isAlive() && this.isTame();
     }
 
-    boolean testMood(LivingEntity a) {
-        if (this.mood < 55) {
-            this.attackplayertoo = true;
-            return true;
-        }
-        return false;
-    }
-
-    public int getInventoryRows() {
-        return this.invRows;
-    }
-
     public abstract AbstractDialogueManager getDialogueManager();
-
-    protected void dropEquipment() {
-        super.dropEquipment();
-        if (this.inventory != null) {
-            for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
-                ItemStack itemstack = this.inventory.getItem(i);
-                if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack)) {
-                    this.spawnAtLocation(itemstack);
-                }
-            }
-
-        }
-    }
 
     public boolean shouldMoveArms() {
         return this.getAttackCounter() <= 0 && !this.drawBowAnimationState.isStarted() && !this.swimAnimState.isStarted() && this.shakeAnimO == 0 && !this.snowballIdle();
     }
 
+    public int getAttackCounter() {
+        return this.getEntityData().get(FRIEND_ATTACKCOUNTER);
+    }
+
+    public void setAttackCounter(int time) {
+        this.attackCounter = (int) ((time + 2) / this.getAttackSpeed());
+        //LOGGER.info(this.attackCounter +"");
+        this.getEntityData().set(FRIEND_ATTACKCOUNTER, time + 2);
+    }
+
+    public boolean snowballIdle() {
+        return this.isHoldingThrowable() && !this.isDescending() && this.canDoThings() && this.shakeAnimO == 0;
+    }
+
+    public boolean isHoldingThrowable() {
+        return this.getMainHandItem().getItem() instanceof SnowballItem;
+    }
+
+    public boolean canDoThings() {
+        return !this.getInSittingPose() && !this.isDying && this.getVehicle() == null;
+    }
+
+    public boolean getInSittingPose() {
+        return this.entityData.get(FRIEND_ISSITTING);
+    }    public void setFriendSwimCounter(int n) {
+        this.startfloattimer = n;
+        this.getEntityData().set(FRIEND_SWIMCOUNTER, n);
+    }
+
     public boolean shouldMoveLeftArm() {
         return this.getAttackCounter() <= 0 && !this.drawBowAnimationState.isStarted() && !this.swimAnimState.isStarted() && this.shakeAnimO == 0 && this.snowballIdle();
+    }    public int getFriendSwimCounter() {
+        return this.getEntityData().get(FRIEND_SWIMCOUNTER);
+    }
+
+    public int getDeathAnimCounter() {
+        return this.getEntityData().get(FRIEND_DEATHCOUNTER);
+    }
+
+    public void setDeathAnimCounter(int c) {
+        this.deathAnimCounter = c;
+        this.getEntityData().set(FRIEND_DEATHCOUNTER, c);
+    }
+
+    public int getHungerMeter() {
+        return this.getEntityData().get(FRIEND_HUNGERMETER);
+    }
+
+    public void setHungerMeter(int hun) {
+        this.hungerMeter = hun;
+        this.getEntityData().set(FRIEND_HUNGERMETER, hun);
+    }
+
+    public int getFriendItemsCollected() {
+        return this.getEntityData().get(FRIEND_ITEMSCOLLECTED);
+    }
+
+    public void setFriendItemsCollected(int c) {
+        this.itemsCollected = c;
+        this.getEntityData().set(FRIEND_ITEMSCOLLECTED, c);
+    }
+
+    public int getFriendEnemiesKilled() {
+        return this.getEntityData().get(FRIEND_ENEMIESKILLED);
+    }
+
+    public void setFriendEnemiesKilled(int c) {
+        this.enemiesKilled = c;
+        this.getEntityData().set(FRIEND_ENEMIESKILLED, c);
+    }
+
+    public void updateCombatSettings() {
+        this.getEntityData().set(FRIEND_COMBATSETTINGS, this.combatSettings.makeHash());
+    }
+
+    public FriendPathNavigation getFriendNav() {
+        return (FriendPathNavigation) this.navigation;
+    }
+
+    public void updateFriendNorma(float n, int source) {
+        double netup = 0;
+        if (source == 0) { //pats
+            if (this.normaprogress[source] + n * this.getPeaceAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
+            }
+        } else if (source == 1) { //combat kill
+            if (this.normaprogress[source] + n * this.getCombatAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getCombatAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getCombatAffinityModifier();
+                this.normaprogress[source] += netup;
+            }
+        } else if (source == 2) { //dialogue
+            if (this.normaprogress[source] + n * this.getPeaceAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
+            }
+        } else if (source == 3) { //eating
+            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
+            }
+        } else if (source == 5) { //passive
+            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
+            }
+        } else if (source == 6) { //travel
+            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getTravelAffinityModifier();
+                this.normaprogress[source] += netup;
+            }
+        } else { //sleep
+            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
+                netup = n * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
+            } else {
+                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getPeaceAffinityModifier();
+                this.normaprogress[source] += netup;
+            }
+        }
+
+        this.setFriendNorma((float) (this.getFriendNorma() + netup), 0);
+    }
+
+    public float getFriendExperience() {
+        return this.getEntityData().get(FRIEND_LEVEL);
+    }
+
+    public void setFriendExperience(float n) {
+        this.experience = n;
+        this.getEntityData().set(FRIEND_LEVEL, n);
+    }
+
+    public int[] getSkillLevels() {
+        return SkillManager.assembleSkillLevels(this);
+    }
+
+    public void setSkillLevels(int[] a) {
+        this.skillLevels = a;
+
+        this.getEntityData().set(FRIEND_SKILLLEVELS1, a[0]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS2, a[1]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS3, a[2]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS4, a[3]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS5, a[4]);
+        this.getEntityData().set(FRIEND_SKILLLEVELS6, a[5]);
+    }
+
+    public int[] getSpecialDialogueEnabled() {
+        return AbstractDialogueManager.decodeSpecialHash(this.getEntityData().get(FRIEND_SPECIALSENABLED));
+    }
+
+    public void setSpecialDialogueEnabled(int[] n) {
+        this.specialDialogueEnabled = n;
+        this.getEntityData().set(FRIEND_SPECIALSENABLED, AbstractDialogueManager.encodeSpecialHash(n));
+    }
+
+    public boolean getIsWandering() {
+        return this.getEntityData().get(FRIEND_ISWANDERING);
+    }
+
+    public void setIsWandering(boolean b) {
+        this.wandering = b;
+        this.getEntityData().set(FRIEND_ISWANDERING, b);
+    }
+
+    public boolean getIsFarming() {
+        return this.getEntityData().get(FRIEND_ISFARMING);
+    }
+
+    public void setIsFarming(boolean b) {
+        this.doFarming = b;
+        this.getEntityData().set(FRIEND_ISFARMING, b);
+    }
+
+    public boolean hasActivator() {
+        return !this.inventory.getItem(0).isEmpty();
+    }
+
+    public int getViewFlower() {
+        return this.getEntityData().get(FRIEND_VIEWFLOWER);
+    }
+
+    public void setViewFlower(int n) {
+        this.viewflower = n;
+        this.getEntityData().set(FRIEND_VIEWFLOWER, n);
+    }
+
+    public int getFriendPlaceCounter() {
+        return this.getEntityData().get(FRIEND_PLACECOUNTER);
+    }
+
+    public void setFriendPlaceCounter(int n) {
+        this.placecounter = n;
+        this.getEntityData().set(FRIEND_PLACECOUNTER, n);
+    }
+
+    //override if change attack timing
+    public int getCounterTiming() {
+        return (int) (24 / this.getAttackSpeed());
+    }
+
+    public int getCounterMax() {
+        return (int) ((34 + 2) / this.getAttackSpeed());
+    }
+
+    public double getAttackSpeed() {
+        try {
+            double temp = -3;
+            for (AttributeModifier mod : this.getFriendWeapon().getItem().getDefaultAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_SPEED)) {
+                if (mod.getName().equals("Weapon modifier")) {
+                    temp = mod.getAmount();
+                    break;
+                }
+            }
+            temp += 4;
+            //LOGGER.info(this.combatmodifier + "BASE");
+            //LOGGER.info(this.getCombatMod() +"MOD");
+            return temp / 1.6 * Mth.clamp(1 + 0.05 * this.getCombatMod(), 0.1, 1.5);
+        } catch (Exception e) {
+            return 0.625 * Mth.clamp(1 + 0.05 * this.getCombatMod(), 0.1, 1.5);
+        }
+    }
+
+    public float getCombatMod() {
+        float mod = this.getCombatModifier();
+        return 10 * (1 + mod) / (10 + mod);
+    }
+
+    public int getCombatModifier() {
+        return this.getEntityData().get(FRIEND_COMBATMOD);
+    }
+
+    public void setCombatModifier(int n) {
+        this.combatmodifier = n;
+        this.getEntityData().set(FRIEND_COMBATMOD, n);
+    }
+
+    public void decrementAttackCounter() {
+        this.attackCounter--;
+        this.getEntityData().set(FRIEND_ATTACKCOUNTER, this.attackCounter);
+    }
+
+    private SlotAccess createEquipmentSlotAccess(final int pSlot, final Predicate<ItemStack> pStackFilter) {
+        return new SlotAccess() {
+            public ItemStack get() {
+                return inventory.getItem(pSlot);
+            }
+
+            public boolean set(ItemStack p_149528_) {
+                if (!pStackFilter.test(p_149528_)) {
+                    return false;
+                } else {
+                    inventory.setItem(pSlot, p_149528_);
+                    updateContainerEquipment();
+                    return true;
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void registerGoals() {
+        this.goalSelector.addGoal(8, new FriendLonelyGoal(this, 1, false));
+        this.goalSelector.addGoal(1, new FriendFloatGoal(this));
+        this.goalSelector.addGoal(4, new OpenDoorGoal(this, true));
+        this.goalSelector.addGoal(4, new FriendLadderClimbGoal(this));
+        this.goalSelector.addGoal(5, new FriendMeleeAttackGoal(this, 1.0D, true));
+        this.goalSelector.addGoal(6, new FriendSleepGoal(this));
+        this.goalSelector.addGoal(2, new FriendSitGoal(this));
+        this.goalSelector.addGoal(8, new FriendFollowGoal(this, 1D, 10.0F, 2.0F, false));
+        //this.goalSelector.addGoal(7, new BreedGoal(this, 1.0D)); //...maybe in the future...
+        this.goalSelector.addGoal(9, new FriendWanderGoal(this, 1.0D));
+        this.goalSelector.addGoal(10, new FriendBegGoal(this, 1, false));
+        this.goalSelector.addGoal(11, new FriendLookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(11, new FriendRandomLookAroundGoal(this));
+        this.targetSelector.addGoal(2, new FriendOwnerHurtByTargetGoal(this));
+        this.targetSelector.addGoal(3, new FriendOwnerHurtTargetGoal(this));
+        this.targetSelector.addGoal(4, (new HurtByTargetGoal(this)).setAlertOthers());
+        this.targetSelector.addGoal(5, new FriendNearestAttackableTargetGoal<>(this, Player.class, 0, true, false, this::isAngryAt));
+        this.targetSelector.addGoal(8, new FriendNearestAttackableTargetGoal<>(this, Seagull.class, true));
+        this.targetSelector.addGoal(9, new ResetUniversalAngerTargetGoal<>(this, true));
+        this.goalSelector.addGoal(5, new FriendFarmGoal(this));
+        this.goalSelector.addGoal(2, new FriendHitAndRunGoal(this));
+        this.goalSelector.addGoal(2, new FriendFleeGoal(this));
+        this.goalSelector.addGoal(2, new FriendFleeFromCreeperGoal(this));
+        this.targetSelector.addGoal(7, new FriendNearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, (p_28879_) -> p_28879_ instanceof Enemy && !(p_28879_ instanceof Creeper)));
+        this.registerCustomGoals();
+    }
+
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_ID_FLAGS, (byte) 0);
+        this.entityData.define(FRIEND_ISDYING, this.isDying);
+        this.entityData.define(FRIEND_ISSITTING, this.isSitting);
+        this.entityData.define(FRIEND_ATTACKCOUNTER, this.attackCounter);
+        this.entityData.define(FRIEND_DEATHCOUNTER, this.deathAnimCounter);
+        this.entityData.define(FRIEND_ATTACKTYPE, this.attackType);
+        this.inventory = new SimpleContainer(16);
+        this.entityData.define(FRIEND_WEAPON, this.inventory.getItem(1));
+        this.entityData.define(SLEEPING_POS_ID, Optional.empty());
+        this.combatSettings = new CombatSettings(4, 3, 1, 0, 0);
+        this.entityData.define(FRIEND_COMBATSETTINGS, this.combatSettings.hash);
+        this.entityData.define(FRIEND_HUNGERMETER, this.hungerMeter);
+        this.entityData.define(FRIEND_NORMA, this.norma);
+        this.entityData.define(FRIEND_LEVEL, this.experience);
+        this.entityData.define(FRIEND_ITEMSCOLLECTED, this.itemsCollected);
+        this.entityData.define(FRIEND_ENEMIESKILLED, this.enemiesKilled);
+        this.skillEnabled = new boolean[6];
+        this.skillLevels = new int[6];
+        this.entityData.define(FRIEND_SKILLENABLED, SkillManager.makeBooleanHash(this.skillEnabled));
+        this.entityData.define(FRIEND_SKILLLEVELS1, this.skillLevels[0]);
+        this.entityData.define(FRIEND_SKILLLEVELS2, this.skillLevels[1]);
+        this.entityData.define(FRIEND_SKILLLEVELS3, this.skillLevels[2]);
+        this.entityData.define(FRIEND_SKILLLEVELS4, this.skillLevels[3]);
+        this.entityData.define(FRIEND_SKILLLEVELS5, this.skillLevels[4]);
+        this.entityData.define(FRIEND_SKILLLEVELS6, this.skillLevels[5]);
+        this.specialDialogueEnabled = new int[]{0, 0, 0};
+        this.entityData.define(FRIEND_SPECIALSENABLED, AbstractDialogueManager.encodeSpecialHash(this.specialDialogueEnabled));
+        this.entityData.define(FRIEND_SKILLPOINTS, this.skillPoints);
+        this.entityData.define(FRIEND_ISWANDERING, this.wandering);
+        this.entityData.define(FRIEND_ISFARMING, this.doFarming);
+        this.eventlog = "";
+        this.entityData.define(FRIEND_EVENTLOG, this.eventlog);
+        this.entityData.define(FRIEND_TIMESINCEPAT, this.timesincelastpat);
+        this.entityData.define(FRIEND_ITEMPICKUP, this.itempickup);
+        this.entityData.define(FRIEND_VIEWFLOWER, this.viewflower);
+        this.entityData.define(FRIEND_PLACECOUNTER, this.placecounter);
+        this.entityData.define(FRIEND_SWIMCOUNTER, this.startfloattimer);
+        this.entityData.define(FRIEND_COMBATMOD, this.combatmodifier);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.putInt("juicecraft.maxnorma",this.maxnorma);
+        pCompound.putInt("juicecraft.maxnorma", this.maxnorma);
         pCompound.putInt("juicecraft.itempickup", this.getFriendItemPickup());
         pCompound.putInt("juicecraft.timesincelastpat", this.timesincelastpat);
         pCompound.putIntArray("juicecraft.normaprogress", new int[]{(int) (this.normaprogress[0] * 10000), (int) (this.normaprogress[1] * 10000), (int) (this.normaprogress[2] * 10000), (int) (this.normaprogress[3] * 10000), (int) (this.normaprogress[4] * 10000), (int) (this.normaprogress[5] * 10000), (int) (this.normaprogress[6] * 10000), (int) (this.normaprogress[7] * 10000)});
@@ -931,6 +1292,14 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         pCompound.putBoolean("juicecraft.sitting", sitting);
     }
 
+    //TYPES
+    //verify that both type and counter are correct when you override
+    //10: light attack
+    //20: medium
+    //34: counterattack
+    //40: heavy attack
+    //60 snowball throw
+
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         if (pCompound.getInt("juicecraft.existed") == 0) {
@@ -940,7 +1309,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
         super.readAdditionalSaveData(pCompound);
         this.initializeNew();
-        this.maxnorma=pCompound.getInt("juicecraft.maxnorma");
+        this.maxnorma = pCompound.getInt("juicecraft.maxnorma");
         int[] temp2 = pCompound.getIntArray("juicecraft.normaprogress");
         this.setTimeSinceLastPat(pCompound.getInt("juicecraft.timesincelastpat"));
         this.setFriendItemPickup(pCompound.getInt("juicecraft.itempickup"));
@@ -1008,754 +1377,27 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     }
 
-
-    public void updateGear() {
-        if (!this.level().isClientSide()) {
-            this.getEntityData().set(FRIEND_WEAPON,this.inventory.getItem(1));
-            if (this.inventory.getItem(1).getItem() instanceof BowItem) {
-                this.goalSelector.removeGoal(this.bowGoal);
-                this.goalSelector.removeGoal(this.crossbowGoal);
-                this.goalSelector.removeGoal(this.snowballGoal);
-                this.goalSelector.addGoal(4, this.bowGoal);
-            } else if (this.inventory.getItem(1).getItem() instanceof CrossbowItem) {
-                this.goalSelector.removeGoal(this.crossbowGoal);
-                this.goalSelector.removeGoal(this.bowGoal);
-                this.goalSelector.removeGoal(this.snowballGoal);
-                this.goalSelector.addGoal(4, this.crossbowGoal);
-            } else if (this.isHoldingThrowable()) {
-                this.goalSelector.removeGoal(this.crossbowGoal);
-                this.goalSelector.removeGoal(this.bowGoal);
-                this.goalSelector.removeGoal(this.snowballGoal);
-                this.goalSelector.addGoal(4, this.snowballGoal);
-            } else {
-                this.goalSelector.removeGoal(this.snowballGoal);
-                this.goalSelector.removeGoal(crossbowGoal);
-                this.goalSelector.removeGoal(bowGoal);
-            }
-        }
-        if (!this.getFriendWeapon().isEmpty()) {
-            this.setItemSlot(EquipmentSlot.MAINHAND, this.getFriendWeapon());
-        } else {
-            this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(AIR));
-        }
-        if (!this.inventory.getItem(3).isEmpty()) {
-            this.setItemSlot(EquipmentSlot.HEAD, this.inventory.getItem(3));
-        } else {
-            this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(AIR));
-        }
-        if (!this.inventory.getItem(4).isEmpty()) {
-            this.setItemSlot(EquipmentSlot.CHEST, this.inventory.getItem(4));
-        } else {
-            this.setItemSlot(EquipmentSlot.CHEST, new ItemStack(AIR));
-        }
-        if (!this.inventory.getItem(5).isEmpty()) {
-            this.setItemSlot(EquipmentSlot.LEGS, this.inventory.getItem(5));
-        } else {
-            this.setItemSlot(EquipmentSlot.LEGS, new ItemStack(AIR));
-        }
-        if (!this.inventory.getItem(6).isEmpty()) {
-            this.setItemSlot(EquipmentSlot.FEET, this.inventory.getItem(6));
-        } else {
-            this.setItemSlot(EquipmentSlot.FEET, new ItemStack(AIR));
-        }
-
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return this.getIdle();
     }
 
-    public void setDeathAnimCounter(int c) {
-        this.deathAnimCounter = c;
-        this.getEntityData().set(FRIEND_DEATHCOUNTER, c);
-    }
-
-    public int getDeathAnimCounter() {
-        return this.getEntityData().get(FRIEND_DEATHCOUNTER);
-    }
-
-    public void setIsDying(boolean b) {
-        this.isDying = b;
-        this.getEntityData().set(FRIEND_ISDYING, b);
-    }
-
-    public void setHungerMeter(int hun) {
-        this.hungerMeter = hun;
-        this.getEntityData().set(FRIEND_HUNGERMETER, hun);
-    }
-
-    public int getHungerMeter() {
-        return this.getEntityData().get(FRIEND_HUNGERMETER);
-    }
-
-    public boolean getIsDying() {
-        return this.getEntityData().get(FRIEND_ISDYING);
-    }
-
-    public void setFriendItemsCollected(int c) {
-        this.itemsCollected = c;
-        this.getEntityData().set(FRIEND_ITEMSCOLLECTED, c);
-    }
-
-    public int getFriendItemsCollected() {
-        return this.getEntityData().get(FRIEND_ITEMSCOLLECTED);
-    }
-
-    public void setFriendEnemiesKilled(int c) {
-        this.enemiesKilled = c;
-        this.getEntityData().set(FRIEND_ENEMIESKILLED, c);
-    }
-
-    public int getFriendEnemiesKilled() {
-        return this.getEntityData().get(FRIEND_ENEMIESKILLED);
-    }
-
-    public void updateCombatSettings() {
-        this.getEntityData().set(FRIEND_COMBATSETTINGS, this.combatSettings.makeHash());
-    }
-
-    public CombatSettings getCombatSettings() {
-        return CombatSettings.decodeHash(this.getEntityData().get(FRIEND_COMBATSETTINGS));
-    }
-
-    public ItemStack getFriendWeapon() {
-        return this.getEntityData().get(FRIEND_WEAPON);
-    }
-
-    public void setFriendNorma(float n, int source) {
-        this.norma = n;
-        int orig = (int) this.getFriendNorma();
-        int newone = (int) n;
-        if (this.setupcomplete) {
-            if (newone > orig && newone < 5 && newone > 1 && newone > maxnorma) {
-                this.maxnorma=newone;
-                this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma" + newone).getString());
-                this.playSound(NORMAUP.get(), 1, 1);
-            } else if (newone > orig && newone == 5 && this.getOwner() != null && newone > maxnorma) {
-                this.maxnorma=newone;
-                this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma5.0").getString() + this.getOwner().getScoreboardName() + Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.norma5.1").getString());
-                this.playSound(NORMAUP.get(), 1, 1);
-            }
-        }
-        this.getEntityData().set(FRIEND_NORMA, n);
-    }
-    public FriendPathNavigation getFriendNav(){
-        return (FriendPathNavigation) this.navigation;
-    }
-
-    public void updateFriendNorma(float n, int source) {
-        double netup = 0;
-        if (source == 0) { //pats
-            if (this.normaprogress[source] + n * this.getPeaceAffinityModifier() <= this.normacaps[source]) {
-                netup = n * this.getPeaceAffinityModifier();
-                this.normaprogress[source] += netup;
-            } else {
-                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getPeaceAffinityModifier();
-                this.normaprogress[source] += netup;
-            }
-        } else if (source == 1) { //combat kill
-            if (this.normaprogress[source] + n * this.getCombatAffinityModifier() <= this.normacaps[source]) {
-                netup = n * this.getCombatAffinityModifier();
-                this.normaprogress[source] += netup;
-            } else {
-                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getCombatAffinityModifier();
-                this.normaprogress[source] += netup;
-            }
-        } else if (source == 2) { //dialogue
-            if (this.normaprogress[source] + n * this.getPeaceAffinityModifier() <= this.normacaps[source]) {
-                netup = n * this.getPeaceAffinityModifier();
-                this.normaprogress[source] += netup;
-            } else {
-                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getPeaceAffinityModifier();
-                this.normaprogress[source] += netup;
-            }
-        } else if (source == 3) { //eating
-            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
-                netup = n * this.getTravelAffinityModifier();
-                this.normaprogress[source] += netup;
-            } else {
-                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getTravelAffinityModifier();
-                this.normaprogress[source] += netup;
-            }
-        } else if (source == 5) { //passive
-            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
-                netup = n * this.getTravelAffinityModifier();
-                this.normaprogress[source] += netup;
-            } else {
-                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getTravelAffinityModifier();
-                this.normaprogress[source] += netup;
-            }
-        } else if (source == 6) { //travel
-            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
-                netup = n * this.getTravelAffinityModifier();
-                this.normaprogress[source] += netup;
-            } else {
-                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getTravelAffinityModifier();
-                this.normaprogress[source] += netup;
-            }
-        } else { //sleep
-            if (this.normaprogress[source] + n * this.getTravelAffinityModifier() <= this.normacaps[source]) {
-                netup = n * this.getPeaceAffinityModifier();
-                this.normaprogress[source] += netup;
-            } else {
-                netup = (this.normacaps[source] - this.normaprogress[source]) * this.getPeaceAffinityModifier();
-                this.normaprogress[source] += netup;
-            }
-        }
-
-        this.setFriendNorma((float) (this.getFriendNorma() + netup), 0);
-    }
-
-    public float getFriendNorma() {
-        return this.getEntityData().get(FRIEND_NORMA);
-    }
-
-    public void setFriendExperience(float n) {
-        this.experience = n;
-        this.getEntityData().set(FRIEND_LEVEL, n);
-    }
-
-    public float getFriendExperience() {
-        return this.getEntityData().get(FRIEND_LEVEL);
-    }
-
-    public int[] getSkillLevels() {
-        return SkillManager.assembleSkillLevels(this);
-    }
-
-    public void setSkillLevels(int[] a) {
-        this.skillLevels = a;
-
-        this.getEntityData().set(FRIEND_SKILLLEVELS1, a[0]);
-        this.getEntityData().set(FRIEND_SKILLLEVELS2, a[1]);
-        this.getEntityData().set(FRIEND_SKILLLEVELS3, a[2]);
-        this.getEntityData().set(FRIEND_SKILLLEVELS4, a[3]);
-        this.getEntityData().set(FRIEND_SKILLLEVELS5, a[4]);
-        this.getEntityData().set(FRIEND_SKILLLEVELS6, a[5]);
-    }
-
-    public boolean[] getSkillEnabled() {
-        return SkillManager.decodeBooleanHash(this.getEntityData().get(FRIEND_SKILLENABLED));
-    }
-
-    public void setSkillEnabled(boolean[] b) {
-        this.skillEnabled = b;
-        this.getEntityData().set(FRIEND_SKILLENABLED, SkillManager.makeBooleanHash(b));
-    }
-
-    public int getSkillPoints() {
-        return this.getEntityData().get(FRIEND_SKILLPOINTS);
-    }
-
-    public void setSkillPoints(int a) {
-        this.skillPoints = a;
-        this.getEntityData().set(FRIEND_SKILLPOINTS, a);
-    }
-
-    public int[] getSpecialDialogueEnabled() {
-        return AbstractDialogueManager.decodeSpecialHash(this.getEntityData().get(FRIEND_SPECIALSENABLED));
-    }
-
-    public void setSpecialDialogueEnabled(int[] n) {
-        this.specialDialogueEnabled = n;
-        this.getEntityData().set(FRIEND_SPECIALSENABLED, AbstractDialogueManager.encodeSpecialHash(n));
-    }
-
-    public boolean getIsWandering() {
-        return this.getEntityData().get(FRIEND_ISWANDERING);
-    }
-
-    public boolean getIsFarming() {
-        return this.getEntityData().get(FRIEND_ISFARMING);
-    }
-
-    public void setIsWandering(boolean b) {
-        this.wandering = b;
-        this.getEntityData().set(FRIEND_ISWANDERING, b);
-    }
-
-    public void setIsFarming(boolean b) {
-        this.doFarming = b;
-        this.getEntityData().set(FRIEND_ISFARMING, b);
-    }
-
-    public String getEventLog() {
-        return this.getEntityData().get(FRIEND_EVENTLOG);
-    }
-
-    public void setEventLog(String s) {
-        this.eventlog = s;
-        this.getEntityData().set(FRIEND_EVENTLOG, s);
-    }
-    public boolean hasActivator(){
-        return !this.inventory.getItem(0).isEmpty();
-    }
-    public void appendEventLog(String s) {
-        if (this.getEventLog().length() > 5000) {
-            this.setEventLog(this.getEventLog().substring(1000));
-        }
-        this.eventlog = this.eventlog + s + "\n";
-        this.getEntityData().set(FRIEND_EVENTLOG, this.eventlog);
-    }
-
-    public void setTimeSinceLastPat(int n) {
-        this.timesincelastpat = n;
-        this.getEntityData().set(FRIEND_TIMESINCEPAT, n);
-    }
-
-    public int getTimeSinceLastPat() {
-        return this.getEntityData().get(FRIEND_TIMESINCEPAT);
-    }
-
-    public int getFriendItemPickup() {
-        return this.getEntityData().get(FRIEND_ITEMPICKUP);
-    }
-
-    public void setFriendItemPickup(int n) {
-        this.itempickup = n;
-        this.getEntityData().set(FRIEND_ITEMPICKUP, n);
-    }
-
-    public void setViewFlower(int n) {
-        this.viewflower = n;
-        this.getEntityData().set(FRIEND_VIEWFLOWER, n);
-    }
-
-    public int getViewFlower() {
-        return this.getEntityData().get(FRIEND_VIEWFLOWER);
-    }
-
-    public int getFriendPlaceCounter() {
-        return this.getEntityData().get(FRIEND_PLACECOUNTER);
-    }
-
-    public void setFriendPlaceCounter(int n) {
-        this.placecounter = n;
-        this.getEntityData().set(FRIEND_PLACECOUNTER, n);
-    }
-
-    public void setFriendSwimCounter(int n) {
-        this.startfloattimer = n;
-        this.getEntityData().set(FRIEND_SWIMCOUNTER, n);
-    }
-
-    public int getFriendSwimCounter() {
-        return this.getEntityData().get(FRIEND_SWIMCOUNTER);
-    }
-
-    public int getCombatModifier() {
-        return this.getEntityData().get(FRIEND_COMBATMOD);
-    }
-
-    public void setCombatModifier(int n) {
-        this.combatmodifier = n;
-        this.getEntityData().set(FRIEND_COMBATMOD, n);
-    }
-
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ID_FLAGS, (byte) 0);
-        this.entityData.define(FRIEND_ISDYING, this.isDying);
-        this.entityData.define(FRIEND_ISSITTING, this.isSitting);
-        this.entityData.define(FRIEND_ATTACKCOUNTER, this.attackCounter);
-        this.entityData.define(FRIEND_DEATHCOUNTER, this.deathAnimCounter);
-        this.entityData.define(FRIEND_ATTACKTYPE, this.attackType);
-        this.inventory = new SimpleContainer(16);
-        this.entityData.define(FRIEND_WEAPON, this.inventory.getItem(1));
-        this.entityData.define(SLEEPING_POS_ID, Optional.empty());
-        this.combatSettings = new CombatSettings(4, 3, 1, 0, 0);
-        this.entityData.define(FRIEND_COMBATSETTINGS, this.combatSettings.hash);
-        this.entityData.define(FRIEND_HUNGERMETER, this.hungerMeter);
-        this.entityData.define(FRIEND_NORMA, this.norma);
-        this.entityData.define(FRIEND_LEVEL, this.experience);
-        this.entityData.define(FRIEND_ITEMSCOLLECTED, this.itemsCollected);
-        this.entityData.define(FRIEND_ENEMIESKILLED, this.enemiesKilled);
-        this.skillEnabled = new boolean[6];
-        this.skillLevels = new int[6];
-        this.entityData.define(FRIEND_SKILLENABLED, SkillManager.makeBooleanHash(this.skillEnabled));
-        this.entityData.define(FRIEND_SKILLLEVELS1, this.skillLevels[0]);
-        this.entityData.define(FRIEND_SKILLLEVELS2, this.skillLevels[1]);
-        this.entityData.define(FRIEND_SKILLLEVELS3, this.skillLevels[2]);
-        this.entityData.define(FRIEND_SKILLLEVELS4, this.skillLevels[3]);
-        this.entityData.define(FRIEND_SKILLLEVELS5, this.skillLevels[4]);
-        this.entityData.define(FRIEND_SKILLLEVELS6, this.skillLevels[5]);
-        this.specialDialogueEnabled = new int[]{0, 0, 0};
-        this.entityData.define(FRIEND_SPECIALSENABLED, AbstractDialogueManager.encodeSpecialHash(this.specialDialogueEnabled));
-        this.entityData.define(FRIEND_SKILLPOINTS, this.skillPoints);
-        this.entityData.define(FRIEND_ISWANDERING, this.wandering);
-        this.entityData.define(FRIEND_ISFARMING, this.doFarming);
-        this.eventlog = "";
-        this.entityData.define(FRIEND_EVENTLOG, this.eventlog);
-        this.entityData.define(FRIEND_TIMESINCEPAT, this.timesincelastpat);
-        this.entityData.define(FRIEND_ITEMPICKUP, this.itempickup);
-        this.entityData.define(FRIEND_VIEWFLOWER, this.viewflower);
-        this.entityData.define(FRIEND_PLACECOUNTER, this.placecounter);
-        this.entityData.define(FRIEND_SWIMCOUNTER, this.startfloattimer);
-        this.entityData.define(FRIEND_COMBATMOD, this.combatmodifier);
-    }
-
-    public static final EntityDataAccessor<ItemStack> FRIEND_WEAPON = SynchedEntityData.defineId(Friend.class,EntityDataSerializers.ITEM_STACK);
-    public static final EntityDataAccessor<Integer> FRIEND_COMBATMOD = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SWIMCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_PLACECOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_VIEWFLOWER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_ITEMPICKUP = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_TIMESINCEPAT = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<String> FRIEND_EVENTLOG = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.STRING);
-    public static final EntityDataAccessor<Boolean> FRIEND_ISFARMING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> FRIEND_ISWANDERING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Integer> FRIEND_SPECIALSENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SKILLPOINTS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS1 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS2 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS3 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS4 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS5 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SKILLLEVELS6 = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_SKILLENABLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_COMBATSETTINGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Byte> DATA_ID_FLAGS = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BYTE);
-    public static final EntityDataAccessor<Boolean> FRIEND_ISDYING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> FRIEND_ISSITTING = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Integer> FRIEND_ATTACKCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_HUNGERMETER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_ITEMSCOLLECTED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_ENEMIESKILLED = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_DEATHCOUNTER = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FRIEND_ATTACKTYPE = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Float> FRIEND_NORMA = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> FRIEND_LEVEL = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Optional<BlockPos>> SLEEPING_POS_ID = SynchedEntityData.defineId(Friend.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
-
-    protected void setFlag(int pFlagId, boolean pValue) {
-        byte b0 = this.entityData.get(DATA_ID_FLAGS);
-
-        if (pValue) {
-            this.entityData.set(DATA_ID_FLAGS, (byte) (b0 | pFlagId));
-        } else {
-            this.entityData.set(DATA_ID_FLAGS, (byte) (b0 & ~pFlagId));
-        }
+    @Override
+    protected SoundEvent getHurtSound(DamageSource dmgsrc) {
+        return SoundEvents.PLAYER_HURT;
 
     }
 
     @Override
-    public boolean isLeftHanded() {
-        return false;
+    public SoundEvent getDeathSound() {
+        return this.getRecoveryFail();
     }
-
-    //TYPES
-    //verify that both type and counter are correct when you override
-    //10: light attack
-    //20: medium
-    //34: counterattack
-    //40: heavy attack
-    //60 snowball throw
-
-    public void setAttackCounter(int time) {
-        this.attackCounter = (int) ((time + 2) / this.getAttackSpeed());
-        //LOGGER.info(this.attackCounter +"");
-        this.getEntityData().set(FRIEND_ATTACKCOUNTER, time + 2);
-    }
-
-    //override if change attack timing
-    public int getCounterTiming() {
-        return (int) (24 / this.getAttackSpeed());
-    }
-
-    public int getCounterMax() {
-        return (int) ((34 + 2) / this.getAttackSpeed());
-    }
-
-    protected @NotNull AABB getAttackBoundingBox() {
-        return super.getAttackBoundingBox().inflate(1.5, 0.0D, 1.5);
-    }
-
-    public void decrementAttackCounter() {
-        this.attackCounter--;
-        this.getEntityData().set(FRIEND_ATTACKCOUNTER, this.attackCounter);
-    }
-
-    public int getAttackCounter() {
-        return this.getEntityData().get(FRIEND_ATTACKCOUNTER);
-    }
-
-    private SlotAccess createEquipmentSlotAccess(final int pSlot, final Predicate<ItemStack> pStackFilter) {
-        return new SlotAccess() {
-            public ItemStack get() {
-                return inventory.getItem(pSlot);
-            }
-
-            public boolean set(ItemStack p_149528_) {
-                if (!pStackFilter.test(p_149528_)) {
-                    return false;
-                } else {
-                    inventory.setItem(pSlot, p_149528_);
-                    updateContainerEquipment();
-                    return true;
-                }
-            }
-        };
-    }
-
-    protected void updateContainerEquipment() {
-        if (!this.level().isClientSide) {
-            this.setFlag(4, !this.inventory.getItem(0).isEmpty());
-        }
-    }
-
-    int socialInteraction;
 
     @Override
-    protected void registerGoals() {
-        this.goalSelector.addGoal(8, new FriendLonelyGoal(this, 1, false));
-        this.goalSelector.addGoal(1, new FriendFloatGoal(this));
-        this.goalSelector.addGoal(4, new OpenDoorGoal(this, true));
-        this.goalSelector.addGoal(4, new FriendLadderClimbGoal(this));
-        this.goalSelector.addGoal(5, new FriendMeleeAttackGoal(this, 1.0D, true));
-        this.goalSelector.addGoal(6, new FriendSleepGoal(this));
-        this.goalSelector.addGoal(2, new FriendSitGoal(this));
-        this.goalSelector.addGoal(8, new FriendFollowGoal(this, 1D, 10.0F, 2.0F, false));
-        //this.goalSelector.addGoal(7, new BreedGoal(this, 1.0D)); //...maybe in the future...
-        this.goalSelector.addGoal(9, new FriendWanderGoal(this, 1.0D));
-        this.goalSelector.addGoal(10, new FriendBegGoal(this, 1, false));
-        this.goalSelector.addGoal(11, new FriendLookAtPlayerGoal(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(11, new FriendRandomLookAroundGoal(this));
-        this.targetSelector.addGoal(2, new FriendOwnerHurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new FriendOwnerHurtTargetGoal(this));
-        this.targetSelector.addGoal(4, (new HurtByTargetGoal(this)).setAlertOthers());
-        this.targetSelector.addGoal(5, new FriendNearestAttackableTargetGoal<>(this, Player.class, 0, true, false, this::isAngryAt));
-        this.targetSelector.addGoal(8, new FriendNearestAttackableTargetGoal<>(this, Seagull.class, true));
-        this.targetSelector.addGoal(9, new ResetUniversalAngerTargetGoal<>(this, true));
-        this.goalSelector.addGoal(5, new FriendFarmGoal(this));
-        this.goalSelector.addGoal(2, new FriendHitAndRunGoal(this));
-        this.goalSelector.addGoal(2, new FriendFleeGoal(this));
-        this.goalSelector.addGoal(2, new FriendFleeFromCreeperGoal(this));
-        this.targetSelector.addGoal(7, new FriendNearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, (p_28879_) -> p_28879_ instanceof Enemy && !(p_28879_ instanceof Creeper)));
-        this.registerCustomGoals();
+    protected float getSoundVolume() {
+        return this.volume;
     }
 
-    void registerCustomGoals() {
-        if (this.aggression > 75) {
-            this.targetSelector.addGoal(6, new FriendNearestAttackableTargetGoal<>(this, Player.class, 0, true, false, this::testMood));
-        }
-        this.registerAdditionalGoals();
-    }
-
-    abstract void registerAdditionalGoals();
-
-    public static final Logger LOGGER = LogUtils.getLogger();
-
-    public void reapplyPosition() {
-        this.setPos(this.getX(), this.getY(), this.getZ());
-    }
-
-    public void setFriendInSittingPose(boolean sit) {
-        this.isSitting = sit;
-        this.entityData.set(FRIEND_ISSITTING, sit);
-    }
-
-    public boolean getInSittingPose() {
-        return this.entityData.get(FRIEND_ISSITTING);
-    }
-
-    public boolean isEdible(ItemStack pStack) {
-        return pStack.is(ItemInit.ORANGE.get()) || pStack.is(ItemInit.GOLDEN_ORANGE.get()) || pStack.getItem() instanceof SweetItem || pStack.is(COOKIE);
-    }
-
-    void loadMemory(SumikaMemory memory) {
-        this.combatSettings = memory.settings;
-        this.setIsWandering(memory.wander);
-        this.setIsFarming(memory.farm);
-        this.setFriendNorma((float) memory.normalevel, -1);
-        this.setSpecialDialogueEnabled(memory.specialsenabled);
-        this.updateCombatSettings();
-    }
-
-    public boolean attackplayertoo = false;
-    public int isembarassed = 0;
-
-    @Override
-    public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        double totalZ = this.getZ() - pPlayer.getZ();
-        double totalX = this.getX() - pPlayer.getX();
-        double totalY = this.getY() + this.getBbHeight() - 0.4 - pPlayer.getBbHeight() - pPlayer.getY();
-        double lookRot = pPlayer.getXRot();
-
-        double worstRot = Math.atan2(totalY, Math.sqrt(totalX * totalX + totalZ * totalZ));
-        worstRot = -Math.toDegrees(worstRot);
-        if (lookRot < worstRot) {
-            ItemStack itemstack = pPlayer.getItemInHand(pHand);
-            if (this.level().isClientSide) {
-                boolean flag = (this.isOwnedBy(pPlayer) && this.isTame());
-                if (this.isOwnedBy(pPlayer) || this.isTame()) {
-                    if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
-                        this.patCounter = 20;
-                    } else if (itemstack.isEmpty()) {
-                        this.idleCounter = 0;
-                    }
-                }
-                if (this.isEdible(itemstack)) {
-                    return InteractionResult.CONSUME_PARTIAL;
-                }
-                return flag ? InteractionResult.SUCCESS : InteractionResult.PASS;
-            } else if (this.isTame() && this.isOwnedBy(pPlayer)) {
-                //LOGGER.info(this.getFriendNorma() + "");
-                if (this.isEdible(itemstack)) {
-                    SweetHandler.doSweetEffect(this, itemstack);
-                    this.updateFriendNorma(0.001F, 3);
-                    this.socialInteraction += 1;
-                    if (!pPlayer.getAbilities().instabuild) {
-                        itemstack.shrink(1);
-                    }
-                    this.gameEvent(GameEvent.EAT);
-                    return InteractionResult.CONSUME_PARTIAL;
-                } else if (itemstack.is(ItemInit.SUMIKA_MEMORY.get())) {
-
-                    if (itemstack.getOrCreateTag().contains("juicecraft.memories")) {
-                        SumikaMemory temp = SumikaMemory.deserialize(itemstack.getOrCreateTag().getByteArray("juicecraft.memories"));
-                        if (temp.verifyValid(this)) {
-                            this.loadMemory(temp);
-                            if (!pPlayer.getAbilities().instabuild) {
-                                itemstack.shrink(1);
-                            }
-                            this.setHealth(this.getMaxHealth() / 2);
-                            this.deathCounter = 7 - recoveryDifficulty;
-                            this.getEntityData().set(FRIEND_ISDYING, false);
-                            this.isDying = false;
-                            this.playSound(RECOVERY.get(), 1, 1);
-                            this.playVoice(this.getRecovery());
-                            this.spawnHorizontalParticles();
-                            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.revive").getString());
-                        } else {
-                            return InteractionResult.PASS;
-                        }
-                    } else {
-                        this.playSound(MEMORY_WRITE.get(), 1, 1);
-                        itemstack.getOrCreateTag().putByteArray("juicecraft.memories", new SumikaMemory(this).serialize());
-                    }
-
-
-                    return InteractionResult.SUCCESS;
-                } else {
-
-                    if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching() || (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching())) {
-
-                        if (pPlayer instanceof ServerPlayer serverPlayer) {
-
-                            this.playVoice(this.getInteract());
-                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
-
-                        }
-                        return InteractionResult.SUCCESS;
-                    } else if ((!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && !pPlayer.isCrouching()) && (!this.isInWater() || this.onGround())) {
-                        this.setFriendInSittingPose(!this.getInSittingPose());
-                        if (sleepy() && animateSleep()) {
-                            this.setPose(Pose.SLEEPING);
-                        } else {
-                            this.setPose(STANDING);
-                        }
-                    } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer)) {
-                        if (this.mood > 50) {
-                            petEvent();
-                        } else {
-                            this.level().broadcastEntityEvent(this, (byte) 6);
-                            this.mood--;
-                        }
-                        this.socialInteraction++;
-                        return InteractionResult.SUCCESS;
-                    }
-                }
-            } else if ((itemstack.is(ItemInit.ORANGE.get()) || itemstack.is(GOLDEN_ORANGE.get())) && !this.isAngry() && this.mood > 50) {
-                if (!pPlayer.getAbilities().instabuild) {
-                    itemstack.shrink(1);
-                }
-                if (captureDifficulty > 1 && itemstack.is(GOLDEN_ORANGE.get())) {
-                    captureDifficulty--;
-                }
-                if (this.random.nextInt(captureDifficulty) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, pPlayer)) {
-                    this.tame(pPlayer);
-                    this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.tame").getString());
-                    this.navigation.stop();
-                    this.setTarget((LivingEntity) null);
-                    this.level().broadcastEntityEvent(this, (byte) 7);
-                } else {
-                    this.level().broadcastEntityEvent(this, (byte) 6);
-                    this.mood -= 10;
-                }
-                return InteractionResult.CONSUME_PARTIAL;
-            }
-            return InteractionResult.SUCCESS;
-        } else {
-            ItemStack itemstack = pPlayer.getItemInHand(pHand);
-            if (this.level().isClientSide) {
-                boolean flag = (this.isOwnedBy(pPlayer) && this.isTame());
-                if (this.isOwnedBy(pPlayer) || this.isTame()) {
-                    if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
-                        this.patCounter = 20;
-                        this.isembarassed = 20;
-                    } else if (itemstack.isEmpty()) {
-                        this.idleCounter = 0;
-                    }
-                }
-                if (this.isEdible(itemstack)) {
-                    return InteractionResult.CONSUME_PARTIAL;
-                }
-                return flag ? InteractionResult.SUCCESS : InteractionResult.PASS;
-            } else {
-                if (this.isTame() && this.isOwnedBy(pPlayer)) {
-
-                    if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
-
-                        if (pPlayer instanceof ServerPlayer serverPlayer) {
-
-                            this.playVoice(this.getInteract());
-                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
-
-                        }
-                        return InteractionResult.SUCCESS;
-                    } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
-                        this.setFriendInSittingPose(!this.getInSittingPose());
-                        if (sleepy() && animateSleep()) {
-                            this.setPose(Pose.SLEEPING);
-                        } else {
-                            this.setPose(STANDING);
-                        }
-                    } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer)) {
-                        if (this.getRandom().nextInt(30) < 3) {
-                            this.playTimedVoice(this.getBattle());
-                            this.swing(InteractionHand.MAIN_HAND);
-                            this.attackplayertoo = true;
-                            this.level().broadcastEntityEvent(this, (byte) 6);
-                            this.mood -= 5;
-                        }
-                        this.socialInteraction++;
-                        return InteractionResult.SUCCESS;
-                    }
-                }
-            }
-            return InteractionResult.PASS;
-        }
-    }
-    public boolean lockLookAround(){
-        return this.getAttackCounter() <= 0;
-    }
-    public boolean shouldShowWeapon(){
-        return true;
-    }
-    public ItemStack getMainHandItem() {
-        return this.getFriendWeapon();
-    }
-
-    public ItemStack getOffhandItem() {
-        return this.getItemBySlot(EquipmentSlot.OFFHAND);
-    }
-    public void synchronizeLookAngle(){
-        if(this.level() instanceof ServerLevel level){
-            int l = Mth.floor(this.getYRot() * 256.0F / 360.0F);
-            int k1 = Mth.floor(this.getXRot() * 256.0F / 360.0F);
-            level.getChunkSource().broadcastAndSend(this,new ClientboundMoveEntityPacket.Rot(this.getId(),(byte) l,(byte) k1,this.onGround()));
-        }
-    }
-    public void alignBodyWithHeadAngle(){
-        this.yBodyRot = this.yHeadRot;
-        this.yBodyRotO = this.yHeadRotO;
-    }
     @Override
     public void aiStep() {
         super.aiStep();
@@ -1839,93 +1481,32 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (soundCounter < 50) {
             soundCounter++;
         }
-        if(this.quicksoundcounter>0){
+        if (this.quicksoundcounter > 0) {
             this.quicksoundcounter--;
         }
         blinkCounter--;
     }
 
-    @Override
-    protected SoundEvent getAmbientSound() {
-        return this.getIdle();
+    public boolean getIsDying() {
+        return this.getEntityData().get(FRIEND_ISDYING);
     }
 
-    @Override
-    public void playAmbientSound() {
-        //do nothing
+    public abstract SoundEvent getIdle();
+
+    public int getTimeSinceLastPat() {
+        return this.getEntityData().get(FRIEND_TIMESINCEPAT);
     }
 
-    @Override
-    protected float getSoundVolume() {
-        return this.volume;
+    public void setTimeSinceLastPat(int n) {
+        this.timesincelastpat = n;
+        this.getEntityData().set(FRIEND_TIMESINCEPAT, n);
     }
 
-    @Override
-    public float getVoicePitch() {
-        return 1F;
+    public void setIsDying(boolean b) {
+        this.isDying = b;
+        this.getEntityData().set(FRIEND_ISDYING, b);
     }
 
-    public boolean day() {
-        long time = this.level().getDayTime();
-
-        return time < 12300 || time > 23850;
-    }
-
-    public Queue<BlockPos> farmqueue = new LinkedList<>();
-
-    public boolean idle() {
-        return !this.isHoldingThrowable() && this.walkAnimation.speed() < 0.1F && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0;
-    }
-
-    public boolean snowballIdle() {
-        return this.isHoldingThrowable() && !this.isDescending() && this.canDoThings() && this.shakeAnimO == 0;
-    }
-
-    public boolean sleepy() {
-        return idle() && !this.day();
-    }
-
-    public boolean animateSleep() {
-        return this.getFeetBlockState().isBed(this.level(), new BlockPos(this.getBlockX(), this.getBlockY() - 1, this.getBlockZ()), null);
-    }
-
-    int n = 5;
-    boolean wasDay = false;
-
-    public boolean isAggressive() {
-        return super.isAggressive();
-    }
-    public boolean isAttackLockedOut(){
-        return false;
-    }
-    public boolean additionalInspectConditions(){
-        return true;
-    }
-    public void tryCounter(LivingAttackEvent event){
-        if (event.getSource().getEntity() != null && !this.isDying && !this.isAttackLockedOut()) {
-            if (this.getAttackType() == 50 && this.getAttackCounter() > this.getCounterTiming()/this.getAttackSpeed()) {
-                event.setCanceled(true);
-            } else if (FriendDefense.shouldDefendAgainst(this)) {
-                this.setAttackCounter(34);
-                this.setAttackType(50);
-                this.playTimedVoice(this.getEvade());
-                this.playSound(COUNTER_BLOCK.get());
-                event.setCanceled(true);
-            }
-        }
-    }
-    public int getSyncInt(EntityDataAccessor<Integer> accessor){
-        return this.getEntityData().get(accessor);
-    }
-    public void setSyncInt(EntityDataAccessor<Integer> accessor, int n){
-        this.getEntityData().set(accessor, n);
-    }
-    public void setSyncBoolean(EntityDataAccessor<Boolean> accessor, boolean n){
-        this.getEntityData().set(accessor, n);
-    }
-    public boolean getSyncBoolean(EntityDataAccessor<Boolean> accessor){
-        return this.getEntityData().get(accessor);
-    }
     @Override
     public void tick() {
         this.setupcomplete = true;
@@ -2114,21 +1695,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
     }
 
-
-    public int aggroCounter = 0;
-    protected void actuallyHurt(@NotNull DamageSource pSource, float pAmount){
-        if(!this.isInvulnerableTo(pSource)){
-        this.playVoice(this.getHurt(pAmount));
-        this.mood -= (int) (3 * this.getPeaceAffinityModifier());
-        super.actuallyHurt(pSource, pAmount);}
-    }
-    public boolean canBeSeenAsEnemy() {
-        return this.canBeSeenByAnyone();
-    }
-    public void playSound(SoundEvent pSound, float pVolume, float pPitch) {
-        super.playSound(SoundEvent.createFixedRangeEvent(pSound.getLocation(),64), pVolume, pPitch);
-
-    }
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
         boolean b;
@@ -2148,49 +1714,375 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return b;
     }
 
-    public boolean isFree(double pX, double pY, double pZ) {
-        if (this.isInWater() && this.getFriendSwimCounter() != 0) {
-            //LOGGER.info(this.startfloattimer +"");
-            return false;
+    @Override
+    public boolean doHurtTarget(Entity pEntity) {
+        if (pEntity.level() instanceof ServerLevel t) {
+            t.sendParticles(SWEEP_ATTACK, pEntity.getX(), pEntity.getY() + 1, pEntity.getZ(), 1, 0.2, 0.2, 0.2, 0.3);
         }
-        return super.isFree(pX, pY, pZ);
-    }
+        boolean flag = false;
+        if (pEntity != null) {
+            if (this.distanceTo(pEntity) < 3) {
+                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getGenericDamageMod() * this.getAttackType() / 20 * (Mth.clamp((5 * this.getCombatMod() / 10) + this.getRandom().nextInt(1, 7), 1, 6) + 3) / 6 * 0.66F;
+                float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+                if (pEntity instanceof LivingEntity) {
+                    f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
+                    f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+                }
 
-    @Override
-    protected SoundEvent getHurtSound(DamageSource dmgsrc) {
-        return SoundEvents.PLAYER_HURT;
+                int i = EnchantmentHelper.getFireAspect(this);
+                if (i > 0) {
+                    pEntity.setSecondsOnFire(i * 4);
+                }
+                flag = pEntity.hurt(this.damageSources().mobAttack(this), f);
+                if (flag) {
+                    if (f1 > 0.0F && pEntity instanceof LivingEntity) {
+                        ((LivingEntity) pEntity).knockback(f1 * 0.5F, Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(this.getYRot() * ((float) Math.PI / 180F)));
+                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
+                    }
 
-    }
-
-    @Override
-    public @NotNull Vec3 handleRelativeFrictionAndCalculateMovement(@NotNull Vec3 pDeltaMovement, float pFriction) {
-        this.moveRelative(this.getFrictionInfluencedSpeed(pFriction), pDeltaMovement);
-        this.setDeltaMovement(this.handleOnClimbable(this.getDeltaMovement()));
-        this.move(MoverType.SELF, this.getDeltaMovement());
-
-        return this.getDeltaMovement();
-    }
-
-    private Vec3 handleOnClimbable(Vec3 pDeltaMovement) {
-        if (this.onClimbable()) {
-            this.resetFallDistance();
-            float f = 0.15F;
-            double d0 = Mth.clamp(pDeltaMovement.x, (double) -0.15F, (double) 0.15F);
-            double d1 = Mth.clamp(pDeltaMovement.z, (double) -0.15F, (double) 0.15F);
-            double d2 = Math.max(pDeltaMovement.y, (double) -0.15F);
-
-            pDeltaMovement = new Vec3(d0, d2, d1);
+                    this.doEnchantDamageEffects(this, pEntity);
+                    this.setLastHurtMob(pEntity);
+                }
+            }
         }
-        return pDeltaMovement;
-    }
-
-    private float getFrictionInfluencedSpeed(float pFriction) {
-        return this.onGround() ? this.getSpeed() * (0.21600002F / (pFriction * pFriction * pFriction)) : this.getFlyingSpeed();
+        return flag;
+    }    public void reapplyPosition() {
+        this.setPos(this.getX(), this.getY(), this.getZ());
     }
 
     @Override
-    public @NotNull EntityDimensions getDimensions(@NotNull Pose pPose) {
-        return POSES.getOrDefault(pPose, new EntityDimensions(0.6F, 1.8F, false));
+    public void setTame(boolean pTamed) {
+        byte b0 = this.entityData.get(DATA_FLAGS_ID);
+        if (pTamed) {
+            this.entityData.set(DATA_FLAGS_ID, (byte) (b0 | 4));
+        } else {
+            this.entityData.set(DATA_FLAGS_ID, (byte) (b0 & -5));
+        }
+
+        this.reassessTameGoals();
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
+        double totalZ = this.getZ() - pPlayer.getZ();
+        double totalX = this.getX() - pPlayer.getX();
+        double totalY = this.getY() + this.getBbHeight() - 0.4 - pPlayer.getBbHeight() - pPlayer.getY();
+        double lookRot = pPlayer.getXRot();
+
+        double worstRot = Math.atan2(totalY, Math.sqrt(totalX * totalX + totalZ * totalZ));
+        worstRot = -Math.toDegrees(worstRot);
+        if (lookRot < worstRot) {
+            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            if (this.level().isClientSide) {
+                boolean flag = (this.isOwnedBy(pPlayer) && this.isTame());
+                if (this.isOwnedBy(pPlayer) || this.isTame()) {
+                    if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
+                        this.patCounter = 20;
+                    } else if (itemstack.isEmpty()) {
+                        this.idleCounter = 0;
+                    }
+                }
+                if (this.isEdible(itemstack)) {
+                    return InteractionResult.CONSUME_PARTIAL;
+                }
+                return flag ? InteractionResult.SUCCESS : InteractionResult.PASS;
+            } else if (this.isTame() && this.isOwnedBy(pPlayer)) {
+                //LOGGER.info(this.getFriendNorma() + "");
+                if (this.isEdible(itemstack)) {
+                    SweetHandler.doSweetEffect(this, itemstack);
+                    this.updateFriendNorma(0.001F, 3);
+                    this.socialInteraction += 1;
+                    if (!pPlayer.getAbilities().instabuild) {
+                        itemstack.shrink(1);
+                    }
+                    this.gameEvent(GameEvent.EAT);
+                    return InteractionResult.CONSUME_PARTIAL;
+                } else if (itemstack.is(ItemInit.SUMIKA_MEMORY.get())) {
+
+                    if (itemstack.getOrCreateTag().contains("juicecraft.memories")) {
+                        SumikaMemory temp = SumikaMemory.deserialize(itemstack.getOrCreateTag().getByteArray("juicecraft.memories"));
+                        if (temp.verifyValid(this)) {
+                            this.loadMemory(temp);
+                            if (!pPlayer.getAbilities().instabuild) {
+                                itemstack.shrink(1);
+                            }
+                            this.setHealth(this.getMaxHealth() / 2);
+                            this.deathCounter = 7 - recoveryDifficulty;
+                            this.getEntityData().set(FRIEND_ISDYING, false);
+                            this.isDying = false;
+                            this.playSound(RECOVERY.get(), 1, 1);
+                            this.playVoice(this.getRecovery());
+                            this.spawnHorizontalParticles();
+                            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.revive").getString());
+                        } else {
+                            return InteractionResult.PASS;
+                        }
+                    } else {
+                        this.playSound(MEMORY_WRITE.get(), 1, 1);
+                        itemstack.getOrCreateTag().putByteArray("juicecraft.memories", new SumikaMemory(this).serialize());
+                    }
+
+
+                    return InteractionResult.SUCCESS;
+                } else {
+
+                    if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching() || (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching())) {
+
+                        if (pPlayer instanceof ServerPlayer serverPlayer) {
+
+                            this.playVoice(this.getInteract());
+                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
+
+                        }
+                        return InteractionResult.SUCCESS;
+                    } else if ((!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && !pPlayer.isCrouching()) && (!this.isInWater() || this.onGround())) {
+                        this.setFriendInSittingPose(!this.getInSittingPose());
+                        if (sleepy() && animateSleep()) {
+                            this.setPose(Pose.SLEEPING);
+                        } else {
+                            this.setPose(STANDING);
+                        }
+                    } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer)) {
+                        if (this.mood > 50) {
+                            petEvent();
+                        } else {
+                            this.level().broadcastEntityEvent(this, (byte) 6);
+                            this.mood--;
+                        }
+                        this.socialInteraction++;
+                        return InteractionResult.SUCCESS;
+                    }
+                }
+            } else if ((itemstack.is(ItemInit.ORANGE.get()) || itemstack.is(GOLDEN_ORANGE.get())) && !this.isAngry() && this.mood > 50) {
+                if (!pPlayer.getAbilities().instabuild) {
+                    itemstack.shrink(1);
+                }
+                if (captureDifficulty > 1 && itemstack.is(GOLDEN_ORANGE.get())) {
+                    captureDifficulty--;
+                }
+                if (this.random.nextInt(captureDifficulty) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, pPlayer)) {
+                    this.tame(pPlayer);
+                    this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.tame").getString());
+                    this.navigation.stop();
+                    this.setTarget(null);
+                    this.level().broadcastEntityEvent(this, (byte) 7);
+                } else {
+                    this.level().broadcastEntityEvent(this, (byte) 6);
+                    this.mood -= 10;
+                }
+                return InteractionResult.CONSUME_PARTIAL;
+            }
+            return InteractionResult.SUCCESS;
+        } else {
+            ItemStack itemstack = pPlayer.getItemInHand(pHand);
+            if (this.level().isClientSide) {
+                boolean flag = (this.isOwnedBy(pPlayer) && this.isTame());
+                if (this.isOwnedBy(pPlayer) || this.isTame()) {
+                    if (itemstack.isEmpty() && !pPlayer.isCrouching()) {
+                        this.patCounter = 20;
+                        this.isembarassed = 20;
+                    } else if (itemstack.isEmpty()) {
+                        this.idleCounter = 0;
+                    }
+                }
+                if (this.isEdible(itemstack)) {
+                    return InteractionResult.CONSUME_PARTIAL;
+                }
+                return flag ? InteractionResult.SUCCESS : InteractionResult.PASS;
+            } else {
+                if (this.isTame() && this.isOwnedBy(pPlayer)) {
+
+                    if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
+
+                        if (pPlayer instanceof ServerPlayer serverPlayer) {
+
+                            this.playVoice(this.getInteract());
+                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
+
+                        }
+                        return InteractionResult.SUCCESS;
+                    } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching()) {
+                        this.setFriendInSittingPose(!this.getInSittingPose());
+                        if (sleepy() && animateSleep()) {
+                            this.setPose(Pose.SLEEPING);
+                        } else {
+                            this.setPose(STANDING);
+                        }
+                    } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer)) {
+                        if (this.getRandom().nextInt(30) < 3) {
+                            this.playTimedVoice(this.getBattle());
+                            this.swing(InteractionHand.MAIN_HAND);
+                            this.attackplayertoo = true;
+                            this.level().broadcastEntityEvent(this, (byte) 6);
+                            this.mood -= 5;
+                        }
+                        this.socialInteraction++;
+                        return InteractionResult.SUCCESS;
+                    }
+                }
+            }
+            return InteractionResult.PASS;
+        }
+    }
+
+    public void setFriendInSittingPose(boolean sit) {
+        this.isSitting = sit;
+        this.entityData.set(FRIEND_ISSITTING, sit);
+    }
+
+    public CombatSettings getCombatSettings() {
+        return CombatSettings.decodeHash(this.getEntityData().get(FRIEND_COMBATSETTINGS));
+    }
+
+    public boolean[] getSkillEnabled() {
+        return SkillManager.decodeBooleanHash(this.getEntityData().get(FRIEND_SKILLENABLED));
+    }
+
+    public void setSkillEnabled(boolean[] b) {
+        this.skillEnabled = b;
+        this.getEntityData().set(FRIEND_SKILLENABLED, SkillManager.makeBooleanHash(b));
+    }
+
+    public int getSkillPoints() {
+        return this.getEntityData().get(FRIEND_SKILLPOINTS);
+    }
+
+    public void setSkillPoints(int a) {
+        this.skillPoints = a;
+        this.getEntityData().set(FRIEND_SKILLPOINTS, a);
+    }
+
+    void registerCustomGoals() {
+        if (this.aggression > 75) {
+            this.targetSelector.addGoal(6, new FriendNearestAttackableTargetGoal<>(this, Player.class, 0, true, false, this::testMood));
+        }
+        this.registerAdditionalGoals();
+    }
+
+    boolean testMood(LivingEntity a) {
+        if (this.mood < 55) {
+            this.attackplayertoo = true;
+            return true;
+        }
+        return false;
+    }
+
+    abstract void registerAdditionalGoals();
+
+    public boolean isEdible(ItemStack pStack) {
+        return pStack.is(ItemInit.ORANGE.get()) || pStack.is(ItemInit.GOLDEN_ORANGE.get()) || pStack.getItem() instanceof SweetItem || pStack.is(COOKIE);
+    }
+
+    void loadMemory(SumikaMemory memory) {
+        this.combatSettings = memory.settings;
+        this.setIsWandering(memory.wander);
+        this.setIsFarming(memory.farm);
+        this.setFriendNorma((float) memory.normalevel, -1);
+        this.setSpecialDialogueEnabled(memory.specialsenabled);
+        this.updateCombatSettings();
+    }
+
+    public boolean lockLookAround() {
+        return this.getAttackCounter() <= 0;
+    }
+
+    public boolean shouldShowWeapon() {
+        return true;
+    }
+
+    public void synchronizeLookAngle() {
+        if (this.level() instanceof ServerLevel level) {
+            int l = Mth.floor(this.getYRot() * 256.0F / 360.0F);
+            int k1 = Mth.floor(this.getXRot() * 256.0F / 360.0F);
+            level.getChunkSource().broadcastAndSend(this, new ClientboundMoveEntityPacket.Rot(this.getId(), (byte) l, (byte) k1, this.onGround()));
+        }
+    }
+
+    public void alignBodyWithHeadAngle() {
+        this.yBodyRot = this.yHeadRot;
+        this.yBodyRotO = this.yHeadRotO;
+    }
+
+    public boolean day() {
+        long time = this.level().getDayTime();
+
+        return time < 12300 || time > 23850;
+    }
+
+    public boolean idle() {
+        return !this.isHoldingThrowable() && this.walkAnimation.speed() < 0.1F && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0;
+    }
+
+    public boolean sleepy() {
+        return idle() && !this.day();
+    }
+
+    public boolean animateSleep() {
+        return this.getFeetBlockState().isBed(this.level(), new BlockPos(this.getBlockX(), this.getBlockY() - 1, this.getBlockZ()), null);
+    }
+
+    public boolean additionalInspectConditions() {
+        return true;
+    }
+
+    public void tryCounter(LivingAttackEvent event) {
+        if (event.getSource().getEntity() != null && !this.isDying && !this.isAttackLockedOut()) {
+            if (this.getAttackType() == 50 && this.getAttackCounter() > this.getCounterTiming() / this.getAttackSpeed()) {
+                event.setCanceled(true);
+            } else if (FriendDefense.shouldDefendAgainst(this)) {
+                this.setAttackCounter(34);
+                this.setAttackType(50);
+                this.playTimedVoice(this.getEvade());
+                this.playSound(COUNTER_BLOCK.get());
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    public int getSyncInt(EntityDataAccessor<Integer> accessor) {
+        return this.getEntityData().get(accessor);
+    }
+
+    public void setSyncInt(EntityDataAccessor<Integer> accessor, int n) {
+        this.getEntityData().set(accessor, n);
+    }
+
+    public void setSyncBoolean(EntityDataAccessor<Boolean> accessor, boolean n) {
+        this.getEntityData().set(accessor, n);
+    }
+
+    public boolean getSyncBoolean(EntityDataAccessor<Boolean> accessor) {
+        return this.getEntityData().get(accessor);
+    }
+
+    public boolean canBeSeenAsEnemy() {
+        return this.canBeSeenByAnyone();
+    }
+
+    protected void dropEquipment() {
+        super.dropEquipment();
+        if (this.inventory != null) {
+            for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
+                ItemStack itemstack = this.inventory.getItem(i);
+                if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack)) {
+                    this.spawnAtLocation(itemstack);
+                }
+            }
+
+        }
+    }
+
+    protected void actuallyHurt(@NotNull DamageSource pSource, float pAmount) {
+        if (!this.isInvulnerableTo(pSource)) {
+            this.playVoice(this.getHurt(pAmount));
+            this.mood -= (int) (3 * this.getPeaceAffinityModifier());
+            super.actuallyHurt(pSource, pAmount);
+        }
+    }
+
+    @Override
+    public @NotNull CombatTracker getCombatTracker() {
+        return this.combatTracker;
     }
 
     public void swing(InteractionHand pHand) {
@@ -2210,10 +2102,66 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
     }
 
+    public ItemStack getMainHandItem() {
+        return this.getFriendWeapon();
+    }
+
+    public ItemStack getOffhandItem() {
+        return this.getItemBySlot(EquipmentSlot.OFFHAND);
+    }
+
+    @Override
+    public float getVoicePitch() {
+        return 1F;
+    }
+
+    @Override
+    public @NotNull Vec3 handleRelativeFrictionAndCalculateMovement(@NotNull Vec3 pDeltaMovement, float pFriction) {
+        this.moveRelative(this.getFrictionInfluencedSpeed(pFriction), pDeltaMovement);
+        this.setDeltaMovement(this.handleOnClimbable(this.getDeltaMovement()));
+        this.move(MoverType.SELF, this.getDeltaMovement());
+
+        return this.getDeltaMovement();
+    }
+
+    private float getFrictionInfluencedSpeed(float pFriction) {
+        return this.onGround() ? this.getSpeed() * (0.21600002F / (pFriction * pFriction * pFriction)) : this.getFlyingSpeed();
+    }
+
+    private Vec3 handleOnClimbable(Vec3 pDeltaMovement) {
+        if (this.onClimbable()) {
+            this.resetFallDistance();
+            float f = 0.15F;
+            double d0 = Mth.clamp(pDeltaMovement.x, -0.15F, 0.15F);
+            double d1 = Mth.clamp(pDeltaMovement.z, -0.15F, 0.15F);
+            double d2 = Math.max(pDeltaMovement.y, -0.15F);
+
+            pDeltaMovement = new Vec3(d0, d2, d1);
+        }
+        return pDeltaMovement;
+    }    public void playSound(SoundEvent pSound, float pVolume, float pPitch) {
+        super.playSound(SoundEvent.createFixedRangeEvent(pSound.getLocation(), 64), pVolume, pPitch);
+
+    }
+
+    @Override
+    public @NotNull EntityDimensions getDimensions(@NotNull Pose pPose) {
+        return POSES.getOrDefault(pPose, new EntityDimensions(0.6F, 1.8F, false));
+    }
+
     @Override
     public boolean isSleeping() {
         return this.getPose() == Pose.SLEEPING;
+    }    public boolean isFree(double pX, double pY, double pZ) {
+        if (this.isInWater() && this.getFriendSwimCounter() != 0) {
+            //LOGGER.info(this.startfloattimer +"");
+            return false;
+        }
+        return super.isFree(pX, pY, pZ);
     }
+
+    @Override
+    public void stopSleeping() {/*yucky method*/}
 
     @Nullable
     @Override
@@ -2223,40 +2171,35 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return !state.isBed(level(), blockpos, this) ? Direction.UP : state.getBedDirection(level(), blockpos);
     }
 
-    @Override
-    public void stopSleeping() {/*yucky method*/}
-
-    @Override
-    public void setTame(boolean pTamed) {
-        byte b0 = this.entityData.get(DATA_FLAGS_ID);
-        if (pTamed) {
-            this.entityData.set(DATA_FLAGS_ID, (byte) (b0 | 4));
-        } else {
-            this.entityData.set(DATA_FLAGS_ID, (byte) (b0 & -5));
+    public void broadcastBreakEvent(EquipmentSlot pSlot) {
+        if (pSlot == EquipmentSlot.MAINHAND) {
+            this.appendEventLog(Component.translatable("juicecraft.menu." + this.getFriendName().toLowerCase() + ".eventlog.breakweapon").getString());
         }
-
-        this.reassessTameGoals();
-    }
-
-    public int startfloattimer = 0;
-
-    @Override
-    public float getEyeHeight(Pose pPose) {
-        return super.getEyeHeight(pPose);
+        super.broadcastBreakEvent(pSlot);
     }
 
     @Override
-    public void setPos(double x, double y, double z) {
-        if (this.isInWater() && this.getFriendSwimCounter() <= 0) {
-            double diff = y - this.getY();
-            diff = diff / 4;
-            this.setPosRaw(x, this.getY() + diff, z);
-        } else {
-            this.setPosRaw(x, y, z);
+    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
+        if (this.isAlive() && capability == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
+            return itemHandler.cast();
+        return super.getCapability(capability, facing);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        if (itemHandler != null) {
+            net.minecraftforge.common.util.LazyOptional<?> oldHandler = itemHandler;
+            itemHandler = null;
+            oldHandler.invalidate();
         }
-        this.setBoundingBox(this.makeBoundingBox());
     }
 
+    public abstract SoundEvent getHurt(float dmg);
+
+    public double getPeaceAffinityModifier() {
+        return (100 - this.aggression) * 0.01;
+    }
 
     public float getSurfaceWaterDistanceFromEye() {
         float eyeheight = (float) this.getEyeY();
@@ -2294,19 +2237,94 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     @Override
-    public SoundEvent getDeathSound() {
-        return this.getRecoveryFail();
-    }
-
-    @Override
     public void containerChanged(Container pContainer) {
         this.updateContainerEquipment();
         this.updateGear();
+    }
+
+    public void updateGear() {
+        if (!this.level().isClientSide()) {
+            this.getEntityData().set(FRIEND_WEAPON, this.inventory.getItem(1));
+            if (this.inventory.getItem(1).getItem() instanceof BowItem) {
+                this.goalSelector.removeGoal(this.bowGoal);
+                this.goalSelector.removeGoal(this.crossbowGoal);
+                this.goalSelector.removeGoal(this.snowballGoal);
+                this.goalSelector.addGoal(4, this.bowGoal);
+            } else if (this.inventory.getItem(1).getItem() instanceof CrossbowItem) {
+                this.goalSelector.removeGoal(this.crossbowGoal);
+                this.goalSelector.removeGoal(this.bowGoal);
+                this.goalSelector.removeGoal(this.snowballGoal);
+                this.goalSelector.addGoal(4, this.crossbowGoal);
+            } else if (this.isHoldingThrowable()) {
+                this.goalSelector.removeGoal(this.crossbowGoal);
+                this.goalSelector.removeGoal(this.bowGoal);
+                this.goalSelector.removeGoal(this.snowballGoal);
+                this.goalSelector.addGoal(4, this.snowballGoal);
+            } else {
+                this.goalSelector.removeGoal(this.snowballGoal);
+                this.goalSelector.removeGoal(crossbowGoal);
+                this.goalSelector.removeGoal(bowGoal);
+            }
+        }
+        if (!this.getFriendWeapon().isEmpty()) {
+            this.setItemSlot(EquipmentSlot.MAINHAND, this.getFriendWeapon());
+        } else {
+            this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(AIR));
+        }
+        if (!this.inventory.getItem(3).isEmpty()) {
+            this.setItemSlot(EquipmentSlot.HEAD, this.inventory.getItem(3));
+        } else {
+            this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(AIR));
+        }
+        if (!this.inventory.getItem(4).isEmpty()) {
+            this.setItemSlot(EquipmentSlot.CHEST, this.inventory.getItem(4));
+        } else {
+            this.setItemSlot(EquipmentSlot.CHEST, new ItemStack(AIR));
+        }
+        if (!this.inventory.getItem(5).isEmpty()) {
+            this.setItemSlot(EquipmentSlot.LEGS, this.inventory.getItem(5));
+        } else {
+            this.setItemSlot(EquipmentSlot.LEGS, new ItemStack(AIR));
+        }
+        if (!this.inventory.getItem(6).isEmpty()) {
+            this.setItemSlot(EquipmentSlot.FEET, this.inventory.getItem(6));
+        } else {
+            this.setItemSlot(EquipmentSlot.FEET, new ItemStack(AIR));
+        }
+
     }
 
     @org.jetbrains.annotations.Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
         return new FriendMenu(pContainerId, pPlayerInventory, this);
+    }    @Override
+    public float getEyeHeight(Pose pPose) {
+        return super.getEyeHeight(pPose);
     }
+
+    @Override
+    public void setPos(double x, double y, double z) {
+        if (this.isInWater() && this.getFriendSwimCounter() <= 0) {
+            double diff = y - this.getY();
+            diff = diff / 4;
+            this.setPosRaw(x, this.getY() + diff, z);
+        } else {
+            this.setPosRaw(x, y, z);
+        }
+        this.setBoundingBox(this.makeBoundingBox());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

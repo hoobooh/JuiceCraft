@@ -10,23 +10,21 @@ import net.minecraft.world.level.pathfinder.Path;
 
 import java.util.EnumSet;
 
-import static com.usagin.juicecraft.friends.Friend.LOGGER;
-
 public class ShellMeleeGoal extends Goal {
+    private static final long COOLDOWN_BETWEEN_CAN_USE_CHECKS = 20L;
     protected final PathfinderMob mob;
     private final double speedModifier;
     private final boolean followingTargetEvenIfNotSeen;
+    private final int attackInterval = 20;
     private Path path;
     private double pathedTargetX;
     private double pathedTargetY;
     private double pathedTargetZ;
     private int ticksUntilNextPathRecalculation;
     private int ticksUntilNextAttack;
-    private final int attackInterval = 20;
     private long lastCanUseCheck;
-    private static final long COOLDOWN_BETWEEN_CAN_USE_CHECKS = 20L;
-    private int failedPathFindingPenalty = 0;
-    private boolean canPenalize = false;
+    private final int failedPathFindingPenalty = 0;
+    private final boolean canPenalize = false;
 
     public ShellMeleeGoal(PathfinderMob pMob, double pSpeedModifier, boolean pFollowingTargetEvenIfNotSeen) {
         this.mob = pMob;
@@ -84,7 +82,7 @@ public class ShellMeleeGoal extends Goal {
         } else if (!this.mob.isWithinRestriction(livingentity.blockPosition())) {
             return false;
         } else {
-            return !(livingentity instanceof Player) || !livingentity.isSpectator() && !((Player)livingentity).isCreative();
+            return !(livingentity instanceof Player) || !livingentity.isSpectator() && !((Player) livingentity).isCreative();
         }
     }
 
@@ -121,9 +119,9 @@ public class ShellMeleeGoal extends Goal {
     public void tick() {
         LivingEntity livingentity = this.mob.getTarget();
         if (livingentity != null) {
-            this.mob.lookAt(livingentity,30,30);
+            this.mob.lookAt(livingentity, 30, 30);
             this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-            this.mob.getNavigation().moveTo(livingentity,1.1F);
+            this.mob.getNavigation().moveTo(livingentity, 1.1F);
             this.checkAndPerformAttack(livingentity);
         }
     }
@@ -136,16 +134,16 @@ public class ShellMeleeGoal extends Goal {
 
     }
 
-    protected void resetAttackCooldown() {
-        this.ticksUntilNextAttack = this.adjustedTickDelay(20);
+    protected boolean canPerformAttack(LivingEntity pEntity) {
+        return this.isTimeToAttack() && this.mob.isWithinMeleeAttackRange(pEntity) && this.mob.getSensing().hasLineOfSight(pEntity);
     }
 
     protected boolean isTimeToAttack() {
         return this.ticksUntilNextAttack <= 0;
     }
 
-    protected boolean canPerformAttack(LivingEntity pEntity) {
-        return this.isTimeToAttack() && this.mob.isWithinMeleeAttackRange(pEntity) && this.mob.getSensing().hasLineOfSight(pEntity);
+    protected void resetAttackCooldown() {
+        this.ticksUntilNextAttack = this.adjustedTickDelay(20);
     }
 
     protected int getTicksUntilNextAttack() {

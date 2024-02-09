@@ -1,10 +1,7 @@
 package com.usagin.juicecraft;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
-import com.usagin.juicecraft.ai.awareness.FriendDefense;
 import com.usagin.juicecraft.friends.Friend;
-import com.usagin.juicecraft.items.SweetItem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,17 +12,13 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.COUNTER_BLOCK;
 
 @Mod.EventBusSubscriber
 public class CommonLiveEvents {
@@ -99,29 +92,29 @@ public class CommonLiveEvents {
 
                 //XP CALC EVENT
                 float temp = (float) EnemyEvaluator.calculateNetGain(pFriend, event.getEntity());
-                if(temp>50){
-                    pFriend.appendEventLog(Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingfirst").getString() + event.getEntity().getDisplayName().getString() + Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase()+".eventlog.killhighratingsecond").getString());
+                if (temp > 50) {
+                    pFriend.appendEventLog(Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase() + ".eventlog.killhighratingfirst").getString() + event.getEntity().getDisplayName().getString() + Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase() + ".eventlog.killhighratingsecond").getString());
                 }
-                pFriend.updateFriendNorma(temp/1000,1);
+                pFriend.updateFriendNorma(temp / 1000, 1);
                 pFriend.playVoice(pFriend.getOnKill());
                 pFriend.increaseEXP(temp);
             }
 
             //when villager dies
-            if(event.getEntity() instanceof Villager villager){
-                if(event.getSource().getDirectEntity() instanceof Player player){
+            if (event.getEntity() instanceof Villager villager) {
+                if (event.getSource().getDirectEntity() instanceof Player player) {
 
-                    AABB detect = new AABB(villager.getX()-8,villager.getY()-8,villager.getZ()-8,villager.getX()+8,villager.getY()+8,villager.getZ()+8);
-                    for(LivingEntity entity: villager.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(),villager,detect)){
-                        if(entity instanceof Friend friend){
-                            if(friend.isTame() && friend.getOwner()!=null){
-                                if(friend.getOwner().getStringUUID().equals(player.getStringUUID())){
-                                    if(friend.aggression<50){
+                    AABB detect = new AABB(villager.getX() - 8, villager.getY() - 8, villager.getZ() - 8, villager.getX() + 8, villager.getY() + 8, villager.getZ() + 8);
+                    for (LivingEntity entity : villager.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(), villager, detect)) {
+                        if (entity instanceof Friend friend) {
+                            if (friend.isTame() && friend.getOwner() != null) {
+                                if (friend.getOwner().getStringUUID().equals(player.getStringUUID())) {
+                                    if (friend.aggression < 50) {
                                         friend.playTimedVoice(friend.getAngry());
-                                        friend.updateFriendNorma(-0.4F,1);
+                                        friend.updateFriendNorma(-0.4F, 1);
                                     } else if (friend.aggression > 90) { //starbo
                                         friend.playTimedVoice(friend.getLaugh());
-                                        friend.updateFriendNorma(0.05F,1);
+                                        friend.updateFriendNorma(0.05F, 1);
                                     }
                                 }
                             }
@@ -132,13 +125,13 @@ public class CommonLiveEvents {
             }
 
             //player death
-            else if(event.getEntity() instanceof Player player){
-                AABB detect = new AABB(player.getX()-16,player.getY()-16,player.getZ()-16,player.getX()+16,player.getY()+16,player.getZ()+16);
-                for(LivingEntity entity: player.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(),player,detect)){
-                    if(entity instanceof Friend friend){
-                        if(friend.isTame() && friend.getOwner()!=null){
-                            if(friend.getOwner().getStringUUID().equals(player.getStringUUID())){
-                                friend.appendEventLog(player.getScoreboardName() + Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase()+".eventlog.playerdeath").getString());
+            else if (event.getEntity() instanceof Player player) {
+                AABB detect = new AABB(player.getX() - 16, player.getY() - 16, player.getZ() - 16, player.getX() + 16, player.getY() + 16, player.getZ() + 16);
+                for (LivingEntity entity : player.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(), player, detect)) {
+                    if (entity instanceof Friend friend) {
+                        if (friend.isTame() && friend.getOwner() != null) {
+                            if (friend.getOwner().getStringUUID().equals(player.getStringUUID())) {
+                                friend.appendEventLog(player.getScoreboardName() + Component.translatable("juicecraft.menu." + friend.getFriendName().toLowerCase() + ".eventlog.playerdeath").getString());
                             }
                         }
                     }
@@ -146,14 +139,15 @@ public class CommonLiveEvents {
             }
         }
     }
+
     @SubscribeEvent
-    public static void onCreeperPrime(LivingEvent event){
-        if(event.getEntity() instanceof Creeper creeper){
-            if(creeper.getSwellDir()==1){
-                AABB detect = new AABB(creeper.getX()-8,creeper.getY()-8,creeper.getZ()-8,creeper.getX()+8,creeper.getY()+8,creeper.getZ()+8);
-                for(LivingEntity entity: creeper.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(),creeper,detect)){
-                    if(entity instanceof Friend friend){
-                        friend.fleeTarget=creeper;
+    public static void onCreeperPrime(LivingEvent event) {
+        if (event.getEntity() instanceof Creeper creeper) {
+            if (creeper.getSwellDir() == 1) {
+                AABB detect = new AABB(creeper.getX() - 8, creeper.getY() - 8, creeper.getZ() - 8, creeper.getX() + 8, creeper.getY() + 8, creeper.getZ() + 8);
+                for (LivingEntity entity : creeper.level().getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(), creeper, detect)) {
+                    if (entity instanceof Friend friend) {
+                        friend.fleeTarget = creeper;
                     }
                 }
             }

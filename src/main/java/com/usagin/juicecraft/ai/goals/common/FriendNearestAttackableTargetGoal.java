@@ -1,8 +1,6 @@
 package com.usagin.juicecraft.ai.goals.common;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
-import com.usagin.juicecraft.ai.awareness.FriendFlee;
-import com.usagin.juicecraft.ai.goals.navigation.FriendPathNavigation;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -11,24 +9,17 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.PlantType;
 
 import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
-
-import static com.usagin.juicecraft.particles.SuguriverseParticleLarge.LOGGER;
 
 public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     Friend friend;
@@ -51,16 +42,6 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
     public FriendNearestAttackableTargetGoal(Mob pMob, Class<T> pTargetType, int pRandomInterval, boolean pMustSee, boolean pMustReach, @Nullable Predicate<LivingEntity> pTargetPredicate) {
         super(pMob, pTargetType, pRandomInterval, pMustSee, pMustReach, pTargetPredicate);
         this.friend = (Friend) pMob;
-    }
-
-    public void start() {
-        if (this.friend.canDoThings() && this.friend.getCombatSettings().aggression == 3) {
-            this.mob.setTarget(this.target);
-            if (EnemyEvaluator.evaluate(this.target) > this.friend.getFriendExperience() / 2) {
-                this.friend.playTimedVoice(this.friend.getWarning());
-            }
-            super.start();
-        }
     }
 
     @Override
@@ -130,13 +111,23 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
                             }
                         }
                     }
-                }else if(this.friend.getViewFlower() == 1){
+                } else if (this.friend.getViewFlower() == 1) {
                     this.friend.getFriendNav().setShouldMove(true);
                 }
                 if (this.friend.flowercooldown > 0) {
                     this.friend.flowercooldown--;
                 }
             }
+        }
+    }
+
+    public void start() {
+        if (this.friend.canDoThings() && this.friend.getCombatSettings().aggression == 3) {
+            this.mob.setTarget(this.target);
+            if (EnemyEvaluator.evaluate(this.target) > this.friend.getFriendExperience() / 2) {
+                this.friend.playTimedVoice(this.friend.getWarning());
+            }
+            super.start();
         }
     }
 }

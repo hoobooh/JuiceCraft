@@ -39,9 +39,12 @@ public class AlteSparkGoal extends Goal {
         }
         return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.sparkcooldown <= 0 && this.alte.distanceTo(this.target) < 4 && !this.alte.areAnimationsBusy();
     }
-    public boolean requiresUpdateEveryTick() {
-        return true;
+
+    @Override
+    public boolean canContinueToUse() {
+        return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.getSyncInt(ALTE_SPARKCOUNTER) > 0;
     }
+
     @Override
     public void start() {
         this.alte.playVoice(ALTE_SPARK.get());
@@ -59,8 +62,13 @@ public class AlteSparkGoal extends Goal {
     }
 
     @Override
-    public boolean canContinueToUse() {
-        return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.getSyncInt(ALTE_SPARKCOUNTER) > 0;
+    public void stop() {
+        this.target = null;
+        this.alte.getFriendNav().setShouldMove(true);
+    }
+
+    public boolean requiresUpdateEveryTick() {
+        return true;
     }
 
     @Override
@@ -70,61 +78,62 @@ public class AlteSparkGoal extends Goal {
 
         int n = this.alte.getSyncInt(ALTE_SPARKCOUNTER);
         if (n >= 5 && n <= 15) {
-            if(n==15){
+            if (n == 15) {
                 this.alte.playSound(LASER_BLAST.get());
             }
             if (n % 4 == 0) {
                 this.hurtAllTargets();
-                if(this.alte.level() instanceof ServerLevel level){
+                if (this.alte.level() instanceof ServerLevel level) {
 
-                    this.spawnParticlesInSphere(10,0.5F,2,level, ParticleInit.ALTE_ENERGY_PARTICLE.get(),0);
-                    this.spawnParticlesInRandomSpread(10,1,2,level, ParticleInit.ALTE_LIGHTNING_PARTICLE.get());
+                    this.spawnParticlesInSphere(10, 0.5F, 2, level, ParticleInit.ALTE_ENERGY_PARTICLE.get(), 0);
+                    this.spawnParticlesInRandomSpread(10, 1, 2, level, ParticleInit.ALTE_LIGHTNING_PARTICLE.get());
                 }
             }
         }
     }
-    public<T extends ParticleOptions> void spawnParticlesInRandomSpread(int count, float radius,float distance, ServerLevel sLevel, T type){
+
+    public <T extends ParticleOptions> void spawnParticlesInRandomSpread(int count, float radius, float distance, ServerLevel sLevel, T type) {
         float posX = (float) this.alte.getX();
         float posY = (float) this.alte.getY() + 1.2F;
         float posZ = (float) this.alte.getZ();
-        float lookAngleY=this.alte.getAlteLookAngle(ALTE_SPARKANGLEY);
-        float lookAngleX=this.alte.getAlteLookAngle(ALTE_SPARKANGLEX);
+        float lookAngleY = this.alte.getAlteLookAngle(ALTE_SPARKANGLEY);
+        float lookAngleX = this.alte.getAlteLookAngle(ALTE_SPARKANGLEX);
 
         float targetX = posX + distance * (float) Math.cos(lookAngleY);
         float targetZ = posZ + distance * (float) Math.sin(lookAngleY);
         float targetY = posY + distance * (float) Math.sin(lookAngleX);
 
-        sLevel.sendParticles(type,targetX,targetY,targetZ,count,radius,radius,radius,1);
+        sLevel.sendParticles(type, targetX, targetY, targetZ, count, radius, radius, radius, 1);
     }
-    public<T extends ParticleOptions> void spawnParticlesInSphere(int count, float radius,float distance, ServerLevel sLevel, T type, float yOffset){
-        if(count<1){
+
+    public <T extends ParticleOptions> void spawnParticlesInSphere(int count, float radius, float distance, ServerLevel sLevel, T type, float yOffset) {
+        if (count < 1) {
             return;
         }
         float posX = (float) this.alte.getX();
         float posY = (float) this.alte.getY() + 1.2F;
         float posZ = (float) this.alte.getZ();
-        float lookAngleY=this.alte.getAlteLookAngle(ALTE_SPARKANGLEY);
-        float lookAngleX=this.alte.getAlteLookAngle(ALTE_SPARKANGLEX);
+        float lookAngleY = this.alte.getAlteLookAngle(ALTE_SPARKANGLEY);
+        float lookAngleX = this.alte.getAlteLookAngle(ALTE_SPARKANGLEX);
 
         float targetX = posX + distance * (float) Math.cos(lookAngleY);
         float targetZ = posZ + distance * (float) Math.sin(lookAngleY);
         float targetY = posY + distance * (float) Math.sin(lookAngleX);
 
 
-
-        for(int i = 0; i < count; i++){
-            float x = (float) (Math.sin(i))/2*radius;
-            float z = (float) (Math.cos(i))/2*radius;
-            if(this.alte.getRandom().nextBoolean()){
-                x=-x;
-                z=-z;
+        for (int i = 0; i < count; i++) {
+            float x = (float) (Math.sin(i)) / 2 * radius;
+            float z = (float) (Math.cos(i)) / 2 * radius;
+            if (this.alte.getRandom().nextBoolean()) {
+                x = -x;
+                z = -z;
             }
-            sLevel.sendParticles(type,targetX + x,targetY + yOffset,targetZ + z,1,0,0,0,0.5);
+            sLevel.sendParticles(type, targetX + x, targetY + yOffset, targetZ + z, 1, 0, 0, 0, 0.5);
 
         }
 
-        this.spawnParticlesInSphere((int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset+0.3F);
-        this.spawnParticlesInSphere((int)(count*0.8), radius*0.8F,distance, sLevel, type,yOffset-0.3F);
+        this.spawnParticlesInSphere((int) (count * 0.8), radius * 0.8F, distance, sLevel, type, yOffset + 0.3F);
+        this.spawnParticlesInSphere((int) (count * 0.8), radius * 0.8F, distance, sLevel, type, yOffset - 0.3F);
 
     }
 
@@ -165,7 +174,7 @@ public class AlteSparkGoal extends Goal {
                 if (flag) {
                     this.alte.setLastHurtMob(pEntity);
                     if (pEntity instanceof LivingEntity entity) {
-                        entity.knockback((double) (f1 * 0.5F), (double) Mth.sin(this.alte.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(this.alte.getYRot() * ((float) Math.PI / 180F))));
+                        entity.knockback(f1 * 0.5F, Mth.sin(this.alte.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(this.alte.getYRot() * ((float) Math.PI / 180F)));
                         int mod = 1 + (int) (4 * (1 + (float) this.alte.getSkillLevels()[1]) / (100 + (float) this.alte.getSkillLevels()[1]));
                         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * mod, mod), this.alte);
                     }
@@ -173,11 +182,5 @@ public class AlteSparkGoal extends Goal {
                 }
             }
         }
-    }
-
-    @Override
-    public void stop() {
-        this.target = null;
-        this.alte.getFriendNav().setShouldMove(true);
     }
 }

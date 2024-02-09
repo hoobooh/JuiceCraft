@@ -4363,4 +4363,5 @@ public class SoraAnimation {
                             new Keyframe(0.75f, KeyframeAnimations.degreeVec(-7.5f, 0f, 0f),
                                     AnimationChannel.Interpolations.LINEAR),
                             new Keyframe(1.75f, KeyframeAnimations.degreeVec(0f, 0f, 0f),
-                                    AnimationChannel.Interpolations.LINEAR))).build();}
+                                    AnimationChannel.Interpolations.LINEAR))).build();
+}

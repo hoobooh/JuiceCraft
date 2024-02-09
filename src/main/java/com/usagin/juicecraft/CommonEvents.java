@@ -23,24 +23,27 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 @Mod.EventBusSubscriber(modid = JuiceCraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CommonEvents {
     @SubscribeEvent
-    public static void entityAttributes(EntityAttributeCreationEvent event){
+    public static void entityAttributes(EntityAttributeCreationEvent event) {
         event.put(EntityInit.SORA.get(), Sora.getSoraAttributes().build());
         event.put(EntityInit.ALTE.get(), Alte.getAlteAttributes().build());
     }
+
     @SubscribeEvent
-    public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event){
-        event.registerEntityRenderer(EntityInit.SORA.get(),SoraEntityRenderer::new);
+    public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(EntityInit.SORA.get(), SoraEntityRenderer::new);
         event.registerEntityRenderer(EntityInit.ALTE.get(), AlteEntityRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_MINIGUN_PROJECTILE.get(), FriendProjectileRenderer::new);
-        event.registerEntityRenderer(ProjectileInit.ALTE_PANEL_PROJECTILE.get(),FriendProjectileRenderer::new);
+        event.registerEntityRenderer(ProjectileInit.ALTE_PANEL_PROJECTILE.get(), FriendProjectileRenderer::new);
     }
+
     @SubscribeEvent
-    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event){
+    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SoraEntityModel.LAYER_LOCATION, SoraEntityModel::createBodyLayer);
         event.registerLayerDefinition(AlteEntityModel.LAYER_LOCATION, AlteEntityModel::createBodyLayer);
     }
+
     @SubscribeEvent
-    public static void registerParticles(RegisterParticleProvidersEvent event){
+    public static void registerParticles(RegisterParticleProvidersEvent event) {
         Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_IMPACT_PARTICLE.get(), AlteImpactParticle.AlteImpactProvider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.SUGURIVERSE_LARGE.get(), SuguriverseParticleLarge.SugPartProvider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.SLEEPY.get(), SleepyParticle.Provider::new);
@@ -57,9 +60,10 @@ public class CommonEvents {
         Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_GUNFLASH.get(), AlteGunFlashParticle.GunFlashProvider::new);
 
     }
+
     @SubscribeEvent
-    public static void registerPacketHandler(FMLCommonSetupEvent event){
-        event.enqueueWork(()->{
+    public static void registerPacketHandler(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
             CombatSettingsPacketHandler.register();
             DialogueResultPacketHandler.register();
             SpecialDialoguePacketHandler.register();

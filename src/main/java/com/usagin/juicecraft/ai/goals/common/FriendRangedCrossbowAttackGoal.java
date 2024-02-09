@@ -7,11 +7,13 @@ import net.minecraft.world.item.CrossbowItem;
 
 public class FriendRangedCrossbowAttackGoal extends ShellCrossbowGoal {
     Friend mob;
+
     public FriendRangedCrossbowAttackGoal(Friend pMob, double pSpeedModifier, float pAttackRadius) {
         super(pMob, pSpeedModifier, pAttackRadius);
         this.mob = pMob;
     }
+
     public boolean canUse() {
-        return this.mob.canDoThings() && this.mob.getTarget() != null && this.mob.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof CrossbowItem && this.isValidTarget()  && !this.mob.isAttackLockedOut();
+        return this.mob.canDoThings() && this.mob.getTarget() != null && this.mob.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof CrossbowItem && this.isValidTarget() && !this.mob.isAttackLockedOut();
     }
 }

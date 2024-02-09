@@ -28,6 +28,8 @@ import java.util.List;
 public class AltePunisherGoal extends Goal {
     protected final Alte alte;
     protected LivingEntity target;
+    float lookanglex;
+    float lookangley;
 
     public AltePunisherGoal(Alte alte) {
         this.alte = alte;
@@ -38,10 +40,33 @@ public class AltePunisherGoal extends Goal {
         this.target = this.alte.getTarget();
         Item item = this.alte.getFriendWeapon().getItem();
         boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
-        if(this.target==null){
+        if (this.target == null) {
             return false;
         }
-        return this.alte.getSkillEnabled()[3] && this.alte.getSkillEnabled()[2] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.punishercooldown <= 0 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy() && !flag && this.alte.distanceTo(this.target)<20;
+        return this.alte.getSkillEnabled()[3] && this.alte.getSkillEnabled()[2] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.punishercooldown <= 0 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy() && !flag && this.alte.distanceTo(this.target) < 20;
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        Item item = this.alte.getFriendWeapon().getItem();
+        boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
+        return this.alte.canDoThings() && this.alte.getSyncInt(Alte.ALTE_PUNISHERCOUNTER) > 0 && !flag;
+    }
+
+    @Override
+    public void start() {
+        this.alte.playVoice(AlteSoundInit.ALTE_PUNISHER_VOICE.get());
+        this.alte.getFriendNav().setShouldMove(false);
+        this.alte.playSound(AlteSoundInit.ALTE_PUNISHER.get());
+        this.alte.punishercooldown = 2400;
+        this.alte.setSyncInt(Alte.ALTE_PUNISHERCOUNTER, 65);
+        this.target = this.findPriorityTarget();
+        this.alte.setTarget(this.target);
+        this.alte.setAggressive(true);
+        this.alte.setInvulnerable(true);
+        this.alte.lookAt(this.target, 360, 360);
+        this.lookanglex = (float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
+        this.lookangley = (float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x);
     }
 
     protected LivingEntity findPriorityTarget() {
@@ -63,46 +88,17 @@ public class AltePunisherGoal extends Goal {
     }
 
     @Override
-    public boolean canContinueToUse() {
-        Item item = this.alte.getFriendWeapon().getItem();
-        boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
-        return this.alte.canDoThings() && this.alte.getSyncInt(Alte.ALTE_PUNISHERCOUNTER) > 0 && !flag;
-    }
-
-    @Override
-    public void start() {
-        this.alte.playVoice(AlteSoundInit.ALTE_PUNISHER_VOICE.get());
-        this.alte.getFriendNav().setShouldMove(false);
-        this.alte.playSound(AlteSoundInit.ALTE_PUNISHER.get());
-        this.alte.punishercooldown=2400;
-        this.alte.setSyncInt(Alte.ALTE_PUNISHERCOUNTER, 65);
-        this.target = this.findPriorityTarget();
-        this.alte.setTarget(this.target);
-        this.alte.setAggressive(true);
-        this.alte.setInvulnerable(true);
-        this.alte.lookAt(this.target,360,360);
-        this.lookanglex=(float) Math.atan2(this.alte.getLookAngle().y, Math.sqrt(this.alte.getLookAngle().z * this.alte.getLookAngle().z + this.alte.getLookAngle().x * this.alte.getLookAngle().x));
-        this.lookangley=(float) Math.atan2(this.alte.getLookAngle().z, this.alte.getLookAngle().x);
-    }
-
-    @Override
     public void stop() {
         this.alte.getFriendNav().setShouldMove(true);
         this.alte.setAggressive(false);
         this.alte.setInvulnerable(false);
     }
+
     @Override
-    public boolean requiresUpdateEveryTick(){
+    public boolean requiresUpdateEveryTick() {
         return true;
     }
-    float lookanglex;
-    float lookangley;
-    public void moveTowardsTarget(float speed){
-        float targetX = speed * (float) Math.cos(this.lookangley);
-        float targetZ = speed * (float) Math.sin(this.lookangley);
-        float targetY = speed * (float) Math.sin(this.lookanglex);
-        this.alte.setDeltaMovement(this.alte.getDeltaMovement().add(targetX,targetY,targetZ));
-    }
+
     @Override
     public void tick() {
         int n = this.alte.getSyncInt(Alte.ALTE_PUNISHERCOUNTER);
@@ -113,7 +109,7 @@ public class AltePunisherGoal extends Goal {
                 this.alte.spawnParticlesInSphereAtEntity(this.alte, 5, 2, 0, level, ParticleInit.ALTE_ENERGY_PARTICLE.get(), 0);
             } else if (n <= 30 && n >= 26) { //main charge
                 this.moveTowardsTarget(1);
-                this.hurtAllTargets((n-30F)/-8 + 1);
+                this.hurtAllTargets((n - 30F) / -8 + 1);
                 this.alte.spawnParticlesInSphereAtEntity(this.alte, 3, 0.5F, 0, level, ParticleInit.ALTE_ENERGY_PARTICLE.get(), 0);
             } else if (n <= 26 && n >= 20) { //recovery
                 this.moveTowardsTarget(0.2F);
@@ -123,6 +119,13 @@ public class AltePunisherGoal extends Goal {
                 }
             }
         }
+    }
+
+    public void moveTowardsTarget(float speed) {
+        float targetX = speed * (float) Math.cos(this.lookangley);
+        float targetZ = speed * (float) Math.sin(this.lookangley);
+        float targetY = speed * (float) Math.sin(this.lookanglex);
+        this.alte.setDeltaMovement(this.alte.getDeltaMovement().add(targetX, targetY, targetZ));
     }
 
     public void hurtAllTargets(float knockbackmod) {
@@ -157,8 +160,8 @@ public class AltePunisherGoal extends Goal {
         if (pEntity != null) {
             if (this.alte.distanceTo(pEntity) < 8) {
                 float f = (0.020F * this.alte.getSkillLevels()[3] + 1) * (float) this.alte.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5 * this.alte.getCombatMod() / 10) + this.alte.getRandom().nextInt(1, 7), 1, 6) + 3) / 6;
-                if(pEntity.equals(this.target)){
-                    f*=2;
+                if (pEntity.equals(this.target)) {
+                    f *= 2;
                 }
 
                 float f1 = knockbackmod * (float) this.alte.getAttributeValue(Attributes.ATTACK_KNOCKBACK) * (0.020F * this.alte.getSkillLevels()[3] + 1);
@@ -166,12 +169,12 @@ public class AltePunisherGoal extends Goal {
                     f += EnchantmentHelper.getDamageBonus(this.alte.getFriendWeapon(), ((LivingEntity) pEntity).getMobType());
                     f1 += (float) EnchantmentHelper.getKnockbackBonus(this.alte);
                 }
-                flag = pEntity.hurt(this.alte.damageSources().explosion(this.alte,this.alte), f);
+                flag = pEntity.hurt(this.alte.damageSources().explosion(this.alte, this.alte), f);
                 if (flag) {
-                    pEntity.playSound(UniversalSoundInit.CRITICAL_HIT.get(),0.1F,1);
+                    pEntity.playSound(UniversalSoundInit.CRITICAL_HIT.get(), 0.1F, 1);
                     this.alte.setLastHurtMob(pEntity);
                     if (pEntity instanceof LivingEntity entity) {
-                        entity.knockback((double) (f1 * 0.5F), (double) Mth.sin(this.alte.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(this.alte.getYRot() * ((float) Math.PI / 180F))));
+                        entity.knockback(f1 * 0.5F, Mth.sin(this.alte.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(this.alte.getYRot() * ((float) Math.PI / 180F)));
                         int mod = 1 + (int) (4 * (1 + (float) this.alte.getSkillLevels()[3]) / (100 + (float) this.alte.getSkillLevels()[3]));
                         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * mod, mod), this.alte);
                     }

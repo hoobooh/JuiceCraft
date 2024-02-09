@@ -23,24 +23,15 @@ import static com.usagin.juicecraft.Init.MenuInit.FRIEND_MENU;
 import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.HYPER_EQUIP;
 
 public class FriendMenu extends AbstractContainerMenu {
+    //Server menu constructor
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Container friendContainer;
     private final Friend friend;
-    public Friend getFriend() {
-        return this.friend;
-    }
-
-    public static Friend decodeBuffer(Level level, FriendlyByteBuf buffer) {
-        int i = buffer.readVarInt();
-        return level.getEntity(i) instanceof Friend friend ? friend : null;
-    }
 
     // Client menu constructor
     public FriendMenu(int containerId, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(containerId, playerInventory, decodeBuffer(playerInventory.player.level(), buffer));
     }
-
-    //Server menu constructor
-    private static final Logger LOGGER = LogUtils.getLogger();
 
     public FriendMenu(int pContainerId, Inventory pPlayerInventory, Friend pFriend) {
         super(FRIEND_MENU.get(), pContainerId);
@@ -55,19 +46,22 @@ public class FriendMenu extends AbstractContainerMenu {
                 return p_39677_.is(ItemInit.ACTIVATOR.get()) && pFriend.isLivingTame();
             }
 
-            public boolean isActive() {
-                return pFriend.isLivingTame();
-            }
             public void set(ItemStack pStack) {
                 this.container.setItem(0, pStack);
-                if(!pPlayerInventory.player.level().isClientSide()){
-                    pFriend.appendEventLog(Component.translatable("juicecraft.menu." +pFriend.getFriendName().toLowerCase()+".eventlog.activator").getString());
-                pFriend.playVoice(pFriend.getHyperEquip());
-                pFriend.playSound(HYPER_EQUIP.get(),0.3F,1);}
+                if (!pPlayerInventory.player.level().isClientSide()) {
+                    pFriend.appendEventLog(Component.translatable("juicecraft.menu." + pFriend.getFriendName().toLowerCase() + ".eventlog.activator").getString());
+                    pFriend.playVoice(pFriend.getHyperEquip());
+                    pFriend.playSound(HYPER_EQUIP.get(), 0.3F, 1);
+                }
                 this.setChanged();
             }
-            public boolean mayPickup(Player player){
+
+            public boolean mayPickup(Player player) {
                 return !this.hasItem();
+            }
+
+            public boolean isActive() {
+                return pFriend.isLivingTame();
             }
         });
         //Weapon slot
@@ -75,20 +69,24 @@ public class FriendMenu extends AbstractContainerMenu {
             public boolean mayPlace(ItemStack p_39690_) {
                 return true;
             }
-            public boolean isActive() {
-                return true;
-            }
+
             public void set(@NotNull ItemStack pStack) {
                 this.container.setItem(1, pStack);
-                if(this.hasItem()){
-                    if(!pPlayerInventory.player.level().isClientSide()){
-                    pFriend.playTimedVoice(pFriend.getEquip());
-                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
+                if (this.hasItem()) {
+                    if (!pPlayerInventory.player.level().isClientSide()) {
+                        pFriend.playTimedVoice(pFriend.getEquip());
+                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 0.3F, 1);
+                    }
                 }
                 this.setChanged();
             }
+
             public int getMaxStackSize() {
                 return 64;
+            }
+
+            public boolean isActive() {
+                return true;
             }
         });
         //Module slot
@@ -97,20 +95,23 @@ public class FriendMenu extends AbstractContainerMenu {
                 return pFriend.isModule(p_39690_);
             }
 
-            public boolean isActive() {
-                return pFriend.isModular();
-            }
             public void set(ItemStack pStack) {
                 this.container.setItem(2, pStack);
-                if(this.hasItem()){
-                    if(!pPlayerInventory.player.level().isClientSide()){
-                    pFriend.playVoice(pFriend.getModuleEquip());
-                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
+                if (this.hasItem()) {
+                    if (!pPlayerInventory.player.level().isClientSide()) {
+                        pFriend.playVoice(pFriend.getModuleEquip());
+                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 0.3F, 1);
+                    }
                 }
                 this.setChanged();
             }
+
             public int getMaxStackSize() {
                 return 1;
+            }
+
+            public boolean isActive() {
+                return pFriend.isModular();
             }
         });
         //Helmet slot
@@ -121,20 +122,24 @@ public class FriendMenu extends AbstractContainerMenu {
                 }
                 return false;
             }
-            public boolean isActive() {
-                return pFriend.isArmorable();
-            }
+
             public void set(ItemStack pStack) {
                 this.container.setItem(3, pStack);
-                if(this.hasItem()){
-                    if(!pPlayerInventory.player.level().isClientSide()){
-                    pFriend.playTimedVoice(pFriend.getEquip());
-                    pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
+                if (this.hasItem()) {
+                    if (!pPlayerInventory.player.level().isClientSide()) {
+                        pFriend.playTimedVoice(pFriend.getEquip());
+                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 0.3F, 1);
+                    }
                 }
                 this.setChanged();
             }
+
             public int getMaxStackSize() {
                 return 1;
+            }
+
+            public boolean isActive() {
+                return pFriend.isArmorable();
             }
         });
         //Chest slot
@@ -146,20 +151,23 @@ public class FriendMenu extends AbstractContainerMenu {
                 return false;
             }
 
-            public boolean isActive() {
-                return pFriend.isArmorable();
-            }
             public void set(ItemStack pStack) {
                 this.container.setItem(4, pStack);
-                if(this.hasItem()){
-                    if(!pPlayerInventory.player.level().isClientSide()){
+                if (this.hasItem()) {
+                    if (!pPlayerInventory.player.level().isClientSide()) {
                         pFriend.playTimedVoice(pFriend.getEquip());
-                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
+                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 0.3F, 1);
+                    }
                 }
                 this.setChanged();
             }
+
             public int getMaxStackSize() {
                 return 1;
+            }
+
+            public boolean isActive() {
+                return pFriend.isArmorable();
             }
         });
         //Leggings slot
@@ -171,20 +179,23 @@ public class FriendMenu extends AbstractContainerMenu {
                 return false;
             }
 
-            public boolean isActive() {
-                return pFriend.isArmorable();
-            }
             public void set(ItemStack pStack) {
                 this.container.setItem(5, pStack);
-                if(this.hasItem()){
-                    if(!pPlayerInventory.player.level().isClientSide()){
+                if (this.hasItem()) {
+                    if (!pPlayerInventory.player.level().isClientSide()) {
                         pFriend.playTimedVoice(pFriend.getEquip());
-                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
+                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 0.3F, 1);
+                    }
                 }
                 this.setChanged();
             }
+
             public int getMaxStackSize() {
                 return 1;
+            }
+
+            public boolean isActive() {
+                return pFriend.isArmorable();
             }
         });
         //Boots slot
@@ -196,20 +207,23 @@ public class FriendMenu extends AbstractContainerMenu {
                 return false;
             }
 
-            public boolean isActive() {
-                return pFriend.isArmorable();
-            }
             public void set(ItemStack pStack) {
                 this.container.setItem(6, pStack);
-                if(this.hasItem()){
-                    if(!pPlayerInventory.player.level().isClientSide()){
+                if (this.hasItem()) {
+                    if (!pPlayerInventory.player.level().isClientSide()) {
                         pFriend.playTimedVoice(pFriend.getEquip());
-                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER,0.3F,1);}
+                        pFriend.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 0.3F, 1);
+                    }
                 }
                 this.setChanged();
             }
+
             public int getMaxStackSize() {
                 return 1;
+            }
+
+            public boolean isActive() {
+                return pFriend.isArmorable();
             }
         });
 
@@ -231,9 +245,13 @@ public class FriendMenu extends AbstractContainerMenu {
         }
     }
 
-    @Override
-    public boolean stillValid(Player pPlayer) {
-        return !this.friend.hasInventoryChanged(this.friendContainer) && this.friendContainer.stillValid(pPlayer) && this.friend.isAlive() && this.friend.distanceTo(pPlayer) < 8.0F;
+    public static Friend decodeBuffer(Level level, FriendlyByteBuf buffer) {
+        int i = buffer.readVarInt();
+        return level.getEntity(i) instanceof Friend friend ? friend : null;
+    }
+
+    public Friend getFriend() {
+        return this.friend;
     }
 
     private boolean hasChest(AbstractHorse pHorse) {
@@ -256,19 +274,19 @@ public class FriendMenu extends AbstractContainerMenu {
                 if (!this.moveItemStackTo(itemstack1, 3, 4, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(4).mayPlace(itemstack1) && !this.getSlot(4).hasItem()&& this.getSlot(4).isActive()) {
+            } else if (this.getSlot(4).mayPlace(itemstack1) && !this.getSlot(4).hasItem() && this.getSlot(4).isActive()) {
                 if (!this.moveItemStackTo(itemstack1, 4, 5, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(5).mayPlace(itemstack1) && !this.getSlot(5).hasItem()&& this.getSlot(5).isActive()) {
+            } else if (this.getSlot(5).mayPlace(itemstack1) && !this.getSlot(5).hasItem() && this.getSlot(5).isActive()) {
                 if (!this.moveItemStackTo(itemstack1, 5, 6, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(6).mayPlace(itemstack1) && !this.getSlot(6).hasItem()&& this.getSlot(6).isActive()) {
+            } else if (this.getSlot(6).mayPlace(itemstack1) && !this.getSlot(6).hasItem() && this.getSlot(6).isActive()) {
                 if (!this.moveItemStackTo(itemstack1, 6, 7, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(2).mayPlace(itemstack1) && !this.getSlot(2).hasItem()&& this.getSlot(2).isActive()) {
+            } else if (this.getSlot(2).mayPlace(itemstack1) && !this.getSlot(2).hasItem() && this.getSlot(2).isActive()) {
                 if (!this.moveItemStackTo(itemstack1, 2, 3, false)) {
                     return ItemStack.EMPTY;
                 }
@@ -307,5 +325,10 @@ public class FriendMenu extends AbstractContainerMenu {
         this.friend.updateGear();
 
         this.friendContainer.stopOpen(pPlayer);
+    }
+
+    @Override
+    public boolean stillValid(Player pPlayer) {
+        return !this.friend.hasInventoryChanged(this.friendContainer) && this.friendContainer.stillValid(pPlayer) && this.friend.isAlive() && this.friend.distanceTo(pPlayer) < 8.0F;
     }
 }

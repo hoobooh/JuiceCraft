@@ -1,11 +1,9 @@
 package com.usagin.juicecraft.Init.sounds;
 
-import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
-import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 import static net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS;
@@ -78,7 +76,7 @@ public class SoraSoundInit {
     public static final RegistryObject<SoundEvent> SORA_MODULEEQUIP = registerFriendSoundEvent("sora_moduleequip");
     public static final RegistryObject<SoundEvent> SORA_ANGRY = registerFriendSoundEvent("sora_angry");
 
-    public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
+    public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name) {
         return SORA_SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, name)));
     }
 }

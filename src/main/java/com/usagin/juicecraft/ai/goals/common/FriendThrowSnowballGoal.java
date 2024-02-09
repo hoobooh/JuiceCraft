@@ -1,47 +1,48 @@
 package com.usagin.juicecraft.ai.goals.common;
 
 import com.usagin.juicecraft.friends.Friend;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-
-import static com.usagin.juicecraft.particles.SuguriverseParticleLarge.LOGGER;
 
 public class FriendThrowSnowballGoal extends Goal {
     protected final Friend friend;
     private final double speedModifier;
-    private int attackIntervalMin;
     private final float attackRadiusSqr;
+    private int attackIntervalMin;
     private int attackTime = -1;
     private int seeTime;
     private boolean strafingClockwise;
     private boolean strafingBackwards;
     private int strafingTime = -1;
-    public FriendThrowSnowballGoal(Friend f){
-        this.friend=f;
-        this.speedModifier=1;
-        this.attackRadiusSqr=225;
+
+    public FriendThrowSnowballGoal(Friend f) {
+        this.friend = f;
+        this.speedModifier = 1;
+        this.attackRadiusSqr = 225;
     }
 
     @Override
     public boolean canUse() {
-        return this.friend.canDoThings() && this.friend.getTarget()!=null && this.friend.isHoldingThrowable() && this.friend.getAttackCounter()<=0;
+        return this.friend.canDoThings() && this.friend.getTarget() != null && this.friend.isHoldingThrowable() && this.friend.getAttackCounter() <= 0;
     }
-    public boolean requiresUpdateEveryTick() {
-        return true;
-    }
+
     @Override
-    public void start(){
+    public void start() {
         this.friend.setAttackCounter(20);
         this.friend.setAttackType(60);
         this.friend.setAggressive(true);
     }
-    public void stop(){
+
+    public void stop() {
         this.friend.setAggressive(false);
         this.seeTime = 0;
         this.attackTime = -1;
     }
+
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
+
     public void tick() {
         LivingEntity livingentity = this.friend.getTarget();
         if (livingentity != null) {
@@ -58,7 +59,7 @@ public class FriendThrowSnowballGoal extends Goal {
                 --this.seeTime;
             }
 
-            if (!(d0 > (double)this.attackRadiusSqr)) {
+            if (!(d0 > (double) this.attackRadiusSqr)) {
                 this.friend.getNavigation().stop();
                 ++this.strafingTime;
             } else {
@@ -67,11 +68,11 @@ public class FriendThrowSnowballGoal extends Goal {
             }
 
             if (this.strafingTime >= 20) {
-                if ((double)this.friend.getRandom().nextFloat() < 0.3D) {
+                if ((double) this.friend.getRandom().nextFloat() < 0.3D) {
                     this.strafingClockwise = !this.strafingClockwise;
                 }
 
-                if ((double)this.friend.getRandom().nextFloat() < 0.3D) {
+                if ((double) this.friend.getRandom().nextFloat() < 0.3D) {
                     this.strafingBackwards = !this.strafingBackwards;
                 }
 
@@ -79,9 +80,9 @@ public class FriendThrowSnowballGoal extends Goal {
             }
 
             if (this.strafingTime > -1) {
-                if (d0 > (double)(this.attackRadiusSqr * 0.75F)) {
+                if (d0 > (double) (this.attackRadiusSqr * 0.75F)) {
                     this.strafingBackwards = false;
-                } else if (d0 < (double)(this.attackRadiusSqr * 0.25F)) {
+                } else if (d0 < (double) (this.attackRadiusSqr * 0.25F)) {
                     this.strafingBackwards = true;
                 }
 

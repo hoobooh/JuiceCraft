@@ -8,7 +8,8 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-import static com.usagin.juicecraft.Init.ItemInit.*;
+import static com.usagin.juicecraft.Init.ItemInit.ITEMS;
+import static com.usagin.juicecraft.Init.ItemInit.ORANGE;
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 
 public class JuiceCreativeTab extends CreativeModeTab {
@@ -18,7 +19,7 @@ public class JuiceCreativeTab extends CreativeModeTab {
             .title(Component.translatable("itemGroup.juicetab"))
             .icon(() -> ORANGE.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                for(RegistryObject<Item> reg: ITEMS.getEntries()){
+                for (RegistryObject<Item> reg : ITEMS.getEntries()) {
                     output.accept(reg.get());
                 }
             }).build());

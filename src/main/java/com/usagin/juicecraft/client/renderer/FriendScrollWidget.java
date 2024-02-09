@@ -1,18 +1,14 @@
 package com.usagin.juicecraft.client.renderer;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractScrollWidget;
 import net.minecraft.client.gui.components.FittingMultiLineTextWidget;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 
 public class FriendScrollWidget extends FittingMultiLineTextWidget {
     private final FriendMenuScreen screen;
-    private MultiLineTextWidget multilineWidget;
+    private final MultiLineTextWidget multilineWidget;
 
     public FriendScrollWidget(int pX, int pY, int pWidth, int pHeight, Component pMessage, Font pFont, FriendMenuScreen screen) {
         super(pX, pY, pWidth, pHeight, pMessage, pFont);
@@ -32,11 +28,7 @@ public class FriendScrollWidget extends FittingMultiLineTextWidget {
     }
 
     protected int getInnerHeight() {
-        return (int) (this.multilineWidget.getHeight()*0.7F);
-    }
-
-    protected void renderDecorations(GuiGraphics pGuiGraphics) {
-        //do nothing
+        return (int) (this.multilineWidget.getHeight() * 0.7F);
     }
 
     public void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
@@ -57,6 +49,10 @@ public class FriendScrollWidget extends FittingMultiLineTextWidget {
         }
 
         //super.renderWidget(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+    }
+
+    protected void renderDecorations(GuiGraphics pGuiGraphics) {
+        //do nothing
     }
 
     protected void renderContents(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {

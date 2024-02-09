@@ -1,28 +1,24 @@
 package com.usagin.juicecraft.ai.goals.common;
 
-import java.util.EnumSet;
-
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.CrossbowAttackMob;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
-import static com.usagin.juicecraft.particles.SuguriverseParticleLarge.LOGGER;
+import java.util.EnumSet;
 
 public class ShellCrossbowGoal<T extends Friend & RangedAttackMob & CrossbowAttackMob> extends Goal {
     public static final UniformInt PATHFINDING_DELAY_RANGE = TimeUtil.rangeOfSeconds(1, 2);
     private final T mob;
-    private CrossbowState crossbowState = CrossbowState.UNCHARGED;
     private final double speedModifier;
     private final float attackRadiusSqr;
+    private CrossbowState crossbowState = CrossbowState.UNCHARGED;
     private int seeTime;
     private int attackDelay;
     private int updatePathDelay;
@@ -34,7 +30,12 @@ public class ShellCrossbowGoal<T extends Friend & RangedAttackMob & CrossbowAtta
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
-    /**
+    enum CrossbowState {
+        UNCHARGED,
+        CHARGING,
+        CHARGED,
+        READY_TO_ATTACK
+    }    /**
      * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
      * method as well.
      */
@@ -60,12 +61,13 @@ public class ShellCrossbowGoal<T extends Friend & RangedAttackMob & CrossbowAtta
     /**
      * Reset the task's internal state. Called when this task is interrupted by another one
      */
-    public void start(){
+    public void start() {
         this.mob.setAggressive(true);
     }
+
     public void stop() {
         this.mob.setAggressive(false);
-        this.mob.setTarget((LivingEntity)null);
+        this.mob.setTarget(null);
         this.seeTime = 0;
         if (this.mob.isUsingItem()) {
             this.mob.stopUsingItem();
@@ -98,7 +100,7 @@ public class ShellCrossbowGoal<T extends Friend & RangedAttackMob & CrossbowAtta
             }
 
             double d0 = this.mob.distanceToSqr(livingentity);
-            boolean flag2 = (d0 > (double)this.attackRadiusSqr || this.seeTime < 5) && this.attackDelay == 0;
+            boolean flag2 = (d0 > (double) this.attackRadiusSqr || this.seeTime < 5) && this.attackDelay == 0;
             if (flag2) {
                 --this.updatePathDelay;
                 if (this.updatePathDelay <= 0) {
@@ -149,11 +151,6 @@ public class ShellCrossbowGoal<T extends Friend & RangedAttackMob & CrossbowAtta
         return this.crossbowState == CrossbowState.UNCHARGED;
     }
 
-    static enum CrossbowState {
-        UNCHARGED,
-        CHARGING,
-        CHARGED,
-        READY_TO_ATTACK;
-    }
+
 }
 

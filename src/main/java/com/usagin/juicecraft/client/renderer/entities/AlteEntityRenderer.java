@@ -28,15 +28,23 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
     private static final ResourceLocation GLOW_NARROW = new ResourceLocation(MODID, "textures/entities/alte/glownarrow.png");
     private static final ResourceLocation GLOW_WINK = new ResourceLocation(MODID, "textures/entities/alte/glowwink.png");
     private static final ResourceLocation ALTE_ENERGYLAYER = new ResourceLocation(MODID, "textures/entities/alte/lightlayerfinal.png");
-
-
+    private static final ResourceLocation SPARK_BASE = new ResourceLocation(MODID, "textures/entities/alte/spark_0.png");
+    private static final ResourceLocation SPARK_BG0 = new ResourceLocation(MODID, "textures/entities/alte/spark_1.png");
+    private static final ResourceLocation SPARK_BG1 = new ResourceLocation(MODID, "textures/entities/alte/spark_2.png");
+    private static final ResourceLocation SPARK_BG2 = new ResourceLocation(MODID, "textures/entities/alte/spark_3.png");
+    private static final ResourceLocation SPARK_BG3 = new ResourceLocation(MODID, "textures/entities/alte/spark_4.png");
+    private static final RenderType SPARK_RENDER_TYPE = RenderType.entityTranslucentEmissive(SPARK_BASE);
+    private static final RenderType SPARK_BG0_TYPE = RenderType.entityTranslucentEmissive(SPARK_BG0);
+    private static final RenderType SPARK_BG1_TYPE = RenderType.entityTranslucentEmissive(SPARK_BG1);
+    private static final RenderType SPARK_BG2_TYPE = RenderType.entityTranslucentEmissive(SPARK_BG2);
+    private static final RenderType SPARK_BG3_TYPE = RenderType.entityTranslucentEmissive(SPARK_BG3);
+    private static final Logger LOGGER = LogUtils.getLogger();
     FriendEyeLayer<Alte, AlteEntityModel> energylayer;
     FriendEyeLayer<Alte, AlteEntityModel> openlayer;
     FriendEyeLayer<Alte, AlteEntityModel> narrowlayer;
     FriendEyeLayer<Alte, AlteEntityModel> winklayer;
     FriendItemInHandLayer<Alte, AlteEntityModel> pLayer;
     FriendItemOnBackLayer<Alte, AlteEntityModel> pBackLayer;
-
     public AlteEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new AlteEntityModel(pContext.bakeLayer(AlteEntityModel.LAYER_LOCATION)), 0.5f);
         energylayer = new FriendEyeLayer<>(this, ALTE_ENERGYLAYER);
@@ -61,7 +69,7 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
             this.narrowlayer.visible = false;
             this.winklayer.visible = false;
             return ALTE_CLOSED;
-        } else if (pEntity.patCounter != 0 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive()) || (pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER) >= 5 && pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER)<=15)) {
+        } else if (pEntity.patCounter != 0 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive()) || (pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER) >= 5 && pEntity.getSyncInt(Alte.ALTE_SPARKCOUNTER) <= 15)) {
             this.openlayer.visible = false;
             this.narrowlayer.visible = false;
             this.winklayer.visible = true;
@@ -93,7 +101,7 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
             float originradius = 1;
             float targetradius = 2;
             float effectmagnitude = (n - 10) * (n - 10) * -0.1F + 2.5F;
-            int effectcount = (int) ((15 - n) / 3) + 1;
+            int effectcount = ((15 - n) / 3) + 1;
             float eyeheight = alte.getEyeHeight() - 0.5F;
 
             float originX = posX + originradius * (float) Math.cos(lookAngleY);
@@ -126,29 +134,14 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
                 pPoseStack.mulPose(Axis.XP.rotationDegrees(f5 * (135F / (float) Math.PI)));
                 float sparkradius = 0.7F * effectmagnitude * scale;
                 drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(SPARK_RENDER_TYPE), sparkradius, dist);
-                drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(SPARK_BG0_TYPE), sparkradius, dist -0.1F,38);
-                drawFrontFacingPlane(pPoseStack,pBuffer.getBuffer(SPARK_BG1_TYPE), sparkradius, dist -0.1F,38);
-                drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(SPARK_BG2_TYPE), sparkradius, dist -0.1F,38);
-                drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(SPARK_BG3_TYPE), sparkradius, dist -0.1F,38);
+                drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(SPARK_BG0_TYPE), sparkradius, dist - 0.1F, 38);
+                drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(SPARK_BG1_TYPE), sparkradius, dist - 0.1F, 38);
+                drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(SPARK_BG2_TYPE), sparkradius, dist - 0.1F, 38);
+                drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(SPARK_BG3_TYPE), sparkradius, dist - 0.1F, 38);
                 scale *= 0.8;
                 pPoseStack.popPose();
             }
 
         }
     }
-
-
-    private static final ResourceLocation SPARK_BASE = new ResourceLocation(MODID, "textures/entities/alte/spark_0.png");
-    private static final ResourceLocation SPARK_BG0 = new ResourceLocation(MODID, "textures/entities/alte/spark_1.png");
-    private static final ResourceLocation SPARK_BG1 = new ResourceLocation(MODID, "textures/entities/alte/spark_2.png");
-    private static final ResourceLocation SPARK_BG2 = new ResourceLocation(MODID, "textures/entities/alte/spark_3.png");
-    private static final ResourceLocation SPARK_BG3 = new ResourceLocation(MODID, "textures/entities/alte/spark_4.png");
-    private static final RenderType SPARK_RENDER_TYPE = RenderType.entityTranslucentEmissive(SPARK_BASE);
-    private static final RenderType SPARK_BG0_TYPE = RenderType.entityTranslucentEmissive(SPARK_BG0);
-    private static final RenderType SPARK_BG1_TYPE = RenderType.entityTranslucentEmissive(SPARK_BG1);
-    private static final RenderType SPARK_BG2_TYPE = RenderType.entityTranslucentEmissive(SPARK_BG2);
-    private static final RenderType SPARK_BG3_TYPE = RenderType.entityTranslucentEmissive(SPARK_BG3);
-
-
-    private static final Logger LOGGER = LogUtils.getLogger();
 }

@@ -50,6 +50,4 @@ public class FriendMenuTextureLocations {
     public static final ResourceLocation PICKUP_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/itempickupdown");
 
 
-
-
 }

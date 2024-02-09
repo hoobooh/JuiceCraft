@@ -96,7 +96,7 @@ public class AlteSoundInit {
     public static final RegistryObject<SoundEvent> ALTE_HYPEREND = registerFriendSoundEvent("alte_hyperend");
     public static final RegistryObject<SoundEvent> ALTE_SHOCKWAVE = registerFriendSoundEvent("alte_shockwave");
 
-    public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name){
+    public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name) {
 
         return ALTE_SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, name)));
     }

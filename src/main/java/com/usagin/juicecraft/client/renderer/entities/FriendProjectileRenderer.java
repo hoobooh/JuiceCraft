@@ -5,18 +5,11 @@ import com.mojang.math.Axis;
 import com.usagin.juicecraft.projectiles.FriendProjectile;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.DragonFireballRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.ItemSupplier;
-import net.minecraft.world.entity.projectile.Snowball;
-import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.NotNull;
 
 public class FriendProjectileRenderer<T extends FriendProjectile> extends EntityRenderer<T> {
@@ -25,15 +18,15 @@ public class FriendProjectileRenderer<T extends FriendProjectile> extends Entity
     private final float scale;
     private final boolean fullBright;
 
+    public FriendProjectileRenderer(EntityRendererProvider.Context pContext) {
+        this(pContext, 1.0F, false);
+    }
+
     public FriendProjectileRenderer(EntityRendererProvider.Context pContext, float pScale, boolean pFullBright) {
         super(pContext);
         this.itemRenderer = pContext.getItemRenderer();
         this.scale = pScale;
         this.fullBright = pFullBright;
-    }
-
-    public FriendProjectileRenderer(EntityRendererProvider.Context pContext) {
-        this(pContext, 1.0F, false);
     }
 
     protected int getBlockLightLevel(T pEntity, BlockPos pPos) {
@@ -48,7 +41,7 @@ public class FriendProjectileRenderer<T extends FriendProjectile> extends Entity
             pPoseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
             pPoseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
             pPoseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-            FriendRenderer.drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(this.getRenderType(pEntity)), pEntity.getBbHeight(),0);
+            FriendRenderer.drawFrontFacingPlane(pPoseStack, pBuffer.getBuffer(this.getRenderType(pEntity)), pEntity.getBbHeight(), 0);
             pPoseStack.popPose();
         }
     }
@@ -60,7 +53,8 @@ public class FriendProjectileRenderer<T extends FriendProjectile> extends Entity
     public @NotNull ResourceLocation getTextureLocation(T pEntity) {
         return pEntity.getTexture();
     }
-    public RenderType getRenderType(T proj){
+
+    public RenderType getRenderType(T proj) {
         return proj.getRenderType();
     }
 }
