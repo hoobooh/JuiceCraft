@@ -156,6 +156,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
         this.toggleShockRod(alt.isUsingShockRod());
     }
 
+
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
@@ -509,9 +510,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
                 .texOffs(430, 0).addBox(-15.0F, 4.0F, -2.0F, 5.0F, 4.0F, 2.0F, new CubeDeformation(0.0F))
                 .texOffs(594, 521).addBox(-14.0F, 0.0F, -2.0F, 8.0F, 4.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 14.0F, 0.0F, 0.1309F, 0.0F, 0.0F));
 
-        PartDefinition leftarm = chest.addOrReplaceChild("leftarm", CubeListBuilder.create().texOffs(240, 625).addBox(4.0F, 0.0F, -6.0F, 3.0F, 28.0F, 12.0F, new CubeDeformation(0.0F))
-                .texOffs(382, 353).addBox(7.0F, 4.0F, -2.0F, 3.0F, 24.0F, 4.0F, new CubeDeformation(0.0F))
-                .texOffs(320, 617).addBox(0.0F, 0.0F, -6.0F, 4.0F, 28.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(15.0F, -18.0F, 9.0F, 0.0F, 0.0F, -0.1309F));
+        PartDefinition leftarm = chest.addOrReplaceChild("leftarm", CubeListBuilder.create().texOffs(859, 147).addBox(0.0F, 0.0F, -6.0F, 11.0F, 28.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(15.0F, -18.0F, 9.0F, 0.0F, 0.0F, -0.1309F));
 
         PartDefinition lowerarm2 = leftarm.addOrReplaceChild("lowerarm2", CubeListBuilder.create().texOffs(380, 458).addBox(-2.0F, 0.0F, -6.0F, 3.0F, 28.0F, 12.0F, new CubeDeformation(0.0F))
                 .texOffs(124, 213).addBox(1.0F, 0.0F, -2.0F, 3.0F, 28.0F, 4.0F, new CubeDeformation(0.0F))
@@ -550,9 +549,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 
         PartDefinition grabber2 = lowerarm2.addOrReplaceChild("grabber2", CubeListBuilder.create(), PartPose.offset(0.0F, 26.0F, 0.0F));
 
-        PartDefinition rightarm = chest.addOrReplaceChild("rightarm", CubeListBuilder.create().texOffs(626, 48).addBox(-7.0F, 0.0F, -6.0F, 3.0F, 28.0F, 12.0F, new CubeDeformation(0.0F))
-                .texOffs(412, 295).addBox(-10.0F, 4.0F, -2.0F, 3.0F, 24.0F, 4.0F, new CubeDeformation(0.0F))
-                .texOffs(506, 617).addBox(-4.0F, 0.0F, -6.0F, 4.0F, 28.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-15.0F, -18.0F, 9.0F, 0.0F, 0.0F, 0.1309F));
+        PartDefinition rightarm = chest.addOrReplaceChild("rightarm", CubeListBuilder.create().texOffs(861, 202).addBox(-11.0F, 0.0F, -6.0F, 11.0F, 28.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-15.0F, -18.0F, 9.0F, 0.0F, 0.0F, 0.1309F));
 
         PartDefinition lowerarm = rightarm.addOrReplaceChild("lowerarm", CubeListBuilder.create().texOffs(538, 452).addBox(-1.0F, 0.0F, -6.0F, 3.0F, 28.0F, 12.0F, new CubeDeformation(0.0F))
                 .texOffs(92, 330).addBox(-4.0F, 0.0F, -2.0F, 3.0F, 28.0F, 4.0F, new CubeDeformation(0.0F))
@@ -1008,4 +1005,5 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 
         return LayerDefinition.create(meshdefinition, 1024, 1024);
     }
+
 }
