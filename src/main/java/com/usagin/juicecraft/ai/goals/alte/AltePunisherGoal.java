@@ -108,10 +108,14 @@ public class AltePunisherGoal extends Goal {
             if (n == 42) { //unsheathe effects
                 this.alte.spawnParticlesInSphereAtEntity(this.alte, 5, 2, 0, level, ParticleInit.ALTE_ENERGY_PARTICLE.get(), 0);
             } else if (n <= 30 && n >= 26) { //main charge
-                this.moveTowardsTarget(1);
+                this.alte.setDiscardFriction(true);
+                if(n > 29){
+                    this.moveTowardsTarget(2);
+                }
                 this.hurtAllTargets((n - 30F) / -8 + 1);
                 this.alte.spawnParticlesInSphereAtEntity(this.alte, 3, 0.5F, 0, level, ParticleInit.ALTE_ENERGY_PARTICLE.get(), 0);
             } else if (n <= 26 && n >= 20) { //recovery
+                this.alte.setDiscardFriction(false);
                 this.moveTowardsTarget(0.2F);
                 if (n % 2 == 0) {
                     this.hurtAllTargets(0.5F);

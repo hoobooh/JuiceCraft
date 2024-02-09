@@ -91,7 +91,7 @@ public class Alte extends OldWarFriend {
 
     public boolean isUsingShockRod() {
         int n = this.getSyncInt(ALTE_RODCOOLDOWN);
-        return ((n < this.getRodDuration() && n > 1) || (this.getSyncInt(ALTE_RODSHEATHCOUNTER) > 0) || (this.getSyncInt(ALTE_PUNISHERCOUNTER) > 0 && this.getSyncInt(ALTE_PUNISHERCOUNTER) < 10)) && !this.isUsingHyper();
+        return ((n < this.getRodDuration() && n > 1) || (this.getSyncInt(ALTE_RODSHEATHCOUNTER) > 0) || (this.getSyncInt(ALTE_PUNISHERCOUNTER) > 0 && this.getSyncInt(ALTE_PUNISHERCOUNTER) < 60)) && !this.isUsingHyper();
     }
 
     public int getRodDuration() {
