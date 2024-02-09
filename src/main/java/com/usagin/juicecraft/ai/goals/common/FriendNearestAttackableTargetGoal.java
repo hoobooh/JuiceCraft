@@ -63,6 +63,9 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
             if (this.target == null && friend.canDoThings() && friend.getPose() != Pose.SLEEPING) {
                 AABB tempbox = this.getTargetSearchArea(this.getFollowDistance());
                 List<Entity> entityList = this.friend.level().getEntities(this.friend, tempbox);
+                if(this.friend.getViewFlower()==0){
+                    this.friend.getFriendNav().setShouldMove(true);
+                }
                 if (this.friend.getFriendItemPickup() != 2 && this.friend.isTame()) {
                     for (Entity e : entityList) {
                         if (e instanceof ItemEntity item) {
