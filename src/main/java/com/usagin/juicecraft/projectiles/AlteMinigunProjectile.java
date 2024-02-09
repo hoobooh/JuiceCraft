@@ -13,6 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Blaze;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
@@ -43,7 +44,7 @@ public class AlteMinigunProjectile extends FriendEnergyProjectile {
         if(alte!=null){
             i = (int)(10+alte.getSkillLevels()[5]);
         }
-        entity.hurt(this.damageSources().thrown(this, this.getOwner()), (float)i);
+        entity.hurt(this.damageSources().explosion(this, this.getOwner()), (float)i);
     }
     @Override
     public ResourceLocation getTexture() {

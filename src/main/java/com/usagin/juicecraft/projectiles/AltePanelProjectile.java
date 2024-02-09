@@ -62,7 +62,7 @@ public class AltePanelProjectile extends FriendEnergyProjectile{
         if(alte!=null){
             i = (int)(15+2*alte.getSkillLevels()[5]);
         }
-        entity.hurt(this.damageSources().thrown(this, this.getOwner()), (float)i);
+        entity.hurt(this.damageSources().explosion(this, this.getOwner()), (float)i);
     }
 
     @Override
