@@ -60,10 +60,10 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
             this.target = this.mob.level().getNearestEntity(this.mob.level().getEntitiesOfClass(this.targetType, this.getTargetSearchArea(this.getFollowDistance()), (p_148152_) -> {
                 return true;
             }), this.targetConditions, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
-            if (this.target == null && friend.canDoThings() && friend.getPose() != Pose.SLEEPING) {
+            if (this.target == null && friend.canDoThings() && friend.getPose() != Pose.SLEEPING && !this.friend.isAttackLockedOut()) {
                 AABB tempbox = this.getTargetSearchArea(this.getFollowDistance());
                 List<Entity> entityList = this.friend.level().getEntities(this.friend, tempbox);
-                if(this.friend.getViewFlower()==0){
+                if(this.friend.getViewFlower()==1){
                     this.friend.getFriendNav().setShouldMove(true);
                 }
                 if (this.friend.getFriendItemPickup() != 2 && this.friend.isTame()) {
