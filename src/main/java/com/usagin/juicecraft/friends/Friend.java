@@ -1552,7 +1552,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             if ((this.getPose() == STANDING && !idle() && !snowballIdle() && idleCounter > 0) || this.isAttackLockedOut()) {
                 this.idleCounter = 0;
             }
-            if ((this.getAttackCounter() > 0 && this.getAttackType() != 60) || this.shakeAnimO > 0) {
+            if ((this.getAttackCounter() > 0 && this.getAttackType() != 60) || this.shakeAnimO > 0 || this.getViewFlower() > 0) {
                 this.idleCounter = 0;
             }
             this.snowballThrowAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() > 0 && this.getAttackType() == 60, this.tickCount);
