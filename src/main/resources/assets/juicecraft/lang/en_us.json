@@ -13,7 +13,19 @@
   "item.juicecraft.rawseagull": "Raw Seagull",
   "item.juicecraft.cookedseagull": "Cooked Seagull",
 
-  "item.juicecraft.alte_spawn_egg": "Spawn Alte",
+  "item.juicecraft.white_friend_bed": " Friend Bed",
+
+  "item.juicecraft.yellow_friend_bed": "Yellow Friend Bed",
+  "item.juicecraft.orange_friend_bed": "Orange Friend Bed",
+  "item.juicecraft.black_friend_bed": "Black Friend Bed",
+  "item.juicecraft.red_friend_bed": "Red Friend Bed",
+  "item.juicecraft.blue_friend_bed": "Blue Friend Bed",
+  "item.juicecraft.gray_friend_bed": "Gray Friend Bed",
+  "item.juicecraft.pink_friend_bed": "Pink Friend Bed",
+  "item.juicecraft.green_friend_bed": "Green Friend Bed",
+  "item.juicecraft.purple_friend_bed": "Purple Friend Bed",
+
+
 
   "juicecraft.skills": "Skills",
   "juicecraft.stats": "Stats",

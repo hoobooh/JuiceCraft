@@ -1,5 +1,6 @@
 package com.usagin.juicecraft;
 
+import com.usagin.juicecraft.Init.BlockEntityInit;
 import com.usagin.juicecraft.Init.EntityInit;
 import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.Init.ProjectileInit;
@@ -13,6 +14,9 @@ import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.network.*;
 import com.usagin.juicecraft.particles.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.blockentity.BedRenderer;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -34,6 +38,11 @@ public class CommonEvents {
         event.registerEntityRenderer(EntityInit.ALTE.get(), AlteEntityRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_MINIGUN_PROJECTILE.get(), FriendProjectileRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_PANEL_PROJECTILE.get(), FriendProjectileRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void blockRenderers(EntityRenderersEvent.RegisterRenderers event){
+        event.registerBlockEntityRenderer(BlockEntityInit.FRIEND_BED.get(), BedRenderer::new);
     }
 
     @SubscribeEvent

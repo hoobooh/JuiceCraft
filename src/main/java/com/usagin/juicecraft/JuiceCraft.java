@@ -1,6 +1,7 @@
 package com.usagin.juicecraft;
 
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.Init.BlockEntityInit;
 import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
 import com.usagin.juicecraft.Init.sounds.SoraSoundInit;
 import net.minecraft.client.Minecraft;
@@ -35,6 +36,7 @@ import static com.usagin.juicecraft.Init.MenuInit.MENUS;
 import static com.usagin.juicecraft.Init.ParticleInit.PARTICLES;
 import static com.usagin.juicecraft.Init.ProjectileInit.PROJECTILES;
 import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.SOUNDS;
+import static com.usagin.juicecraft.Init.BlockInit.*;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(JuiceCraft.MODID)
@@ -42,13 +44,9 @@ public class JuiceCraft {
     // Define mod id in SoraEntityModel common place for everything to reference
     public static final String MODID = "juicecraft";
     // Create SoraEntityModel Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    // Creates SoraEntityModel new Block with the id "examplemod:example_block", combining the namespace and path
-    public static final RegistryObject<Block> EXAMPLE_BLOCK = BLOCKS.register("example_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
     // Create SoraEntityModel Deferred Register to hold Items which will all be registered under the "examplemod" namespace
     // Create SoraEntityModel Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
     // Creates SoraEntityModel new BlockItem with the id "examplemod:example_block", combining the namespace and path
-    public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block", () -> new BlockItem(EXAMPLE_BLOCK.get(), new Item.Properties()));
     // Directly reference SoraEntityModel slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -67,6 +65,7 @@ public class JuiceCraft {
         SOUNDS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
+        BlockEntityInit.BLOCK_ENTITIES.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         MENUS.register(modEventBus);
         ENTITIES.register(modEventBus);
@@ -100,8 +99,7 @@ public class JuiceCraft {
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
-            event.accept(EXAMPLE_BLOCK_ITEM);
+        //if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

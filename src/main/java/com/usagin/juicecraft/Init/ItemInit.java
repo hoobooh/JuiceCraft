@@ -5,12 +5,17 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.BedItem;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import static com.usagin.juicecraft.Init.BlockInit.*;
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 
 public class ItemInit {
@@ -33,4 +38,16 @@ public class ItemInit {
     //SPAWN EGGS
     public static final RegistryObject<Item> ALTE_SPAWN_EGG = ITEMS.register("alte_spawn_egg", () -> new ForgeSpawnEggItem(EntityInit.ALTE, ChatFormatting.LIGHT_PURPLE.getColor(), ChatFormatting.DARK_PURPLE.getColor(), new Item.Properties()));
 
+    //BLOCK ITEMS
+
+    public static final RegistryObject<Item> YELLOW_FRIEND_BED = ITEMS.register("yellow_friend_bed", () -> new BedItem(YELLOW_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+    public static final RegistryObject<Item> WHITE_FRIEND_BED = ITEMS.register("white_friend_bed", () -> new BedItem(WHITE_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+    public static final RegistryObject<Item> ORANGE_FRIEND_BED = ITEMS.register("orange_friend_bed", () -> new BedItem(ORANGE_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+    public static final RegistryObject<Item> BLACK_FRIEND_BED = ITEMS.register("black_friend_bed", () -> new BedItem(BLACK_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+    public static final RegistryObject<Item> RED_FRIEND_BED = ITEMS.register("red_friend_bed", () -> new BedItem(RED_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+    public static final RegistryObject<Item> BLUE_FRIEND_BED = ITEMS.register("blue_friend_bed", () -> new BedItem(BLUE_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+    public static final RegistryObject<Item> GRAY_FRIEND_BED = ITEMS.register("gray_friend_bed", () -> new BedItem(GRAY_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+    public static final RegistryObject<Item> PINK_FRIEND_BED = ITEMS.register("pink_friend_bed", () -> new BedItem(PINK_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+    public static final RegistryObject<Item> GREEN_FRIEND_BED = ITEMS.register("green_friend_bed", () -> new BedItem(GREEN_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+    public static final RegistryObject<Item> PURPLE_FRIEND_BED = ITEMS.register("purple_friend_bed", () -> new BedItem(PURPLE_FRIEND_BED_BLOCK.get(),new Item.Properties()));
 }
