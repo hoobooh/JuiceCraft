@@ -20,6 +20,8 @@ import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import static com.usagin.juicecraft.particles.AlteLightningParticle.LOGGER;
+
 @Mod.EventBusSubscriber
 public class CommonLiveEvents {
     @SubscribeEvent
@@ -156,6 +158,7 @@ public class CommonLiveEvents {
     @SubscribeEvent
     public static void onFriendSpawn(MobSpawnEvent event){
         if(event.getEntity() instanceof Friend friend){
+            LOGGER.info("HOW");
             friend.setHome(friend.getBlockX(),friend.getBlockY(),friend.getBlockZ());
         }
     }

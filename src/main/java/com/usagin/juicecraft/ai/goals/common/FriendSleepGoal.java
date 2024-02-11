@@ -17,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 
 import static com.usagin.juicecraft.Init.ParticleInit.SLEEPY;
+import static com.usagin.juicecraft.particles.AlteLightningParticle.LOGGER;
 import static net.minecraft.world.level.block.BedBlock.PART;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.OCCUPIED;
 

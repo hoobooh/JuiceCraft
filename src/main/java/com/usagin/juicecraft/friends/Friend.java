@@ -1178,7 +1178,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.setHome(pos.getX(),pos.getY(),pos.getZ());
     }
     public BlockPos getHome(){
-        return new BlockPos(this.getBlockX(),this.getBlockY(),this.getBlockZ());
+        return new BlockPos(this.homeX,this.homeY,this.homeZ);
     }
 
     @Override
@@ -1326,6 +1326,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         super.readAdditionalSaveData(pCompound);
         this.initializeNew();
         int[] pos = pCompound.getIntArray("juicecraft.homepos");
+        if(pos.length>1);
         this.homeX=pos[0];
         this.homeY=pos[1];
         this.homeZ=pos[2];

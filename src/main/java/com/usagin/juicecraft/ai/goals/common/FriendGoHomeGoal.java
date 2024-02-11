@@ -5,6 +5,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.pathfinder.Path;
 
+import static com.usagin.juicecraft.friends.Friend.LOGGER;
+
 public class FriendGoHomeGoal extends Goal
 {
     public final Friend friend;
