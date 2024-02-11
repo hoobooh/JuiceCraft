@@ -39,7 +39,7 @@ public class ItemInit {
     public static final RegistryObject<Item> ALTE_SPAWN_EGG = ITEMS.register("alte_spawn_egg", () -> new ForgeSpawnEggItem(EntityInit.ALTE, ChatFormatting.LIGHT_PURPLE.getColor(), ChatFormatting.DARK_PURPLE.getColor(), new Item.Properties()));
 
     //BLOCK ITEMS
-
+    public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("test_block", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
     public static final RegistryObject<Item> YELLOW_FRIEND_BED = ITEMS.register("yellow_friend_bed", () -> new BedItem(YELLOW_FRIEND_BED_BLOCK.get(),new Item.Properties()));
     public static final RegistryObject<Item> WHITE_FRIEND_BED = ITEMS.register("white_friend_bed", () -> new BedItem(WHITE_FRIEND_BED_BLOCK.get(),new Item.Properties()));
     public static final RegistryObject<Item> ORANGE_FRIEND_BED = ITEMS.register("orange_friend_bed", () -> new BedItem(ORANGE_FRIEND_BED_BLOCK.get(),new Item.Properties()));

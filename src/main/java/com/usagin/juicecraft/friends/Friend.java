@@ -1552,6 +1552,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.idleCounter++;
             }
             //LOGGER.info(this.isAttackLockout() +"");
+            if(this.isHoldingThrowable() && !(this.snowballIdle() && !this.walkAnimation.isMoving() && !this.isDescending() && !this.isAggressive() && this.onGround() && this.canDoThings() && this.shakeAnimO == 0)){
+                this.idleCounter=0;
+            }
             if ((this.getPose() == STANDING && !idle() && !snowballIdle() && idleCounter > 0) || this.isAttackLockedOut()) {
                 this.idleCounter = 0;
             }

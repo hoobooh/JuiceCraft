@@ -6,6 +6,7 @@ import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.Init.ProjectileInit;
 import com.usagin.juicecraft.client.models.alte.AlteEntityModel;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
+import com.usagin.juicecraft.client.renderer.blockrenderers.FriendBedRenderer;
 import com.usagin.juicecraft.client.renderer.entities.AlteEntityRenderer;
 import com.usagin.juicecraft.client.renderer.entities.FriendProjectileRenderer;
 import com.usagin.juicecraft.client.renderer.entities.SoraEntityRenderer;
@@ -42,7 +43,7 @@ public class CommonEvents {
 
     @SubscribeEvent
     public static void blockRenderers(EntityRenderersEvent.RegisterRenderers event){
-        event.registerBlockEntityRenderer(BlockEntityInit.FRIEND_BED.get(), BedRenderer::new);
+        event.registerBlockEntityRenderer(BlockEntityInit.FRIEND_BED.get(), FriendBedRenderer::new);
     }
 
     @SubscribeEvent
