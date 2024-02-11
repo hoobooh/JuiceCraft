@@ -1,6 +1,8 @@
 package com.usagin.juicecraft.Init;
 
 import com.usagin.juicecraft.blocks.FriendBedBlock;
+import com.usagin.juicecraft.blocks.plushies.AltePlushieBlock;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -17,6 +19,8 @@ import static com.usagin.juicecraft.JuiceCraft.MODID;
 public class BlockInit {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     // Creates SoraEntityModel new Block with the id "examplemod:example_block", combining the namespace and path
+    public static final RegistryObject<Block> ALTE_PLUSHIE = BLOCKS.register("alte_plushie", () -> new AltePlushieBlock(BlockBehaviour.Properties.of()));
+
     public static final RegistryObject<Block> WHITE_FRIEND_BED_BLOCK = BLOCKS.register("white_friend_bed", () -> bed(DyeColor.WHITE));
     public static final RegistryObject<Block> ORANGE_FRIEND_BED_BLOCK = BLOCKS.register("orange_friend_bed", () -> bed(DyeColor.ORANGE));
     public static final RegistryObject<Block> YELLOW_FRIEND_BED_BLOCK = BLOCKS.register("yellow_friend_bed", () -> bed(DyeColor.YELLOW));
