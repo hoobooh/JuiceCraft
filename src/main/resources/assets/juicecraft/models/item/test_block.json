@@ -1,0 +1,6 @@
+{
+  "parent": "juicecraft:block/test_block",
+  "textures": {
+    "all": "juicecraft:block/test_block"
+  }
+}

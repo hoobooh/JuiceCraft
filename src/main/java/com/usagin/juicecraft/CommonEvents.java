@@ -15,7 +15,10 @@ import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.network.*;
 import com.usagin.juicecraft.particles.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.blockentity.BedRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -24,8 +27,12 @@ import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.server.command.ModIdArgument;
 
-@Mod.EventBusSubscriber(modid = JuiceCraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+import static com.usagin.juicecraft.JuiceCraft.MODID;
+import static com.usagin.juicecraft.particles.AlteLightningParticle.LOGGER;
+
+@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CommonEvents {
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event) {
@@ -46,11 +53,19 @@ public class CommonEvents {
         event.registerBlockEntityRenderer(BlockEntityInit.FRIEND_BED.get(), FriendBedRenderer::new);
     }
 
+    public static ModelLayerLocation FRIEND_BED_FOOT = new ModelLayerLocation(new ResourceLocation(MODID,"friend_bed_foot"),"main");
+    public static ModelLayerLocation FRIEND_BED_HEAD = new ModelLayerLocation(new ResourceLocation(MODID,"friend_bed_head"),"main");
+
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SoraEntityModel.LAYER_LOCATION, SoraEntityModel::createBodyLayer);
         event.registerLayerDefinition(AlteEntityModel.LAYER_LOCATION, AlteEntityModel::createBodyLayer);
+
+        event.registerLayerDefinition(FRIEND_BED_FOOT,FriendBedRenderer::createFootLayer);
+        event.registerLayerDefinition(FRIEND_BED_HEAD,FriendBedRenderer::createHeadLayer);
+
     }
+
 
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event) {

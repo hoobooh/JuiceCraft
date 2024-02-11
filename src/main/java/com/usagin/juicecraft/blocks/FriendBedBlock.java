@@ -1,5 +1,6 @@
 package com.usagin.juicecraft.blocks;
 
+import com.usagin.juicecraft.particles.AlteLightningParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.BedBlock;
