@@ -1,5 +1,6 @@
 package com.usagin.juicecraft.ai.goals.common;
 
+import com.usagin.juicecraft.blocks.FriendBedBlock;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -61,6 +62,9 @@ public class FriendSleepGoal extends Goal {
                     this.friend.setPose(Pose.SLEEPING);
                     this.friend.reapplyPosition();
                     this.friend.refreshDimensions();
+                    if(this.friend.getFeetBlockState().getBlock() instanceof FriendBedBlock){
+                        this.friend.setHome(this.friend.getBlockX(),this.friend.getBlockY(),this.friend.getBlockZ());
+                    }
                 } else if (this.friend.getFeetBlockState().getValue(OCCUPIED)) {
                     this.stop();
                 } else {

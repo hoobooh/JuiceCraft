@@ -153,5 +153,10 @@ public class CommonLiveEvents {
             }
         }
     }
-
+    @SubscribeEvent
+    public static void onFriendSpawn(MobSpawnEvent event){
+        if(event.getEntity() instanceof Friend friend){
+            friend.setHome(friend.getBlockX(),friend.getBlockY(),friend.getBlockZ());
+        }
+    }
 }
