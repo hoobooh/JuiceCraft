@@ -1,14 +1,11 @@
 package com.usagin.juicecraft.Init;
 
 import com.usagin.juicecraft.blocks.FriendBedBlock;
-import net.minecraft.client.renderer.blockentity.BedRenderer;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.block.BedBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BedPart;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.registries.DeferredRegister;
@@ -20,7 +17,6 @@ import static com.usagin.juicecraft.JuiceCraft.MODID;
 public class BlockInit {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     // Creates SoraEntityModel new Block with the id "examplemod:example_block", combining the namespace and path
-    public static final RegistryObject<Block> TEST_BLOCK = BLOCKS.register("test_block", () -> new Block(BlockBehaviour.Properties.of()));
     public static final RegistryObject<Block> WHITE_FRIEND_BED_BLOCK = BLOCKS.register("white_friend_bed", () -> bed(DyeColor.WHITE));
     public static final RegistryObject<Block> ORANGE_FRIEND_BED_BLOCK = BLOCKS.register("orange_friend_bed", () -> bed(DyeColor.ORANGE));
     public static final RegistryObject<Block> YELLOW_FRIEND_BED_BLOCK = BLOCKS.register("yellow_friend_bed", () -> bed(DyeColor.YELLOW));
@@ -31,6 +27,8 @@ public class BlockInit {
     public static final RegistryObject<Block> PINK_FRIEND_BED_BLOCK = BLOCKS.register("pink_friend_bed", () -> bed(DyeColor.PINK));
     public static final RegistryObject<Block> GREEN_FRIEND_BED_BLOCK = BLOCKS.register("green_friend_bed", () -> bed(DyeColor.GREEN));
     public static final RegistryObject<Block> PURPLE_FRIEND_BED_BLOCK = BLOCKS.register("purple_friend_bed", () -> bed(DyeColor.PURPLE));
+    public static final RegistryObject<Block> CYAN_FRIEND_BED_BLOCK = BLOCKS.register("cyan_friend_bed", () -> bed(DyeColor.PURPLE));
+    public static final RegistryObject<Block> BROWN_FRIEND_BED_BLOCK = BLOCKS.register("brown_friend_bed", () -> bed(DyeColor.PURPLE));
 
     private static BedBlock bed(DyeColor pColor) {
         return new FriendBedBlock(pColor, BlockBehaviour.Properties.of().mapColor((a) -> a.getValue(BedBlock.PART) == BedPart.FOOT ? pColor.getMapColor() : MapColor.WOOL).sound(SoundType.WOOD).strength(0.2F).noOcclusion().ignitedByLava().pushReaction(PushReaction.DESTROY));

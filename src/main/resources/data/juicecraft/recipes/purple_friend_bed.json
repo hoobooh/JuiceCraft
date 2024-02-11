@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "bed",
+  "key": {
+    "#": {
+      "item": "juicecraft:purple_seagull_fluff"
+    },
+    "X": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "###",
+    "XXX"
+  ],
+  "result": {
+    "item": "juicecraft:purple_friend_bed"
+  },
+  "show_notification": true
+}

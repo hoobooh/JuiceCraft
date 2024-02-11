@@ -7,9 +7,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BedItem;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -38,8 +36,22 @@ public class ItemInit {
     //SPAWN EGGS
     public static final RegistryObject<Item> ALTE_SPAWN_EGG = ITEMS.register("alte_spawn_egg", () -> new ForgeSpawnEggItem(EntityInit.ALTE, ChatFormatting.LIGHT_PURPLE.getColor(), ChatFormatting.DARK_PURPLE.getColor(), new Item.Properties()));
 
+    //INGREDIENTS
+    public static final RegistryObject<Item> WHITE_SEAGULL_FLUFF = ITEMS.register("white_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> ORANGE_SEAGULL_FLUFF = ITEMS.register("orange_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> YELLOW_SEAGULL_FLUFF = ITEMS.register("yellow_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> BLACK_SEAGULL_FLUFF = ITEMS.register("black_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> RED_SEAGULL_FLUFF = ITEMS.register("red_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> BLUE_SEAGULL_FLUFF = ITEMS.register("blue_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> GRAY_SEAGULL_FLUFF = ITEMS.register("gray_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> PINK_SEAGULL_FLUFF = ITEMS.register("pink_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> GREEN_SEAGULL_FLUFF = ITEMS.register("green_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> PURPLE_SEAGULL_FLUFF = ITEMS.register("purple_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> CYAN_SEAGULL_FLUFF = ITEMS.register("cyan_seagull_fluff", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> BROWN_SEAGULL_FLUFF = ITEMS.register("brown_seagull_fluff", () -> new Item(new Item.Properties()));
+
+
     //BLOCK ITEMS
-    public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("test_block", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
     public static final RegistryObject<Item> YELLOW_FRIEND_BED = ITEMS.register("yellow_friend_bed", () -> new BedItem(YELLOW_FRIEND_BED_BLOCK.get(),new Item.Properties()));
     public static final RegistryObject<Item> WHITE_FRIEND_BED = ITEMS.register("white_friend_bed", () -> new BedItem(WHITE_FRIEND_BED_BLOCK.get(),new Item.Properties()));
     public static final RegistryObject<Item> ORANGE_FRIEND_BED = ITEMS.register("orange_friend_bed", () -> new BedItem(ORANGE_FRIEND_BED_BLOCK.get(),new Item.Properties()));

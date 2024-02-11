@@ -146,6 +146,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
     public final FriendRangedCrossbowAttackGoal crossbowGoal = new FriendRangedCrossbowAttackGoal(this, 1.0D, 20);
     public final FriendThrowSnowballGoal snowballGoal = new FriendThrowSnowballGoal(this);
+    public int homeX;
+    public int homeY;
+    public int homeZ;
     public int snoozeCounter = 40;
     public int flowercooldown = 300;
     public int viewflower = 0;
@@ -1166,6 +1169,17 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
         };
     }
+    public void setHome(int x, int y, int z){
+        this.homeX=x;
+        this.homeY=y;
+        this.homeZ=z;
+    }
+    public void setHome(BlockPos pos){
+        this.setHome(pos.getX(),pos.getY(),pos.getZ());
+    }
+    public BlockPos getHome(){
+        return new BlockPos(this.getBlockX(),this.getBlockY(),this.getBlockZ());
+    }
 
     @Override
     protected void registerGoals() {
@@ -1260,6 +1274,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         pCompound.putFloat("juicecraft.experience", this.experience);
         pCompound.putInt("juicecraft.itemscollected", this.itemsCollected);
         pCompound.putInt("juicecraft.enemieskilled", this.enemiesKilled);
+        pCompound.putIntArray("juicecraft.homepos",new int[]{this.homeX,this.homeY,this.homeZ});
 
         //pCompound.putInt("juicecraft.skilllevels", SkillManager.saveSkills(this.getSkillLevels()));
         byte[] bytes = new byte[]{(byte) this.skillLevels[0], (byte) this.skillLevels[1], (byte) this.skillLevels[2], (byte) this.skillLevels[3], (byte) this.skillLevels[4], (byte) this.skillLevels[5],};
@@ -1309,6 +1324,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
         super.readAdditionalSaveData(pCompound);
         this.initializeNew();
+        int[] pos = pCompound.getIntArray("juicecraft.homepos");
+        this.homeX=pos[0];
+        this.homeY=pos[1];
+        this.homeZ=pos[2];
         this.maxnorma = pCompound.getInt("juicecraft.maxnorma");
         int[] temp2 = pCompound.getIntArray("juicecraft.normaprogress");
         this.setTimeSinceLastPat(pCompound.getInt("juicecraft.timesincelastpat"));
