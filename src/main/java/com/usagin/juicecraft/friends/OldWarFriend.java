@@ -15,6 +15,9 @@ public abstract class OldWarFriend extends Friend {
     public OldWarFriend(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
+    public boolean isNocturnal(){
+        return true;
+    }
 
     public void setSkillEnabled(boolean[] b) {
         this.skillEnabled = b;

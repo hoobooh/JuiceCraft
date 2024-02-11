@@ -1135,6 +1135,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public float getCombatMod() {
         float mod = this.getCombatModifier();
+        if(!this.day() && !this.isNocturnal()){
+            mod=mod/2;
+        }
         return 10 * (1 + mod) / (10 + mod);
     }
 
@@ -1180,6 +1183,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public BlockPos getHome(){
         return new BlockPos(this.homeX,this.homeY,this.homeZ);
     }
+    public abstract boolean isNocturnal();
 
     @Override
     protected void registerGoals() {
@@ -1527,7 +1531,18 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.isDying = b;
         this.getEntityData().set(FRIEND_ISDYING, b);
     }
-
+    public static final UUID NIGHTFATIGUEID = UUID.fromString("7c3f9e32-0fbb-4b93-8230-6a03f2be21b6");
+    AttributeModifier FATIGUE;
+    public void updateFatigue(){
+        if(this.day()){
+            if(!this.isNocturnal()){
+            this.getAttribute(Attributes.MOVEMENT_SPEED).removePermanentModifier(NIGHTFATIGUEID);}
+        }else{
+            if(!this.isNocturnal()){
+            this.getAttribute(Attributes.MOVEMENT_SPEED).removePermanentModifier(NIGHTFATIGUEID);
+            this.FATIGUE = new AttributeModifier(NIGHTFATIGUEID, "NIGHTFATIGUE", -0.1F, AttributeModifier.Operation.ADDITION);
+            this.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(this.FATIGUE);}}
+    }
     @Override
     public void tick() {
         this.setupcomplete = true;
@@ -1663,6 +1678,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 }
             }
             if (this.tickCount % 200 == 0) {
+                this.updateFatigue();
                 this.updateFriendNorma(0.01F, 5);
                 if (this.hungerMeter > 0) {
                     this.setHungerMeter(this.hungerMeter - 1);
