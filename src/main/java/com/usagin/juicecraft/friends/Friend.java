@@ -1116,6 +1116,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public double getAttackSpeed() {
+        float nightmod = (!this.day() && !this.isNocturnal()) ? 0.7F : 1F;
         try {
             double temp = -3;
             for (AttributeModifier mod : this.getFriendWeapon().getItem().getDefaultAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_SPEED)) {
@@ -1127,9 +1128,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             temp += 4;
             //LOGGER.info(this.combatmodifier + "BASE");
             //LOGGER.info(this.getCombatMod() +"MOD");
-            return temp / 1.6 * Mth.clamp(1 + 0.05 * this.getCombatMod(), 0.1, 1.5);
+            return (temp / 1.6 * Mth.clamp(1 + 0.05 * this.getCombatMod(), 0.1, 1.5)) * nightmod;
         } catch (Exception e) {
-            return 0.625 * Mth.clamp(1 + 0.05 * this.getCombatMod(), 0.1, 1.5);
+            return (0.625 * Mth.clamp(1 + 0.05 * this.getCombatMod(), 0.1, 1.5)) * nightmod;
         }
     }
 
