@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import static com.usagin.juicecraft.Init.sounds.SoraSoundInit.*;
 
 
-public class Sora extends Friend {
+public class Sora extends OldWarFriend {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public Sora(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {

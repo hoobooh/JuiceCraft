@@ -3,16 +3,12 @@ package com.usagin.juicecraft.client.renderer.blockrenderers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import com.usagin.juicecraft.blocks.FriendBedEntity;
 import com.usagin.juicecraft.blocks.plushies.PlushieBlock;
-import com.usagin.juicecraft.blocks.plushies.PlushieBlockEntity;
-import cpw.mods.modlauncher.api.IModuleLayerManager;
+import com.usagin.juicecraft.blocks.plushies.AltePlushieBlockEntity;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BedRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.Material;
@@ -23,7 +19,7 @@ import net.minecraft.world.level.Level;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 
-public abstract class PlushieRenderer implements BlockEntityRenderer<PlushieBlockEntity> {
+public abstract class PlushieRenderer implements BlockEntityRenderer<AltePlushieBlockEntity> {
     public final ModelPart plushie;
     public static ModelLayerLocation PLUSHIE = new ModelLayerLocation(new ResourceLocation(MODID,"plushie"),"main");
     public PlushieRenderer(BlockEntityRendererProvider.Context pContext){
@@ -31,7 +27,7 @@ public abstract class PlushieRenderer implements BlockEntityRenderer<PlushieBloc
     }
     //define layer through a non abstract method
     @Override
-    public void render(PlushieBlockEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
+    public void render(AltePlushieBlockEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
         Level level=pBlockEntity.getLevel();
         Material mat;
         if(pBlockEntity.getBlockState().getBlock() instanceof PlushieBlock block){

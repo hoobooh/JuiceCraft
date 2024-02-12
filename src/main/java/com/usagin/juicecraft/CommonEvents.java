@@ -6,6 +6,7 @@ import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.Init.ProjectileInit;
 import com.usagin.juicecraft.client.models.alte.AlteEntityModel;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
+import com.usagin.juicecraft.client.renderer.blockrenderers.AltePlushieRenderer;
 import com.usagin.juicecraft.client.renderer.blockrenderers.FriendBedRenderer;
 import com.usagin.juicecraft.client.renderer.entities.AlteEntityRenderer;
 import com.usagin.juicecraft.client.renderer.entities.FriendProjectileRenderer;
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.server.command.ModIdArgument;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
+import static com.usagin.juicecraft.client.renderer.blockrenderers.PlushieRenderer.PLUSHIE;
 import static com.usagin.juicecraft.particles.AlteLightningParticle.LOGGER;
 
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -51,6 +53,7 @@ public class CommonEvents {
     @SubscribeEvent
     public static void blockRenderers(EntityRenderersEvent.RegisterRenderers event){
         event.registerBlockEntityRenderer(BlockEntityInit.FRIEND_BED.get(), FriendBedRenderer::new);
+        event.registerBlockEntityRenderer(BlockEntityInit.ALTE_PLUSHIE.get(), AltePlushieRenderer::new);
     }
 
     public static ModelLayerLocation FRIEND_BED_FOOT = new ModelLayerLocation(new ResourceLocation(MODID,"friend_bed_foot"),"main");
@@ -63,6 +66,7 @@ public class CommonEvents {
 
         event.registerLayerDefinition(FRIEND_BED_FOOT,FriendBedRenderer::createFootLayer);
         event.registerLayerDefinition(FRIEND_BED_HEAD,FriendBedRenderer::createHeadLayer);
+        event.registerLayerDefinition(PLUSHIE, AltePlushieRenderer::createLayer);
 
     }
 
