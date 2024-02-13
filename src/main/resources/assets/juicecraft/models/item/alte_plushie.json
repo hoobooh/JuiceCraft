@@ -1,3 +1,6 @@
 {
-  "parent": "juicecraft:block/plushie.json"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "juicecraft:item/alte_plushie"
+  }
 }
