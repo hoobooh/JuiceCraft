@@ -82,7 +82,7 @@ public class AltePlushieRenderer extends PlushieRenderer{
 
         PartDefinition hair1_r10 = bb_main.addOrReplaceChild("hair1_r10", CubeListBuilder.create().texOffs(22, 26).addBox(0.0F, -0.3F, -1.3F, 1.0F, 4.0F, 2.0F, new CubeDeformation(-0.1F)), PartPose.offsetAndRotation(1.0F, -6.0F, 1.0F, 0.0873F, 0.0F, -0.0436F));
 
-        PartDefinition hair1_r11 = bb_main.addOrReplaceChild("hair1_r11", CubeListBuilder.create().texOffs(0, 27).addBox(0.0F, -0.3F, -0.7F, 1.0F, 4.0F, 2.0F, new CubeDeformation(-0.1F)), PartPose.offsetAndRotation(1.0F, -6.0F, -1.0F, -0.0873F, 0.0F, -0.0436F));
+        PartDefinition hair1_r11 = bb_main.addOrReplaceChild("hair1_r11", CubeListBuilder.create().texOffs(0, 26).addBox(0.0F, -0.3F, -0.7F, 1.0F, 4.0F, 2.0F, new CubeDeformation(-0.1F)), PartPose.offsetAndRotation(1.0F, -6.0F, -1.0F, -0.0873F, 0.0F, -0.0436F));
 
         PartDefinition hair1_r12 = bb_main.addOrReplaceChild("hair1_r12", CubeListBuilder.create().texOffs(0, 27).addBox(-1.5F, -0.3F, -0.7F, 3.0F, 3.0F, 2.0F, new CubeDeformation(-0.1F)), PartPose.offsetAndRotation(0.0F, -6.0F, -1.0F, -0.0873F, 0.0F, 0.0F));
 

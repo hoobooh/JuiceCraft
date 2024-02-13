@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
+import static com.usagin.juicecraft.particles.AlteLightningParticle.LOGGER;
 
 public abstract class PlushieRenderer implements BlockEntityRenderer<AltePlushieBlockEntity> {
     public final ModelPart plushie;
@@ -29,24 +30,24 @@ public abstract class PlushieRenderer implements BlockEntityRenderer<AltePlushie
     @Override
     public void render(AltePlushieBlockEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
         Level level=pBlockEntity.getLevel();
-        Material mat;
+        ResourceLocation mat;
         if(pBlockEntity.getBlockState().getBlock() instanceof PlushieBlock block){
-            mat=block.getMaterial();
+            mat=block.getTexture();
         }else{return;}
         if(level!=null){
             Direction direction = pBlockEntity.getBlockState().getBedDirection(level,pBlockEntity.getBlockPos());
             this.renderPlushie(pPoseStack,pBuffer,this.plushie,direction,mat,pPackedLight,pPackedOverlay);
-        }
-        this.renderPlushie(pPoseStack,pBuffer,this.plushie,Direction.SOUTH,mat,pPackedLight,pPackedOverlay);
+        }else{
+        this.renderPlushie(pPoseStack,pBuffer,this.plushie,Direction.SOUTH,mat,pPackedLight,pPackedOverlay);}
     }
-    public void renderPlushie(PoseStack pPoseStack, MultiBufferSource pBufferSource, ModelPart pModelPart, Direction pDirection, Material pMaterial, int pPackedLight, int pPackedOverlay) {
+    public void renderPlushie(PoseStack pPoseStack, MultiBufferSource pBufferSource, ModelPart pModelPart, Direction pDirection, ResourceLocation texture, int pPackedLight, int pPackedOverlay) {
         pPoseStack.pushPose();
-        pPoseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-        pPoseStack.translate(0.5F, 0.5F, 0.5F);
-        pPoseStack.mulPose(Axis.ZP.rotationDegrees(180.0F + pDirection.toYRot()));
-        pPoseStack.translate(-0.5F, -0.5F, -0.5F);
+        pPoseStack.translate(0.5F, 0, 0.5F);
+        pPoseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
+        pPoseStack.translate(0, -1.5, 0);
+        pPoseStack.mulPose(Axis.YP.rotationDegrees(270.0F + pDirection.toYRot()));
 
-        VertexConsumer vertexconsumer = pMaterial.buffer(pBufferSource, RenderType::entitySolid);
+        VertexConsumer vertexconsumer = pBufferSource.getBuffer(RenderType.entitySolid(texture));
 
         pModelPart.render(pPoseStack, vertexconsumer, pPackedLight, pPackedOverlay);
         pPoseStack.popPose();

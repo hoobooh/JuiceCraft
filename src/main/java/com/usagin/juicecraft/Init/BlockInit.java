@@ -19,7 +19,7 @@ import static com.usagin.juicecraft.JuiceCraft.MODID;
 public class BlockInit {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     // Creates SoraEntityModel new Block with the id "examplemod:example_block", combining the namespace and path
-    public static final RegistryObject<Block> ALTE_PLUSHIE = BLOCKS.register("alte_plushie", () -> new AltePlushieBlock(BlockBehaviour.Properties.of()));
+    public static final RegistryObject<Block> ALTE_PLUSHIE = BLOCKS.register("alte_plushie", () -> new AltePlushieBlock(BlockBehaviour.Properties.of().noOcclusion()));
 
     public static final RegistryObject<Block> WHITE_FRIEND_BED_BLOCK = BLOCKS.register("white_friend_bed", () -> bed(DyeColor.WHITE));
     public static final RegistryObject<Block> ORANGE_FRIEND_BED_BLOCK = BLOCKS.register("orange_friend_bed", () -> bed(DyeColor.ORANGE));
