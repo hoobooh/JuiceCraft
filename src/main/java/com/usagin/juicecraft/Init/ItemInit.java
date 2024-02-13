@@ -52,6 +52,11 @@ public class ItemInit {
 
 
     //BLOCK ITEMS
+
+    public static final RegistryObject<Item> ALTE_PLUSHIE = ITEMS.register("alte_plushie", () -> new BlockItem(BlockInit.ALTE_PLUSHIE.get(),new Item.Properties()));
+
+    //BED ITEMS
+
     public static final RegistryObject<Item> YELLOW_FRIEND_BED = ITEMS.register("yellow_friend_bed", () -> new BedItem(YELLOW_FRIEND_BED_BLOCK.get(),new Item.Properties()));
     public static final RegistryObject<Item> WHITE_FRIEND_BED = ITEMS.register("white_friend_bed", () -> new BedItem(WHITE_FRIEND_BED_BLOCK.get(),new Item.Properties()));
     public static final RegistryObject<Item> ORANGE_FRIEND_BED = ITEMS.register("orange_friend_bed", () -> new BedItem(ORANGE_FRIEND_BED_BLOCK.get(),new Item.Properties()));

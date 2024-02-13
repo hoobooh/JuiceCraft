@@ -45,8 +45,12 @@ public abstract class PlushieRenderer implements BlockEntityRenderer<AltePlushie
         pPoseStack.translate(0.5F, 0.5F, 0.5F);
         pPoseStack.mulPose(Axis.ZP.rotationDegrees(180.0F + pDirection.toYRot()));
         pPoseStack.translate(-0.5F, -0.5F, -0.5F);
+
         VertexConsumer vertexconsumer = pMaterial.buffer(pBufferSource, RenderType::entitySolid);
+
         pModelPart.render(pPoseStack, vertexconsumer, pPackedLight, pPackedOverlay);
         pPoseStack.popPose();
     }
+
+
 }
