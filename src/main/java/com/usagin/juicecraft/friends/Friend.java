@@ -1524,7 +1524,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         return this.getEntityData().get(FRIEND_TIMESINCEPAT);
     }
     public void setTarget(@Nullable LivingEntity pTarget) {
-        LOGGER.info((pTarget!=null) +"");
         super.setTarget(pTarget);
     }
 
