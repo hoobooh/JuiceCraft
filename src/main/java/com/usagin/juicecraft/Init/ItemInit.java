@@ -67,4 +67,8 @@ public class ItemInit {
     public static final RegistryObject<Item> PINK_FRIEND_BED = ITEMS.register("pink_friend_bed", () -> new BedItem(PINK_FRIEND_BED_BLOCK.get(),new Item.Properties()));
     public static final RegistryObject<Item> GREEN_FRIEND_BED = ITEMS.register("green_friend_bed", () -> new BedItem(GREEN_FRIEND_BED_BLOCK.get(),new Item.Properties()));
     public static final RegistryObject<Item> PURPLE_FRIEND_BED = ITEMS.register("purple_friend_bed", () -> new BedItem(PURPLE_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+
+    public static final RegistryObject<Item> CYAN_FRIEND_BED = ITEMS.register("cyan_friend_bed", () -> new BedItem(CYAN_FRIEND_BED_BLOCK.get(),new Item.Properties()));
+
+    public static final RegistryObject<Item> BROWN_FRIEND_BED = ITEMS.register("brown_friend_bed", () -> new BedItem(BROWN_FRIEND_BED_BLOCK.get(),new Item.Properties()));
 }

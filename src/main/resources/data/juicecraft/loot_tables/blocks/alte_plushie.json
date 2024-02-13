@@ -14,10 +14,7 @@
           "conditions": [
             {
               "block": "juicecraft:alte_plushie",
-              "condition": "minecraft:block_state_property",
-              "properties": {
-                "part": "head"
-              }
+              "condition": "minecraft:block_state_property"
             }
           ],
           "name": "juicecraft:alte_plushie"
