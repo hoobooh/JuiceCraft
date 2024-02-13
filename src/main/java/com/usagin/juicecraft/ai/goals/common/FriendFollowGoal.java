@@ -2,6 +2,7 @@ package com.usagin.juicecraft.ai.goals.common;
 
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -14,6 +15,8 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 
 import java.util.EnumSet;
+
+import static com.usagin.juicecraft.Init.ParticleInit.RANDOM_ENERGY_PARTICLE;
 
 public class FriendFollowGoal extends Goal {
     public static final int TELEPORT_WHEN_DISTANCE_IS = 12;
@@ -123,7 +126,6 @@ public class FriendFollowGoal extends Goal {
 
     private void teleportToOwner() {
         BlockPos blockpos = this.owner.blockPosition();
-
         for (int i = 0; i < 10; ++i) {
             int j = this.randomIntInclusive(-3, 3);
             int k = this.randomIntInclusive(-1, 1);
@@ -147,6 +149,9 @@ public class FriendFollowGoal extends Goal {
             return false;
         } else {
             this.tamable.moveTo((double) pX + 0.5D, pY, (double) pZ + 0.5D, this.tamable.getYRot(), this.tamable.getXRot());
+            if(this.tamable.level() instanceof ServerLevel level){
+                this.tamable.spawnParticlesInSphereAtEntity(this.tamable,5,0,0,level,RANDOM_ENERGY_PARTICLE.get(),0);
+            }
             this.navigation.stop();
             return true;
         }
