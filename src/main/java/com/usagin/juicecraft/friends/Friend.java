@@ -146,6 +146,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
     public final FriendRangedCrossbowAttackGoal crossbowGoal = new FriendRangedCrossbowAttackGoal(this, 1.0D, 20);
     public final FriendThrowSnowballGoal snowballGoal = new FriendThrowSnowballGoal(this);
+
     public int homeX;
     public int homeY;
     public int homeZ;
@@ -1522,6 +1523,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public int getTimeSinceLastPat() {
         return this.getEntityData().get(FRIEND_TIMESINCEPAT);
     }
+    public void setTarget(@Nullable LivingEntity pTarget) {
+        LOGGER.info((pTarget!=null) +"");
+        super.setTarget(pTarget);
+    }
 
     public void setTimeSinceLastPat(int n) {
         this.timesincelastpat = n;
@@ -1627,6 +1632,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         //SERVERSIDE-ONLY TICKS
 
         else {
+            if (this.getViewFlower() == 1) {
+                this.getFriendNav().setShouldMove(true);
+            }
             if (this.getAttackCounter() > 0) {
                 this.doReleaseStart();
                 this.decrementAttackCounter();

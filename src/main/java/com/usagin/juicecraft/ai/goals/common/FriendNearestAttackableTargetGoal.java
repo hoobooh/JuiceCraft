@@ -114,8 +114,6 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
                             }
                         }
                     }
-                } else if (this.friend.getViewFlower() == 1) {
-                    this.friend.getFriendNav().setShouldMove(true);
                 }
                 if (this.friend.flowercooldown > 0) {
                     this.friend.flowercooldown--;
