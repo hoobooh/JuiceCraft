@@ -13,22 +13,23 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.Half;
-import net.minecraft.world.level.block.state.properties.StairsShape;
+import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public abstract class PlushieBlock extends HorizontalDirectionalBlock  implements EntityBlock, SimpleWaterloggedBlock {
+public abstract class PlushieBlock extends Block  implements EntityBlock, SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
 
     public PlushieBlock(Properties pProperties) {
         super(pProperties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any().setValue(ROTATION, 0).setValue(WATERLOGGED, Boolean.FALSE));
 
     }
+    public float getYRotationDegrees(BlockState pState) {
+        return RotationSegment.convertToDegrees(pState.getValue(ROTATION));
+    }
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(FACING, WATERLOGGED);
+        pBuilder.add(ROTATION, WATERLOGGED);
     }
     public static VoxelShape PLUSHIESHAPE = Block.box(6.0D, 0.0D, 6.0D, 10.0D, 6.0D, 10.0D);
     public abstract ResourceLocation getTexture();
@@ -37,6 +38,10 @@ public abstract class PlushieBlock extends HorizontalDirectionalBlock  implement
         return state.getValue(HorizontalDirectionalBlock.FACING);
     }
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
+        float n=(pContext.getRotation() % 360);
+        if(n < 0){
+            n+=360;
+        }
+        return this.defaultBlockState().setValue(ROTATION, (int) Math.floor(n/22.5));
     }
 }

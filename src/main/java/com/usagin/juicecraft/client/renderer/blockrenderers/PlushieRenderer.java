@@ -35,17 +35,17 @@ public abstract class PlushieRenderer implements BlockEntityRenderer<AltePlushie
             mat=block.getTexture();
         }else{return;}
         if(level!=null){
-            Direction direction = pBlockEntity.getBlockState().getBedDirection(level,pBlockEntity.getBlockPos());
-            this.renderPlushie(pPoseStack,pBuffer,this.plushie,direction,mat,pPackedLight,pPackedOverlay);
+            int rot = (int)(pBlockEntity.getBlockState().getValue(PlushieBlock.ROTATION)*22.5F);
+            this.renderPlushie(pPoseStack,pBuffer,this.plushie,rot,mat,pPackedLight,pPackedOverlay);
         }else{
-        this.renderPlushie(pPoseStack,pBuffer,this.plushie,Direction.SOUTH,mat,pPackedLight,pPackedOverlay);}
+        this.renderPlushie(pPoseStack,pBuffer,this.plushie,0,mat,pPackedLight,pPackedOverlay);}
     }
-    public void renderPlushie(PoseStack pPoseStack, MultiBufferSource pBufferSource, ModelPart pModelPart, Direction pDirection, ResourceLocation texture, int pPackedLight, int pPackedOverlay) {
+    public void renderPlushie(PoseStack pPoseStack, MultiBufferSource pBufferSource, ModelPart pModelPart, int angle, ResourceLocation texture, int pPackedLight, int pPackedOverlay) {
         pPoseStack.pushPose();
         pPoseStack.translate(0.5F, 0, 0.5F);
         pPoseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
         pPoseStack.translate(0, -1.5, 0);
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(270.0F + pDirection.toYRot()));
+        pPoseStack.mulPose(Axis.YP.rotationDegrees(111 + angle));
 
         VertexConsumer vertexconsumer = pBufferSource.getBuffer(RenderType.entitySolid(texture));
 
