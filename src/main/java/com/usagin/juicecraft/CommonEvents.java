@@ -1,6 +1,7 @@
 package com.usagin.juicecraft;
 
 import com.ibm.icu.text.MessagePattern;
+import com.mojang.datafixers.util.Pair;
 import com.usagin.juicecraft.Init.BlockEntityInit;
 import com.usagin.juicecraft.Init.EntityInit;
 import com.usagin.juicecraft.Init.ParticleInit;
@@ -20,17 +21,28 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.blockentity.BedRenderer;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.server.command.ModIdArgument;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 import static com.usagin.juicecraft.client.renderer.blockrenderers.PlushieRenderer.PLUSHIE;
@@ -107,5 +119,7 @@ public class CommonEvents {
             CircleParticlePacketHandler.register();
         });
     }
+
+
 
 }

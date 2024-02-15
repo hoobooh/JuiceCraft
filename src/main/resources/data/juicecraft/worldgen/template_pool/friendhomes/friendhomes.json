@@ -1,0 +1,15 @@
+{
+  "name": "juicecraft:friendhomes/friendhomes",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+    "weight": 1,
+    "element": {
+      "location": "juicecraft:friendhomes/altetent",
+      "processors": "minecraft:empty",
+      "projection": "rigid",
+      "element_type": "minecraft:single_pool_element"
+    }
+  }
+  ]
+}
