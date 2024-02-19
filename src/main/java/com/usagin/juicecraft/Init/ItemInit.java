@@ -1,8 +1,6 @@
 package com.usagin.juicecraft.Init;
 
-import com.usagin.juicecraft.items.FriendBedItem;
-import com.usagin.juicecraft.items.JuiceCraftItem;
-import com.usagin.juicecraft.items.SweetItem;
+import com.usagin.juicecraft.items.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -39,23 +37,23 @@ public class ItemInit {
     public static final RegistryObject<Item> ALTE_SPAWN_EGG = ITEMS.register("alte_spawn_egg", () -> new ForgeSpawnEggItem(EntityInit.ALTE, ChatFormatting.LIGHT_PURPLE.getColor(), ChatFormatting.DARK_PURPLE.getColor(), new JuiceCraftItem.Properties()));
 
     //INGREDIENTS
-    public static final RegistryObject<Item> WHITE_SEAGULL_FLUFF = ITEMS.register("white_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> ORANGE_SEAGULL_FLUFF = ITEMS.register("orange_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> YELLOW_SEAGULL_FLUFF = ITEMS.register("yellow_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> BLACK_SEAGULL_FLUFF = ITEMS.register("black_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> RED_SEAGULL_FLUFF = ITEMS.register("red_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> BLUE_SEAGULL_FLUFF = ITEMS.register("blue_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> GRAY_SEAGULL_FLUFF = ITEMS.register("gray_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> PINK_SEAGULL_FLUFF = ITEMS.register("pink_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> GREEN_SEAGULL_FLUFF = ITEMS.register("green_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> PURPLE_SEAGULL_FLUFF = ITEMS.register("purple_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> CYAN_SEAGULL_FLUFF = ITEMS.register("cyan_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> BROWN_SEAGULL_FLUFF = ITEMS.register("brown_seagull_fluff", () -> new JuiceCraftItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> WHITE_SEAGULL_FLUFF = ITEMS.register("white_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> ORANGE_SEAGULL_FLUFF = ITEMS.register("orange_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> YELLOW_SEAGULL_FLUFF = ITEMS.register("yellow_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> BLACK_SEAGULL_FLUFF = ITEMS.register("black_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> RED_SEAGULL_FLUFF = ITEMS.register("red_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> BLUE_SEAGULL_FLUFF = ITEMS.register("blue_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> GRAY_SEAGULL_FLUFF = ITEMS.register("gray_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> PINK_SEAGULL_FLUFF = ITEMS.register("pink_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> GREEN_SEAGULL_FLUFF = ITEMS.register("green_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> PURPLE_SEAGULL_FLUFF = ITEMS.register("purple_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> CYAN_SEAGULL_FLUFF = ITEMS.register("cyan_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> BROWN_SEAGULL_FLUFF = ITEMS.register("brown_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
 
 
     //BLOCK ITEMS
 
-    public static final RegistryObject<Item> ALTE_PLUSHIE = ITEMS.register("alte_plushie", () -> new BlockItem(BlockInit.ALTE_PLUSHIE.get(),new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> ALTE_PLUSHIE = ITEMS.register("alte_plushie", () -> new FriendBlockItem(BlockInit.ALTE_PLUSHIE.get(),new JuiceCraftItem.Properties()));
 
     //BED ITEMS
 
