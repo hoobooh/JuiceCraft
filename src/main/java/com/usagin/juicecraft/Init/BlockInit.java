@@ -31,8 +31,8 @@ public class BlockInit {
     public static final RegistryObject<Block> PINK_FRIEND_BED_BLOCK = BLOCKS.register("pink_friend_bed", () -> bed(DyeColor.PINK));
     public static final RegistryObject<Block> GREEN_FRIEND_BED_BLOCK = BLOCKS.register("green_friend_bed", () -> bed(DyeColor.GREEN));
     public static final RegistryObject<Block> PURPLE_FRIEND_BED_BLOCK = BLOCKS.register("purple_friend_bed", () -> bed(DyeColor.PURPLE));
-    public static final RegistryObject<Block> CYAN_FRIEND_BED_BLOCK = BLOCKS.register("cyan_friend_bed", () -> bed(DyeColor.PURPLE));
-    public static final RegistryObject<Block> BROWN_FRIEND_BED_BLOCK = BLOCKS.register("brown_friend_bed", () -> bed(DyeColor.PURPLE));
+    public static final RegistryObject<Block> CYAN_FRIEND_BED_BLOCK = BLOCKS.register("cyan_friend_bed", () -> bed(DyeColor.CYAN));
+    public static final RegistryObject<Block> BROWN_FRIEND_BED_BLOCK = BLOCKS.register("brown_friend_bed", () -> bed(DyeColor.BROWN));
 
     private static BedBlock bed(DyeColor pColor) {
         return new FriendBedBlock(pColor, BlockBehaviour.Properties.of().mapColor((a) -> a.getValue(BedBlock.PART) == BedPart.FOOT ? pColor.getMapColor() : MapColor.WOOL).sound(SoundType.WOOD).strength(0.2F).noOcclusion().ignitedByLava().pushReaction(PushReaction.DESTROY));
