@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public abstract class PlushieBlock extends Block  implements EntityBlock, SimpleWaterloggedBlock {
+public abstract class PlushieBlock extends BaseEntityBlock  implements EntityBlock, SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
 
@@ -31,6 +31,19 @@ public abstract class PlushieBlock extends Block  implements EntityBlock, Simple
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(ROTATION, WATERLOGGED);
     }
+    public BlockState rotate(BlockState pState, Rotation pRotation) {
+        return pState.setValue(ROTATION, Integer.valueOf(pRotation.rotate(pState.getValue(ROTATION), 16)));
+    }
+
+    /**
+     * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
+     * blockstate.
+     * @deprecated call via {@link net.minecraft.world.level.block.state.BlockBehaviour.BlockStateBase#mirror} whenever
+     * possible. Implementing/overriding is fine.
+     */
+    public BlockState mirror(BlockState pState, Mirror pMirror) {
+        return pState.setValue(ROTATION, Integer.valueOf(pMirror.mirror(pState.getValue(ROTATION), 16)));
+    }
     public static VoxelShape PLUSHIESHAPE = Block.box(6.0D, 0.0D, 6.0D, 10.0D, 6.0D, 10.0D);
     public abstract ResourceLocation getTexture();
     public Direction getBedDirection(BlockState state, LevelReader level, BlockPos pos)
@@ -44,4 +57,5 @@ public abstract class PlushieBlock extends Block  implements EntityBlock, Simple
         }
         return this.defaultBlockState().setValue(ROTATION, (int) Math.floor(n/22.5));
     }
+
 }

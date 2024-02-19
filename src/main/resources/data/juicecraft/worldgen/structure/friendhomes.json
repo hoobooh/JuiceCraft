@@ -3,7 +3,7 @@
 
   "start_pool": "juicecraft:friendhomes/friendhomes",
 
-  "size": 2,
+  "size": 1,
 
 
   "max_distance_from_center": 80,
@@ -13,7 +13,7 @@
 
   "step": "surface_structures",
 
-  "terrain_adaptation": "beard_thin",
+  "terrain_adaptation": "none",
 
   "start_height": {
     "absolute": 0
