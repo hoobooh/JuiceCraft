@@ -20,6 +20,6 @@ public class JuiceCraftItem extends Item {
     //descid = item.juicecraft.*
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        pTooltipComponents.add(Component.translatable("desc."+this.getDescriptionId()));
+        pTooltipComponents.add(Component.literal("§o" + Component.translatable("desc."+this.getDescriptionId()).getString()));
     }
 }

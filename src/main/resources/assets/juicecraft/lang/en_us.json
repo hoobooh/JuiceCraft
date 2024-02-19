@@ -74,9 +74,13 @@
   "item.juicecraft.pink_seagull_fluff": "Pink Seagull Fluff",
   "item.juicecraft.green_seagull_fluff": "Green Seagull Fluff",
   "item.juicecraft.purple_seagull_fluff": "Purple Seagull Fluff",
+  "item.juicecraft.cyan_seagull_fluff": "Green Seagull Fluff",
+  "item.juicecraft.brown_seagull_fluff": "Purple Seagull Fluff",
 
 
   "desc.fluff": "Warm fluff taken from an unfortunate seagull. Big the Johnathon won't be pleased.",
+
+  "item.juicecraft.alte_spawn_egg":"Alte Spawn Egg",
 
   "juicecraft.skills": "Skills",
   "juicecraft.stats": "Stats",

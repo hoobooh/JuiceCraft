@@ -15,6 +15,6 @@ public class FriendFluffItem extends Item {
     }
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-        pTooltipComponents.add(Component.translatable("desc.fluff"));
+        pTooltipComponents.add(Component.literal("§o" + Component.translatable("desc.fluff").getString()));
     }
 }

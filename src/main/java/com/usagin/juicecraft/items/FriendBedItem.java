@@ -18,6 +18,6 @@ public class FriendBedItem extends BedItem {
     }
 
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        pTooltipComponents.add(Component.translatable("desc.bed"));
+        pTooltipComponents.add(Component.literal("§o" + Component.translatable("desc.bed").getString()));
     }
 }
