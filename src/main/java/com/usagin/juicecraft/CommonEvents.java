@@ -23,17 +23,31 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.blockentity.BedRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.worldgen.VillagePools;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.datafix.fixes.WeaponSmithChestLootTableFix;
+import net.minecraft.util.profiling.jfr.event.ChunkGenerationEvent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.structures.DesertPyramidPiece;
+import net.minecraft.world.level.levelgen.structure.structures.DesertPyramidStructure;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntries;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -85,6 +99,7 @@ public class CommonEvents {
     }
 
 
+
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event) {
         Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_IMPACT_PARTICLE.get(), AlteImpactParticle.AlteImpactProvider::new);
@@ -104,7 +119,6 @@ public class CommonEvents {
         Minecraft.getInstance().particleEngine.register(ParticleInit.RANDOM_ENERGY_PARTICLE.get(), RandomEnergyParticle.RandomEnergyProvider::new);
 
     }
-
     @SubscribeEvent
     public static void registerPacketHandler(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {

@@ -3,6 +3,7 @@ package com.usagin.juicecraft;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.profiling.jfr.event.ChunkGenerationEvent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
@@ -24,6 +25,9 @@ import static com.usagin.juicecraft.particles.AlteLightningParticle.LOGGER;
 
 @Mod.EventBusSubscriber
 public class CommonLiveEvents {
+    @SubscribeEvent
+    public static void onStructureLore(){}
+
     @SubscribeEvent
     public static void onFriendHurt(LivingAttackEvent event) {
         if (event.getEntity() instanceof Friend friend) {
