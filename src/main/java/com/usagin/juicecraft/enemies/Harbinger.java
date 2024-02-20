@@ -6,15 +6,21 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK;
 
 public class Harbinger extends Monster {
 
@@ -28,7 +34,9 @@ public class Harbinger extends Monster {
     public void tick(){
         super.tick();
         if(this.level().isClientSide()){
-
+            this.attackAnimState.animateWhen(this.getSyncInt(ATTACKCOUNTER)>0,this.tickCount);
+            this.walkAnimState.animateWhen(this.walkAnimation.isMoving(),this.tickCount);
+            this.otherAnimState.animateWhen(this.getSyncInt(ANIMCOUNTER)>0,this.tickCount);
         }else{
             this.decrementCounters();
         }
@@ -51,20 +59,45 @@ public class Harbinger extends Monster {
             //2: slam, 13
             //3: swing, 9
             if(!this.isUsingSword()){
-
+                if(type==1){
+                    if(n==15){
+                        this.doHurtTarget(20,2);
+                    }
+                } else if (type == 2){
+                    if(n==13){
+                        this.doHurtTarget(360,1);
+                    }
+                }else{
+                    if(n==9){
+                        this.doHurtTarget(30,3);
+                    }
+                }
             }
             //SWORD
             //1: swing, 27 + 18
             //2: uppercut, 30, 19
             //3: slam, 30 + 14
             else{
-
+                if(type==1){
+                    if(n==27 || n==18){
+                        this.doHurtTarget(30,3);
+                    }
+                } else if (type == 2){
+                    if(n==30 || n==19){
+                        this.doHurtTarget(30,4);
+                    }
+                }else{
+                    if(n==30 || n==14){
+                        this.doHurtTarget(90,3);
+                    }
+                }
             }
 
         }
     }
-    public void doHurtTarget(double maxFov) {
-        AABB hitTracer = new AABB(this.getX() - 2.8, this.getY(), this.getZ() - 2.8, this.getX() + 2.8, this.getY() + 5, this.getZ() + 2.8);
+    public void doHurtTarget(double maxFov, double range) {
+        range=range/2;
+        AABB hitTracer = new AABB(this.getX() - range, this.getY(), this.getZ() - range, this.getX() + range, this.getY() + 5, this.getZ() + range);
         List<Entity> entityList = this.level().getEntities(this, hitTracer);
         if (this.getTarget() != null) {
             this.lookAt(this.getTarget(), 360, 360);
@@ -86,6 +119,34 @@ public class Harbinger extends Monster {
                 }
             }
         }
+    }
+    @Override
+    public boolean doHurtTarget(Entity pEntity) {
+        if (pEntity.level() instanceof ServerLevel t) {
+            t.sendParticles(SWEEP_ATTACK, pEntity.getX(), pEntity.getY() + 1, pEntity.getZ(), 1, 0.2, 0.2, 0.2, 0.3);
+        }
+        boolean flag = false;
+        if (pEntity != null) {
+            if (this.distanceTo(pEntity) < 3) {
+                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getSyncInt(ATTACKTYPE);
+                float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+                if (pEntity instanceof LivingEntity) {
+                    f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
+                    f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+                }
+                flag = pEntity.hurt(this.damageSources().mobAttack(this), f);
+                if (flag) {
+                    if (f1 > 0.0F && pEntity instanceof LivingEntity) {
+                        ((LivingEntity) pEntity).knockback(f1 * 0.5F, Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(this.getYRot() * ((float) Math.PI / 180F)));
+                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
+                    }
+
+                    this.doEnchantDamageEffects(this, pEntity);
+                    this.setLastHurtMob(pEntity);
+                }
+            }
+        }
+        return flag;
     }
     public boolean isUsingSword(){
         return this.getSyncBoolean(SWORD);
