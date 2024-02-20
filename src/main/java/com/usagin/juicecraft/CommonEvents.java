@@ -7,12 +7,15 @@ import com.usagin.juicecraft.Init.EntityInit;
 import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.Init.ProjectileInit;
 import com.usagin.juicecraft.client.models.alte.AlteEntityModel;
+import com.usagin.juicecraft.client.models.harbinger.HarbingerModel;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.blockrenderers.AltePlushieRenderer;
 import com.usagin.juicecraft.client.renderer.blockrenderers.FriendBedRenderer;
 import com.usagin.juicecraft.client.renderer.entities.AlteEntityRenderer;
 import com.usagin.juicecraft.client.renderer.entities.FriendProjectileRenderer;
+import com.usagin.juicecraft.client.renderer.entities.HarbingerRenderer;
 import com.usagin.juicecraft.client.renderer.entities.SoraEntityRenderer;
+import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.network.*;
@@ -68,12 +71,14 @@ public class CommonEvents {
     public static void entityAttributes(EntityAttributeCreationEvent event) {
         event.put(EntityInit.SORA.get(), Sora.getSoraAttributes().build());
         event.put(EntityInit.ALTE.get(), Alte.getAlteAttributes().build());
+        event.put(EntityInit.HARBINGER.get(),Harbinger.getHarbingerAttributes().build());
     }
 
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(EntityInit.SORA.get(), SoraEntityRenderer::new);
         event.registerEntityRenderer(EntityInit.ALTE.get(), AlteEntityRenderer::new);
+        event.registerEntityRenderer(EntityInit.HARBINGER.get(), HarbingerRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_MINIGUN_PROJECTILE.get(), FriendProjectileRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_PANEL_PROJECTILE.get(), FriendProjectileRenderer::new);
     }
@@ -91,6 +96,7 @@ public class CommonEvents {
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SoraEntityModel.LAYER_LOCATION, SoraEntityModel::createBodyLayer);
         event.registerLayerDefinition(AlteEntityModel.LAYER_LOCATION, AlteEntityModel::createBodyLayer);
+        event.registerLayerDefinition(HarbingerModel.LAYER_LOCATION, HarbingerModel::createBodyLayer);
 
         event.registerLayerDefinition(FRIEND_BED_FOOT,FriendBedRenderer::createFootLayer);
         event.registerLayerDefinition(FRIEND_BED_HEAD,FriendBedRenderer::createHeadLayer);

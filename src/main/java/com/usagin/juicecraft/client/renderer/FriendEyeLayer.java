@@ -25,6 +25,12 @@ public class FriendEyeLayer<T extends Entity, M extends EntityModel<T>> extends 
         this.location = location;
         this.rendertype = RenderType.eyes(location);
     }
+    public FriendEyeLayer(RenderLayerParent<T, M> pRenderer, ResourceLocation location, boolean t) {
+        super(pRenderer);
+        this.location = location;
+        this.rendertype = RenderType.eyes(location);
+        this.visible=t;
+    }
 
     public void render(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         if (this.visible) {

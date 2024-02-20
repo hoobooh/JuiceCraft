@@ -25,8 +25,6 @@ import static com.usagin.juicecraft.particles.AlteLightningParticle.LOGGER;
 
 @Mod.EventBusSubscriber
 public class CommonLiveEvents {
-    @SubscribeEvent
-    public static void onStructureLore(){}
 
     @SubscribeEvent
     public static void onFriendHurt(LivingAttackEvent event) {
