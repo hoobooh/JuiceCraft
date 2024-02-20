@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.enemies;
 
 import com.usagin.juicecraft.Init.ParticleInit;
+import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.goals.harbinger.HarbingerMeleeAttackGoal;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.network.CircleParticlePacketHandler;
@@ -130,14 +131,17 @@ public class Harbinger extends Monster {
                 if (type == 1) {
                     if (n == 15) {
                         this.doHurtTarget(40, 5);
+                        this.playSound(UniversalSoundInit.HEAVY_ATTACK.get());
                     }
                 } else if (type == 2) {
                     if (n == 13) {
+                        this.playSound(UniversalSoundInit.HARBINGER_SLAM.get());
                         this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.CRIT);
                         this.doHurtTarget(180, 4);
                     }
                 } else {
                     if (n == 9) {
+                        this.playSound(UniversalSoundInit.HARBINGER_SLASH.get());
                         this.doHurtTarget(50, 5);
                     }
                 }
@@ -150,11 +154,15 @@ public class Harbinger extends Monster {
                 if (type == 1) {
                     if (n == 27 || n == 18) {
                         this.doHurtTarget(50, 5);
+                        this.playSound(UniversalSoundInit.HARBINGER_SLASH.get());
                     }
                 } else if (type == 2) {
                     if (n == 30 || n == 19) {
                         if(n==30){
                             this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.CRIT);
+                            this.playSound(UniversalSoundInit.HARBINGER_SLAM.get());
+                        }else{
+                            this.playSound(UniversalSoundInit.HARBINGER_SLASH.get());
                         }
                         this.doHurtTarget(40, 6);
                     }
@@ -163,6 +171,9 @@ public class Harbinger extends Monster {
                         if(n==30){
                             this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.CRIT);
                             this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.FLAME);
+                            this.playSound(UniversalSoundInit.HARBINGER_SLAM.get());
+                        }else{
+                            this.playSound(UniversalSoundInit.HARBINGER_SLASH.get());
                         }
                         this.doHurtTarget(90, 5);
                     }

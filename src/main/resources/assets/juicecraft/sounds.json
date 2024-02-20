@@ -1,4 +1,14 @@
 {
+  "harbinger_slam": {
+    "sounds": [
+      "juicecraft:harbinger_slam"
+    ]
+  },
+  "harbinger_slash": {
+    "sounds": [
+      "juicecraft:harbinger_slash"
+    ]
+  },
   "alte_shockwave": {
     "sounds": [
       "juicecraft:alte_shockwave"

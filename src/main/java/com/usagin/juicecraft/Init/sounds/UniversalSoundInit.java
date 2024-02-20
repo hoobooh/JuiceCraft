@@ -27,6 +27,8 @@ public class UniversalSoundInit {
     public static final RegistryObject<SoundEvent> DICE_THROW = registerFriendSoundEvent("dicethrow");
     public static final RegistryObject<SoundEvent> MEMORY_WRITE = registerFriendSoundEvent("memory_write");
     public static final RegistryObject<SoundEvent> CRITICAL_HIT = registerFriendSoundEvent("critical_hit");
+    public static final RegistryObject<SoundEvent> HARBINGER_SLASH = registerFriendSoundEvent("harbinger_slash");
+    public static final RegistryObject<SoundEvent> HARBINGER_SLAM = registerFriendSoundEvent("harbinger_slam");
     static Logger LOGGER = LogUtils.getLogger();
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name) {
