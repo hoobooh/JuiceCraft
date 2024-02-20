@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.usagin.juicecraft.client.animation.HarbingerAnimation;
 import com.usagin.juicecraft.enemies.Harbinger;
+import com.usagin.juicecraft.particles.AlteLightningParticle;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -160,30 +161,37 @@ public class HarbingerModel<T extends Harbinger> extends HierarchicalModel<T> {
     @Override
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         root().getAllParts().forEach(ModelPart::resetPose);
-        boolean b = entity.isUsingSword();
         if (entity.getSyncBoolean(Harbinger.PEACEFUL)) {
             this.animate(entity.idleAnimState, HarbingerAnimation.PreFightIdle, ageInTicks);
-            this.animate(entity.otherAnimState, HarbingerAnimation.IdleTransition, ageInTicks);
-        } else {
-            if (b) {
-                this.animateWalk(HarbingerAnimation.SwordWalk, limbSwing, limbSwingAmount, 2, 5);
-                this.animate(entity.idleAnimState, HarbingerAnimation.SwordIdle, ageInTicks);
-            } else {
-                this.animateWalk(HarbingerAnimation.ShieldWalk, limbSwing, limbSwingAmount, 2, 5);
-                this.animate(entity.idleAnimState, HarbingerAnimation.ShieldIdle, ageInTicks);
+            this.animate(entity.walkAnimState, HarbingerAnimation.PreFightIdle, ageInTicks);
+            if(entity.otherAnimState.isStarted()){
+                root().getAllParts().forEach(ModelPart::resetPose);
+                this.animate(entity.otherAnimState, HarbingerAnimation.IdleTransition, ageInTicks);
             }
 
-            if (!entity.shouldLockHead()) {
-                this.parts.head().yRot = (netHeadYaw * (float) Math.PI / 180f);
-                this.parts.head().xRot = (headPitch * (float) Math.PI / 180f);
+        } else {
+            boolean b = entity.isUsingSword();
+            double x = entity.getX() - entity.xOld;
+            double z = entity.getZ() - entity.zOld;
+            double speed = 20 * Math.sqrt(x*x+z*z);
+            if (b) {
+                this.animate(entity.walkAnimState, HarbingerAnimation.SwordWalk, ageInTicks, (float) speed);
+                this.animate(entity.idleAnimState, HarbingerAnimation.SwordIdle, ageInTicks);
+            } else {
+                this.animate(entity.walkAnimState, HarbingerAnimation.ShieldWalk, ageInTicks, (float) speed);
+                this.animate(entity.idleAnimState, HarbingerAnimation.ShieldIdle, ageInTicks);
             }
-            if (entity.shouldResetRightArm()) {
-                this.parts.rightarm().resetPose();
-                this.parts.rightarm().getAllParts().forEach(ModelPart::resetPose);
-            }
-            if(entity.otherAnimState.isStarted()){
+            if(entity.otherAnimState.isStarted() && entity.getSyncInt(Harbinger.ANIMTYPE)==1){
+                if (entity.shouldResetRightArm()) {
+                    this.parts.rightarm().resetPose();
+                    this.parts.rightarm().getAllParts().forEach(ModelPart::resetPose);
+                }
                 this.animate(entity.otherAnimState, HarbingerAnimation.SwordUnsheathe, ageInTicks);
             }else if(entity.attackAnimState.isStarted()){
+                if (entity.shouldResetRightArm()) {
+                    this.parts.rightarm().resetPose();
+                    this.parts.rightarm().getAllParts().forEach(ModelPart::resetPose);
+                }
                 this.parts.leftarm().resetPose();
                 int n = entity.getSyncInt(Harbinger.ATTACKTYPE);
                 if(b){
@@ -203,6 +211,10 @@ public class HarbingerModel<T extends Harbinger> extends HierarchicalModel<T> {
                         this.animate(entity.attackAnimState,HarbingerAnimation.ShieldSwing,ageInTicks);
                     }
                 }
+            }
+            if (!entity.shouldLockHead()) {
+                this.parts.head().yRot = (netHeadYaw * (float) Math.PI / 180f);
+                this.parts.head().xRot = (headPitch * (float) Math.PI / 180f);
             }
         }
     }
