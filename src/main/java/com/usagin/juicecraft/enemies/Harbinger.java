@@ -7,6 +7,7 @@ import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.network.CircleParticlePacketHandler;
 import com.usagin.juicecraft.network.ToClientCircleParticlePacket;
 import com.usagin.juicecraft.particles.AlteLightningParticle;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.data.worldgen.VillagePools;
@@ -15,17 +16,22 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ProtectionEnchantment;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
@@ -59,13 +65,34 @@ public class Harbinger extends Monster {
     public AnimationState otherAnimState = new AnimationState();
     boolean queuehostile = false;
     int previouscount = 0;
+    protected SoundEvent getDeathSound() {
+        return UniversalSoundInit.HARBINGER_DEATH.get();
+    }
+    protected SoundEvent getHurtSound(DamageSource pDamageSource) {
+        return UniversalSoundInit.HARBINGER_HIT.get();
+    }
+    protected SoundEvent getAmbientSound() {
+        return SoundEvents.EMPTY;
+    }
+    protected SoundEvent getStepSound() {
+        return UniversalSoundInit.HARBINGER_STEP.get();
+    }
+    protected void playStepSound(BlockPos pPos, BlockState pBlock) {
+        this.playSound(this.getStepSound(), 1F, 1.0F);
+    }
+    public void playSound(SoundEvent pSound) {
+        if (!this.isSilent()) {
+            this.playSound(pSound, 1.5F, 1.0F);
+        }
+
+    }
     @Override
     public void tick() {
         super.tick();
         if (this.level().isClientSide()) {
-            this.walkAnimState.animateWhen(this.walkAnimation.isMoving(),this.tickCount);
+            this.walkAnimState.animateWhen(this.walkAnimation.speed() >= 0.1F,this.tickCount);
             this.attackAnimState.animateWhen(this.getSyncInt(ATTACKCOUNTER) > 0, this.tickCount);
-            this.idleAnimState.animateWhen(!this.walkAnimation.isMoving(),this.tickCount);
+            this.idleAnimState.animateWhen(this.walkAnimation.speed() < 0.1F,this.tickCount);
             this.otherAnimState.animateWhen(this.getSyncInt(ANIMCOUNTER) > 0, this.tickCount);
         } else {
             this.previouscount=this.getSyncInt(ANIMCOUNTER);
@@ -75,6 +102,7 @@ public class Harbinger extends Monster {
                 if(this.getTarget()!=null && this.getSyncInt(ANIMCOUNTER) <= 0 && this.previouscount==0){
                     this.setSyncInt(ANIMCOUNTER,50);
                     this.setSyncInt(ANIMTYPE,0);
+                    this.playSound(UniversalSoundInit.HARBINGER_INTRO.get());
                     this.queuehostile=true;
                 }
                 if(this.getSyncInt(ANIMCOUNTER) == 0 && this.previouscount == 1){
@@ -83,6 +111,7 @@ public class Harbinger extends Monster {
             }else if(!this.getSyncBoolean(SWORD)){
                 if(this.getHealth() / this.getMaxHealth() < 0.5F){
                     this.setSyncBoolean(SWORD,true);
+                    this.playSound(UniversalSoundInit.HARBINGER_UNSHEATHE.get());
                     this.setSyncInt(ANIMCOUNTER,50);
                     this.setSyncInt(ANIMTYPE,1);
                 }

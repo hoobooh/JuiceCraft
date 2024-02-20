@@ -1,4 +1,29 @@
 {
+  "harbinger_unsheathe": {
+    "sounds": [
+      "juicecraft:harbinger_unsheathe"
+    ]
+  },
+  "harbinger_intro": {
+    "sounds": [
+      "juicecraft:harbinger_intro"
+    ]
+  },
+  "harbinger_death": {
+    "sounds": [
+      "juicecraft:harbinger_death"
+    ]
+  },
+  "harbinger_step": {
+    "sounds": [
+      "juicecraft:harbinger_step"
+    ]
+  },
+  "harbinger_hit": {
+    "sounds": [
+      "juicecraft:harbinger_hit"
+    ]
+  },
   "harbinger_slam": {
     "sounds": [
       "juicecraft:harbinger_slam"
