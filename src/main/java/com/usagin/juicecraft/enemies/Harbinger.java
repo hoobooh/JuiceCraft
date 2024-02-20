@@ -1,7 +1,13 @@
 package com.usagin.juicecraft.enemies;
 
+import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.ai.goals.harbinger.HarbingerMeleeAttackGoal;
+import com.usagin.juicecraft.friends.Alte;
+import com.usagin.juicecraft.network.CircleParticlePacketHandler;
+import com.usagin.juicecraft.network.ToClientCircleParticlePacket;
 import com.usagin.juicecraft.particles.AlteLightningParticle;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.data.worldgen.VillagePools;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -108,7 +114,9 @@ public class Harbinger extends Monster {
             }
         }
     }
-
+    public <T extends ParticleOptions> void spawnParticlesInUpFacingCircle(Entity entity, float radius, T type) {
+        CircleParticlePacketHandler.sendToClient(new ToClientCircleParticlePacket(entity.getId(), radius, type), entity);
+    }
     public void checkAndPerformAttack() {
         int n = this.getSyncInt(ATTACKCOUNTER);
         int type = this.getSyncInt(ATTACKTYPE);
@@ -125,6 +133,7 @@ public class Harbinger extends Monster {
                     }
                 } else if (type == 2) {
                     if (n == 13) {
+                        this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.CRIT);
                         this.doHurtTarget(180, 4);
                     }
                 } else {
@@ -144,10 +153,17 @@ public class Harbinger extends Monster {
                     }
                 } else if (type == 2) {
                     if (n == 30 || n == 19) {
+                        if(n==30){
+                            this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.CRIT);
+                        }
                         this.doHurtTarget(40, 6);
                     }
                 } else {
                     if (n == 30 || n == 14) {
+                        if(n==30){
+                            this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.CRIT);
+                            this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.FLAME);
+                        }
                         this.doHurtTarget(90, 5);
                     }
                 }
