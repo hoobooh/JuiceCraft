@@ -27,6 +27,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ProtectionEnchantment;
@@ -46,6 +47,8 @@ public class Harbinger extends Monster {
 
     public Harbinger(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.xpReward=50;
+        this.setPersistenceRequired();
     }
     public boolean canDisableShield() {
         return true;
@@ -85,6 +88,7 @@ public class Harbinger extends Monster {
     public boolean isAbsorbingLife(){
         return this.getSyncInt(LIFECOUNTER)>0;
     }
+    public boolean flagForWake = false;
     @Override
     public void tick() {
         super.tick();
@@ -97,14 +101,14 @@ public class Harbinger extends Monster {
             this.otherAnimState.animateWhen(this.getSyncInt(ANIMCOUNTER) > 0, this.tickCount);
             this.counterAnimState.animateWhen(n > 0 && t==4, this.tickCount);
         } else {
-            if(this.tickCount%20==0 && this.getHealth() < this.getMaxHealth()){
+            if(this.tickCount%20==0 && this.getHealth() < this.getMaxHealth() && !this.isDeadOrDying()){
                 this.setHealth(Mth.clamp(this.getHealth()+1,0,this.getMaxHealth()));
             }
             this.previouscount=this.getSyncInt(ANIMCOUNTER);
             this.decrementCounters();
             this.checkAndPerformAttack();
             if(this.getSyncBoolean(PEACEFUL)){
-                if(this.getTarget()!=null && this.getSyncInt(ANIMCOUNTER) <= 0 && this.previouscount==0){
+                if((this.getTarget() instanceof Player || this.flagForWake) && this.getSyncInt(ANIMCOUNTER) <= 0 && this.previouscount==0){
                     this.setSyncInt(ANIMCOUNTER,50);
                     this.setSyncInt(ANIMTYPE,0);
                     this.playSound(UniversalSoundInit.HARBINGER_INTRO.get());
@@ -126,6 +130,7 @@ public class Harbinger extends Monster {
     }
     public void registerGoals(){
         this.goalSelector.addGoal(5, new HarbingerMeleeAttackGoal(this));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, LivingEntity.class, true));
     }
     protected AABB getAttackBoundingBox() {
@@ -150,7 +155,7 @@ public class Harbinger extends Monster {
         }
     }
     public <T extends ParticleOptions> void spawnParticlesInUpFacingCircle(Entity entity, float radius, T type) {
-        CircleParticlePacketHandler.sendToClient(new ToClientCircleParticlePacket(entity.getId(), radius, type), entity);
+        CircleParticlePacketHandler.sendToClient(new ToClientCircleParticlePacket(entity.getId(), radius, type), this);
     }
     public void checkAndPerformAttack() {
         int n = this.getSyncInt(ATTACKCOUNTER);
@@ -240,7 +245,11 @@ public class Harbinger extends Monster {
             this.playSound(UniversalSoundInit.COUNTER_BLOCK.get());
             return false;
         }else{
-            return super.hurt(pSource,pAmount);
+            boolean flag = super.hurt(pSource,pAmount);
+            if(flag){
+                this.flagForWake=true;
+            }
+            return flag;
         }
     }
 

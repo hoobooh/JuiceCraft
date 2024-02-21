@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "separation": 16,
+    "spacing": 30,
+    "spread_type": "triangular",
+    "salt": 1694767080
+  },
+  "structures": [{
+    "structure": "juicecraft:harbinger_pedestal",
+    "weight": 1
+  }]
+
+}

@@ -25,7 +25,7 @@
               "function": "minecraft:looting_enchant"
             }
           ],
-          "name": "minecraft:rotten_flesh"
+          "name": "minecraft:netherite_scrap"
         }
       ],
       "rolls": 1.0
@@ -45,11 +45,15 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:iron_ingot"
+          "name": "juicecraft:activator"
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:carrot"
+          "name": "juicecraft:redbeanicecream"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "juicecraft:sumikas_memory"
         },
         {
           "type": "minecraft:item",
@@ -69,7 +73,7 @@
               "function": "minecraft:furnace_smelt"
             }
           ],
-          "name": "minecraft:potato"
+          "name": "juicecraft:rawseagull"
         }
       ],
       "rolls": 1.0

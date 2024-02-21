@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class HarbingerMeleeAttackGoal extends Goal {
@@ -26,10 +27,12 @@ public class HarbingerMeleeAttackGoal extends Goal {
     @Override
     public void start(){
         this.harbinger.getNavigation().moveTo(this.harbinger.getTarget(),1);
+        this.harbinger.setAggressive(true);
     }
     @Override
     public void stop(){
         this.harbinger.getNavigation().stop();
+        this.harbinger.setAggressive(false);
     }
     @Override
             public boolean requiresUpdateEveryTick(){
@@ -52,7 +55,7 @@ public class HarbingerMeleeAttackGoal extends Goal {
                 this.harbinger.spawnParticlesInUpFacingCircle(this.harbinger.getTarget(),1.5F, ParticleTypes.PORTAL);
             }
             if(tpcd==1){
-                this.harbinger.getTarget().moveTo(this.harbinger.position());
+                this.harbinger.getTarget().teleportTo(this.harbinger.getX(),this.harbinger.getY(),this.harbinger.getZ());
             }
             tpcd--;
         }
