@@ -2,6 +2,9 @@ package com.usagin.juicecraft.ai.goals.harbinger;
 
 import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Friend;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -29,13 +32,29 @@ public class HarbingerMeleeAttackGoal extends Goal {
         this.harbinger.getNavigation().stop();
     }
     @Override
+            public boolean requiresUpdateEveryTick(){
+        return true;
+    }
+    int tpcd=0;
+    @Override
     public void tick(){
         if(!this.harbinger.getNavigation().isInProgress()){
             this.harbinger.getNavigation().moveTo(this.harbinger.getTarget(),1);
         }
         if(this.harbinger.tickCount%7==0){
-            this.harbinger.lookAt(this.harbinger.getTarget(),30,30);
-            this.harbinger.getLookControl().setLookAt(this.harbinger.getTarget());
+            if(this.harbinger.distanceTo(this.harbinger.getTarget())>7 && this.tpcd==0){
+                this.tpcd=40;
+                this.harbinger.playSound(SoundEvents.ELDER_GUARDIAN_CURSE);
+            }
+        }
+        if(tpcd>0){
+            if(tpcd%3==0){
+                this.harbinger.spawnParticlesInUpFacingCircle(this.harbinger.getTarget(),1.5F, ParticleTypes.PORTAL);
+            }
+            if(tpcd==1){
+                this.harbinger.getTarget().moveTo(this.harbinger.position());
+            }
+            tpcd--;
         }
         checkAndPerformAttack(this.harbinger.getTarget());
     }

@@ -188,7 +188,7 @@ public class HarbingerModel<T extends Harbinger> extends HierarchicalModel<T> {
                 }
                 this.animate(entity.otherAnimState, HarbingerAnimation.SwordUnsheathe, ageInTicks);
             }
-            else if(entity.attackAnimState.isStarted()){
+            else if(entity.attackAnimState.isStarted() || entity.counterAnimState.isStarted()){
                 if (entity.shouldResetRightArm()) {
                     this.parts.rightarm().resetPose();
                     this.parts.rightarm().getAllParts().forEach(ModelPart::resetPose);
@@ -203,6 +203,8 @@ public class HarbingerModel<T extends Harbinger> extends HierarchicalModel<T> {
                     else{
                         this.animate(entity.attackAnimState,HarbingerAnimation.SwordSlam,ageInTicks);
                     }
+                    this.animate(entity.counterAnimState,HarbingerAnimation.SwordCounter,ageInTicks);
+
                 }else{
                     if(n==1){
                         this.animate(entity.attackAnimState,HarbingerAnimation.ShieldPush,ageInTicks);}
@@ -211,6 +213,7 @@ public class HarbingerModel<T extends Harbinger> extends HierarchicalModel<T> {
                     else{
                         this.animate(entity.attackAnimState,HarbingerAnimation.ShieldSwing,ageInTicks);
                     }
+                    this.animate(entity.counterAnimState,HarbingerAnimation.ShieldCounter,ageInTicks);
                 }
             }
             if (!entity.shouldLockHead()) {

@@ -1,11 +1,17 @@
 package com.usagin.juicecraft;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
+import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Friend;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.profiling.jfr.event.ChunkGenerationEvent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Creeper;
@@ -13,6 +19,7 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.RedstoneTorchBlock;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -103,7 +110,17 @@ public class CommonLiveEvents {
                 pFriend.playVoice(pFriend.getOnKill());
                 pFriend.increaseEXP(temp);
             }
-
+            if (event.getSource().getEntity() instanceof Harbinger pHarbinger){
+                try{
+                pHarbinger.getAttribute(Attributes.MAX_HEALTH).setBaseValue(pHarbinger.getAttributeBaseValue(Attributes.MAX_HEALTH)+event.getEntity().getMaxHealth());
+                pHarbinger.getAttribute(Attributes.ARMOR).setBaseValue(pHarbinger.getAttributeBaseValue(Attributes.ARMOR)+event.getEntity().getArmorValue()/10F);
+                pHarbinger.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(pHarbinger.getAttributeBaseValue(Attributes.ATTACK_DAMAGE)+event.getEntity().getAttributeValue(Attributes.ATTACK_DAMAGE)/10);
+                pHarbinger.heal(event.getEntity().getMaxHealth()/2);
+                pHarbinger.setSyncInt(Harbinger.LIFECOUNTER,40);
+                pHarbinger.playSound(SoundEvents.END_PORTAL_SPAWN);}catch(Exception e){
+                    //nothing.
+                }
+            }
             //when villager dies
             if (event.getEntity() instanceof Villager villager) {
                 if (event.getSource().getDirectEntity() instanceof Player player) {

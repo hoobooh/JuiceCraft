@@ -1,6 +1,7 @@
 package com.usagin.juicecraft.ai.awareness;
 
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -94,7 +95,9 @@ public class EnemyEvaluator {
             }
             netXP += tempexp - currentexp;
         }
-
+        if(target instanceof Harbinger){
+            netXP=netXP/10;
+        }
         return netXP * friend.getCombatAffinityModifier();
     }
 }

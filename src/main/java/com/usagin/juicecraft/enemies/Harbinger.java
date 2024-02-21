@@ -47,11 +47,6 @@ public class Harbinger extends Monster {
     public Harbinger(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
-    public void setSecondsOnFire(int pSeconds) {
-        if(pSeconds > 300){
-            super.setSecondsOnFire(pSeconds-300);
-        }
-    }
     public boolean canDisableShield() {
         return true;
     }
@@ -62,6 +57,7 @@ public class Harbinger extends Monster {
     public AnimationState attackAnimState = new AnimationState();
     public AnimationState idleAnimState = new AnimationState();
     public AnimationState walkAnimState = new AnimationState();
+    public AnimationState counterAnimState = new AnimationState();
     public AnimationState otherAnimState = new AnimationState();
     boolean queuehostile = false;
     int previouscount = 0;
@@ -86,15 +82,24 @@ public class Harbinger extends Monster {
         }
 
     }
+    public boolean isAbsorbingLife(){
+        return this.getSyncInt(LIFECOUNTER)>0;
+    }
     @Override
     public void tick() {
         super.tick();
         if (this.level().isClientSide()) {
+            int n = this.getSyncInt(ATTACKCOUNTER);
+            int t = this.getSyncInt(ATTACKTYPE);
             this.walkAnimState.animateWhen(this.walkAnimation.speed() >= 0.1F,this.tickCount);
-            this.attackAnimState.animateWhen(this.getSyncInt(ATTACKCOUNTER) > 0, this.tickCount);
+            this.attackAnimState.animateWhen(n > 0 && t!=4, this.tickCount);
             this.idleAnimState.animateWhen(this.walkAnimation.speed() < 0.1F,this.tickCount);
             this.otherAnimState.animateWhen(this.getSyncInt(ANIMCOUNTER) > 0, this.tickCount);
+            this.counterAnimState.animateWhen(n > 0 && t==4, this.tickCount);
         } else {
+            if(this.tickCount%20==0 && this.getHealth() < this.getMaxHealth()){
+                this.setHealth(Mth.clamp(this.getHealth()+1,0,this.getMaxHealth()));
+            }
             this.previouscount=this.getSyncInt(ANIMCOUNTER);
             this.decrementCounters();
             this.checkAndPerformAttack();
@@ -168,10 +173,15 @@ public class Harbinger extends Monster {
                         this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.CRIT);
                         this.doHurtTarget(180, 4);
                     }
-                } else {
+                } else if (type==3){
                     if (n == 9) {
                         this.playSound(UniversalSoundInit.HARBINGER_SLASH.get());
                         this.doHurtTarget(50, 5);
+                    }
+                }   else{
+                    if(n==17){
+                        this.playSound(UniversalSoundInit.HARBINGER_SLAM.get());
+                        this.doHurtTarget(60,6);
                     }
                 }
             }
@@ -194,8 +204,9 @@ public class Harbinger extends Monster {
                             this.playSound(UniversalSoundInit.HARBINGER_SLASH.get());
                         }
                         this.doHurtTarget(40, 6);
+
                     }
-                } else {
+                } else if (type==3){
                     if (n == 30 || n == 14) {
                         if(n==30){
                             this.spawnParticlesInUpFacingCircle(this,1.5F, ParticleTypes.CRIT);
@@ -206,9 +217,30 @@ public class Harbinger extends Monster {
                         }
                         this.doHurtTarget(90, 5);
                     }
+                }else{
+                    if(n==15){
+                        this.playSound(UniversalSoundInit.HARBINGER_SLASH.get());
+                        this.doHurtTarget(90,7);
+                        this.level().explode(this, this.getX(), this.getY(), this.getZ(), 3, true, Level.ExplosionInteraction.NONE);
+                    }
                 }
             }
 
+        }
+    }
+    @Override
+    public boolean hurt(DamageSource pSource, float pAmount) {
+        if (this.isInvulnerableTo(pSource)) {
+            return false;
+        }
+        if(this.getRandom().nextInt(0,10) <3 && (this.getSyncInt(ATTACKCOUNTER) > 20 || this.getSyncInt(ATTACKCOUNTER) ==0)&& this.getSyncInt(ATTACKTYPE)!=4 && !this.getSyncBoolean(PEACEFUL)
+        && this.getSyncInt(ANIMCOUNTER) <= 0){
+            this.setSyncInt(ATTACKCOUNTER,40);
+            this.setSyncInt(ATTACKTYPE,4);
+            this.playSound(UniversalSoundInit.COUNTER_BLOCK.get());
+            return false;
+        }else{
+            return super.hurt(pSource,pAmount);
         }
     }
 
@@ -335,7 +367,7 @@ public class Harbinger extends Monster {
     }
 
     public boolean shouldResetRightArm() {
-        return (this.getSyncInt(ANIMTYPE) == 1 && this.getSyncInt(ANIMCOUNTER) > 0 ) || this.attackAnimState.isStarted();
+        return (this.getSyncInt(ANIMTYPE) == 1 && this.getSyncInt(ANIMCOUNTER) > 0 ) || this.counterAnimState.isStarted() || this.attackAnimState.isStarted();
     }
 
     public boolean shouldLockHead() {
@@ -350,13 +382,15 @@ public class Harbinger extends Monster {
         this.getEntityData().define(ANIMCOUNTER, 0);
         this.getEntityData().define(ATTACKTYPE, 0);
         this.getEntityData().define(ANIMTYPE, 0);
+        this.getEntityData().define(LIFECOUNTER, 0);
     }
 
+    public static EntityDataAccessor<Integer> LIFECOUNTER = SynchedEntityData.defineId(Harbinger.class, EntityDataSerializers.INT);
     public static EntityDataAccessor<Boolean> PEACEFUL = SynchedEntityData.defineId(Harbinger.class, EntityDataSerializers.BOOLEAN);
     public static EntityDataAccessor<Boolean> SWORD = SynchedEntityData.defineId(Harbinger.class, EntityDataSerializers.BOOLEAN);
     public static EntityDataAccessor<Integer> ATTACKCOUNTER = SynchedEntityData.defineId(Harbinger.class, EntityDataSerializers.INT);
     public static EntityDataAccessor<Integer> ANIMCOUNTER = SynchedEntityData.defineId(Harbinger.class, EntityDataSerializers.INT);
     public static EntityDataAccessor<Integer> ATTACKTYPE = SynchedEntityData.defineId(Harbinger.class, EntityDataSerializers.INT);
     public static EntityDataAccessor<Integer> ANIMTYPE = SynchedEntityData.defineId(Harbinger.class, EntityDataSerializers.INT);
-    public static final List<EntityDataAccessor<Integer>> LIST = Arrays.asList(ATTACKCOUNTER, ANIMCOUNTER);
+    public static final List<EntityDataAccessor<Integer>> LIST = Arrays.asList(ATTACKCOUNTER, ANIMCOUNTER,LIFECOUNTER);
 }
