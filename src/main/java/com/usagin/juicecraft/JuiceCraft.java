@@ -2,6 +2,7 @@ package com.usagin.juicecraft;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.Init.BlockEntityInit;
+import com.usagin.juicecraft.Init.CodecInit;
 import com.usagin.juicecraft.Init.sounds.AlteSoundInit;
 import com.usagin.juicecraft.Init.sounds.SoraSoundInit;
 import net.minecraft.client.Minecraft;
@@ -74,6 +75,7 @@ public class JuiceCraft {
         // Register the Deferred Register to the mod event bus so tabs get registered
         ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        CodecInit.CODREG.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

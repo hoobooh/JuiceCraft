@@ -1,7 +1,5 @@
 package com.usagin.juicecraft;
 
-import com.ibm.icu.text.MessagePattern;
-import com.mojang.datafixers.util.Pair;
 import com.usagin.juicecraft.Init.BlockEntityInit;
 import com.usagin.juicecraft.Init.EntityInit;
 import com.usagin.juicecraft.Init.ParticleInit;
@@ -22,58 +20,31 @@ import com.usagin.juicecraft.network.*;
 import com.usagin.juicecraft.particles.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.blockentity.BedRenderer;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.data.worldgen.AncientCityStructurePieces;
-import net.minecraft.data.worldgen.AncientCityStructurePools;
-import net.minecraft.data.worldgen.VillagePools;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.datafix.fixes.WeaponSmithChestLootTableFix;
-import net.minecraft.util.profiling.jfr.event.ChunkGenerationEvent;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.BedBlock;
-import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
-import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
-import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
-import net.minecraft.world.level.levelgen.structure.structures.DesertPyramidPiece;
-import net.minecraft.world.level.levelgen.structure.structures.DesertPyramidStructure;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntries;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.common.data.GlobalLootModifierProvider;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.server.command.ModIdArgument;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 import static com.usagin.juicecraft.client.renderer.blockrenderers.PlushieRenderer.PLUSHIE;
-import static com.usagin.juicecraft.particles.AlteLightningParticle.LOGGER;
 
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CommonEvents {
+
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event) {
         event.put(EntityInit.SORA.get(), Sora.getSoraAttributes().build());
         event.put(EntityInit.ALTE.get(), Alte.getAlteAttributes().build());
-        event.put(EntityInit.HARBINGER.get(),Harbinger.getHarbingerAttributes().build());
+        event.put(EntityInit.HARBINGER.get(), Harbinger.getHarbingerAttributes().build());
     }
 
     @SubscribeEvent
@@ -87,13 +58,13 @@ public class CommonEvents {
     }
 
     @SubscribeEvent
-    public static void blockRenderers(EntityRenderersEvent.RegisterRenderers event){
+    public static void blockRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(BlockEntityInit.FRIEND_BED.get(), FriendBedRenderer::new);
         event.registerBlockEntityRenderer(BlockEntityInit.ALTE_PLUSHIE.get(), AltePlushieRenderer::new);
     }
 
-    public static ModelLayerLocation FRIEND_BED_FOOT = new ModelLayerLocation(new ResourceLocation(MODID,"friend_bed_foot"),"main");
-    public static ModelLayerLocation FRIEND_BED_HEAD = new ModelLayerLocation(new ResourceLocation(MODID,"friend_bed_head"),"main");
+    public static ModelLayerLocation FRIEND_BED_FOOT = new ModelLayerLocation(new ResourceLocation(MODID, "friend_bed_foot"), "main");
+    public static ModelLayerLocation FRIEND_BED_HEAD = new ModelLayerLocation(new ResourceLocation(MODID, "friend_bed_head"), "main");
 
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -101,12 +72,11 @@ public class CommonEvents {
         event.registerLayerDefinition(AlteEntityModel.LAYER_LOCATION, AlteEntityModel::createBodyLayer);
         event.registerLayerDefinition(HarbingerModel.LAYER_LOCATION, HarbingerModel::createBodyLayer);
 
-        event.registerLayerDefinition(FRIEND_BED_FOOT,FriendBedRenderer::createFootLayer);
-        event.registerLayerDefinition(FRIEND_BED_HEAD,FriendBedRenderer::createHeadLayer);
+        event.registerLayerDefinition(FRIEND_BED_FOOT, FriendBedRenderer::createFootLayer);
+        event.registerLayerDefinition(FRIEND_BED_HEAD, FriendBedRenderer::createHeadLayer);
         event.registerLayerDefinition(PLUSHIE, AltePlushieRenderer::createLayer);
 
     }
-
 
 
     @SubscribeEvent
@@ -128,6 +98,7 @@ public class CommonEvents {
         Minecraft.getInstance().particleEngine.register(ParticleInit.RANDOM_ENERGY_PARTICLE.get(), RandomEnergyParticle.RandomEnergyProvider::new);
 
     }
+
     @SubscribeEvent
     public static void registerPacketHandler(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
@@ -142,7 +113,6 @@ public class CommonEvents {
             CircleParticlePacketHandler.register();
         });
     }
-
 
 
 }
