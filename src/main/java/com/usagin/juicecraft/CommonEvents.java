@@ -27,6 +27,8 @@ import net.minecraft.client.renderer.blockentity.BedRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.worldgen.AncientCityStructurePieces;
+import net.minecraft.data.worldgen.AncientCityStructurePools;
 import net.minecraft.data.worldgen.VillagePools;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -81,6 +83,7 @@ public class CommonEvents {
         event.registerEntityRenderer(EntityInit.HARBINGER.get(), HarbingerRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_MINIGUN_PROJECTILE.get(), FriendProjectileRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_PANEL_PROJECTILE.get(), FriendProjectileRenderer::new);
+
     }
 
     @SubscribeEvent

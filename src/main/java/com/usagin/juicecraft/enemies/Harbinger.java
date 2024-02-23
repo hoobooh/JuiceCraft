@@ -50,6 +50,9 @@ public class Harbinger extends Monster {
         this.xpReward=50;
         this.setPersistenceRequired();
     }
+    public boolean isPersistenceRequired() {
+        return true;
+    }
     public boolean canDisableShield() {
         return true;
     }
