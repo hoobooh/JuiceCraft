@@ -1,0 +1,12 @@
+{
+  "type": "juicecraft:chest_codec",
+  "chance": 12,
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/bastion_treasure"
+    }
+  ],
+  "count": 3,
+  "item": "juicecraft:altescooking"
+}

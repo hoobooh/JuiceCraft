@@ -15,6 +15,6 @@ import net.minecraftforge.registries.RegistryObject;
 import static net.minecraftforge.common.loot.IGlobalLootModifier.LOOT_CONDITIONS_CODEC;
 
 public class CodecInit {
-    public static DeferredRegister<Codec<? extends IGlobalLootModifier>> CODREG = DeferredRegister.create(ForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS, JuiceCraft.MODID);
+    public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> CODREG = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, JuiceCraft.MODID);
     public static final RegistryObject<Codec<? extends IGlobalLootModifier>> CHEST = CODREG.register("chest_codec", ChestLootModifier.CODEC);
 }

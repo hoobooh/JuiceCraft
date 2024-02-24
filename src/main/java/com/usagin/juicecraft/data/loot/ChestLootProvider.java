@@ -2,6 +2,7 @@ package com.usagin.juicecraft.data.loot;
 
 import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.JuiceCraft;
+import com.usagin.juicecraft.particles.AlteLightningParticle;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -35,10 +36,11 @@ public class ChestLootProvider extends GlobalLootModifierProvider {
         this.addAllItems(new ResourceLocation("chests/stronghold_crossing"));
         this.addAllItems(new ResourceLocation("chests/igloo_chest"));
         this.addAllItems(new ResourceLocation("chests/jungle_temple"));
+        this.addAllItems(new ResourceLocation("chests/desert_pyramid"));
     }
 
     public void addAllItems(ResourceLocation loc){
-        String has = loc.getNamespace().replace('/','.').replace(':','.');
+        String has = loc.getPath().replace('/','.').replace(':','.') + ".";
         add(has + "orange",new ChestLootModifier(new LootItemCondition[]{
                new LootTableIdCondition.Builder(loc).build()
         }, ItemInit.ORANGE.get(),8,10));

@@ -13,6 +13,7 @@ import com.usagin.juicecraft.client.renderer.entities.AlteEntityRenderer;
 import com.usagin.juicecraft.client.renderer.entities.FriendProjectileRenderer;
 import com.usagin.juicecraft.client.renderer.entities.HarbingerRenderer;
 import com.usagin.juicecraft.client.renderer.entities.SoraEntityRenderer;
+import com.usagin.juicecraft.data.loot.ChestLootProvider;
 import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Sora;
