@@ -41,9 +41,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 
         PartDefinition butt = hip.addOrReplaceChild("butt", CubeListBuilder.create().texOffs(290, 92).addBox(-19.0F, 0.0F, 2.0F, 38.0F, 12.0F, 19.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -71.0F, -7.0F));
 
-        PartDefinition rightleg = butt.addOrReplaceChild("rightleg", CubeListBuilder.create().texOffs(286, 132).addBox(-4.0F, 0.0F, -8.0F, 8.0F, 23.0F, 16.0F, new CubeDeformation(0.0F))
-                .texOffs(290, 52).addBox(-8.0F, 0.0F, -4.0F, 4.0F, 24.0F, 8.0F, new CubeDeformation(0.0F))
-                .texOffs(0, 71).addBox(4.0F, 0.0F, -4.0F, 4.0F, 24.0F, 8.0F, new CubeDeformation(0.0F)), PartPose.offset(-12.0F, 11.0F, 11.0F));
+        PartDefinition rightleg = butt.addOrReplaceChild("rightleg", CubeListBuilder.create().texOffs(869, 428).addBox(-8.0F, 0.0F, -7.0F, 16.0F, 24.0F, 14.0F, new CubeDeformation(0.0F)), PartPose.offset(-12.0F, 11.0F, 11.0F));
 
         PartDefinition lowerleg2 = rightleg.addOrReplaceChild("lowerleg2", CubeListBuilder.create().texOffs(286, 184).addBox(-4.0F, -1.0F, -8.0F, 8.0F, 21.0F, 16.0F, new CubeDeformation(0.0F))
                 .texOffs(134, 608).addBox(-8.0F, 1.0F, -4.0F, 16.0F, 19.0F, 8.0F, new CubeDeformation(0.0F))
@@ -53,9 +51,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
                 .texOffs(696, 62).addBox(-1.0F, 0.0F, -7.0F, 2.0F, 6.0F, 16.0F, new CubeDeformation(0.0F))
                 .texOffs(354, 599).addBox(-9.0F, 0.0F, -9.0F, 8.0F, 6.0F, 18.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-        PartDefinition leftleg = butt.addOrReplaceChild("leftleg", CubeListBuilder.create().texOffs(142, 286).addBox(-4.0F, 0.0F, -8.0F, 8.0F, 23.0F, 16.0F, new CubeDeformation(0.0F))
-                .texOffs(296, 353).addBox(4.0F, 0.0F, -4.0F, 4.0F, 24.0F, 8.0F, new CubeDeformation(0.0F))
-                .texOffs(0, 142).addBox(-8.0F, 0.0F, -4.0F, 4.0F, 24.0F, 8.0F, new CubeDeformation(0.0F)), PartPose.offset(12.0F, 11.0F, 11.0F));
+        PartDefinition leftleg = butt.addOrReplaceChild("leftleg", CubeListBuilder.create().texOffs(869, 428).addBox(-8.0F, 0.0F, -7.0F, 16.0F, 24.0F, 14.0F, new CubeDeformation(0.0F)), PartPose.offset(12.0F, 11.0F, 11.0F));
 
         PartDefinition lowerleg = leftleg.addOrReplaceChild("lowerleg", CubeListBuilder.create().texOffs(290, 0).addBox(-4.0F, -1.0F, -8.0F, 8.0F, 21.0F, 16.0F, new CubeDeformation(0.0F))
                 .texOffs(608, 610).addBox(-8.0F, 1.0F, -4.0F, 16.0F, 19.0F, 8.0F, new CubeDeformation(0.0F))
@@ -385,8 +381,8 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 
         PartDefinition leftarm = chest.addOrReplaceChild("leftarm", CubeListBuilder.create().texOffs(859, 147).addBox(0.0F, 0.0F, -6.0F, 11.0F, 28.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(15.0F, -18.0F, 9.0F, 0.0F, 0.0F, -0.1309F));
 
-        PartDefinition lowerarm2 = leftarm.addOrReplaceChild("lowerarm2", CubeListBuilder.create().texOffs(380, 458).addBox(-2.0F, 0.0F, -6.0F, 3.0F, 28.0F, 12.0F, new CubeDeformation(0.0F))
-                .texOffs(124, 213).addBox(1.0F, 0.0F, -2.0F, 3.0F, 28.0F, 4.0F, new CubeDeformation(0.0F))
+        PartDefinition lowerarm2 = leftarm.addOrReplaceChild("lowerarm2", CubeListBuilder.create().texOffs(861, 281).addBox(-2.0F, 13.0F, -6.0F, 6.0F, 15.0F, 12.0F, new CubeDeformation(0.0F))
+                .texOffs(861, 281).addBox(-2.0F, 0.0F, -6.0F, 3.0F, 13.0F, 12.0F, new CubeDeformation(0.0F))
                 .texOffs(384, 406).addBox(-6.0F, 0.0F, -6.0F, 4.0F, 28.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offset(6.0F, 28.0F, 0.0F));
 
         PartDefinition lowersleeve4 = lowerarm2.addOrReplaceChild("lowersleeve4", CubeListBuilder.create().texOffs(580, 134).addBox(-6.0F, 0.0F, -10.0F, 8.0F, 9.0F, 20.0F, new CubeDeformation(0.001F))
@@ -424,8 +420,8 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 
         PartDefinition rightarm = chest.addOrReplaceChild("rightarm", CubeListBuilder.create().texOffs(861, 202).addBox(-11.0F, 0.0F, -6.0F, 11.0F, 28.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-15.0F, -18.0F, 9.0F, 0.0F, 0.0F, 0.1309F));
 
-        PartDefinition lowerarm = rightarm.addOrReplaceChild("lowerarm", CubeListBuilder.create().texOffs(538, 452).addBox(-1.0F, 0.0F, -6.0F, 3.0F, 28.0F, 12.0F, new CubeDeformation(0.0F))
-                .texOffs(92, 330).addBox(-4.0F, 0.0F, -2.0F, 3.0F, 28.0F, 4.0F, new CubeDeformation(0.0F))
+        PartDefinition lowerarm = rightarm.addOrReplaceChild("lowerarm", CubeListBuilder.create().texOffs(880, 855).addBox(-4.0F, 13.0F, -6.0F, 6.0F, 15.0F, 12.0F, new CubeDeformation(0.0F))
+                .texOffs(880, 855).addBox(-1.0F, 0.0F, -6.0F, 3.0F, 13.0F, 12.0F, new CubeDeformation(0.0F))
                 .texOffs(237, 418).addBox(2.0F, 0.0F, -6.0F, 4.0F, 28.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offset(-6.0F, 28.0F, 0.0F));
 
         PartDefinition lowersleeve = lowerarm.addOrReplaceChild("lowersleeve", CubeListBuilder.create().texOffs(580, 163).addBox(-2.0F, 0.0F, -10.0F, 8.0F, 9.0F, 20.0F, new CubeDeformation(0.001F))
@@ -878,6 +874,7 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
 
         return LayerDefinition.create(meshdefinition, 1024, 1024);
     }
+
 
     public void defineAnimations() {
         this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);
