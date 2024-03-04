@@ -1,0 +1,12 @@
+{
+  "type": "juicecraft:chest_codec",
+  "chance": 2,
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/bastion_treasure"
+    }
+  ],
+  "count": 2,
+  "item": "juicecraft:redbeanicecream"
+}

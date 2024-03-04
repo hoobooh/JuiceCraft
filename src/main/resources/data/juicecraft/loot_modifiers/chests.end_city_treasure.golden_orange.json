@@ -1,0 +1,12 @@
+{
+  "type": "juicecraft:chest_codec",
+  "chance": 5,
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/end_city_treasure"
+    }
+  ],
+  "count": 2,
+  "item": "juicecraft:golden_orange"
+}

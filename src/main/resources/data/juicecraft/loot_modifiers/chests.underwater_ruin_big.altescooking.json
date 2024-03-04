@@ -1,0 +1,12 @@
+{
+  "type": "juicecraft:chest_codec",
+  "chance": 12,
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/underwater_ruin_big"
+    }
+  ],
+  "count": 3,
+  "item": "juicecraft:altescooking"
+}
