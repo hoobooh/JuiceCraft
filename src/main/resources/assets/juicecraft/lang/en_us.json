@@ -205,7 +205,7 @@
   "juicecraft.menu.alte.skill1": "§n§lWeapon of War§r§l\nNorma 1§r\nImprove Alte's combat capabilities, strengthening her physical stats and fighting prowess.",
   "juicecraft.menu.alte.skill2": "§n§lSpark§r§l\nNorma 2§r\nAlte creates a shockwave in front of her, damaging and slowing any enemies caught inside.",
   "juicecraft.menu.alte.skill3": "§n§lShock Rod§r§l\nNorma 3§r\nAlte temporarily equips her Shock Rod, increasing melee attack damage and shocking the enemies she hits.",
-  "juicecraft.menu.alte.skill4": "§n§lPunisher§r§l\nNorma 3§r\nRequires \"Shock Rod\" to be active. Alte increases the energy output of her Shock Rod before dashing through a target, knocking aside any enemies in the way.",
+  "juicecraft.menu.alte.skill4": "§n§lPunisher§r§l\nNorma 3§r\nRequires \"Shock Rod\" to be active. Alte increases the energy output of her Shock Rod before dashing through a target, knocking aside any enemies in her way.",
   "juicecraft.menu.alte.skill5": "§n§lWhatever It Takes§r§l\nNorma 4§r\nRequires Activator. Once per day, when Alte would die: Alte instead unleashes a violent shockwave of energy, dealing massive damage to the enemies around her.",
   "juicecraft.menu.alte.skill6": "§d§n§lLambda Leonis§r§l\nNorma 5§r\nRequires Activator. Alte shoots everything.",
 
@@ -315,6 +315,14 @@
   "juicecraft.menu.sora.disposition": "Kind",
   "juicecraft.menu.sora.specialties": "Naturally Talented, Idol Prodigy",
   "juicecraft.menu.sora.weaknesses": "Prone to Violence",
+
+  "juicecraft.menu.sora.skill1": "§n§lWeapon of War§r§l\nNorma 1§r\nImprove Sora's combat capabilities, strengthening her physical stats and fighting prowess.",
+  "juicecraft.menu.sora.skill2": "§n§lSlash-Through§r§l\nNorma 1§r\nSora dashes forward with a quick slice, cutting everything in her way.",
+  "juicecraft.menu.sora.skill3": "§n§lShield§r§l\nNorma 2§r\nSora raises an energy barrier around her and her player, protecting them from harm.",
+  "juicecraft.menu.sora.skill4": "§n§lShield Invert§r§l\nNorma 3§r\nRequires \"Shield\" to be active. When Sora would lower her barrier, disperse all absorbed damage to nearby enemies.",
+  "juicecraft.menu.sora.skill5": "§n§lBoisterous Dance§r§l\nNorma 4§r\nRequires Activator. Sora's power temporarily spikes, giving her access to a completely new attack set and sharpening her senses.",
+  "juicecraft.menu.sora.skill6": "§6§n§lUnlimited Charge§r§l\nNorma 5§r\nRequires Activator. Sora gains Unlimited Charge, releasing a single massive attack.",
+
 
   "juicecraft.menu.sora.prompts.normal1": "Pillagers… I wonder if we could get along with them too…",
   "juicecraft.menu.sora.esponses.normal1_response1": "I think it might be possible one day.",

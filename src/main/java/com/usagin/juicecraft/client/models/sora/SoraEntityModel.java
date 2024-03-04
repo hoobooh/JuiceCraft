@@ -375,12 +375,16 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
                 .texOffs(216, 0).addBox(-2.0F, 17.1F, -196.0F, 4.0F, 3.0F, 200.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.2182F, 0.0F, 0.0F));
 
         PartDefinition bell = chest.addOrReplaceChild("bell", CubeListBuilder.create().texOffs(346, 76).addBox(-3.0F, 3.5F, -4.75F, 6.0F, 2.0F, 5.0F, new CubeDeformation(0.0F))
+                .texOffs(346, 76).addBox(-3.0F, 5.5F, -4.75F, 6.0F, 1.0F, 5.0F, new CubeDeformation(0.0F))
                 .texOffs(216, 69).addBox(-4.0F, 0.5F, -5.75F, 8.0F, 3.0F, 7.0F, new CubeDeformation(0.0F))
                 .texOffs(76, 446).addBox(-1.0F, 3.5F, -5.75F, 2.0F, 1.0F, 7.0F, new CubeDeformation(0.0F))
-                .texOffs(370, 430).addBox(-4.0F, 5.5F, -5.75F, 8.0F, 2.0F, 7.0F, new CubeDeformation(0.0F))
-                .texOffs(75, 0).addBox(-0.5F, 7.25F, -4.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F))
-                .texOffs(47, 446).addBox(-4.0F, 4.5F, -5.75F, 2.0F, 1.0F, 7.0F, new CubeDeformation(0.0F))
-                .texOffs(53, 327).addBox(2.0F, 4.5F, -5.75F, 2.0F, 1.0F, 7.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -9.0F, -8.0F, -0.0873F, 0.0F, 0.0F));
+                .texOffs(75, 0).addBox(-0.5F, 7.25F, -4.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -9.0F, -8.0F, -0.0873F, 0.0F, 0.0F));
+
+        PartDefinition shellleft = bell.addOrReplaceChild("shellleft", CubeListBuilder.create().texOffs(370, 430).addBox(-4.0F, -0.5F, -5.75F, 4.0F, 2.0F, 7.0F, new CubeDeformation(0.0F))
+                .texOffs(47, 446).addBox(-4.0F, -1.5F, -5.75F, 2.0F, 1.0F, 7.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 6.0F, 0.0F));
+
+        PartDefinition shellright = bell.addOrReplaceChild("shellright", CubeListBuilder.create().texOffs(370, 430).addBox(0.0F, -0.5F, -5.75F, 4.0F, 2.0F, 7.0F, new CubeDeformation(0.0F))
+                .texOffs(53, 327).addBox(2.0F, -1.5F, -5.75F, 2.0F, 1.0F, 7.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 6.0F, 0.0F));
 
         PartDefinition zipper = bell.addOrReplaceChild("zipper", CubeListBuilder.create().texOffs(54, 5).addBox(-1.5F, 0.0F, 0.0F, 3.0F, 5.0F, 1.0F, new CubeDeformation(0.0F))
                 .texOffs(75, 37).addBox(-1.5F, 6.0F, 0.0F, 3.0F, 1.0F, 1.0F, new CubeDeformation(0.0F))
@@ -474,6 +478,7 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
         return LayerDefinition.create(meshdefinition, 1024, 1024);
     }
 
+
     public boolean shouldRenderZapper(Sora sora){
         return false;
     }
@@ -483,6 +488,12 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
 
     public void defineAnimations() {
         this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);}
+    public void attackAnim(Sora pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+        boolean flag = pEntity.slashThroughAnimState.isStarted();
+        this.animate(pEntity.slashThroughAnimState,slashThrough,pAgeInTicks);
+        if(!flag){
+        super.attackAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);}
+    }
 
     @Override
     public void setupAnim(@NotNull Sora sora, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {

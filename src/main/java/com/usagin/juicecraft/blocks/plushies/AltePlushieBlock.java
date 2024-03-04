@@ -19,7 +19,7 @@ public class AltePlushieBlock extends PlushieBlock {
         return new AltePlushieBlockEntity(pPos, pState);
     }
 
-    public static ResourceLocation TEXTURE = new ResourceLocation(JuiceCraft.MODID,"textures/entities/plushies/alte.png");
+    public static ResourceLocation TEXTURE = new ResourceLocation(JuiceCraft.MODID,"textures/entities/plushies/sora.png");
     @Override
     public ResourceLocation getTexture() {
         return TEXTURE;

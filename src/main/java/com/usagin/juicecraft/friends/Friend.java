@@ -228,6 +228,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.inventory.setItem(1, this.getFriendWeapon());
         }
         this.setCanPickUpLoot(true);
+        this.counters=new ArrayList<>();
     }
 
     void initializeNew() {
@@ -1548,9 +1549,27 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.FATIGUE = new AttributeModifier(NIGHTFATIGUEID, "NIGHTFATIGUE", -0.1F, AttributeModifier.Operation.ADDITION);
             this.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(this.FATIGUE);}}
     }
+    public void decrementAnimCounter(EntityDataAccessor<Integer> accessor) {
+        int temp = this.getSyncInt(accessor);
+        if (temp > 0) {
+            this.setSyncInt(accessor, temp - 1);
+        }
+
+    }
+    public boolean areAnimationsBusy() {
+        for (EntityDataAccessor<Integer> access : this.counters) {
+            if (this.getSyncInt(access) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
     @Override
     public void tick() {
         this.setupcomplete = true;
+        for (EntityDataAccessor<Integer> counter : this.counters) {
+            this.decrementAnimCounter(counter);
+        }
         super.tick();
         if (this.patCounter > 0) {
             this.idleCounter = 0;
@@ -2067,6 +2086,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean sleepy() {
         return idle() && !this.day();
     }
+    public ArrayList<EntityDataAccessor<Integer>> counters;
 
     public boolean animateSleep() {
         return this.getFeetBlockState().isBed(this.level(), new BlockPos(this.getBlockX(), this.getBlockY() - 1, this.getBlockZ()), null);

@@ -24,9 +24,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static com.usagin.juicecraft.Init.ParticleInit.ALTE_LIGHTNING_PARTICLE;
 import static com.usagin.juicecraft.Init.ParticleInit.ALTE_SELFDESTRUCT_PARTICLE;
 import static com.usagin.juicecraft.Init.sounds.AlteSoundInit.*;
@@ -45,7 +42,6 @@ public class Alte extends OldWarFriend {
     public static final EntityDataAccessor<Integer> ALTE_HYPERWINDUPCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ALTE_HYPERRELAXCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> ALTE_HYPERENDCOUNTER = SynchedEntityData.defineId(Alte.class, EntityDataSerializers.INT);
-    public static final List<EntityDataAccessor<Integer>> counters = Arrays.asList(ALTE_SPARKCOUNTER, ALTE_RODSUMMONCOUNTER, ALTE_RODSHEATHCOUNTER, ALTE_PUNISHERCOUNTER, ALTE_HYPERENDCOUNTER, ALTE_HYPERSTARTCOUNTER, ALTE_HYPERWINDUPCOUNTER, ALTE_HYPERRELAXCOUNTER);
     public final AnimationState sparkAnimState = new AnimationState();
     public final AnimationState rodSummonAnimState = new AnimationState();
     public final AnimationState rodSheathAnimState = new AnimationState();
@@ -64,8 +60,17 @@ public class Alte extends OldWarFriend {
     public int rodcooldown = 12000;
     public int punishercooldown = 0;
     public int hypermeter = 24000;
+
     public Alte(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.counters.add(ALTE_SPARKCOUNTER);
+        this.counters.add(ALTE_RODSUMMONCOUNTER);
+        this.counters.add(ALTE_RODSHEATHCOUNTER);
+        this.counters.add(ALTE_PUNISHERCOUNTER);
+        this.counters.add(ALTE_HYPERENDCOUNTER);
+        this.counters.add(ALTE_HYPERSTARTCOUNTER);
+        this.counters.add(ALTE_HYPERWINDUPCOUNTER);
+        this.counters.add(ALTE_HYPERRELAXCOUNTER);
     }
 
     public static AttributeSupplier.Builder getAlteAttributes() {
@@ -419,25 +424,25 @@ public class Alte extends OldWarFriend {
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
 
-        pCompound.putInt("juicecraft.alte.hypermeter", this.hypermeter);
-        pCompound.putInt("juicecraft.alte.sparkcooldown", this.sparkcooldown);
-        pCompound.putInt("juicecraft.alte.rodcooldown", this.getSyncInt(ALTE_RODCOOLDOWN));
-        pCompound.putInt("juicecraft.alte.punishercooldown", this.punishercooldown);
-        pCompound.putInt("juicecraft.alte.selfdestructcooldown", this.selfdestructcooldown);
-        pCompound.putBoolean("juicecraft.alte.usinghyper", this.getSyncBoolean(ALTE_USINGHYPER));
+        pCompound.putInt("juicecraft.sora.hypermeter", this.hypermeter);
+        pCompound.putInt("juicecraft.sora.sparkcooldown", this.sparkcooldown);
+        pCompound.putInt("juicecraft.sora.rodcooldown", this.getSyncInt(ALTE_RODCOOLDOWN));
+        pCompound.putInt("juicecraft.sora.punishercooldown", this.punishercooldown);
+        pCompound.putInt("juicecraft.sora.selfdestructcooldown", this.selfdestructcooldown);
+        pCompound.putBoolean("juicecraft.sora.usinghyper", this.getSyncBoolean(ALTE_USINGHYPER));
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("juicecraft.alte.rodcooldown")) {
-            this.setAlteRodCooldown(pCompound.getInt("juicecraft.alte.rodcooldown"));
+        if (pCompound.contains("juicecraft.sora.rodcooldown")) {
+            this.setAlteRodCooldown(pCompound.getInt("juicecraft.sora.rodcooldown"));
         }
-        this.hypermeter = pCompound.getInt("juicecraft.alte.hypermeter");
-        this.sparkcooldown = pCompound.getInt("juicecraft.alte.sparkcooldown");
-        this.punishercooldown = pCompound.getInt("juicecraft.alte.punishercooldown");
-        this.selfdestructcooldown = pCompound.getInt("juicecraft.alte.selfdestructcooldown");
-        this.setAlteUsingHyper(pCompound.getBoolean("juicecraft.alte.usinghyper"));
+        this.hypermeter = pCompound.getInt("juicecraft.sora.hypermeter");
+        this.sparkcooldown = pCompound.getInt("juicecraft.sora.sparkcooldown");
+        this.punishercooldown = pCompound.getInt("juicecraft.sora.punishercooldown");
+        this.selfdestructcooldown = pCompound.getInt("juicecraft.sora.selfdestructcooldown");
+        this.setAlteUsingHyper(pCompound.getBoolean("juicecraft.sora.usinghyper"));
     }
 
     public void setAlteUsingHyper(boolean b) {
@@ -460,6 +465,7 @@ public class Alte extends OldWarFriend {
         this.entityData.define(ALTE_USINGHYPER, false);
         this.entityData.define(ALTE_HYPERRELAXCOUNTER, 0);
         this.entityData.define(ALTE_SHOOTING, false);
+
     }
 
     @Override
@@ -492,15 +498,6 @@ public class Alte extends OldWarFriend {
         return this.isUsingHyper() || this.areAnimationsBusy();
     }
 
-    public boolean areAnimationsBusy() {
-        for (EntityDataAccessor<Integer> access : counters) {
-            if (this.getSyncInt(access) > 0) {
-                return true;
-            }
-
-        }
-        return false;
-    }
 
     public boolean additionalInspectConditions() {
         return this.getSyncInt(ALTE_SPARKCOUNTER) <= 0;
@@ -518,10 +515,6 @@ public class Alte extends OldWarFriend {
             }
             if (this.getSyncInt(ALTE_RODCOOLDOWN) < 12000) {
                 this.setAlteRodCooldown(this.getSyncInt(ALTE_RODCOOLDOWN) + 1);
-            }
-            for (EntityDataAccessor<Integer> counter : counters) {
-                this.decrementAlteAnimCounter(counter);
-                //LOGGER.info(this.getSyncInt(ALTE_HYPERENDCOUNTER)+"");
             }
             if (this.primed) {
                 if (this.selfdestructtimer <= 0) {
@@ -557,13 +550,6 @@ public class Alte extends OldWarFriend {
         this.setSyncInt(ALTE_RODCOOLDOWN, n);
     }
 
-    public void decrementAlteAnimCounter(EntityDataAccessor<Integer> accessor) {
-        int temp = this.getSyncInt(accessor);
-        if (temp > 0) {
-            this.setSyncInt(accessor, temp - 1);
-        }
-
-    }
 
     void doSelfDestruct() {
         this.level().explode(this, this.getX(), this.getY(), this.getZ(), 10 + this.getSkillLevels()[4], true, Level.ExplosionInteraction.MOB);

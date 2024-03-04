@@ -163,7 +163,7 @@ public class AltePunisherGoal extends Goal {
         boolean flag;
         if (pEntity != null) {
             if (this.alte.distanceTo(pEntity) < 8) {
-                float f = (0.020F * this.alte.getSkillLevels()[3] + 1) * (float) this.alte.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5 * this.alte.getCombatMod() / 10) + this.alte.getRandom().nextInt(1, 7), 1, 6) + 3) / 6;
+                float f = (0.040F * this.alte.getSkillLevels()[3] + 1) * (float) this.alte.getAttributeValue(Attributes.ATTACK_DAMAGE) * (Mth.clamp((5 * this.alte.getCombatMod() / 10) + this.alte.getRandom().nextInt(1, 7), 1, 6) + 3) / 6;
                 if (pEntity.equals(this.target)) {
                     f *= 2;
                 }

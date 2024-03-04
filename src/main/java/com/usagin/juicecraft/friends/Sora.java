@@ -2,9 +2,15 @@ package com.usagin.juicecraft.friends;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.ai.goals.sora.SoraHyperGoal;
+import com.usagin.juicecraft.ai.goals.sora.SoraSlashThroughGoal;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.SoraDialogueManager;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -20,15 +26,54 @@ public class Sora extends OldWarFriend {
 
     public Sora(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.counters.add(SLASHTHROUGHCOUNTER);
     }
-
+    public AnimationState slashThroughAnimState = new AnimationState();
+    public void tick(){
+        super.tick();
+        if(this.level().isClientSide()){
+            this.slashThroughAnimState.animateWhen(this.getSyncInt(SLASHTHROUGHCOUNTER)>0,this.tickCount);
+        }else{
+            if(this.slashthroughcooldown>0){
+                this.slashthroughcooldown--;
+            }
+        }
+    }
+    public boolean isAttackLockedOut() {
+        return this.isUsingHyper() || this.areAnimationsBusy();
+    }
+    public boolean lockLookAround() {
+        return this.areAnimationsBusy() && super.lockLookAround();
+    }
+    @Override
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        pCompound.putInt("juicecraft.sora.slashthroughcooldown",this.slashthroughcooldown);
+    }
+    @Override
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        this.slashthroughcooldown=pCompound.getInt("juicecraft.sora.slashthroughcooldown");
+    }
     public static AttributeSupplier.Builder getSoraAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30).add(Attributes.MOVEMENT_SPEED, 0.35).add(Attributes.ATTACK_DAMAGE, 4);
     }
+    public boolean shouldMoveLegs() {
+        return !this.isUsingHyper() && this.getSyncInt(SLASHTHROUGHCOUNTER) <= 0;
+    }
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.getEntityData().define(SLASHTHROUGHCOUNTER,0);
+    }
+    public int slashthroughcooldown;
+    public static final EntityDataAccessor<Integer> SLASHTHROUGHCOUNTER = SynchedEntityData.defineId(Sora.class, EntityDataSerializers.INT);
 
+    public boolean isUsingHyper(){
+        return false;
+    }
     @Override
     int[] getSkillInfo() {
-        return new int[]{1, 1, 2, 2, 3, 4};
+        return new int[]{1, 1, 2, 3, 4, 5};
     }
 
     @Override
@@ -289,7 +334,7 @@ public class Sora extends OldWarFriend {
 
     @Override
     void registerAdditionalGoals() {
-
+        this.goalSelector.addGoal(5,new SoraSlashThroughGoal(this));
     }
 
 

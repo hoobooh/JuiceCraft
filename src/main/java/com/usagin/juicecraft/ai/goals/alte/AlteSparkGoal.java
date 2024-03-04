@@ -73,8 +73,8 @@ public class AlteSparkGoal extends Goal {
 
     @Override
     public void tick() {
-        //Vec3 angle = Vec3.directionFromRotation(this.alte.getAlteLookAngle(ALTE_SPARKANGLEX),this.alte.getAlteLookAngle(ALTE_SPARKANGLEY));
-        //this.alte.getLookControl().setLookAt(angle);
+        //Vec3 angle = Vec3.directionFromRotation(this.sora.getAlteLookAngle(ALTE_SPARKANGLEX),this.sora.getAlteLookAngle(ALTE_SPARKANGLEY));
+        //this.sora.getLookControl().setLookAt(angle);
 
         int n = this.alte.getSyncInt(ALTE_SPARKCOUNTER);
         if (n >= 5 && n <= 15) {
