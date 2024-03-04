@@ -44,7 +44,6 @@ import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
@@ -212,7 +211,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     float mvspeed;
     float atkdmg;
     int socialInteraction;
-    int n = 5;
+    int deathdiceroll = 5;
     boolean wasDay = false;
     private int enemiesKilled = 0;
     private int itemsCollected = 0;
@@ -272,7 +271,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
         this.getEntityData().set(FRIEND_NORMA, n);
     }
-
+    public boolean shouldAfterImage(){return false;};
     abstract void setRecoveryDifficulty();
 
     abstract void setCaptureDifficulty();
@@ -1564,8 +1563,22 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
         return false;
     }
+    public double xOldOld;
+    public double xOldOldOld;
+    public double yOldOld;
+    public double yOldOldOld;
+    public double zOldOld;
+    public double zOldOldOld;
     @Override
     public void tick() {
+
+        this.xOldOldOld=this.xOldOld;
+        this.xOldOld=this.xOld;
+        this.yOldOldOld=this.yOldOld;
+        this.yOldOld=this.yOld;
+        this.zOldOldOld=this.zOldOld;
+        this.zOldOld=this.zOld;
+
         this.setupcomplete = true;
         for (EntityDataAccessor<Integer> counter : this.counters) {
             this.decrementAnimCounter(counter);
@@ -1676,12 +1689,12 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     ServerLevel sLevel = (ServerLevel) this.level();
                 }
                 if (deathTimer == 100) {
-                    n = this.random.nextInt(6);
+                    deathdiceroll = this.random.nextInt(6);
                     ServerLevel sLevel = (ServerLevel) this.level();
                     this.playSound(DICE_THROW.get(), 1, 1);
-                    sLevel.sendParticles(DiceHandler.getDice(n), this.getX(), this.getY() + 2.5, this.getZ(), 1, 0, 0, 0, 0.1);
+                    sLevel.sendParticles(DiceHandler.getDice(deathdiceroll), this.getX(), this.getY() + 2.5, this.getZ(), 1, 0, 0, 0, 0.1);
                 }
-                if (deathTimer == 80 && n >= this.getRecoveryDifficulty()) {
+                if (deathTimer == 80 && deathdiceroll >= this.getRecoveryDifficulty()) {
                     doRecoveryEvent();
                 } else if (deathTimer == 80) {
                     deathCounter--;

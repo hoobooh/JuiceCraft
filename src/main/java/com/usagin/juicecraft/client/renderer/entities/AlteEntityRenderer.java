@@ -8,6 +8,7 @@ import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
 import com.usagin.juicecraft.client.renderer.FriendItemInHandLayer;
 import com.usagin.juicecraft.client.renderer.FriendItemOnBackLayer;
 import com.usagin.juicecraft.friends.Alte;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -85,6 +86,7 @@ public class AlteEntityRenderer extends FriendRenderer<Alte, AlteEntityModel> {
         this.winklayer.visible = false;
         return ALTE_NEUTRAL;
     }
+
 
     @Override
     public void render(@NotNull Alte alte, float pEntityYaw, float pPartialTicks, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight) {

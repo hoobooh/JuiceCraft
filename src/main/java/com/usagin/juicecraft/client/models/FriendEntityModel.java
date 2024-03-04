@@ -6,9 +6,11 @@ import com.mojang.logging.LogUtils;
 import com.mojang.math.Axis;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.client.animation.AnimationDefinition;
+import net.minecraft.client.animation.KeyframeAnimations;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
@@ -30,6 +32,12 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     public FriendEntityModel(ModelPart root) {
         defineParts(root);
         defineAnimations();
+    }
+    public int offset;
+    protected void animate(AnimationState pAnimationState, AnimationDefinition pAnimationDefinition, float pAgeInTicks, float pSpeed) {
+        pAnimationState.accumulatedTime+=offset;
+        super.animate(pAnimationState, pAnimationDefinition, pAgeInTicks, pSpeed);
+        pAnimationState.accumulatedTime-=offset;
     }
 
     public void defineParts(ModelPart root) {
@@ -56,7 +64,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     }
 
     @Override
-    public ModelPart root() {
+    public @NotNull ModelPart root() {
         return this.parts.customroot();
     }
 

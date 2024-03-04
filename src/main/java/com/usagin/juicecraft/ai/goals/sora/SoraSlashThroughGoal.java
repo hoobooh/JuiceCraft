@@ -50,7 +50,6 @@ public class SoraSlashThroughGoal extends Goal {
     public boolean canContinueToUse() {
         Item item = this.sora.getFriendWeapon().getItem();
         boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
-        AlteLightningParticle.LOGGER.info(this.sora.getSyncInt(Sora.SLASHTHROUGHCOUNTER)+"");
         return this.sora.canDoThings() && this.sora.getSyncInt(Sora.SLASHTHROUGHCOUNTER) > 0 && !flag;
     }
 
@@ -104,16 +103,13 @@ public class SoraSlashThroughGoal extends Goal {
         if (this.sora.level() instanceof ServerLevel level) {
             if (n <= 15 && n >= 12) { //main charge
                 this.sora.setDiscardFriction(true);
-                if(n == 15){
-                    this.moveTowardsTarget(0.7F);
+                if(n >14){
+                    this.moveTowardsTarget(1.5F);
                 }
                 this.hurtAllTargets((n - 30F) / -8 + 1);
             } else if (n <12) { //recovery
                 this.sora.setDiscardFriction(false);
                 this.moveTowardsTarget(0.1F);
-                if (n % 2 == 0) {
-                    this.hurtAllTargets(0.5F);
-                }
             }
         }
     }
@@ -168,7 +164,7 @@ public class SoraSlashThroughGoal extends Goal {
                 }
                 flag = pEntity.hurt(this.sora.damageSources().mobAttack(this.sora), f);
                 if (flag) {
-                    pEntity.playSound(UniversalSoundInit.CRITICAL_HIT.get(), 0.1F, 1);
+                    pEntity.playSound(UniversalSoundInit.COUNTER_ATTACK.get(), 0.5F, 1);
                     this.sora.setLastHurtMob(pEntity);
                     if (pEntity instanceof LivingEntity entity) {
                         entity.knockback(f1 * 0.5F, Mth.sin(this.sora.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(this.sora.getYRot() * ((float) Math.PI / 180F)));

@@ -3,6 +3,7 @@ package com.usagin.juicecraft.client.renderer.entities;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
+import com.usagin.juicecraft.client.renderer.FriendAfterImageLayer;
 import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
 import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -25,16 +26,20 @@ public class SoraEntityRenderer extends FriendRenderer<Sora, SoraEntityModel> {
     FriendEyeLayer<Sora, SoraEntityModel> energylayer;
     FriendEyeLayer<Sora, SoraEntityModel> openlayer;
     FriendEyeLayer<Sora, SoraEntityModel> narrowlayer;
+    FriendAfterImageLayer<Sora,SoraEntityModel> afterimagelayer1;
 
     public SoraEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new SoraEntityModel(pContext.bakeLayer(SoraEntityModel.LAYER_LOCATION)), 0.5f);
         energylayer = new FriendEyeLayer<>(this, SORA_ENERGYLAYER);
         openlayer = new FriendEyeLayer<>(this, GLOW_OPEN);
         narrowlayer = new FriendEyeLayer<>(this, GLOW_NARROW);
+        this.afterimagelayer1 = new FriendAfterImageLayer<>(this, 200);
         energylayer.visible = true;
+        this.addLayer(afterimagelayer1);
         this.addLayer(energylayer);
         this.addLayer(openlayer);
         this.addLayer(narrowlayer);
+
     }
 
     @Override

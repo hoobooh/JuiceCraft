@@ -28,6 +28,10 @@ public class Sora extends OldWarFriend {
         super(pEntityType, pLevel);
         this.counters.add(SLASHTHROUGHCOUNTER);
     }
+    public boolean shouldAfterImage(){
+        int n = this.getSyncInt(SLASHTHROUGHCOUNTER);
+        return (n <= 15 && n >= 6); //main charge;
+    }
     public AnimationState slashThroughAnimState = new AnimationState();
     public void tick(){
         super.tick();
