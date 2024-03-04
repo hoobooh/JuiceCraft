@@ -23,7 +23,7 @@ public class FriendBegGoal extends FriendLonelyGoal {
     public boolean canUse() {
         if (!this.friend.getInSittingPose() && !this.friend.isDying) {
             this.owner = friend.getOwner();
-            return this.owner != null && this.playerHoldingInteresting((Player) this.owner) && !this.friend.getInSittingPose();
+            return !this.friend.wandering && this.owner != null && this.playerHoldingInteresting((Player) this.owner) && !this.friend.getInSittingPose();
         } else {
             return false;
         }

@@ -763,7 +763,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public boolean shouldMoveLegs() {
-        return false;
+        return true;
     }
 
     public boolean shouldFollow() {

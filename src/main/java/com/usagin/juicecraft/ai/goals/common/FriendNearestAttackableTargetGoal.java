@@ -77,7 +77,7 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
                         }
                     }
                 }
-                if (this.friend.getViewFlower() == 0 && this.friend.flowercooldown <= 0) {
+                if (this.friend.getViewFlower() == 0 && this.friend.flowercooldown <= 0 && !this.friend.sleepy()) {
                     for (int x = -1; x < 2; x++) {
                         for (int y = -1; y < 2; y++) {
                             for (int z = -1; z < 2; z++) {

@@ -4,12 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
-import com.usagin.juicecraft.client.renderer.FriendItemInHandLayer;
-import com.usagin.juicecraft.client.renderer.FriendItemOnBackLayer;
 import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
 import org.jetbrains.annotations.NotNull;
@@ -17,45 +14,42 @@ import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 
-public class SoraEntityRenderer extends MobRenderer<Sora, SoraEntityModel> {
-    private static final ResourceLocation SORA_NEUTRAL = new ResourceLocation(MODID, "textures/entities/sora/sora_neutral.png");
-    private static final ResourceLocation SORA_NARROW = new ResourceLocation(MODID, "textures/entities/sora/sora_midclose.png");
-    private static final ResourceLocation SORA_CLOSED = new ResourceLocation(MODID, "textures/entities/sora/sora_closed.png");
+public class SoraEntityRenderer extends FriendRenderer<Sora, SoraEntityModel> {
+    private static final ResourceLocation SORA_NEUTRAL = new ResourceLocation(MODID, "textures/entities/sora/neutral.png");
+    private static final ResourceLocation SORA_NARROW = new ResourceLocation(MODID, "textures/entities/sora/half.png");
+    private static final ResourceLocation SORA_CLOSED = new ResourceLocation(MODID, "textures/entities/sora/closed.png");
+    private static final ResourceLocation GLOW_OPEN = new ResourceLocation(MODID, "textures/entities/sora/glowopen.png");
+    private static final ResourceLocation GLOW_NARROW = new ResourceLocation(MODID, "textures/entities/sora/glowhalf.png");
+    private static final ResourceLocation SORA_ENERGYLAYER = new ResourceLocation(MODID, "textures/entities/sora/energy.png");
     private static final Logger LOGGER = LogUtils.getLogger();
-    FriendEyeLayer<Sora, SoraEntityModel> eyeopen;
-    FriendEyeLayer<Sora, SoraEntityModel> eyemedium;
-    FriendEyeLayer<Sora, SoraEntityModel> orb;
-    FriendItemInHandLayer<Sora, SoraEntityModel> pLayer;
-    FriendItemOnBackLayer<Sora, SoraEntityModel> pBackLayer;
+    FriendEyeLayer<Sora, SoraEntityModel> energylayer;
+    FriendEyeLayer<Sora, SoraEntityModel> openlayer;
+    FriendEyeLayer<Sora, SoraEntityModel> narrowlayer;
 
     public SoraEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new SoraEntityModel(pContext.bakeLayer(SoraEntityModel.LAYER_LOCATION)), 0.5f);
-        eyeopen = new FriendEyeLayer<>(this, new ResourceLocation(MODID, "textures/entities/sora/sora_eyelayer.png"));
-        eyemedium = new FriendEyeLayer<>(this, new ResourceLocation(MODID, "textures/entities/sora/sora_mediumeyelayer.png"));
-        orb = new FriendEyeLayer<>(this, new ResourceLocation(MODID, "textures/entities/sora/sora_orb_layer.png"));
-        pLayer = new FriendItemInHandLayer<>(this, pContext.getItemInHandRenderer());
-        pBackLayer = new FriendItemOnBackLayer<>(this, pContext.getItemInHandRenderer());
-        orb.visible = true;
-        this.addLayer(orb);
-        this.addLayer(pBackLayer);
-        this.addLayer(pLayer);
-        this.addLayer(eyemedium);
-        this.addLayer(eyeopen);
+        energylayer = new FriendEyeLayer<>(this, SORA_ENERGYLAYER);
+        openlayer = new FriendEyeLayer<>(this, GLOW_OPEN);
+        narrowlayer = new FriendEyeLayer<>(this, GLOW_NARROW);
+        energylayer.visible = true;
+        this.addLayer(energylayer);
+        this.addLayer(openlayer);
+        this.addLayer(narrowlayer);
     }
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull Sora pEntity) {
-        if (pEntity.patCounter != 0 || pEntity.getPose() == Pose.SLEEPING || pEntity.blinkCounter <= 6) {
-            this.eyeopen.visible = false;
-            this.eyemedium.visible = false;
+        if (pEntity.patCounter != 0 || pEntity.getPose() == Pose.SLEEPING || pEntity.blinkCounter <= 6 || (pEntity.shakeAnimO > 0 && pEntity.shakeAnimO < 2) || pEntity.shakeAnimO > 3 || pEntity.deathAnimState.isStarted()) {
+            this.openlayer.visible = false;
+            this.narrowlayer.visible = false;
             return SORA_CLOSED;
-        } else if (pEntity.blinkCounter <= 8 || (pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive())) {
-            this.eyeopen.visible = false;
-            this.eyemedium.visible = true;
+        }  else if ((pEntity.getTimeSinceLastPat() > 3600 && !pEntity.getIsWandering() && !pEntity.isAggressive()) || pEntity.blinkCounter <= 8) {
+            this.openlayer.visible = false;
+            this.narrowlayer.visible = true;
             return SORA_NARROW;
         }
-        this.eyeopen.visible = true;
-        this.eyemedium.visible = false;
+        this.openlayer.visible = true;
+        this.narrowlayer.visible = false;
         return SORA_NEUTRAL;
     }
 

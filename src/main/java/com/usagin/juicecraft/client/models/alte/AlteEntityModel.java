@@ -3,7 +3,6 @@ package com.usagin.juicecraft.client.models.alte;// Made with Blockbench 4.8.3
 // Paste this class into your mod and generate all required imports
 
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.usagin.juicecraft.JuiceCraft;
 import com.usagin.juicecraft.client.models.FriendEntityModel;
 import com.usagin.juicecraft.friends.Alte;
@@ -12,12 +11,8 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import static com.usagin.juicecraft.client.animation.AlteAnimation.*;
+import static com.usagin.juicecraft.client.animation.AlteAnimation1.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation2.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation3.*;
 import static com.usagin.juicecraft.client.animation.AlteAnimation4.*;
@@ -879,35 +874,6 @@ public class AlteEntityModel extends FriendEntityModel<Alte> {
     public void defineAnimations() {
         this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);
     }
-
-    public void defineParts(ModelPart root) {
-        ModelPart customroot = root.getChild("customroot");
-        ModelPart chest = root.getChild("customroot").getChild("hip").getChild("waist").getChild("chest");
-        ModelPart head = chest.getChild("neck").getChild("head");
-        ModelPart leftarm = chest.getChild("leftarm");
-        ModelPart rightarm = chest.getChild("rightarm");
-        ModelPart leftleg = root.getChild("customroot").getChild("hip").getChild("butt").getChild("leftleg");
-        ModelPart rightleg = root.getChild("customroot").getChild("hip").getChild("butt").getChild("rightleg");
-
-        this.parts = new ModelParts(customroot, head, leftarm, rightarm, leftleg, rightleg, chest);
-    }
-
-    public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
-        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
-            pPoseStack.scale(0, 0, 0);
-        } else {
-            super.translateToHand(pSide, pPoseStack);
-        }
-    }
-
-    public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
-        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
-            pPoseStack.scale(0, 0, 0);
-        } else {
-            super.translateToBack(pPoseStack, pItemStack);
-        }
-    }
-
     @Override
     public void attackAnim(Alte alte, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         this.animate(alte.hyperShootAnimState, hyperShoot, pAgeInTicks);

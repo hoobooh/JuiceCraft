@@ -4,7 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.usagin.juicecraft.client.models.FriendEntityModel;
+import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
+import com.usagin.juicecraft.client.renderer.FriendItemInHandLayer;
+import com.usagin.juicecraft.client.renderer.FriendItemOnBackLayer;
 import com.usagin.juicecraft.friends.Friend;
+import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -15,9 +19,15 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public abstract class FriendRenderer<T extends Friend, M extends FriendEntityModel<T>> extends MobRenderer<T, M> {
+    FriendItemInHandLayer<T, M> pLayer;
+    FriendItemOnBackLayer<T, M> pBackLayer;
 
     public FriendRenderer(EntityRendererProvider.Context pContext, M pModel, float pShadowRadius) {
         super(pContext, pModel, pShadowRadius);
+        pLayer = new FriendItemInHandLayer<>(this, pContext.getItemInHandRenderer());
+        pBackLayer = new FriendItemOnBackLayer<>(this, pContext.getItemInHandRenderer());
+        this.addLayer(pBackLayer);
+        this.addLayer(pLayer);
     }
 
     public static void drawFrontFacingPlane(PoseStack pPoseStack, VertexConsumer vertexconsumer, float radius, float dist) {

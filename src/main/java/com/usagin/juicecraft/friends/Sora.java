@@ -23,7 +23,7 @@ public class Sora extends OldWarFriend {
     }
 
     public static AttributeSupplier.Builder getSoraAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30).add(Attributes.MOVEMENT_SPEED, 0.4).add(Attributes.ATTACK_DAMAGE, 4);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30).add(Attributes.MOVEMENT_SPEED, 0.35).add(Attributes.ATTACK_DAMAGE, 4);
     }
 
     @Override

@@ -32,7 +32,17 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         defineAnimations();
     }
 
-    public abstract void defineParts(ModelPart root);
+    public void defineParts(ModelPart root) {
+        ModelPart customroot = root.getChild("customroot");
+        ModelPart chest = root.getChild("customroot").getChild("hip").getChild("waist").getChild("chest");
+        ModelPart head = chest.getChild("neck").getChild("head");
+        ModelPart leftarm = chest.getChild("leftarm");
+        ModelPart rightarm = chest.getChild("rightarm");
+        ModelPart leftleg = root.getChild("customroot").getChild("hip").getChild("butt").getChild("leftleg");
+        ModelPart rightleg = root.getChild("customroot").getChild("hip").getChild("butt").getChild("rightleg");
+
+        this.parts = new ModelParts(customroot, head, leftarm, rightarm, leftleg, rightleg, chest);
+    }
 
     public abstract void defineAnimations();
 
@@ -51,37 +61,40 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     }
 
     public void translateToHand(HumanoidArm pSide, @NotNull PoseStack pPoseStack) {
-        ModelPart root = this.root().getChild("hip");
-        ModelPart limb;
-        ModelPart arm;
-        ModelPart hand;
-        ModelPart waist = root.getChild("waist");
-        ModelPart chest = waist.getChild("chest");
-
-        if (pSide.name().equals("LEFT")) {
-            arm = this.parts.leftarm();
-            limb = arm.getChild("lowerarm2");
-            hand = limb.getChild("grabber2");
+        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
+            pPoseStack.scale(0, 0, 0);
         } else {
-            arm = this.parts.rightarm();
-            limb = arm.getChild("lowerarm");
-            hand = limb.getChild("grabber");
+            ModelPart root = this.root().getChild("hip");
+            ModelPart limb;
+            ModelPart arm;
+            ModelPart hand;
+            ModelPart waist = root.getChild("waist");
+            ModelPart chest = waist.getChild("chest");
+
+            if (pSide.name().equals("LEFT")) {
+                arm = this.parts.leftarm();
+                limb = arm.getChild("lowerarm2");
+                hand = limb.getChild("grabber2");
+            } else {
+                arm = this.parts.rightarm();
+                limb = arm.getChild("lowerarm");
+                hand = limb.getChild("grabber");
+            }
+
+
+            pPoseStack.translate(0, 1.5, 0);
+
+            translateAndRotate(pPoseStack, root);
+            translateAndRotate(pPoseStack, waist);
+            translateAndRotate(pPoseStack, chest);
+            translateAndRotate(pPoseStack, arm);
+            translateAndRotate(pPoseStack, limb);
+            translateAndRotate(pPoseStack, hand);
+
+            pPoseStack.translate(0, 0.1, 0);
+
+            pPoseStack.scale(0.883F, 0.883F, 0.883F);
         }
-
-
-        pPoseStack.translate(0, 1.5, 0);
-
-        translateAndRotate(pPoseStack, root);
-        translateAndRotate(pPoseStack, waist);
-        translateAndRotate(pPoseStack, chest);
-        translateAndRotate(pPoseStack, arm);
-        translateAndRotate(pPoseStack, limb);
-        translateAndRotate(pPoseStack, hand);
-
-        pPoseStack.translate(0, 0.1, 0);
-
-        pPoseStack.scale(0.883F, 0.883F, 0.883F);
-
 
     }
 
@@ -98,6 +111,9 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
     }
 
     public void translateToBack(@NotNull PoseStack pPoseStack, @Nullable ItemStack pItemStack) {
+        if (this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible) {
+            pPoseStack.scale(0, 0, 0);
+        } else {
         ModelPart hip = this.root().getChild("hip");
         ModelPart holster = hip.getChild("weaponholster");
 
@@ -121,6 +137,7 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
         // pPoseStack.translate(-0.3, 1, 0);
 
         pPoseStack.scale(0.883F, 0.883F, 0.883F);
+        }
     }
 
     @Override
@@ -150,11 +167,12 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
 
             if (!pEntity.getInSittingPose()) {
                 if (!pEntity.isSprinting() && !pEntity.isSwimming() && !pEntity.idle() && pEntity.walkAnimation.isMoving() && pEntity.shouldMoveLegs()) {
-                    this.parts.rightleg().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
-                    this.parts.leftleg().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
+                    float scale = 0.9F;
+                    this.parts.rightleg().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * scale * pLimbSwingAmount);
+                    this.parts.leftleg().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * scale * pLimbSwingAmount);
                     if (pEntity.shouldMoveArms()) {
-                        this.parts.leftarm().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * 1.4F * pLimbSwingAmount);
-                        this.parts.rightarm().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * 1.4F * pLimbSwingAmount);
+                        this.parts.leftarm().xRot = (float) (Math.cos(pLimbSwing * 0.6662F) * scale * pLimbSwingAmount);
+                        this.parts.rightarm().xRot = (float) ((Math.cos(pLimbSwing * 0.6662F + (float) Math.PI)) * scale * pLimbSwingAmount);
                     } else if (pEntity.shouldMoveLeftArm()) {
                         this.parts.leftarm().resetPose();
                         for (ModelPart part : this.parts.leftarm().getAllParts().toList()) {
