@@ -57,7 +57,7 @@ public class AlteSparkGoal extends Goal {
         this.alte.getFriendNav().stop();
 
         this.alte.getFriendNav().setShouldMove(false);
-        this.alte.sparkcooldown = 3600 - (int) (1800 * (1 + (float) this.alte.getSkillLevels()[1]) / (35 + (float) this.alte.getSkillLevels()[1]));
+        this.alte.sparkcooldown = 600 - (int) (600 * (1 + (float) this.alte.getSkillLevels()[1]) / (20 + (float) this.alte.getSkillLevels()[1]));
         this.alte.setSyncInt(ALTE_SPARKCOUNTER, 30);
     }
 

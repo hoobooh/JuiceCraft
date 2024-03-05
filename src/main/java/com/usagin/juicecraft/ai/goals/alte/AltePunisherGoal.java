@@ -58,7 +58,7 @@ public class AltePunisherGoal extends Goal {
         this.alte.playVoice(AlteSoundInit.ALTE_PUNISHER_VOICE.get());
         this.alte.getFriendNav().setShouldMove(false);
         this.alte.playSound(AlteSoundInit.ALTE_PUNISHER.get());
-        this.alte.punishercooldown = 2400;
+        this.alte.punishercooldown = 600;
         this.alte.setSyncInt(Alte.ALTE_PUNISHERCOUNTER, 65);
         this.target = this.findPriorityTarget();
         this.alte.setTarget(this.target);
