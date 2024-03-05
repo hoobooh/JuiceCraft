@@ -33,6 +33,10 @@ public class Sora extends OldWarFriend {
         return (n <= 15 && n >= 6); //main charge;
     }
     public AnimationState slashThroughAnimState = new AnimationState();
+    public int shieldduration;
+    public int shieldcooldown;
+    public boolean usingshield = false;
+
     public void tick(){
         super.tick();
         if(this.level().isClientSide()){
@@ -40,6 +44,9 @@ public class Sora extends OldWarFriend {
         }else{
             if(this.slashthroughcooldown>0){
                 this.slashthroughcooldown--;
+            }
+            if(this.shieldcooldown>0){
+                this.shieldcooldown--;
             }
         }
     }
@@ -53,11 +60,17 @@ public class Sora extends OldWarFriend {
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putInt("juicecraft.sora.slashthroughcooldown",this.slashthroughcooldown);
+        pCompound.putInt("juicecraft.sora.shieldduration",this.shieldduration);
+        pCompound.putInt("juicecraft.sora.shieldcooldown", this.shieldcooldown);
+        pCompound.putBoolean("juicecraft.sora.usingshield", this.usingshield);
     }
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         this.slashthroughcooldown=pCompound.getInt("juicecraft.sora.slashthroughcooldown");
+        this.shieldduration = pCompound.getInt("juicecraft.sora.shieldduration");
+        this.shieldcooldown = pCompound.getInt("juicecraft.sora.shieldcooldown");
+        this.usingshield=pCompound.getBoolean("juicecraft.sora.usingshield");
     }
     public static AttributeSupplier.Builder getSoraAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30).add(Attributes.MOVEMENT_SPEED, 0.35).add(Attributes.ATTACK_DAMAGE, 4);

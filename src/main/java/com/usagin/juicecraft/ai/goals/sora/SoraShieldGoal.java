@@ -21,7 +21,7 @@ public class SoraShieldGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return this.sora.canDoThings() && this.sora.shieldcooldown <= 0 && this.sora.isAggressive() && this.sora.getSkillEnabled()[2] && !this.sora.getSyncBoolean(Sora.BARRIER);
+        return (this.sora.canDoThings() && this.sora.shieldcooldown <= 0 && this.sora.isAggressive() && this.sora.getSkillEnabled()[2] || this.sora.usingshield);
     }
     @Override
     public boolean canContinueToUse(){
@@ -37,8 +37,10 @@ public class SoraShieldGoal extends Goal {
     }
     @Override
     public void start(){
+
+        if(this.sora.shieldduration!=0){
+            this.sora.usingshield=true;
         this.sora.shieldcooldown=1200;
-        this.sora.shieldduration=0;
         this.sora.playVoice(SoraSoundInit.SORA_SHIELD.get(),true);
         this.sora.playSound(SoraSoundInit.SHIELD_START.get());
         SoraShieldEntity entity = new SoraShieldEntity(EntityInit.SORA_SHIELD_ENTITY.get(),this.sora.level());
@@ -56,12 +58,15 @@ public class SoraShieldGoal extends Goal {
             entity.damagetaken=0;
             this.owner.level().addFreshEntity(entity);
         }
+        }
     }
     @Override
     public void stop(){
+        this.sora.shieldduration=0;
         if(this.sora.getSkillEnabled()[3]){
             this.doShieldInvert();
         }
+        this.sora.usingshield=false;
     }
     public void doShieldInvert(){
         this.sora.playVoice(SoraSoundInit.SORA_SHIELD_INVERT.get(), true)
@@ -75,5 +80,9 @@ public class SoraShieldGoal extends Goal {
                 shield.releaseEnergy(this.sora);
             }
         }
+    }
+    @Override
+    public void tick(){
+        this.sora.shieldduration++;
     }
 }
