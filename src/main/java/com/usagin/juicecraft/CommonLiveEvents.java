@@ -4,11 +4,13 @@ import com.usagin.juicecraft.Init.ItemInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Friend;
+import com.usagin.juicecraft.miscentities.SoraShieldEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -39,6 +41,13 @@ public class CommonLiveEvents {
 
     @SubscribeEvent
     public static void onFriendHurt(LivingAttackEvent event) {
+        for(Entity e: event.getEntity().getPassengers()){
+            if(e instanceof SoraShieldEntity shield){
+                shield.damagetaken+=event.getAmount();
+                event.setCanceled(true);
+                return;
+            }
+        }
         if (event.getEntity() instanceof Friend friend) {
             if (!friend.level().isClientSide()) {
                 friend.tryCounter(event);

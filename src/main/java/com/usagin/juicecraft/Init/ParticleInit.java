@@ -26,4 +26,5 @@ public class ParticleInit {
 
     public static final RegistryObject<SimpleParticleType> RANDOM_ENERGY_PARTICLE = PARTICLES.register("randomenergyparticle", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> ALTE_GUNFLASH = PARTICLES.register("altegunflashparticle", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> SORA_ENERGY_PARTICLE = PARTICLES.register("soraenergyparticle", () -> new SimpleParticleType(true));
 }

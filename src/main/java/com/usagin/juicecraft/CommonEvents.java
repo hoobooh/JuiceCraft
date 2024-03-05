@@ -6,13 +6,11 @@ import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.Init.ProjectileInit;
 import com.usagin.juicecraft.client.models.alte.AlteEntityModel;
 import com.usagin.juicecraft.client.models.harbinger.HarbingerModel;
+import com.usagin.juicecraft.client.models.sora.ShieldEntityModel;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.blockrenderers.AltePlushieRenderer;
 import com.usagin.juicecraft.client.renderer.blockrenderers.FriendBedRenderer;
-import com.usagin.juicecraft.client.renderer.entities.AlteEntityRenderer;
-import com.usagin.juicecraft.client.renderer.entities.FriendProjectileRenderer;
-import com.usagin.juicecraft.client.renderer.entities.HarbingerRenderer;
-import com.usagin.juicecraft.client.renderer.entities.SoraEntityRenderer;
+import com.usagin.juicecraft.client.renderer.entities.*;
 import com.usagin.juicecraft.data.loot.ChestLootProvider;
 import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Alte;
@@ -55,7 +53,7 @@ public class CommonEvents {
         event.registerEntityRenderer(EntityInit.HARBINGER.get(), HarbingerRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_MINIGUN_PROJECTILE.get(), FriendProjectileRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_PANEL_PROJECTILE.get(), FriendProjectileRenderer::new);
-
+        event.registerEntityRenderer(EntityInit.SORA_SHIELD_ENTITY.get(), SoraShieldEntityRenderer::new);
     }
 
     @SubscribeEvent
@@ -72,6 +70,7 @@ public class CommonEvents {
         event.registerLayerDefinition(SoraEntityModel.LAYER_LOCATION, SoraEntityModel::createBodyLayer);
         event.registerLayerDefinition(AlteEntityModel.LAYER_LOCATION, AlteEntityModel::createBodyLayer);
         event.registerLayerDefinition(HarbingerModel.LAYER_LOCATION, HarbingerModel::createBodyLayer);
+        event.registerLayerDefinition(ShieldEntityModel.LAYER_LOCATION,ShieldEntityModel::createBodyLayer);
 
         event.registerLayerDefinition(FRIEND_BED_FOOT, FriendBedRenderer::createFootLayer);
         event.registerLayerDefinition(FRIEND_BED_HEAD, FriendBedRenderer::createHeadLayer);
@@ -97,6 +96,7 @@ public class CommonEvents {
         Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_SELFDESTRUCT_PARTICLE.get(), AlteSelfDestructParticle.SelfDestructProvider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_GUNFLASH.get(), AlteGunFlashParticle.GunFlashProvider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.RANDOM_ENERGY_PARTICLE.get(), RandomEnergyParticle.RandomEnergyProvider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.SORA_ENERGY_PARTICLE.get(), SoraEnergyParticle.SoraEnergyProvider::new);
 
     }
 
