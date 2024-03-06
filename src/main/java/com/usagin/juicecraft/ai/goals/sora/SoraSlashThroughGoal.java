@@ -104,6 +104,7 @@ public class SoraSlashThroughGoal extends Goal {
             if (n <= 15 && n >= 12) { //main charge
                 this.sora.setDiscardFriction(true);
                 if(n >14){
+                    this.sora.playSound(UniversalSoundInit.COUNTER_ATTACK.get(), 0.5F, 1);
                     this.moveTowardsTarget(1.5F);
                 }
                 this.hurtAllTargets((n - 30F) / -8 + 1);
@@ -164,7 +165,6 @@ public class SoraSlashThroughGoal extends Goal {
                 }
                 flag = pEntity.hurt(this.sora.damageSources().mobAttack(this.sora), f);
                 if (flag) {
-                    pEntity.playSound(UniversalSoundInit.COUNTER_ATTACK.get(), 0.5F, 1);
                     this.sora.setLastHurtMob(pEntity);
                     if (pEntity instanceof LivingEntity entity) {
                         entity.knockback(f1 * 0.5F, Mth.sin(this.sora.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(this.sora.getYRot() * ((float) Math.PI / 180F)));
