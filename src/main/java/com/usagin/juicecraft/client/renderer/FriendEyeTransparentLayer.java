@@ -24,7 +24,7 @@ public class FriendEyeTransparentLayer<T extends Entity, M extends EntityModel<T
     public FriendEyeTransparentLayer(RenderLayerParent<T, M> pRenderer, ResourceLocation location, boolean visible, float transparency) {
         super(pRenderer);
         this.location = location;
-        this.rendertype = RenderType.eyes(location);
+        this.rendertype = RenderType.entityTranslucentEmissive(location);
         this.visible=visible;
         this.transparency=transparency;
     }

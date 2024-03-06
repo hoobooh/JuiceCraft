@@ -42,24 +42,52 @@ public class FriendAfterImageLayer<T extends Friend, M extends FriendEntityModel
     @Override
     public void render(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, T friend, float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         if (friend.shouldAfterImage()) {
+
+            double xOld = friend.xOld;
+            double yOld = friend.yOld;
+            double zOld = friend.zOld;
+
+            double xOldOld = friend.xOldOld;
+            double yOldOld = friend.yOldOld;
+            double zOldOld = friend.zOldOld;
+
+            double xOldOldOld = friend.xOldOldOld ;
+            double yOldOldOld  = friend.yOldOldOld ;
+            double zOldOldOld  = friend.zOldOldOld ;
+
             float x = (float) (friend.getX() - friend.xOld);
             float y = (float) (friend.getY() - friend.yOld);
             float z = (float) (friend.getZ() - friend.zOld);
             float f8 = friend.walkAnimation.speed(pPartialTick-delay/300F);
             float f4 = friend.walkAnimation.position(pPartialTick-delay/300F);
             this.renderForPosition(pPoseStack,pBuffer,pPackedLight,friend,f4,f8,pPartialTick,pAgeInTicks,pNetHeadYaw,pHeadPitch,x,y,z,this.delay,0);
+
+             friend.xOld=xOldOld;
+             friend.yOld=yOldOld;
+             friend.zOld=zOldOld;
+
             x = (float) (friend.getX() - friend.xOldOld);
             y = (float) (friend.getY() - friend.yOldOld);
             z = (float) (friend.getZ() - friend.zOldOld);
             f8 = friend.walkAnimation.speed(pPartialTick-delay*2/300F);
             f4 = friend.walkAnimation.position(pPartialTick-delay*2/300F);
             this.renderForPosition(pPoseStack,pBuffer,pPackedLight,friend,f4,f8,pPartialTick,pAgeInTicks,pNetHeadYaw,pHeadPitch,x,y,z,this.delay*2,3);
+
+            friend.xOld=xOldOldOld;
+            friend.yOld=yOldOldOld;
+            friend.zOld=zOldOldOld;
+
             x = (float) (friend.getX() - friend.xOldOldOld);
             y = (float) (friend.getY() - friend.yOldOldOld);
             z = (float) (friend.getZ() - friend.zOldOldOld);
             f8 = friend.walkAnimation.speed(pPartialTick-delay*3/300F);
             f4 = friend.walkAnimation.position(pPartialTick-delay*3/300F);
             this.renderForPosition(pPoseStack,pBuffer,pPackedLight,friend,f4,f8,pPartialTick,pAgeInTicks,pNetHeadYaw,pHeadPitch,x,y,z,this.delay*3,6);
+
+            friend.xOld=xOld;
+            friend.yOld=yOld;
+            friend.zOld=zOld;
+
 
         }
     }

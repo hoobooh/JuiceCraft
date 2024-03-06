@@ -9,6 +9,7 @@ import com.usagin.juicecraft.miscentities.SoraShieldEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.GuardianRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.SlimeRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -33,6 +34,7 @@ public class SoraShieldEntityRenderer extends LivingEntityRenderer<SoraShieldEnt
         /*if(shield.host!=null){
             pPoseStack.translate(-shield.getX()+shield.host.getX(),-shield.getY()+shield.host.getY(),-shield.getZ()+shield.host.getZ());
         }*/
+
 
         super.render(shield, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
     }
