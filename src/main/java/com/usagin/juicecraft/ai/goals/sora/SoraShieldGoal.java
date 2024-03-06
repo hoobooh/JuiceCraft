@@ -45,6 +45,7 @@ public class SoraShieldGoal extends Goal {
         SoraShieldEntity entity = new SoraShieldEntity(EntityInit.SORA_SHIELD_ENTITY.get(),this.sora.level());
         entity.setPos(this.sora.position());
         entity.host=this.sora;
+        entity.hostid=this.sora.getId();
         entity.lifetime= (int) this.getShieldDuration();
         entity.damagetaken=0;
         this.sora.level().addFreshEntity(entity);
@@ -53,6 +54,7 @@ public class SoraShieldGoal extends Goal {
             entity = new SoraShieldEntity(EntityInit.SORA_SHIELD_ENTITY.get(),this.sora.level());
             entity.setPos(this.sora.getOwner().position());
             entity.host=this.sora.getOwner();
+            entity.hostid=this.sora.getOwner().getId();
             entity.lifetime= (int) this.getShieldDuration();
             entity.damagetaken=0;
             this.sora.getOwner().level().addFreshEntity(entity);

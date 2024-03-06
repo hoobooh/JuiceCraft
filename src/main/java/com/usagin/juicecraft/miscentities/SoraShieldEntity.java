@@ -1,11 +1,16 @@
 package com.usagin.juicecraft.miscentities;
 
+import com.google.common.collect.ImmutableList;
 import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.particles.AlteLightningParticle;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -14,8 +19,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.event.KeyEvent;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +36,7 @@ public class SoraShieldEntity extends LivingEntity {
     }
 
     public LivingEntity host;
+    public int hostid;
     public double damagetaken = 0;
     public int lifetime = -100;
 
@@ -34,9 +45,12 @@ public class SoraShieldEntity extends LivingEntity {
         this.setInvulnerable(true);
         this.setNoGravity(true);
         this.noPhysics = true;
-
+        this.aiStep();
     }
 
+    public void aiStep() {
+
+    }
     public boolean canCollideWith(Entity pEntity) {
         return pEntity.canBeCollidedWith() && !this.isPassengerOfSameVehicle(pEntity);
     }
@@ -60,13 +74,18 @@ public class SoraShieldEntity extends LivingEntity {
     protected float ridingOffset(Entity pEntity) {
         return -2F;
     }
-
     @Override
     public void tick() {
+
         /*if(this.host!=null && this.getVehicle()==null){
             AlteLightningParticle.LOGGER.info(this.startRiding(this.host) +"");
         //this.startRiding(this.host);
         }*/
+        if(!this.level().isClientSide()){
+            this.getEntityData().set(id,this.hostid);
+        }else{
+            this.hostid=this.getEntityData().get(id);
+        }
         if (this.lifetime != -100) {
             this.lifetime--;
         }
@@ -74,18 +93,19 @@ public class SoraShieldEntity extends LivingEntity {
             this.remove(RemovalReason.DISCARDED);
         }
         this.setDeltaMovement(Vec3.ZERO);
+
         super.tick();
-        Minecraft mc = Minecraft.getInstance();
-        float pPartialTick = mc.getPartialTick();
-        if (this.host != null) {
-            double d0 = Mth.lerp((double) pPartialTick, this.host.xOld, this.host.getX());
-            double d1 = Mth.lerp((double) pPartialTick, this.host.yOld, this.host.getY());
-            double d2 = Mth.lerp((double) pPartialTick, this.host.zOld, this.host.getZ());
-            Vec3 one = new Vec3(d0, d1, d2);
-            this.setPos(one);
+
+        if(this.host==null){
+            this.host= (LivingEntity) this.level().getEntity(this.hostid);
+        }
+
+        if(this.host!=null){
+            this.setPos(this.host.position());
         }
 
     }
+
 
     @Override
     public @NotNull HumanoidArm getMainArm() {
@@ -95,7 +115,9 @@ public class SoraShieldEntity extends LivingEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
+        this.getEntityData().define(id,0);
     }
+    public static EntityDataAccessor<Integer> id = SynchedEntityData.defineId(SoraShieldEntity.class,EntityDataSerializers.INT);
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -104,6 +126,7 @@ public class SoraShieldEntity extends LivingEntity {
         for(Entity e: this.level().getEntities(this,this.getBoundingBox().inflate(2))){
             if(e instanceof LivingEntity entity && e.getUUID().compareTo(id)==0){
                 this.host=entity;
+                this.hostid=this.host.getId();
             }
         }
         this.lifetime = pCompound.getInt("juicecraft.sora.shield.lifetime");
