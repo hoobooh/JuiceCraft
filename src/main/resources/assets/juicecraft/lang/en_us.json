@@ -356,6 +356,10 @@
   "juicecraft.menu.sora.reactions.neutral": "Mm.",
   "juicecraft.menu.sora.reactions.approval": "Fufu.",
 
+
+  "juicecraft.sora_shield": "Shield!",
+  "juicecraft.sora_shield_invert": "Shield Invert!",
+  "juicecraft.sora_unlimited_charge": "Unlimited charge!",
   "juicecraft.sora_angry": "That's no good.",
   "juicecraft.sora_idle_night1": "The stars are pretty, aren't they? I like them.",
   "juicecraft.sora_idle_night2": "Stars...",

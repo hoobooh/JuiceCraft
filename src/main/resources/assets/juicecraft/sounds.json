@@ -1,4 +1,19 @@
 {
+  "sora_shield": {
+    "sounds": [
+      "juicecraft:sora_shield"
+    ]
+  },
+  "sora_shield_invert": {
+    "sounds": [
+      "juicecraft:sora_shield_invert"
+    ]
+  },
+  "sora_unlimited_charge": {
+    "sounds": [
+      "juicecraft:sora_unlimited_charge"
+    ]
+  },
   "harbinger_unsheathe": {
     "sounds": [
       "juicecraft:harbinger_unsheathe"

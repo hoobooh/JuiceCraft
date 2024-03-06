@@ -15,6 +15,7 @@ import com.usagin.juicecraft.data.loot.ChestLootProvider;
 import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Sora;
+import com.usagin.juicecraft.miscentities.SoraShieldEntity;
 import com.usagin.juicecraft.network.*;
 import com.usagin.juicecraft.particles.*;
 import net.minecraft.client.Minecraft;
@@ -44,6 +45,7 @@ public class CommonEvents {
         event.put(EntityInit.SORA.get(), Sora.getSoraAttributes().build());
         event.put(EntityInit.ALTE.get(), Alte.getAlteAttributes().build());
         event.put(EntityInit.HARBINGER.get(), Harbinger.getHarbingerAttributes().build());
+        event.put(EntityInit.SORA_SHIELD_ENTITY.get(), SoraShieldEntity.getShieldAttributes().build());
     }
 
     @SubscribeEvent

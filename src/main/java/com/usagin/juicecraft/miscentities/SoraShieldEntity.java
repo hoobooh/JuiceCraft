@@ -5,17 +5,33 @@ import com.usagin.juicecraft.Init.sounds.SoraSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.goals.sora.SoraShieldGoal;
 import com.usagin.juicecraft.friends.Sora;
+import com.usagin.juicecraft.particles.AlteLightningParticle;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.entity.GuardianRenderer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import java.util.Collections;
 import java.util.List;
 
 public class SoraShieldEntity extends LivingEntity {
+    public static AttributeSupplier.Builder getShieldAttributes() {
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 1).add(Attributes.MOVEMENT_SPEED, 0).add(Attributes.ATTACK_DAMAGE, 0);
+    }
     public LivingEntity host;
     public double damagetaken = 0;
     public int lifetime = -100;
@@ -32,7 +48,7 @@ public class SoraShieldEntity extends LivingEntity {
 
     public void releaseEnergy(Sora sora){
         sora.spawnParticlesInUpFacingCircle(this,10, ParticleInit.SORA_ENERGY_PARTICLE.get());
-        this.playSound(SoraSoundInit.SHIELD_DETONATE.get());
+        //this.playSound(SoraSoundInit.SHIELD_DETONATE.get());
         AABB box = this.getBoundingBox().inflate(5);
         List<Entity> list = this.level().getEntities(this,box);
         for(Entity e: list){
@@ -46,33 +62,43 @@ public class SoraShieldEntity extends LivingEntity {
         this.remove(RemovalReason.DISCARDED);
     }
 
+    protected float ridingOffset(Entity pEntity) {
+        return -2F;
+    }
 
     @Override
     public void tick(){
-        if(this.host!=null && this.getVehicle()==null){
-        this.startRiding(this.host);
-        }
+        /*if(this.host!=null && this.getVehicle()==null){
+            AlteLightningParticle.LOGGER.info(this.startRiding(this.host) +"");
+        //this.startRiding(this.host);
+        }*/
         if(this.lifetime!=-100){
             this.lifetime--;
         }
         if(this.lifetime==-10){
             this.remove(RemovalReason.DISCARDED);
         }
+        this.setDeltaMovement(Vec3.ZERO);
         super.tick();
+            if(this.host!=null){
+                this.setPos(this.host.position());
+            }
+
     }
 
     @Override
-    public HumanoidArm getMainArm() {
+    public @NotNull HumanoidArm getMainArm() {
         return HumanoidArm.RIGHT;
     }
 
     @Override
     protected void defineSynchedData() {
-
+        super.defineSynchedData();
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
         this.host= (LivingEntity) this.level().getEntity(pCompound.getInt("juicecraft.sora.shield.host"));
         this.lifetime=pCompound.getInt("juicecraft.sora.shield.lifetime");
         this.damagetaken=pCompound.getDouble("juicecraft.sora.shield.damagetaken");
@@ -95,6 +121,7 @@ public class SoraShieldEntity extends LivingEntity {
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
         if(this.host!=null){
         pCompound.putInt("juiceraft.sora.shield.host",this.host.getId());
         pCompound.putInt("juicecraft.sora.shield.lifetime",this.lifetime);

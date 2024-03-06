@@ -75,6 +75,10 @@ public class SoraSoundInit {
     public static final RegistryObject<SoundEvent> SORA_HYPERUSE = registerFriendSoundEvent("sora_hyper_use");
     public static final RegistryObject<SoundEvent> SORA_MODULEEQUIP = registerFriendSoundEvent("sora_moduleequip");
     public static final RegistryObject<SoundEvent> SORA_ANGRY = registerFriendSoundEvent("sora_angry");
+    public static final RegistryObject<SoundEvent> SORA_SHIELD = registerFriendSoundEvent("sora_shield");
+    public static final RegistryObject<SoundEvent> SORA_SHIELD_INVERT = registerFriendSoundEvent("sora_shield_invert");
+    public static final RegistryObject<SoundEvent> SORA_UNLIMITED_CHARGE = registerFriendSoundEvent("sora_unlimited_charge");
+
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name) {
         return SORA_SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, name)));

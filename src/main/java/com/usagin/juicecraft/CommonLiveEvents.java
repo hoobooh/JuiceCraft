@@ -41,13 +41,24 @@ public class CommonLiveEvents {
 
     @SubscribeEvent
     public static void onFriendHurt(LivingAttackEvent event) {
-        for(Entity e: event.getEntity().getPassengers()){
+        for(Entity e: event.getEntity().level().getEntities(null,event.getEntity().getBoundingBox())){
+            if(e instanceof SoraShieldEntity shield){
+                if(shield.host!=null){
+                    if(shield.host.is(event.getEntity())){
+                        shield.damagetaken+=event.getAmount();
+                        event.setCanceled(true);
+                        return;
+                    }
+                }
+            }
+        }
+        /*for(Entity e: event.getEntity().getPassengers()){
             if(e instanceof SoraShieldEntity shield){
                 shield.damagetaken+=event.getAmount();
                 event.setCanceled(true);
                 return;
             }
-        }
+        }*/
         if (event.getEntity() instanceof Friend friend) {
             if (!friend.level().isClientSide()) {
                 friend.tryCounter(event);

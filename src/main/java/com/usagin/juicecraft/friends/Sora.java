@@ -2,6 +2,7 @@ package com.usagin.juicecraft.friends;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.ai.goals.sora.SoraHyperGoal;
+import com.usagin.juicecraft.ai.goals.sora.SoraShieldGoal;
 import com.usagin.juicecraft.ai.goals.sora.SoraSlashThroughGoal;
 import com.usagin.juicecraft.data.dialogue.AbstractDialogueManager;
 import com.usagin.juicecraft.data.dialogue.SoraDialogueManager;
@@ -352,6 +353,7 @@ public class Sora extends OldWarFriend {
     @Override
     void registerAdditionalGoals() {
         this.goalSelector.addGoal(5,new SoraSlashThroughGoal(this));
+        this.goalSelector.addGoal(5,new SoraShieldGoal(this));
     }
 
 
