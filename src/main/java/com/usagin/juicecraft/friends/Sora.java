@@ -51,6 +51,12 @@ public class Sora extends OldWarFriend {
             }
         }
     }
+    public boolean isFearless(){
+        return this.isBoisterous();
+    }
+    public boolean isBoisterous(){
+        return false;
+    }
     public boolean isAttackLockedOut() {
         return this.isUsingHyper() || this.areAnimationsBusy();
     }

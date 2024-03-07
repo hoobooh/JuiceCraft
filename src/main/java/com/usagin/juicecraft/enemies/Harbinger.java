@@ -295,19 +295,12 @@ public class Harbinger extends Monster {
         double angle = Math.atan2(this.getLookAngle().z, this.getLookAngle().x);
         angle = Math.toDegrees(angle);
         for (Entity e : entityList) {
-            if (e instanceof LivingEntity ent) {
                 double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
                 entityAngle = Math.toDegrees(entityAngle);
                 if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
                     this.doHurtTarget(e);
                 }
-            } else {
-                double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
-                entityAngle = Math.toDegrees(entityAngle);
-                if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
-                    this.doHurtTarget(e);
-                }
-            }
+
         }
     }
 

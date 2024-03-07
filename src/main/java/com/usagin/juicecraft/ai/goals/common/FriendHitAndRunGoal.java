@@ -28,7 +28,7 @@ public class FriendHitAndRunGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (friend.getTarget() != null && this.friend.canDoThings() && this.friend.runTimer > 30 && FriendDefense.shouldDefendAgainst(this.friend)) {
+        if (friend.getTarget() != null && this.friend.canDoThings() && this.friend.runTimer > 30) {
             this.target = this.friend.getTarget();
             Vec3 vec3 = this.findRandomAwayPos();
             if (vec3 == null) {

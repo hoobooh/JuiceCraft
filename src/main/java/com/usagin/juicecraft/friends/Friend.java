@@ -699,7 +699,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     }
 
     public void doHurtTarget() {
-        if (FriendDefense.shouldDefendAgainst(this)) {
+        if (FriendDefense.shouldBeCareful(this)) {
             this.runTimer = 35;
         }
         AABB hitTracer = new AABB(this.getX() - 1.8, this.getY(), this.getZ() - 1.8, this.getX() + 1.8, this.getY() + 2, this.getZ() + 1.8);
@@ -717,26 +717,78 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         } else {
             maxFov = 30;
         }
+        boolean flag = false;
         for (Entity e : entityList) {
             if (e instanceof LivingEntity ent) {
                 if (EnemyEvaluator.shouldDoHurtTarget(this, ent)) {
                     double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
                     entityAngle = Math.toDegrees(entityAngle);
                     if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
-                        this.doHurtTarget(e);
+                        flag = flag || this.doHurtTarget(e);
                     }
                 }
             } else {
                 double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
                 entityAngle = Math.toDegrees(entityAngle);
                 if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
-                    this.doHurtTarget(e);
+                    flag = flag || this.doHurtTarget(e);
                 }
             }
         }
         this.playVoice(this.getAttack());
         if (!this.inventory.getItem(1).isEmpty() || this.hasShellWeapon()) {
+            if(flag){
+
             this.playSound(this.getHitSound(), 0.5F, 1);
+
+            }else{
+                this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP);
+            }
+        }
+        this.inventory.getItem(1).hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+        this.updateGear();
+    }
+    public void doHurtTargetDetailed(double maxFov, double range) {
+        if (FriendDefense.shouldBeCareful(this)) {
+            this.runTimer = 35;
+        }
+        range = range / 2;
+        AABB hitTracer = new AABB(this.getX() - range, this.getY(), this.getZ() - range, this.getX() + range, this.getY() + 5, this.getZ() + range);
+        List<Entity> entityList = this.level().getEntities(this, hitTracer);
+        if (this.getTarget() != null) {
+            this.lookAt(this.getTarget(), 360, 360);
+        }
+        double angle = Math.atan2(this.getLookAngle().z, this.getLookAngle().x);
+        angle = Math.toDegrees(angle);
+
+        boolean flag = false;
+
+        for (Entity e : entityList) {
+            if (e instanceof LivingEntity ent) {
+                if(EnemyEvaluator.shouldDoHurtTarget(this, ent)){
+                    double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
+                    entityAngle = Math.toDegrees(entityAngle);
+                    if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
+                        flag = flag || this.doHurtTarget(e);
+                    }
+                }
+            } else {
+                double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
+                entityAngle = Math.toDegrees(entityAngle);
+                if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
+                    flag = flag || this.doHurtTarget(e);
+                }
+            }
+        }
+        this.playVoice(this.getAttack());
+        if (!this.inventory.getItem(1).isEmpty() || this.hasShellWeapon()) {
+            if(flag){
+
+                this.playSound(this.getHitSound(), 0.5F, 1);
+
+            }else{
+                this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP);
+            }
         }
         this.inventory.getItem(1).hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
         this.updateGear();
@@ -1555,6 +1607,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
 
     }
+    public boolean isFearless(){
+        return false;
+    }
     public boolean areAnimationsBusy() {
         for (EntityDataAccessor<Integer> access : this.counters) {
             if (this.getSyncInt(access) > 0) {
@@ -1799,33 +1854,34 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     @Override
     public boolean doHurtTarget(Entity pEntity) {
+        if(pEntity == null){
+            return false;
+        }
         if (pEntity.level() instanceof ServerLevel t) {
             t.sendParticles(SWEEP_ATTACK, pEntity.getX(), pEntity.getY() + 1, pEntity.getZ(), 1, 0.2, 0.2, 0.2, 0.3);
         }
         boolean flag = false;
-        if (pEntity != null) {
-            if (this.distanceTo(pEntity) < 3) {
-                float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getGenericDamageMod() * this.getAttackType() / 20 * (Mth.clamp((5 * this.getCombatMod() / 10) + this.getRandom().nextInt(1, 7), 1, 6) + 3) / 6 * 0.66F;
-                float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-                if (pEntity instanceof LivingEntity) {
-                    f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
-                    f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+        if (this.distanceTo(pEntity) < 3) {
+            float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getGenericDamageMod() * this.getAttackType() / 20 * (Mth.clamp((5 * this.getCombatMod() / 10) + this.getRandom().nextInt(1, 7), 1, 6) + 3) / 6 * 0.66F;
+            float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+            if (pEntity instanceof LivingEntity) {
+                f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
+                f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+            }
+
+            int i = EnchantmentHelper.getFireAspect(this);
+            if (i > 0) {
+                pEntity.setSecondsOnFire(i * 4);
+            }
+            flag = pEntity.hurt(this.damageSources().mobAttack(this), f);
+            if (flag) {
+                if (f1 > 0.0F && pEntity instanceof LivingEntity) {
+                    ((LivingEntity) pEntity).knockback(f1 * 0.5F, Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(this.getYRot() * ((float) Math.PI / 180F)));
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                 }
 
-                int i = EnchantmentHelper.getFireAspect(this);
-                if (i > 0) {
-                    pEntity.setSecondsOnFire(i * 4);
-                }
-                flag = pEntity.hurt(this.damageSources().mobAttack(this), f);
-                if (flag) {
-                    if (f1 > 0.0F && pEntity instanceof LivingEntity) {
-                        ((LivingEntity) pEntity).knockback(f1 * 0.5F, Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(this.getYRot() * ((float) Math.PI / 180F)));
-                        this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
-                    }
-
-                    this.doEnchantDamageEffects(this, pEntity);
-                    this.setLastHurtMob(pEntity);
-                }
+                this.doEnchantDamageEffects(this, pEntity);
+                this.setLastHurtMob(pEntity);
             }
         }
         return flag;
