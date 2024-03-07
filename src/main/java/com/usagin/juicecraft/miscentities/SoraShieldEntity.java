@@ -2,6 +2,8 @@ package com.usagin.juicecraft.miscentities;
 
 import com.google.common.collect.ImmutableList;
 import com.usagin.juicecraft.Init.ParticleInit;
+import com.usagin.juicecraft.Init.sounds.SoraSoundInit;
+import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.particles.AlteLightningParticle;
@@ -11,6 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -56,17 +59,19 @@ public class SoraShieldEntity extends LivingEntity {
     }
 
     public void releaseEnergy(Sora sora) {
-        sora.spawnParticlesInUpFacingCircle(this, 10, ParticleInit.SORA_ENERGY_PARTICLE.get());
-        //this.playSound(SoraSoundInit.SHIELD_DETONATE.get());
-        AABB box = this.getBoundingBox().inflate(5);
-        List<Entity> list = this.level().getEntities(this, box);
-        for (Entity e : list) {
-            if (e instanceof LivingEntity entity) {
-                if (!EnemyEvaluator.shouldDoHurtTarget(sora, entity)) {
-                    continue;
+        if(this.level() instanceof ServerLevel level){
+            sora.spawnParticlesInSphereAtEntity(this,10,4,0,level,ParticleInit.SORA_ENERGY_PARTICLE.get(),0);
+            this.playSound(UniversalSoundInit.FRIEND_DEATH.get());
+            AABB box = this.getBoundingBox().inflate(5);
+            List<Entity> list = this.level().getEntities(this, box);
+            for (Entity e : list) {
+                if (e instanceof LivingEntity entity) {
+                    if (!EnemyEvaluator.shouldDoHurtTarget(sora, entity)) {
+                        continue;
+                    }
                 }
+                e.hurt(sora.damageSources().explosion(this, sora), (float) (this.damagetaken * sora.getSkillLevels()[3] * 3) / (2 + sora.getSkillLevels()[3]));
             }
-            e.hurt(sora.damageSources().explosion(this, sora), (float) (this.damagetaken * sora.getSkillLevels()[3] * 3) / (2 + sora.getSkillLevels()[3]));
         }
         this.remove(RemovalReason.DISCARDED);
     }
@@ -81,6 +86,9 @@ public class SoraShieldEntity extends LivingEntity {
             AlteLightningParticle.LOGGER.info(this.startRiding(this.host) +"");
         //this.startRiding(this.host);
         }*/
+        if(this.tickCount%50==0){
+            this.playSound(SoraSoundInit.SORA_SHIELD_HUM.get(),0.7F,1);
+        }
         if(!this.level().isClientSide()){
             this.getEntityData().set(id,this.hostid);
         }else{

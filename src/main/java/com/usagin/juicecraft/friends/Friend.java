@@ -1880,7 +1880,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     }
                     this.gameEvent(GameEvent.EAT);
                     return InteractionResult.CONSUME_PARTIAL;
-                } else if (itemstack.is(ItemInit.SUMIKA_MEMORY.get())) {
+                }
+                else if (itemstack.is(ItemInit.SUMIKA_MEMORY.get())) {
 
                     if (itemstack.getOrCreateTag().contains("juicecraft.memories")) {
                         SumikaMemory temp = SumikaMemory.deserialize(itemstack.getOrCreateTag().getByteArray("juicecraft.memories"));
@@ -1907,7 +1908,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
 
                     return InteractionResult.SUCCESS;
-                } else {
+                }
+                else {
 
                     if (!itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching() || (itemstack.isEmpty() && this.isOwnedBy(pPlayer) && pPlayer.isCrouching())) {
 
@@ -1926,12 +1928,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                             this.setPose(STANDING);
                         }
                     } else if (itemstack.isEmpty() && this.isOwnedBy(pPlayer)) {
-                        if (this.mood > 50) {
                             petEvent();
-                        } else {
-                            this.level().broadcastEntityEvent(this, (byte) 6);
-                            this.mood--;
-                        }
                         this.socialInteraction++;
                         return InteractionResult.SUCCESS;
                     }

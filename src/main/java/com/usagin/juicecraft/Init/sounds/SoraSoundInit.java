@@ -78,6 +78,8 @@ public class SoraSoundInit {
     public static final RegistryObject<SoundEvent> SORA_SHIELD = registerFriendSoundEvent("sora_shield");
     public static final RegistryObject<SoundEvent> SORA_SHIELD_INVERT = registerFriendSoundEvent("sora_shield_invert");
     public static final RegistryObject<SoundEvent> SORA_UNLIMITED_CHARGE = registerFriendSoundEvent("sora_unlimited_charge");
+    public static final RegistryObject<SoundEvent> SORA_BARRIER = registerFriendSoundEvent("sora_barrier");
+    public static final RegistryObject<SoundEvent> SORA_SHIELD_HUM = registerFriendSoundEvent("sora_shield_hum");
 
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name) {

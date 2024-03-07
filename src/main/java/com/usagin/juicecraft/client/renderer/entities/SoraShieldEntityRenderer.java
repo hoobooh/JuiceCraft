@@ -20,9 +20,10 @@ public class SoraShieldEntityRenderer extends LivingEntityRenderer<SoraShieldEnt
     public SoraShieldEntityRenderer(EntityRendererProvider.Context pContext) {
         this(pContext, new ShieldEntityModel(pContext.bakeLayer(ShieldEntityModel.LAYER_LOCATION)), 0);
     }
+    public FriendEyeTransparentLayer<SoraShieldEntity,ShieldEntityModel> layer=new FriendEyeTransparentLayer<>(this, main,true,0.2F);
     public SoraShieldEntityRenderer(EntityRendererProvider.Context pContext, ShieldEntityModel pModel, float pShadowRadius) {
         super(pContext, pModel, pShadowRadius);
-        this.addLayer(new FriendEyeTransparentLayer<>(this, main,true,0.2F));
+        this.addLayer(this.layer);
     }
     public static ResourceLocation main = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/shield.png");
     public static ResourceLocation none = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/shield_none.png");
@@ -34,7 +35,7 @@ public class SoraShieldEntityRenderer extends LivingEntityRenderer<SoraShieldEnt
         /*if(shield.host!=null){
             pPoseStack.translate(-shield.getX()+shield.host.getX(),-shield.getY()+shield.host.getY(),-shield.getZ()+shield.host.getZ());
         }*/
-
+        this.layer.transparency= (float) Math.abs(((Math.sin((shield.tickCount/20F)%80)) / 4F));
 
         super.render(shield, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
     }

@@ -41,7 +41,6 @@ public class SoraShieldGoal extends Goal {
             this.sora.usingshield=true;
         this.sora.shieldcooldown=1200;
         this.sora.playVoice(SoraSoundInit.SORA_SHIELD.get(),true);
-        //this.sora.playSound(SoraSoundInit.SHIELD_START.get());
         SoraShieldEntity entity = new SoraShieldEntity(EntityInit.SORA_SHIELD_ENTITY.get(),this.sora.level());
         entity.setPos(this.sora.position());
         entity.host=this.sora;
@@ -49,6 +48,7 @@ public class SoraShieldGoal extends Goal {
         entity.lifetime= (int) this.getShieldDuration();
         entity.damagetaken=0;
         this.sora.level().addFreshEntity(entity);
+        entity.playSound(SoraSoundInit.SORA_BARRIER.get());
 
         if(this.sora.getOwner() != null){
             entity = new SoraShieldEntity(EntityInit.SORA_SHIELD_ENTITY.get(),this.sora.level());
@@ -58,6 +58,7 @@ public class SoraShieldGoal extends Goal {
             entity.lifetime= (int) this.getShieldDuration();
             entity.damagetaken=0;
             this.sora.getOwner().level().addFreshEntity(entity);
+            entity.playSound(SoraSoundInit.SORA_BARRIER.get());
         }
         }
     }

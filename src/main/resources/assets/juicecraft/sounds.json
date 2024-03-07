@@ -1,4 +1,14 @@
 {
+  "sora_shield_hum": {
+    "sounds": [
+      "juicecraft:sora_shield_hum"
+    ]
+  },
+  "sora_barrier": {
+    "sounds": [
+      "juicecraft:sora_barrier"
+    ]
+  },
   "sora_shield": {
     "sounds": [
       "juicecraft:sora_shield"
