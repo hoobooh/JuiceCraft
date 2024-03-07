@@ -86,7 +86,7 @@ public class SoraShieldEntity extends LivingEntity {
             AlteLightningParticle.LOGGER.info(this.startRiding(this.host) +"");
         //this.startRiding(this.host);
         }*/
-        if(this.tickCount%50==0){
+        if(this.tickCount%63==1){
             this.playSound(SoraSoundInit.SORA_SHIELD_HUM.get(),0.7F,1);
         }
         if(!this.level().isClientSide()){
