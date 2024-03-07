@@ -10,6 +10,7 @@ import com.usagin.juicecraft.particles.AlteLightningParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -113,7 +114,9 @@ public class SoraShieldEntity extends LivingEntity {
         }
 
     }
-
+    public @NotNull Component getDisplayName() {
+        return Component.empty();
+    }
 
     @Override
     public @NotNull HumanoidArm getMainArm() {
