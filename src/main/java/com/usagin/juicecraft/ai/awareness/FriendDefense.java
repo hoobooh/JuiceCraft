@@ -4,7 +4,7 @@ import com.usagin.juicecraft.friends.Friend;
 
 public class FriendDefense {
     static public boolean shouldDefendAgainst(Friend friend) {
-        if(shouldBeCareful(friend)){
+        if(shouldBeCareful(friend) || friend.isFearless()){
             int n = friend.getRandom().nextInt(0, 21);
             return n <= friend.getCombatMod();
         }
@@ -13,7 +13,7 @@ public class FriendDefense {
     }
     static public boolean shouldBeCareful(Friend friend){
         if(friend.isFearless()){
-            return true;
+            return false;
         }
 
         int setting = friend.getCombatSettings().defense;
