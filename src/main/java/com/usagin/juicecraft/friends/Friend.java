@@ -724,14 +724,16 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
                     entityAngle = Math.toDegrees(entityAngle);
                     if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
-                        flag = flag || this.doHurtTarget(e);
+                        boolean temp = this.doHurtTarget(e);
+                        flag = flag || temp;
                     }
                 }
             } else {
                 double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
                 entityAngle = Math.toDegrees(entityAngle);
                 if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
-                    flag = flag || this.doHurtTarget(e);
+                    boolean temp = this.doHurtTarget(e);
+                    flag = flag || temp;
                 }
             }
         }
@@ -771,14 +773,16 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
                     entityAngle = Math.toDegrees(entityAngle);
                     if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
-                        flag = flag || this.doHurtTargetDamage(e,damagemult);
+                        boolean temp = this.doHurtTarget(e);
+                        flag = flag || temp;
                     }
                 }
             } else {
                 double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
                 entityAngle = Math.toDegrees(entityAngle);
                 if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
-                    flag = flag || this.doHurtTargetDamage(e,damagemult);
+                    boolean temp = this.doHurtTarget(e);
+                    flag = flag || temp;
                 }
             }
         }
@@ -1265,7 +1269,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.targetSelector.addGoal(7, new FriendNearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, (p_28879_) -> p_28879_ instanceof Enemy && !(p_28879_ instanceof Creeper)));
         this.registerCustomGoals();
     }
-
+    public static EntityDataAccessor<Boolean> FLAGFORRESET = SynchedEntityData.defineId(Friend.class,EntityDataSerializers.BOOLEAN);
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_ID_FLAGS, (byte) 0);
@@ -1293,6 +1297,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         this.entityData.define(FRIEND_SKILLLEVELS4, this.skillLevels[3]);
         this.entityData.define(FRIEND_SKILLLEVELS5, this.skillLevels[4]);
         this.entityData.define(FRIEND_SKILLLEVELS6, this.skillLevels[5]);
+        this.entityData.define(FLAGFORRESET, false);
         this.specialDialogueEnabled = new int[]{0, 0, 0};
         this.entityData.define(FRIEND_SPECIALSENABLED, AbstractDialogueManager.encodeSpecialHash(this.specialDialogueEnabled));
         this.entityData.define(FRIEND_SKILLPOINTS, this.skillPoints);
@@ -1658,7 +1663,10 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.aggroCounter--;
         }
         if (level().isClientSide()) {
-
+            if(this.getSyncBoolean(FLAGFORRESET)){
+                this.attackAnimState.stop();
+                this.attackCounterAnimState.stop();
+            }
             if (this.level().getGameTime() % 150 == 0 && this.getInSittingPose()) {
                 this.impatientCounter = 100;
             } else if (!this.getInSittingPose() || this.patCounter != 0) {
@@ -1690,7 +1698,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                 this.idleCounter = 0;
             }
             this.snowballThrowAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() > 0 && this.getAttackType() == 60, this.tickCount);
-            this.attackAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType() != 50 && this.getAttackType() != 60, this.tickCount);
+            this.attackAnimState.animateWhen(!this.attackCounterAnimState.isStarted() && this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType() != 50 && this.getAttackType() != 60, this.tickCount);
 
             this.attackCounterAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && (this.getAttackType() == 50 || this.isCounter()), this.tickCount);
 
@@ -1719,6 +1727,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         //SERVERSIDE-ONLY TICKS
 
         else {
+            if(this.getSyncBoolean(FLAGFORRESET)){
+                this.setSyncBoolean(FLAGFORRESET,false);
+            }
             if (this.getViewFlower() == 1) {
                 this.getFriendNav().setShouldMove(true);
             }
@@ -2204,6 +2215,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             } else if (FriendDefense.shouldDefendAgainst(this)) {
                 this.setAttackCounter(34);
                 this.setAttackType(50);
+                this.setSyncBoolean(FLAGFORRESET,true);
                 this.playTimedVoice(this.getEvade());
                 this.playSound(COUNTER_BLOCK.get());
                 event.setCanceled(true);

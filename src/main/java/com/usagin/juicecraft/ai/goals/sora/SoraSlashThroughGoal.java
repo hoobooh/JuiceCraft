@@ -39,7 +39,7 @@ public class SoraSlashThroughGoal extends Goal {
     public boolean canUse() {
         this.target = this.sora.getTarget();
         Item item = this.sora.getFriendWeapon().getItem();
-        boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
+        boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem || this.sora.getAttackCounter() > 0;
         if (this.target == null) {
             return false;
         }

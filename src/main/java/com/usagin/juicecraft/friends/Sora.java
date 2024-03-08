@@ -164,7 +164,7 @@ public class Sora extends OldWarFriend {
             }else if(this.getAttackType()==55){
                 //7
                 if(n==(int) (5 )){
-                    this.doHurtTargetDetailed(60,2.5,2.5F, UniversalSoundInit.COUNTER_ATTACK.get());
+                    this.doHurtTargetDetailed(30,2,2.5F, UniversalSoundInit.COUNTER_ATTACK.get());
                 }
             }
         }else{
@@ -189,6 +189,7 @@ public class Sora extends OldWarFriend {
                 } else if (FriendDefense.shouldDefendAgainst(this)) {
                     this.setAttackCounter(20);
                     this.setAttackType(55);
+                    this.setSyncBoolean(FLAGFORRESET,true);
                     this.playTimedVoice(this.getEvade());
                     this.playSound(COUNTER_BLOCK.get());
                     event.setCanceled(true);
