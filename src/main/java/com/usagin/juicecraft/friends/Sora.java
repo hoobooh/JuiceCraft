@@ -1,6 +1,8 @@
 package com.usagin.juicecraft.friends;
 
 import com.mojang.logging.LogUtils;
+import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
+import com.usagin.juicecraft.ai.awareness.FriendDefense;
 import com.usagin.juicecraft.ai.goals.sora.SoraHyperGoal;
 import com.usagin.juicecraft.ai.goals.sora.SoraShieldGoal;
 import com.usagin.juicecraft.ai.goals.sora.SoraSlashThroughGoal;
@@ -11,15 +13,19 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.unsafe.UnsafeFieldAccess;
 import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.Init.sounds.SoraSoundInit.*;
+import static com.usagin.juicecraft.Init.sounds.UniversalSoundInit.COUNTER_BLOCK;
 
 
 public class Sora extends OldWarFriend {
@@ -43,6 +49,9 @@ public class Sora extends OldWarFriend {
         if(this.level().isClientSide()){
             this.slashThroughAnimState.animateWhen(this.getSyncInt(SLASHTHROUGHCOUNTER)>0,this.tickCount);
         }else{
+            if(this.boisterouscooldown>0){
+                this.boisterouscooldown--;
+            }
             if(this.slashthroughcooldown>0){
                 this.slashthroughcooldown--;
             }
@@ -51,11 +60,116 @@ public class Sora extends OldWarFriend {
             }
         }
     }
+    @Override
+    public void swing(InteractionHand pHand, boolean pUpdateSelf) {
+        if(this.getSyncBoolean(BOISTEROUS) && this.getAttackCounter() <= 0 && !this.getIsDying() && !this.isAttackLockedOut()){
+            this.doBoisterousAttack();
+        }else{
+        super.swing(pHand, pUpdateSelf);}
+    }
+    public void doBoisterousAttack(){
+        int rand = this.random.nextInt(3);
+        if (rand == 0) {
+            this.setAttackCounter(70);
+            this.setAttackType(28);
+        } else if (rand == 1) {
+            this.setAttackCounter(85);
+            this.setAttackType(25);
+        } else {
+            this.setAttackCounter(75);
+            this.setAttackType(22);
+        }
+    }
+    public boolean isCounter(){
+        return this.getAttackType()==55;
+    }
+    void doReleaseStart() {
+        if(this.isBoisterous()){
+            int n = this.getAttackCounter();
+            if(this.getAttackType()==28){
+                //65
+                //55
+                //40
+                //23
+                if(n==65){
+                    this.doHurtTargetDetailed(20,2,1.5F, UniversalSoundInit.HEAVY_ATTACK.get());
+                }else if(n==55){
+                    this.doHurtTargetDetailed(40,1.5,1.2F,UniversalSoundInit.MEDIUM_ATTACK.get());
+                }else if(n==40){
+                    this.doHurtTargetDetailed(30,1.5,1.7F,UniversalSoundInit.MEDIUM_ATTACK.get());
+                }else if(n==23){
+                    this.doHurtTargetDetailed(180,4,4, UniversalSoundInit.COUNTER_ATTACK.get());
+                }
+            }else if(this.getAttackType()==25){
+                //75
+                //60
+                //33
+                if(n==75){
+
+                }else if(n==60){
+
+                }else if(n==33){
+
+                }
+            }else if(this.getAttackType()==22){
+                //60
+                //45
+                //36
+                //27,23,21,17
+                if(n==60){
+
+                }else if(n==45){
+
+                }else if(n==36){
+
+                }else if(n==27 || n== 23 || n==21 || n==17){
+
+                }
+
+            }else if(this.getAttackType()==55){
+                //7
+                if(n==7){
+
+                }
+            }
+        }else{
+        super.doReleaseStart();}
+    }
+    public int getCounterTiming() {
+        if(this.isBoisterous()){
+            return (int) (8/this.getAttackSpeed());
+        }else{
+        return super.getCounterTiming();}
+    }
+    public void tryCounter(LivingAttackEvent event) {
+        if(this.isBoisterous()){
+            if(this.getRandom().nextBoolean()){
+                event.setCanceled(true);
+                this.playTimedVoice(this.getEvade());
+                return;
+            }
+            if (event.getSource().getEntity() != null && !this.isDying && !this.isAttackLockedOut()) {
+                if (this.getAttackType() == 55 && this.getAttackCounter() > this.getCounterTiming() / this.getAttackSpeed()) {
+                    event.setCanceled(true);
+                } else if (FriendDefense.shouldDefendAgainst(this)) {
+                    this.setAttackCounter(20);
+                    this.setAttackType(55);
+                    this.playTimedVoice(this.getEvade());
+                    this.playSound(COUNTER_BLOCK.get());
+                    event.setCanceled(true);
+                }
+            }
+
+
+        }else{
+            super.tryCounter(event);
+        }
+    }
     public boolean isFearless(){
         return this.isBoisterous();
     }
     public boolean isBoisterous(){
-        return false;
+        return this.getSyncBoolean(BOISTEROUS);
     }
     public boolean isAttackLockedOut() {
         return this.isUsingHyper() || this.areAnimationsBusy();
@@ -63,6 +177,7 @@ public class Sora extends OldWarFriend {
     public boolean lockLookAround() {
         return this.areAnimationsBusy() && super.lockLookAround();
     }
+    int boisterouscooldown;
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
@@ -70,6 +185,8 @@ public class Sora extends OldWarFriend {
         pCompound.putInt("juicecraft.sora.shieldduration",this.shieldduration);
         pCompound.putInt("juicecraft.sora.shieldcooldown", this.shieldcooldown);
         pCompound.putBoolean("juicecraft.sora.usingshield", this.usingshield);
+        pCompound.putBoolean("juicecraft.sora.boisterous", this.getSyncBoolean(BOISTEROUS));
+        pCompound.putInt("juicecraft.sora.boisterouscooldown", this.boisterouscooldown);
     }
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -78,6 +195,8 @@ public class Sora extends OldWarFriend {
         this.shieldduration = pCompound.getInt("juicecraft.sora.shieldduration");
         this.shieldcooldown = pCompound.getInt("juicecraft.sora.shieldcooldown");
         this.usingshield=pCompound.getBoolean("juicecraft.sora.usingshield");
+        this.boisterouscooldown=pCompound.getInt("juicecraft.sora.boisterouscooldown");
+        this.setSyncBoolean(BOISTEROUS, pCompound.getBoolean("juicecraft.sora.boisterous"));
     }
     public static AttributeSupplier.Builder getSoraAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30).add(Attributes.MOVEMENT_SPEED, 0.35).add(Attributes.ATTACK_DAMAGE, 4);
@@ -88,9 +207,11 @@ public class Sora extends OldWarFriend {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.getEntityData().define(SLASHTHROUGHCOUNTER,0);
+        this.getEntityData().define(BOISTEROUS,false);
     }
     public int slashthroughcooldown;
     public static final EntityDataAccessor<Integer> SLASHTHROUGHCOUNTER = SynchedEntityData.defineId(Sora.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> BOISTEROUS = SynchedEntityData.defineId(Sora.class, EntityDataSerializers.BOOLEAN);
 
     public boolean isUsingHyper(){
         return false;

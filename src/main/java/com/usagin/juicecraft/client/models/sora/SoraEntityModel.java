@@ -479,7 +479,9 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
 
 
     public boolean shouldRenderZapper(Sora sora){
-        return false;
+        boolean flag = sora.getAttackType()==28 && sora.getAttackCounter() < 45 && sora.getAttackCounter() > 4;
+        flag = flag || (sora.getAttackType()==25 && sora.getAttackCounter() < 40 && sora.getAttackCounter() > 10);
+        return flag;
     }
     public void setZapperVisible(boolean b){
         this.parts.rightarm().getChild("lowerarm").getChild("grabber").visible=b;

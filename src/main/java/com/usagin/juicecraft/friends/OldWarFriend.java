@@ -18,8 +18,13 @@ public abstract class OldWarFriend extends Friend {
     public boolean isNocturnal(){
         return true;
     }
+    public void setSkillLevels(int[] n){
+        super.setSkillLevels(n);
+        this.setSkillEnabled(this.getSkillEnabled());
+    }
 
     public void setSkillEnabled(boolean[] b) {
+
         this.skillEnabled = b;
         this.getEntityData().set(FRIEND_SKILLENABLED, SkillManager.makeBooleanHash(b));
         if (this.skillEnabled[0]) {

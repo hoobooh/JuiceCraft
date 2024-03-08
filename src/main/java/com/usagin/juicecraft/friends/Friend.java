@@ -744,11 +744,13 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }else{
                 this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP);
             }
+        }else{
+            this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP);
         }
         this.inventory.getItem(1).hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
         this.updateGear();
     }
-    public void doHurtTargetDetailed(double maxFov, double range) {
+    public void doHurtTargetDetailed(double maxFov, double range, float damagemult, SoundEvent hitsound) {
         if (FriendDefense.shouldBeCareful(this)) {
             this.runTimer = 35;
         }
@@ -769,26 +771,22 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
                     entityAngle = Math.toDegrees(entityAngle);
                     if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
-                        flag = flag || this.doHurtTarget(e);
+                        flag = flag || this.doHurtTargetDamage(e,damagemult);
                     }
                 }
             } else {
                 double entityAngle = -Math.atan2(e.position().z - this.position().z, e.position().x - this.position().x);
                 entityAngle = Math.toDegrees(entityAngle);
                 if (Math.abs(Math.abs(angle) - Math.abs(entityAngle)) < maxFov) {
-                    flag = flag || this.doHurtTarget(e);
+                    flag = flag || this.doHurtTargetDamage(e,damagemult);
                 }
             }
         }
         this.playVoice(this.getAttack());
-        if (!this.inventory.getItem(1).isEmpty() || this.hasShellWeapon()) {
-            if(flag){
-
-                this.playSound(this.getHitSound(), 0.5F, 1);
-
-            }else{
-                this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP);
-            }
+        if(!flag){
+            this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP);
+        }else{
+            this.playSound(hitsound);
         }
         this.inventory.getItem(1).hurtAndBreak(1, this, (a) -> this.broadcastBreakEvent(InteractionHand.MAIN_HAND));
         this.updateGear();
@@ -1624,6 +1622,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public double yOldOldOld;
     public double zOldOld;
     public double zOldOldOld;
+    public boolean isCounter(){
+        return false;
+    }
     @Override
     public void tick() {
 
@@ -1691,7 +1692,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             }
             this.snowballThrowAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() > 0 && this.getAttackType() == 60, this.tickCount);
             this.attackAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType() != 50 && this.getAttackType() != 60, this.tickCount);
-            this.attackCounterAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && this.getAttackType() == 50, this.tickCount);
+
+            this.attackCounterAnimState.animateWhen(this.canDoThings() && this.getAttackCounter() != 0 && (this.getAttackType() == 50 || this.isCounter()), this.tickCount);
 
             this.interactAnimState.animateWhen(this.canDoThings() && this.getFriendPlaceCounter() > 0, this.tickCount);
             this.viewFlowerAnimState.animateWhen(this.canDoThings() && this.getViewFlower() > 0, this.tickCount);
@@ -1851,7 +1853,39 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         }
         return b;
     }
+    public boolean doHurtTargetDamage(Entity pEntity, float dmgmod){
+        if(pEntity == null){
+            return false;
+        }
+        if (pEntity.level() instanceof ServerLevel t) {
+            t.sendParticles(SWEEP_ATTACK, pEntity.getX(), pEntity.getY() + 1, pEntity.getZ(), 1, 0.2, 0.2, 0.2, 0.3);
+        }
+        boolean flag = false;
+        if (this.distanceTo(pEntity) < 3) {
+            float f = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * this.getGenericDamageMod() * dmgmod * (Mth.clamp((5 * this.getCombatMod() / 10) + this.getRandom().nextInt(1, 7), 1, 6) + 3) / 6 * 0.66F;
+            float f1 = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+            if (pEntity instanceof LivingEntity) {
+                f += EnchantmentHelper.getDamageBonus(this.getMainHandItem(), ((LivingEntity) pEntity).getMobType());
+                f1 += (float) EnchantmentHelper.getKnockbackBonus(this);
+            }
 
+            int i = EnchantmentHelper.getFireAspect(this);
+            if (i > 0) {
+                pEntity.setSecondsOnFire(i * 4);
+            }
+            flag = pEntity.hurt(this.damageSources().mobAttack(this), f);
+            if (flag) {
+                if (f1 > 0.0F && pEntity instanceof LivingEntity) {
+                    ((LivingEntity) pEntity).knockback(f1 * 0.5F, Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(this.getYRot() * ((float) Math.PI / 180F)));
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
+                }
+
+                this.doEnchantDamageEffects(this, pEntity);
+                this.setLastHurtMob(pEntity);
+            }
+        }
+        return flag;
+    }
     @Override
     public boolean doHurtTarget(Entity pEntity) {
         if(pEntity == null){
