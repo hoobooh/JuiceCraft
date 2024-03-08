@@ -80,6 +80,11 @@ public class SoraSoundInit {
     public static final RegistryObject<SoundEvent> SORA_UNLIMITED_CHARGE = registerFriendSoundEvent("sora_unlimited_charge");
     public static final RegistryObject<SoundEvent> SORA_BARRIER = registerFriendSoundEvent("sora_barrier");
     public static final RegistryObject<SoundEvent> SORA_SHIELD_HUM = registerFriendSoundEvent("sora_shield_hum");
+    public static final RegistryObject<SoundEvent> SORA_WIN1 = registerFriendSoundEvent("sora_win1");
+    public static final RegistryObject<SoundEvent> SORA_WIN2 = registerFriendSoundEvent("sora_win2");
+    public static final RegistryObject<SoundEvent> SORA_WIN3 = registerFriendSoundEvent("sora_win3");
+
+
 
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name) {

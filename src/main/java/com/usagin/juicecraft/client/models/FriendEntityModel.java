@@ -112,9 +112,9 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
             pPoseStack.mulPose((new Quaternionf()).rotationZYX(part.zRot, part.yRot, part.xRot));
         }
 
-        if (part.xScale != 1.0F || part.yScale != 1.0F || part.zScale != 1.0F) {
+        /*if (part.xScale != 1.0F || part.yScale != 1.0F || part.zScale != 1.0F) {
             pPoseStack.scale(part.xScale, part.yScale, part.zScale);
-        }
+        }*/
 
     }
 

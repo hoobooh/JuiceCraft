@@ -754,11 +754,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         if (FriendDefense.shouldBeCareful(this)) {
             this.runTimer = 35;
         }
-        range = range / 2;
         AABB hitTracer = new AABB(this.getX() - range, this.getY(), this.getZ() - range, this.getX() + range, this.getY() + 5, this.getZ() + range);
         List<Entity> entityList = this.level().getEntities(this, hitTracer);
         if (this.getTarget() != null) {
             this.lookAt(this.getTarget(), 360, 360);
+            this.getLookControl().setLookAt(this.getTarget());
         }
         double angle = Math.atan2(this.getLookAngle().z, this.getLookAngle().x);
         angle = Math.toDegrees(angle);
@@ -948,8 +948,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public void setAttackCounter(int time) {
         this.attackCounter = (int) ((time + 2) / this.getAttackSpeed());
-        //LOGGER.info(this.attackCounter +"");
-        this.getEntityData().set(FRIEND_ATTACKCOUNTER, time + 2);
+        this.getEntityData().set(FRIEND_ATTACKCOUNTER, this.attackCounter);
     }
 
     public boolean snowballIdle() {
@@ -2159,7 +2158,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public boolean shouldShowWeapon() {
         return true;
     }
-
+    public boolean forceShowWeapon(){
+        return false;
+    }
     public void synchronizeLookAngle() {
         if (this.level() instanceof ServerLevel level) {
             int l = Mth.floor(this.getYRot() * 256.0F / 360.0F);

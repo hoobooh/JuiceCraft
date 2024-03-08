@@ -99,6 +99,7 @@ public class CommonEvents {
         Minecraft.getInstance().particleEngine.register(ParticleInit.ALTE_GUNFLASH.get(), AlteGunFlashParticle.GunFlashProvider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.RANDOM_ENERGY_PARTICLE.get(), RandomEnergyParticle.RandomEnergyProvider::new);
         Minecraft.getInstance().particleEngine.register(ParticleInit.SORA_ENERGY_PARTICLE.get(), SoraEnergyParticle.SoraEnergyProvider::new);
+        Minecraft.getInstance().particleEngine.register(ParticleInit.GENERIC_LIGHTNING_PARTICLE.get(), GenericLightningParticle.LightningProvider::new);
 
     }
 

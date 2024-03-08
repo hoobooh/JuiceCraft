@@ -34,6 +34,7 @@ public class UniversalSoundInit {
     public static final RegistryObject<SoundEvent> HARBINGER_DEATH = registerFriendSoundEvent("harbinger_death");
     public static final RegistryObject<SoundEvent> HARBINGER_INTRO = registerFriendSoundEvent("harbinger_intro");
     public static final RegistryObject<SoundEvent> HARBINGER_UNSHEATHE = registerFriendSoundEvent("harbinger_unsheathe");
+    public static final RegistryObject<SoundEvent> ACCELERATOR = registerFriendSoundEvent("accelerator");
     static Logger LOGGER = LogUtils.getLogger();
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name) {

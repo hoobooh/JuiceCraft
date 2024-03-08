@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static com.usagin.juicecraft.client.animation.SoraAnimation1.*;
 import static com.usagin.juicecraft.client.animation.SoraAnimation2.*;
+import static com.usagin.juicecraft.client.animation.SoraAnimation3.*;
 
 public class SoraEntityModel extends FriendEntityModel<Sora> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
@@ -479,8 +480,8 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
 
 
     public boolean shouldRenderZapper(Sora sora){
-        boolean flag = sora.getAttackType()==28 && sora.getAttackCounter() < 45 && sora.getAttackCounter() > 4;
-        flag = flag || (sora.getAttackType()==25 && sora.getAttackCounter() < 40 && sora.getAttackCounter() > 10);
+        boolean flag = sora.getAttackType()==25 && sora.getAttackCounter() < 45 && sora.getAttackCounter() > 1;
+        flag = flag || (sora.getAttackType()==28 && sora.getAttackCounter() < 40 && sora.getAttackCounter() > 5);
         return flag;
     }
     public void setZapperVisible(boolean b){
@@ -492,6 +493,19 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
     public void attackAnim(Sora pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         boolean flag = pEntity.slashThroughAnimState.isStarted();
         this.animate(pEntity.slashThroughAnimState,slashThrough,pAgeInTicks);
+        if(pEntity.isBoisterous()){
+            flag=true;
+            int n = pEntity.getAttackType();
+            if(n==28){
+                this.animate(pEntity.attackAnimState, boisterousOne,pAgeInTicks);
+            }else if (n==25){
+                this.animate(pEntity.attackAnimState, boisterousTwo,pAgeInTicks);
+            }else if(n==22){
+                this.animate(pEntity.attackAnimState, boisterousThree,pAgeInTicks);
+            }else if(n==55){
+                this.animate(pEntity.attackCounterAnimState, boisterousCounter,pAgeInTicks);
+            }
+        }
         if(!flag){
         super.attackAnim(pEntity, pLimbSwing, pLimbSwingAmount, pAgeInTicks, pNetHeadYaw, pHeadPitch);}
     }

@@ -3,6 +3,7 @@ package com.usagin.juicecraft.friends;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.FriendDefense;
+import com.usagin.juicecraft.ai.goals.sora.SoraBoisterousGoal;
 import com.usagin.juicecraft.ai.goals.sora.SoraHyperGoal;
 import com.usagin.juicecraft.ai.goals.sora.SoraShieldGoal;
 import com.usagin.juicecraft.ai.goals.sora.SoraSlashThroughGoal;
@@ -13,6 +14,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
@@ -21,7 +23,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.unsafe.UnsafeFieldAccess;
 import org.slf4j.Logger;
 
 import static com.usagin.juicecraft.Init.sounds.SoraSoundInit.*;
@@ -37,18 +38,29 @@ public class Sora extends OldWarFriend {
     }
     public boolean shouldAfterImage(){
         int n = this.getSyncInt(SLASHTHROUGHCOUNTER);
-        return (n <= 15 && n >= 6); //main charge;
+        return (n <= 15 && n >= 6) || this.isBoisterous();
     }
     public AnimationState slashThroughAnimState = new AnimationState();
     public int shieldduration;
     public int shieldcooldown;
     public boolean usingshield = false;
+    private int buffer=5;
 
     public void tick(){
         super.tick();
         if(this.level().isClientSide()){
             this.slashThroughAnimState.animateWhen(this.getSyncInt(SLASHTHROUGHCOUNTER)>0,this.tickCount);
+
         }else{
+            if(this.getAttackCounter()==1 && this.isBoisterous()){
+                if(buffer>0){
+                    buffer--;
+                    this.setAttackCounter(2);
+                }
+                else{
+                    buffer=5;
+                }
+            }
             if(this.boisterouscooldown>0){
                 this.boisterouscooldown--;
             }
@@ -67,6 +79,15 @@ public class Sora extends OldWarFriend {
         }else{
         super.swing(pHand, pUpdateSelf);}
     }
+    public void setAttackCounter(int time) {
+        if(this.isBoisterous()){
+            this.attackCounter=time;
+            this.setSyncInt(Friend.FRIEND_ATTACKCOUNTER,time);
+        }else{
+            super.setAttackCounter(time);
+        }
+
+    }
     public void doBoisterousAttack(){
         int rand = this.random.nextInt(3);
         if (rand == 0) {
@@ -83,6 +104,17 @@ public class Sora extends OldWarFriend {
     public boolean isCounter(){
         return this.getAttackType()==55;
     }
+    public int getCombatModifier() {
+        int n = 0;
+        if(this.isBoisterous())
+        {
+            n=this.getSkillLevels()[4]*5;
+        }
+        return n+super.getCombatModifier();
+    }
+    public boolean forceShowWeapon(){
+        return this.isBoisterous();
+    }
     void doReleaseStart() {
         if(this.isBoisterous()){
             int n = this.getAttackCounter();
@@ -91,45 +123,48 @@ public class Sora extends OldWarFriend {
                 //55
                 //40
                 //23
-                if(n==65){
-                    this.doHurtTargetDetailed(20,2,1.5F, UniversalSoundInit.HEAVY_ATTACK.get());
-                }else if(n==55){
-                    this.doHurtTargetDetailed(40,1.5,1.2F,UniversalSoundInit.MEDIUM_ATTACK.get());
-                }else if(n==40){
-                    this.doHurtTargetDetailed(30,1.5,1.7F,UniversalSoundInit.MEDIUM_ATTACK.get());
-                }else if(n==23){
-                    this.doHurtTargetDetailed(180,4,4, UniversalSoundInit.COUNTER_ATTACK.get());
+                if(n==(int) (62 )){
+                    this.doHurtTargetDetailed(25,2,1.5F, UniversalSoundInit.HEAVY_ATTACK.get());
+                }else if(n==(int) (50 )){
+                    this.doHurtTargetDetailed(45,1.5,1.2F,UniversalSoundInit.MEDIUM_ATTACK.get());
+                }else if(n==(int) (35 )){
+                    this.doHurtTargetDetailed(35,1.5,1.7F,UniversalSoundInit.MEDIUM_ATTACK.get());
+                }else if(n==(int) (19 )){
+                    this.doHurtTargetDetailed(120,3,4, UniversalSoundInit.HARBINGER_SLASH.get());
                 }
             }else if(this.getAttackType()==25){
                 //75
                 //60
                 //33
-                if(n==75){
-
-                }else if(n==60){
-
-                }else if(n==33){
-
+                if(n==(int) (75 )){
+                    this.doHurtTargetDetailed(45,1.4,1.4F,UniversalSoundInit.MEDIUM_ATTACK.get());
+                }else if(n==(int) (60 )){
+                    this.doHurtTargetDetailed(35,1.5,1.7F,UniversalSoundInit.MEDIUM_ATTACK.get());
+                }else if(n==(int) (28 )){
+                    this.doHurtTargetDetailed(65,5,6, UniversalSoundInit.HARBINGER_SLAM.get());
                 }
             }else if(this.getAttackType()==22){
                 //60
                 //45
                 //36
                 //27,23,21,17
-                if(n==60){
-
-                }else if(n==45){
-
-                }else if(n==36){
-
-                }else if(n==27 || n== 23 || n==21 || n==17){
-
+                if(n==(int) (54 )){
+                    this.doHurtTargetDetailed(45,1.5F,1.2F, UniversalSoundInit.MEDIUM_ATTACK.get());
+                }else if(n==(int) (41 )){
+                    this.doHurtTargetDetailed(45,1.5F,1.2F, UniversalSoundInit.MEDIUM_ATTACK.get());
+                }else if(n==(int) (32)){
+                    this.doHurtTargetDetailed(35,2F,1.5F, UniversalSoundInit.HEAVY_ATTACK.get());
+                }else if(n==(int) (24 )||
+                        n== (int) (20 ) ||
+                        n==(int) (18 ) ||
+                        n==(int) (14 )){
+                    this.doHurtTargetDetailed(40,1.3F,0.9F, UniversalSoundInit.LIGHT_ATTACK.get());
                 }
 
             }else if(this.getAttackType()==55){
                 //7
-                if(n==7){
-
+                if(n==(int) (5 )){
+                    this.doHurtTargetDetailed(60,2.5,2.5F, UniversalSoundInit.COUNTER_ATTACK.get());
                 }
             }
         }else{
@@ -137,7 +172,7 @@ public class Sora extends OldWarFriend {
     }
     public int getCounterTiming() {
         if(this.isBoisterous()){
-            return (int) (8/this.getAttackSpeed());
+            return (int) (8 );
         }else{
         return super.getCounterTiming();}
     }
@@ -149,7 +184,7 @@ public class Sora extends OldWarFriend {
                 return;
             }
             if (event.getSource().getEntity() != null && !this.isDying && !this.isAttackLockedOut()) {
-                if (this.getAttackType() == 55 && this.getAttackCounter() > this.getCounterTiming() / this.getAttackSpeed()) {
+                if (this.getAttackType() == 55 && this.getAttackCounter() > this.getCounterTiming()) {
                     event.setCanceled(true);
                 } else if (FriendDefense.shouldDefendAgainst(this)) {
                     this.setAttackCounter(20);
@@ -177,7 +212,7 @@ public class Sora extends OldWarFriend {
     public boolean lockLookAround() {
         return this.areAnimationsBusy() && super.lockLookAround();
     }
-    int boisterouscooldown;
+    public int boisterouscooldown, boisterousduration;
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
@@ -187,6 +222,7 @@ public class Sora extends OldWarFriend {
         pCompound.putBoolean("juicecraft.sora.usingshield", this.usingshield);
         pCompound.putBoolean("juicecraft.sora.boisterous", this.getSyncBoolean(BOISTEROUS));
         pCompound.putInt("juicecraft.sora.boisterouscooldown", this.boisterouscooldown);
+        pCompound.putInt("juicecraft.sora.boisterousduration", this.boisterousduration);
     }
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -196,6 +232,7 @@ public class Sora extends OldWarFriend {
         this.shieldcooldown = pCompound.getInt("juicecraft.sora.shieldcooldown");
         this.usingshield=pCompound.getBoolean("juicecraft.sora.usingshield");
         this.boisterouscooldown=pCompound.getInt("juicecraft.sora.boisterouscooldown");
+        this.boisterousduration=pCompound.getInt("juicecraft.sora.boisterousduration");
         this.setSyncBoolean(BOISTEROUS, pCompound.getBoolean("juicecraft.sora.boisterous"));
     }
     public static AttributeSupplier.Builder getSoraAttributes() {
@@ -259,7 +296,12 @@ public class Sora extends OldWarFriend {
 
     @Override
     public SoundEvent getOnKill() {
-        return this.getHurt(100000);
+        int a = this.random.nextInt(3);
+        return switch (a) {
+            case 0 -> SORA_WIN1.get();
+            case 1 -> SORA_WIN2.get();
+            default -> SORA_WIN3.get();
+        };
     }
 
     @Override
@@ -479,6 +521,7 @@ public class Sora extends OldWarFriend {
 
     @Override
     void registerAdditionalGoals() {
+        this.goalSelector.addGoal(1,new SoraBoisterousGoal(this));
         this.goalSelector.addGoal(5,new SoraSlashThroughGoal(this));
         this.goalSelector.addGoal(5,new SoraShieldGoal(this));
     }

@@ -356,7 +356,9 @@
   "juicecraft.menu.sora.reactions.neutral": "Mm.",
   "juicecraft.menu.sora.reactions.approval": "Fufu.",
 
-
+  "juicecraft.sora_win1": "I managed to settle it.",
+  "juicecraft.sora_win2": "I did it.",
+  "juicecraft.sora_win3": "Phew... I won.",
   "juicecraft.sora_shield": "Shield!",
   "juicecraft.sora_shield_invert": "Shield Invert!",
   "juicecraft.sora_unlimited_charge": "Unlimited charge!",
