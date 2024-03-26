@@ -71,7 +71,7 @@ public class SoraShieldEntity extends LivingEntity {
                         continue;
                     }
                 }
-                e.hurt(sora.damageSources().explosion(this, sora), (float) (this.damagetaken * sora.getSkillLevels()[3] * 3) / (2 + sora.getSkillLevels()[3]));
+                e.hurt(sora.damageSources().explosion(this, sora), (float) (this.damagetaken/5 * sora.getSkillLevels()[3] * 3) / (2 + sora.getSkillLevels()[3]));
             }
         }
         this.remove(RemovalReason.DISCARDED);
