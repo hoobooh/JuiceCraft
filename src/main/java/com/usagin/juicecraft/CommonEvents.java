@@ -12,28 +12,22 @@ import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.blockrenderers.AltePlushieRenderer;
 import com.usagin.juicecraft.client.renderer.blockrenderers.FriendBedRenderer;
 import com.usagin.juicecraft.client.renderer.entities.*;
-import com.usagin.juicecraft.data.loot.ChestLootProvider;
 import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Sora;
+import com.usagin.juicecraft.miscentities.SoraChargeEntity;
 import com.usagin.juicecraft.miscentities.SoraShieldEntity;
 import com.usagin.juicecraft.network.*;
 import com.usagin.juicecraft.particles.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.common.data.GlobalLootModifierProvider;
-import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-
-import java.util.Collections;
-import java.util.List;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
 import static com.usagin.juicecraft.client.renderer.blockrenderers.PlushieRenderer.PLUSHIE;
@@ -47,6 +41,7 @@ public class CommonEvents {
         event.put(EntityInit.ALTE.get(), Alte.getAlteAttributes().build());
         event.put(EntityInit.HARBINGER.get(), Harbinger.getHarbingerAttributes().build());
         event.put(EntityInit.SORA_SHIELD_ENTITY.get(), SoraShieldEntity.getShieldAttributes().build());
+        event.put(EntityInit.SORA_CHARGE_ENTITY.get(), SoraChargeEntity.getChargeAttributes().build());
     }
 
     @SubscribeEvent

@@ -91,6 +91,15 @@ public class SoraShieldEntity extends LivingEntity {
             this.playSound(SoraSoundInit.SORA_SHIELD_HUM.get(),0.7F,1);
         }
         if(!this.level().isClientSide()){
+            if(this.host==null){
+                List<Entity> list = this.level().getEntities(null,this.getBoundingBox().inflate(5));
+                for(Entity e: list){
+                    if(e instanceof LivingEntity entity && e.getUUID().compareTo(this.uuid)==0){
+                        this.host=entity;
+                        this.hostid=this.host.getId();
+                    }
+                }
+            }
             this.getEntityData().set(id,this.hostid);
         }else{
             this.hostid=this.getEntityData().get(id);
@@ -130,16 +139,12 @@ public class SoraShieldEntity extends LivingEntity {
     }
     public static EntityDataAccessor<Integer> id = SynchedEntityData.defineId(SoraShieldEntity.class,EntityDataSerializers.INT);
 
+    UUID uuid;
+
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        UUID id = pCompound.getUUID("juicecraft.sora.shield.sora");
-        for(Entity e: this.level().getEntities(this,this.getBoundingBox().inflate(2))){
-            if(e instanceof LivingEntity entity && e.getUUID().compareTo(id)==0){
-                this.host=entity;
-                this.hostid=this.host.getId();
-            }
-        }
+        this.uuid = pCompound.getUUID("juicecraft.sora.shield.sora");
         this.lifetime = pCompound.getInt("juicecraft.sora.shield.lifetime");
         this.damagetaken = pCompound.getDouble("juicecraft.sora.shield.damagetaken");
     }

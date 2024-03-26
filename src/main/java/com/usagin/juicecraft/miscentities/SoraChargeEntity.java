@@ -1,16 +1,9 @@
 package com.usagin.juicecraft.miscentities;
 
-import com.usagin.juicecraft.Init.ParticleInit;
-import com.usagin.juicecraft.Init.sounds.SoraSoundInit;
-import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class SoraChargeEntity extends LivingEntity {
-    public static AttributeSupplier.Builder getShieldAttributes() {
+    public static AttributeSupplier.Builder getChargeAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 1).add(Attributes.MOVEMENT_SPEED, 0).add(Attributes.ATTACK_DAMAGE, 0);
     }
 

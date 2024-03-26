@@ -6,6 +6,7 @@ import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.client.renderer.entities.SoraChargeEntityRenderer;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.miscentities.SoraChargeEntity;
+import com.usagin.juicecraft.particles.AlteLightningParticle;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -20,7 +21,7 @@ public class SoraHyperGoal extends Goal {
     @Override
     public boolean canUse() {
         this.target = this.sora.getTarget();
-        return this.target != null && !this.sora.inventory.getItem(0).isEmpty() && this.sora.canDoThings() && !this.sora.areAnimationsBusy() && this.sora.isAggressive() && this.sora.chargecooldown == 0;
+        return this.sora.getSkillEnabled()[5] && this.target != null && !this.sora.inventory.getItem(0).isEmpty() && this.sora.canDoThings() && !this.sora.areAnimationsBusy() && this.sora.isAggressive() && this.sora.chargecooldown == 0;
     }
 
     @Override

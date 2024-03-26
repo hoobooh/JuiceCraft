@@ -522,17 +522,14 @@ public class Sora extends OldWarFriend {
         return new SoraDialogueManager();
     }
 
-    @Override
-    void registerCustomGoals() {
-        super.registerCustomGoals();
-        this.goalSelector.addGoal(2, new SoraHyperGoal(this));
-    }
 
     @Override
     void registerAdditionalGoals() {
-        this.goalSelector.addGoal(1,new SoraBoisterousGoal(this));
-        this.goalSelector.addGoal(5,new SoraSlashThroughGoal(this));
-        this.goalSelector.addGoal(5,new SoraShieldGoal(this));
+
+        this.goalSelector.addGoal(1, new SoraBoisterousGoal(this));
+        this.goalSelector.addGoal(5, new SoraSlashThroughGoal(this));
+        this.goalSelector.addGoal(5, new SoraShieldGoal(this));
+        this.goalSelector.addGoal(2, new SoraHyperGoal(this));
     }
 
 
