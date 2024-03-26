@@ -1,8 +1,11 @@
 package com.usagin.juicecraft.ai.goals.sora;
 
+import com.usagin.juicecraft.Init.EntityInit;
 import com.usagin.juicecraft.Init.sounds.SoraSoundInit;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
+import com.usagin.juicecraft.client.renderer.entities.SoraChargeEntityRenderer;
 import com.usagin.juicecraft.friends.Sora;
+import com.usagin.juicecraft.miscentities.SoraChargeEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -47,7 +50,12 @@ public class SoraHyperGoal extends Goal {
     public void tick(){
         int n = this.sora.getSyncInt(Sora.CHARGECOUNTER);
         if(n ==45){ //main charge
-            this.sora.
+            SoraChargeEntity entity = new SoraChargeEntity(EntityInit.SORA_CHARGE_ENTITY.get(),this.sora.level());
+            entity.setPos(this.sora.position());
+            entity.sora=this.sora;
+            entity.soraid=this.sora.getId();
+            entity.lifetime= 15;
+            this.sora.level().addFreshEntity(entity);
         }
     }
 }

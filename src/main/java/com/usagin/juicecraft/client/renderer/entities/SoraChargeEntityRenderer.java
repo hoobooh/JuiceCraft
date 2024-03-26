@@ -18,11 +18,15 @@ public class SoraChargeEntityRenderer extends LivingEntityRenderer<SoraChargeEnt
         this(pContext, new ChargeEntityModel(pContext.bakeLayer(ChargeEntityModel.LAYER_LOCATION)), 0);
     }
     public FriendEyeTransparentLayer<SoraChargeEntity, ChargeEntityModel> layer=new FriendEyeTransparentLayer<>(this, main,true,0.2F);
+    public FriendEyeTransparentLayer<SoraChargeEntity, ChargeEntityModel> layer2=new FriendEyeTransparentLayer<>(this, inner,true,0.8F);
     public SoraChargeEntityRenderer(EntityRendererProvider.Context pContext, ChargeEntityModel pModel, float pShadowRadius) {
         super(pContext, pModel, pShadowRadius);
         this.addLayer(this.layer);
+        this.addLayer(this.layer2);
     }
-    public static ResourceLocation main = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/shield.png");
+    public static ResourceLocation main = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/charge.png");
+    public static ResourceLocation inner = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/charge_inner.png");
+
     public static ResourceLocation none = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/shield_none.png");
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull SoraChargeEntity pEntity) {

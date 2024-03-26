@@ -6,6 +6,7 @@ import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.Init.ProjectileInit;
 import com.usagin.juicecraft.client.models.alte.AlteEntityModel;
 import com.usagin.juicecraft.client.models.harbinger.HarbingerModel;
+import com.usagin.juicecraft.client.models.sora.ChargeEntityModel;
 import com.usagin.juicecraft.client.models.sora.ShieldEntityModel;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.blockrenderers.AltePlushieRenderer;
@@ -56,7 +57,9 @@ public class CommonEvents {
         event.registerEntityRenderer(ProjectileInit.ALTE_MINIGUN_PROJECTILE.get(), FriendProjectileRenderer::new);
         event.registerEntityRenderer(ProjectileInit.ALTE_PANEL_PROJECTILE.get(), FriendProjectileRenderer::new);
         event.registerEntityRenderer(EntityInit.SORA_SHIELD_ENTITY.get(), SoraShieldEntityRenderer::new);
+        event.registerEntityRenderer(EntityInit.SORA_CHARGE_ENTITY.get(), SoraChargeEntityRenderer::new);
     }
+
 
     @SubscribeEvent
     public static void blockRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -73,6 +76,7 @@ public class CommonEvents {
         event.registerLayerDefinition(AlteEntityModel.LAYER_LOCATION, AlteEntityModel::createBodyLayer);
         event.registerLayerDefinition(HarbingerModel.LAYER_LOCATION, HarbingerModel::createBodyLayer);
         event.registerLayerDefinition(ShieldEntityModel.LAYER_LOCATION,ShieldEntityModel::createBodyLayer);
+        event.registerLayerDefinition(ChargeEntityModel.LAYER_LOCATION,ChargeEntityModel::createBodyLayer);
 
         event.registerLayerDefinition(FRIEND_BED_FOOT, FriendBedRenderer::createFootLayer);
         event.registerLayerDefinition(FRIEND_BED_HEAD, FriendBedRenderer::createHeadLayer);

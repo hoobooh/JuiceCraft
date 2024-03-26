@@ -31,7 +31,6 @@ public class SoraChargeEntity extends LivingEntity {
 
     public Sora sora;
     public int soraid;
-    public double damagetaken = 0;
     public int lifetime = -100;
 
     public SoraChargeEntity(EntityType<? extends LivingEntity> pEntityType, Level pLevel) {
@@ -65,9 +64,8 @@ public class SoraChargeEntity extends LivingEntity {
     @Override
     public void tick() {
         if(this.lifetime==14){
-            this.playSound(SoraSoundInit.SORA_CHARGE_ROAR.get());
+            //this.playSound(SoraSoundInit.SORA_CHARGE_ROAR.get());
         }
-        this.playSound(SoraSoundInit.SORA_SHIELD_HUM.get(),0.7F,1);
         if (this.lifetime != -100) {
             this.lifetime--;
         }
