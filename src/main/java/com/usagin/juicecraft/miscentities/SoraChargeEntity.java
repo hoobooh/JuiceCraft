@@ -48,20 +48,26 @@ public class SoraChargeEntity extends LivingEntity {
     public boolean canCollideWith(Entity pEntity) {
         return pEntity.canBeCollidedWith() && !this.isPassengerOfSameVehicle(pEntity);
     }
-
-    protected float ridingOffset(Entity pEntity) {
-        return -2F;
+    public void hurtAllTargets(){
+        AABB box = this.getBoundingBox().inflate((15F-this.lifetime)/5);
+        List<Entity> list = this.level().getEntities(this,box);
+        for(Entity e: list){
+            if(e instanceof LivingEntity liv){
+                if(!EnemyEvaluator.shouldDoHurtTarget(this.sora,liv)){
+                    continue;
+                }
+            }
+            int a = this.sora.getSkillLevels()[5];
+            float n = -4/(0.15F*a+1) + 4;
+            e.hurt(this.sora.damageSources().mobAttack(this.sora), 20 * n);
+        }
     }
     @Override
     public void tick() {
-        if(this.tickCount%63==1){
-            this.playSound(SoraSoundInit.SORA_SHIELD_HUM.get(),0.7F,1);
+        if(this.lifetime==14){
+            this.playSound(SoraSoundInit.SORA_CHARGE_ROAR.get());
         }
-        if(!this.level().isClientSide()){
-            this.getEntityData().set(id,this.soraid);
-        }else{
-            this.soraid =this.getEntityData().get(id);
-        }
+        this.playSound(SoraSoundInit.SORA_SHIELD_HUM.get(),0.7F,1);
         if (this.lifetime != -100) {
             this.lifetime--;
         }
@@ -69,7 +75,9 @@ public class SoraChargeEntity extends LivingEntity {
             this.remove(RemovalReason.DISCARDED);
         }
         this.setDeltaMovement(Vec3.ZERO);
-
+        if(this.sora != null){
+            this.hurtAllTargets();
+        }
         super.tick();
 
 
@@ -82,13 +90,6 @@ public class SoraChargeEntity extends LivingEntity {
     public @NotNull HumanoidArm getMainArm() {
         return HumanoidArm.RIGHT;
     }
-
-    @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.getEntityData().define(id,0);
-    }
-    public static EntityDataAccessor<Integer> id = SynchedEntityData.defineId(SoraChargeEntity.class,EntityDataSerializers.INT);
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {

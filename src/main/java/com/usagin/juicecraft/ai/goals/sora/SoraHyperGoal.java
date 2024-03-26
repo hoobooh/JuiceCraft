@@ -36,6 +36,7 @@ public class SoraHyperGoal extends Goal {
         this.sora.setInvulnerable(true);
         this.sora.getFriendNav().setShouldMove(false);
         this.sora.setSyncInt(Sora.CHARGECOUNTER, 60);
+        this.sora.chargecooldown=12000;
     }
     @Override
     public void stop(){
@@ -45,8 +46,8 @@ public class SoraHyperGoal extends Goal {
     @Override
     public void tick(){
         int n = this.sora.getSyncInt(Sora.CHARGECOUNTER);
-        if(n < 45 && n>30){ //main charge
-
+        if(n ==45){ //main charge
+            this.sora.
         }
     }
 }
