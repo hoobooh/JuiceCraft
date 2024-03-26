@@ -27,7 +27,7 @@ public class SoraChargeEntityRenderer extends LivingEntityRenderer<SoraChargeEnt
     public static ResourceLocation main = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/charge.png");
     public static ResourceLocation inner = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/charge_inner.png");
 
-    public static ResourceLocation none = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/shield_none.png");
+    public static ResourceLocation none = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/charge_none.png");
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull SoraChargeEntity pEntity) {
         return none;
@@ -36,7 +36,7 @@ public class SoraChargeEntityRenderer extends LivingEntityRenderer<SoraChargeEnt
         /*if(shield.sora!=null){
             pPoseStack.translate(-shield.getX()+shield.sora.getX(),-shield.getY()+shield.sora.getY(),-shield.getZ()+shield.sora.getZ());
         }*/
-        this.layer.transparency= (float) Math.abs(((Math.sin((shield.tickCount/20F)%80)) / 4F));
+        //this.layer.transparency= (float) Math.abs(((Math.sin((shield.tickCount/20F)%80)) / 4F));
 
         super.render(shield, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
     }
