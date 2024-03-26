@@ -50,6 +50,7 @@ public class SoraShieldEntity extends LivingEntity {
         this.setNoGravity(true);
         this.noPhysics = true;
         this.aiStep();
+        this.setCustomNameVisible(false);
     }
 
     public void aiStep() {
