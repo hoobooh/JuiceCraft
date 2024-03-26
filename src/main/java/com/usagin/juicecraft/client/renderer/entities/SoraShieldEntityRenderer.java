@@ -32,8 +32,8 @@ public class SoraShieldEntityRenderer extends LivingEntityRenderer<SoraShieldEnt
         return none;
     }
     public void render(SoraShieldEntity shield, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
-        /*if(shield.host!=null){
-            pPoseStack.translate(-shield.getX()+shield.host.getX(),-shield.getY()+shield.host.getY(),-shield.getZ()+shield.host.getZ());
+        /*if(shield.sora!=null){
+            pPoseStack.translate(-shield.getX()+shield.sora.getX(),-shield.getY()+shield.sora.getY(),-shield.getZ()+shield.sora.getZ());
         }*/
         this.layer.transparency= (float) Math.abs(((Math.sin((shield.tickCount/20F)%80)) / 4F));
 

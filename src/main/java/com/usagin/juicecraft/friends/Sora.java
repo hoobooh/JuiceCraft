@@ -35,6 +35,7 @@ public class Sora extends OldWarFriend {
     public Sora(EntityType<? extends FakeWolf> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.counters.add(SLASHTHROUGHCOUNTER);
+        this.counters.add(CHARGECOUNTER);
     }
     public boolean shouldAfterImage(){
         int n = this.getSyncInt(SLASHTHROUGHCOUNTER);
@@ -66,6 +67,9 @@ public class Sora extends OldWarFriend {
             }
             if(this.slashthroughcooldown>0){
                 this.slashthroughcooldown--;
+            }
+            if(this.chargecooldown>0){
+                this.chargecooldown--;
             }
             if(this.shieldcooldown>0){
                 this.shieldcooldown--;
@@ -213,7 +217,7 @@ public class Sora extends OldWarFriend {
     public boolean lockLookAround() {
         return this.areAnimationsBusy() && super.lockLookAround();
     }
-    public int boisterouscooldown, boisterousduration;
+    public int boisterouscooldown, boisterousduration, chargecooldown;
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
@@ -224,6 +228,7 @@ public class Sora extends OldWarFriend {
         pCompound.putBoolean("juicecraft.sora.boisterous", this.getSyncBoolean(BOISTEROUS));
         pCompound.putInt("juicecraft.sora.boisterouscooldown", this.boisterouscooldown);
         pCompound.putInt("juicecraft.sora.boisterousduration", this.boisterousduration);
+        pCompound.putInt("juicecraft.sora.chargecooldown", this.chargecooldown);
     }
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
@@ -235,6 +240,7 @@ public class Sora extends OldWarFriend {
         this.boisterouscooldown=pCompound.getInt("juicecraft.sora.boisterouscooldown");
         this.boisterousduration=pCompound.getInt("juicecraft.sora.boisterousduration");
         this.setSyncBoolean(BOISTEROUS, pCompound.getBoolean("juicecraft.sora.boisterous"));
+        this.chargecooldown=pCompound.getInt("juicecraft.sora.chargecooldown");
     }
     public static AttributeSupplier.Builder getSoraAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30).add(Attributes.MOVEMENT_SPEED, 0.35).add(Attributes.ATTACK_DAMAGE, 4);
@@ -246,9 +252,11 @@ public class Sora extends OldWarFriend {
         super.defineSynchedData();
         this.getEntityData().define(SLASHTHROUGHCOUNTER,0);
         this.getEntityData().define(BOISTEROUS,false);
+        this.getEntityData().define(CHARGECOUNTER,0);
     }
     public int slashthroughcooldown;
     public static final EntityDataAccessor<Integer> SLASHTHROUGHCOUNTER = SynchedEntityData.defineId(Sora.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> CHARGECOUNTER = SynchedEntityData.defineId(Sora.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Boolean> BOISTEROUS = SynchedEntityData.defineId(Sora.class, EntityDataSerializers.BOOLEAN);
 
     public boolean isUsingHyper(){
@@ -517,7 +525,7 @@ public class Sora extends OldWarFriend {
     @Override
     void registerCustomGoals() {
         super.registerCustomGoals();
-        this.goalSelector.addGoal(2, new SoraHyperGoal(!this.inventory.getItem(0).isEmpty(), this.combatSettings));
+        this.goalSelector.addGoal(2, new SoraHyperGoal(this));
     }
 
     @Override
