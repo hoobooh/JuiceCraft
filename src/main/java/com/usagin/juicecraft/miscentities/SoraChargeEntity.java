@@ -31,12 +31,9 @@ public class SoraChargeEntity extends LivingEntity {
         this.setInvulnerable(true);
         this.setNoGravity(true);
         this.noPhysics = true;
-        this.aiStep();
     }
 
-    public void aiStep() {
 
-    }
     public boolean canCollideWith(Entity pEntity) {
         return pEntity.canBeCollidedWith() && !this.isPassengerOfSameVehicle(pEntity);
     }
@@ -65,7 +62,7 @@ public class SoraChargeEntity extends LivingEntity {
         if (this.lifetime == 0) {
             this.remove(RemovalReason.DISCARDED);
         }
-        this.setDeltaMovement(Vec3.ZERO);
+        //this.setDeltaMovement(Vec3.ZERO);
         if(this.sora != null){
             this.hurtAllTargets();
         }

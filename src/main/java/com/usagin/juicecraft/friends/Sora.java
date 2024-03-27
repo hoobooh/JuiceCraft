@@ -41,7 +41,7 @@ public class Sora extends OldWarFriend {
         int n = this.getSyncInt(SLASHTHROUGHCOUNTER);
         return (n <= 15 && n >= 6) || this.isBoisterous();
     }
-    public AnimationState slashThroughAnimState = new AnimationState();
+    public AnimationState slashThroughAnimState = new AnimationState(), chargeAnimState = new AnimationState();
     public int shieldduration;
     public int shieldcooldown;
     public boolean usingshield = false;
@@ -50,6 +50,7 @@ public class Sora extends OldWarFriend {
     public void tick(){
         super.tick();
         if(this.level().isClientSide()){
+            this.chargeAnimState.animateWhen(this.getSyncInt(CHARGECOUNTER)>0,this.tickCount);
             this.slashThroughAnimState.animateWhen(this.getSyncInt(SLASHTHROUGHCOUNTER)>0,this.tickCount);
 
         }else{
@@ -260,7 +261,7 @@ public class Sora extends OldWarFriend {
     public static final EntityDataAccessor<Boolean> BOISTEROUS = SynchedEntityData.defineId(Sora.class, EntityDataSerializers.BOOLEAN);
 
     public boolean isUsingHyper(){
-        return false;
+        return this.chargeAnimState.isStarted();
     }
     @Override
     int[] getSkillInfo() {

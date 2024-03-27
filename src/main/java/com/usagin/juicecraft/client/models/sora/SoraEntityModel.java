@@ -491,8 +491,9 @@ public class SoraEntityModel extends FriendEntityModel<Sora> {
     public void defineAnimations() {
         this.animations = new Animations(idleGrounded, idleTransition, patGrounded, sit, sitImpatient, sitPat, sleepingPose, deathLoop, deathStart, attackOne, attackTwo, attackThree, attackCounter, bowDraw, standingInspect, wetShake, viewFlower, swimLoop, interact, swimMove, snowballIdle, throwSnowball, snowballIdleTransition, patEmbarassed);}
     public void attackAnim(Sora pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        boolean flag = pEntity.slashThroughAnimState.isStarted();
+        boolean flag = pEntity.slashThroughAnimState.isStarted() || pEntity.isUsingHyper();
         this.animate(pEntity.slashThroughAnimState,slashThrough,pAgeInTicks);
+        this.animate(pEntity.chargeAnimState,unlimitedCharge,pAgeInTicks);
         if(pEntity.isBoisterous()){
             flag=true;
             int n = pEntity.getAttackType();

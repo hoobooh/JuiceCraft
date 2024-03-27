@@ -28,7 +28,7 @@ public class FriendMeleeAttackGoal extends ShellMeleeGoal {
     @Override
     public void start() {
         if (!this.friend.isDying) {
-            this.friend.playVoice(((Friend) this.mob).getBattle());
+            this.friend.playTimedVoice(((Friend) this.mob).getBattle());
             super.start();
         }
     }

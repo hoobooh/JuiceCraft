@@ -46,6 +46,7 @@ public class SoraBoisterousGoal extends Goal {
     public void tick(){
         this.sora.boisterousduration++;
         if(this.sora.tickCount%5==0 && this.sora.level() instanceof ServerLevel level){
+            this.sora.playSound(UniversalSoundInit.LIGHTNING.get(),this.sora.getRandom().nextFloat(),this.sora.getRandom().nextFloat());
             this.sora.spawnParticlesInRandomSpreadAtEntity(this.sora,3,0.5F,0,level, ParticleInit.GENERIC_LIGHTNING_PARTICLE.get());
         }
     }

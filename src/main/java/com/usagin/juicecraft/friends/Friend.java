@@ -423,7 +423,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public void playTimedVoice(SoundEvent sound) {
         if (this.soundCounter >= 50) {
-            this.playVoice(sound, true);
+            this.playVoice(sound, false);
         }
     }
 

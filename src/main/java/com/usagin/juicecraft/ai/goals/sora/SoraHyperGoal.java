@@ -55,7 +55,18 @@ public class SoraHyperGoal extends Goal {
             entity.setPos(this.sora.position());
             entity.sora=this.sora;
             entity.soraid=this.sora.getId();
-            entity.lifetime= 15;
+            entity.lifetime= 30;
+
+            float lookanglex = (float) Math.atan2(this.sora.getLookAngle().y, Math.sqrt(this.sora.getLookAngle().z * this.sora.getLookAngle().z + this.sora.getLookAngle().x * this.sora.getLookAngle().x));
+            float lookangley = (float) Math.atan2(this.sora.getLookAngle().z, this.sora.getLookAngle().x);
+
+            float speed = 1F;
+
+            float targetX = speed * (float) Math.cos(lookangley);
+            float targetZ = speed * (float) Math.sin(lookangley);
+            float targetY = speed * (float) Math.sin(lookanglex);
+
+            entity.setDeltaMovement(entity.getDeltaMovement().add(targetX, targetY, targetZ));
             this.sora.level().addFreshEntity(entity);
         }
     }

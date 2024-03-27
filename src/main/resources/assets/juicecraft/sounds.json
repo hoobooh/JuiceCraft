@@ -1,4 +1,9 @@
 {
+  "lightning": {
+    "sounds": [
+      "juicecraft:lightning"
+    ]
+  },
   "sora_win1": {
     "sounds": [
       "juicecraft:sora_win1"
