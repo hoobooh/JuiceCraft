@@ -1,11 +1,15 @@
 package com.usagin.juicecraft.miscentities;
 
+import com.usagin.juicecraft.Init.ParticleInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
+import com.usagin.juicecraft.friends.Friend;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.particles.AlteLightningParticle;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -84,7 +88,7 @@ public class SoraChargeEntity extends LivingEntity {
             }
             int a = this.sora.getSkillLevels()[5];
             float n = -4/(0.15F*a+1) + 4;
-            e.hurt(this.sora.damageSources().mobAttack(this.sora), 20 * n);
+            e.hurt(this.sora.damageSources().mobAttack(this.sora), 5 * n);
         }
         box = this.getBoundingBox().inflate((144F-this.lifetime)/6);
         list = this.level().getEntities(this,box);
@@ -106,6 +110,7 @@ public class SoraChargeEntity extends LivingEntity {
             this.lifetime--;
         }
         if (this.lifetime == 0) {
+            this.spawnParticlesInRandomSpreadAtEntity(this,60,7,0,(ServerLevel) this.level(), ParticleInit.SORA_ENERGY_PARTICLE.get());
             this.remove(RemovalReason.DISCARDED);
         }
         //this.setDeltaMovement(Vec3.ZERO);
@@ -115,6 +120,13 @@ public class SoraChargeEntity extends LivingEntity {
         super.tick();
 
 
+    }
+    public <T extends ParticleOptions> void spawnParticlesInRandomSpreadAtEntity(Entity entity, int count, float radius, float distance, ServerLevel sLevel, T type) {
+        float targetX = (float) entity.getX();
+        float targetZ = (float) entity.getZ();
+        float targetY = (float) entity.getEyeY();
+
+        sLevel.sendParticles(type, targetX, targetY, targetZ, count, radius, radius, radius, 1);
     }
 
     @Override
