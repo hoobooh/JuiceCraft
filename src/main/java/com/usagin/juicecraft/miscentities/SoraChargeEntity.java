@@ -5,6 +5,7 @@ import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Friend;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.particles.AlteLightningParticle;
+import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
@@ -67,7 +68,8 @@ public class SoraChargeEntity extends LivingEntity {
         for(double x = this.getX() - p; x <= this.getX() + p; x++){
             for(double y = this.getY() - p; y <= this.getY() + p; y++){
                 for(double z = this.getZ() - p; z <= this.getZ() + p; z++){
-                    poslist.add(new BlockPos((int) x,(int) y,(int) z));
+                    if(Math.sqrt(this.distanceToSqr(new Vec3(x,y,z))) <= p)
+                        poslist.add(new BlockPos((int) x,(int) y,(int) z));
                 }
             }
         }
@@ -105,6 +107,10 @@ public class SoraChargeEntity extends LivingEntity {
     public void tick() {
         if(this.lifetime==14){
             //this.playSound(SoraSoundInit.SORA_CHARGE_ROAR.get());
+        }
+        if(this.tickCount%5==0 && !this.level().isClientSide()){
+            double p = (144D - this.lifetime)/12;
+            this.spawnParticlesInRandomSpreadAtEntity(this,(int) (p * 5),(int) (p/4),0,(ServerLevel) this.level(), ParticleInit.SORA_ENERGY_PARTICLE.get());
         }
         if (this.lifetime != -100) {
             this.lifetime--;
