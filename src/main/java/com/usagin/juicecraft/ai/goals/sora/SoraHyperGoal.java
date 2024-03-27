@@ -2,6 +2,7 @@ package com.usagin.juicecraft.ai.goals.sora;
 
 import com.usagin.juicecraft.Init.EntityInit;
 import com.usagin.juicecraft.Init.sounds.SoraSoundInit;
+import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.client.renderer.entities.SoraChargeEntityRenderer;
 import com.usagin.juicecraft.friends.Sora;
@@ -38,6 +39,7 @@ public class SoraHyperGoal extends Goal {
     @Override
     public void start() {
         this.sora.playVoice(SoraSoundInit.SORA_UNLIMITED_CHARGE.get(), true);
+        this.sora.playSound(SoraSoundInit.SORA_CHARGE_BURST.get(),2,1);
         this.sora.setInvulnerable(true);
         this.sora.getFriendNav().setShouldMove(false);
         this.sora.setSyncInt(Sora.CHARGECOUNTER, 60);
