@@ -53,19 +53,30 @@ public class SoraHyperGoal extends Goal {
         int n = this.sora.getSyncInt(Sora.CHARGECOUNTER);
         if(n ==45){ //main charge
             SoraChargeEntity entity = new SoraChargeEntity(EntityInit.SORA_CHARGE_ENTITY.get(),this.sora.level());
-            entity.setPos(this.sora.position());
             entity.sora=this.sora;
             entity.soraid=this.sora.getId();
             entity.lifetime= 30;
 
-            float lookanglex = (float) Math.atan2(this.sora.getLookAngle().y, Math.sqrt(this.sora.getLookAngle().z * this.sora.getLookAngle().z + this.sora.getLookAngle().x * this.sora.getLookAngle().x));
-            float lookangley = (float) Math.atan2(this.sora.getLookAngle().z, this.sora.getLookAngle().x);
+            float lookAngleX = (float) Math.atan2(this.sora.getLookAngle().y, Math.sqrt(this.sora.getLookAngle().z * this.sora.getLookAngle().z + this.sora.getLookAngle().x * this.sora.getLookAngle().x));
+            float lookAngleY = (float) Math.atan2(this.sora.getLookAngle().z, this.sora.getLookAngle().x);
 
             float speed = 1F;
 
-            float targetX = speed * (float) Math.cos(lookangley);
-            float targetZ = speed * (float) Math.sin(lookangley);
-            float targetY = speed * (float) Math.sin(lookanglex);
+            float posX = (float) this.sora.getX();
+            float posY = (float) this.sora.getEyeY() - 0.5F;
+            float posZ = (float) this.sora.getZ();
+            float originradius = 1;
+            float targetradius = 2;
+
+            float originX = posX + originradius * (float) Math.cos(lookAngleY);
+            float originZ = posZ + originradius * (float) Math.sin(lookAngleY);
+            float originY = posY + originradius * (float) Math.sin(lookAngleX);
+
+            entity.setPos(new Vec3(originX,originY,originZ));
+
+            float targetX = speed * (float) Math.cos(lookAngleY);
+            float targetZ = speed * (float) Math.sin(lookAngleY);
+            float targetY = speed * (float) Math.sin(lookAngleX);
 
             entity.setDeltaMovement(Vec3.ZERO.add(targetX, targetY, targetZ));
             this.sora.level().addFreshEntity(entity);

@@ -34,8 +34,8 @@ public class ChargeEntityModel extends HierarchicalModel<SoraChargeEntity> {
 
         PartDefinition root = partdefinition.addOrReplaceChild("root", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-        PartDefinition bone = root.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(0, 0).addBox(-32.0F, -64.0F, -32.0F, 64.0F, 64.0F, 64.0F, new CubeDeformation(0.0F))
-                .texOffs(0, 128).addBox(-16.0F, -48.0F, -16.0F, 32.0F, 32.0F, 32.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+        PartDefinition bone = root.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(0, 0).addBox(-32.0F, -32.0F, -32.0F, 64.0F, 64.0F, 64.0F, new CubeDeformation(0.0F))
+                .texOffs(0, 128).addBox(-16.0F, -16.0F, -16.0F, 32.0F, 32.0F, 32.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 256, 256);
     }
@@ -57,11 +57,8 @@ public class ChargeEntityModel extends HierarchicalModel<SoraChargeEntity> {
         return this.root;
     }
     public static final AnimationDefinition def = AnimationDefinition.Builder.withLength(3F)
-            .addAnimation("bone", new AnimationChannel(AnimationChannel.Targets.POSITION,
-			new Keyframe(0.0F, KeyframeAnimations.posVec(0.0F, -32.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
-            ))
             .addAnimation("bone", new AnimationChannel(AnimationChannel.Targets.SCALE,
-			new Keyframe(0.0F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 1.0F), AnimationChannel.Interpolations.CATMULLROM),
+			new Keyframe(0.0F, KeyframeAnimations.scaleVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
             new Keyframe(3F, KeyframeAnimations.scaleVec(5.0F, 5.0F, 5.0F), AnimationChannel.Interpolations.CATMULLROM)
             ))
             .build();

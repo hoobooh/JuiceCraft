@@ -31,6 +31,7 @@ public class SoraChargeEntity extends LivingEntity {
         this.setInvulnerable(true);
         this.setNoGravity(true);
         this.noPhysics = true;
+        this.setDiscardFriction(true);
         this.setCustomNameVisible(false);
     }
 

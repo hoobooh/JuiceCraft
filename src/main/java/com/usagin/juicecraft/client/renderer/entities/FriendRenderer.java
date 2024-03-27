@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -32,6 +33,39 @@ public abstract class FriendRenderer<T extends Friend, M extends FriendEntityMod
         this.addLayer(pBackLayer);
         this.addLayer(pLayer);
         this.context=pContext;
+    }
+    public static void normaliseToFrontFacing(PoseStack pPoseStack, Friend pEntity){
+        float lookAngleX = (float) Math.atan2(pEntity.getLookAngle().y, Math.sqrt(pEntity.getLookAngle().z * pEntity.getLookAngle().z + pEntity.getLookAngle().x * pEntity.getLookAngle().x)) + (float) -Math.toRadians(30);
+        float lookAngleY = (float) Math.atan2(pEntity.getLookAngle().z, pEntity.getLookAngle().x);
+
+        float posX = (float) pEntity.getX();
+        float posY = (float) pEntity.getEyeY() - 0.5F;
+        float posZ = (float) pEntity.getZ();
+        float originradius = 1;
+        float targetradius = 2;
+        float eyeheight = pEntity.getEyeHeight() - 0.5F;
+
+        float originX = posX + originradius * (float) Math.cos(lookAngleY);
+        float originZ = posZ + originradius * (float) Math.sin(lookAngleY);
+        float originY = posY + originradius * (float) Math.sin(lookAngleX);
+
+        float targetX = posX + targetradius * (float) Math.cos(lookAngleY);
+        float targetZ = posZ + targetradius * (float) Math.sin(lookAngleY);
+        float targetY = posY + targetradius * (float) Math.sin(lookAngleX);
+
+        Vec3 targetVec = new Vec3(targetX, targetY, targetZ);
+        Vec3 originVec = new Vec3(originX, originY, originZ);
+        Vec3 netVec = targetVec.subtract(originVec);
+        pPoseStack.translate(0.0F, eyeheight, 0.0F);
+
+        netVec = netVec.normalize();
+        float f5 = (float) Math.acos(netVec.y);
+        float f6 = (float) Math.atan2(netVec.z, netVec.x);
+
+
+        //rotate posestack to match the look angle
+        pPoseStack.mulPose(Axis.YP.rotationDegrees((((float) Math.PI / 2F) - f6) * (180F / (float) Math.PI)));
+        pPoseStack.mulPose(Axis.XP.rotationDegrees(f5 * (135F / (float) Math.PI)));
     }
 
     public static void drawFrontFacingPlane(PoseStack pPoseStack, VertexConsumer vertexconsumer, float radius, float dist) {
