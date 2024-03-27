@@ -31,6 +31,7 @@ public class SoraChargeEntity extends LivingEntity {
         this.setInvulnerable(true);
         this.setNoGravity(true);
         this.noPhysics = true;
+        this.setCustomNameVisible(false);
     }
 
 
@@ -38,7 +39,7 @@ public class SoraChargeEntity extends LivingEntity {
         return pEntity.canBeCollidedWith() && !this.isPassengerOfSameVehicle(pEntity);
     }
     public void hurtAllTargets(){
-        AABB box = this.getBoundingBox().inflate((15F-this.lifetime)/5);
+        AABB box = this.getBoundingBox().inflate((30F-this.lifetime)/5);
         List<Entity> list = this.level().getEntities(this,box);
         for(Entity e: list){
             if(e instanceof LivingEntity liv){
@@ -49,6 +50,16 @@ public class SoraChargeEntity extends LivingEntity {
             int a = this.sora.getSkillLevels()[5];
             float n = -4/(0.15F*a+1) + 4;
             e.hurt(this.sora.damageSources().mobAttack(this.sora), 20 * n);
+        }
+        box = this.getBoundingBox().inflate((30F-this.lifetime)*2);
+        list = this.level().getEntities(this,box);
+        for(Entity e: list){
+            if(e instanceof LivingEntity liv){
+                if(!EnemyEvaluator.shouldDoHurtTarget(this.sora,liv)){
+                    continue;
+                }
+            }
+            e.addDeltaMovement(this.position().subtract(e.position()).multiply(0.05,0.05,0.05));
         }
     }
     @Override

@@ -43,7 +43,7 @@ public class AlteHyperGoal extends Goal {
         if (this.target == null || !this.alte.getCombatSettings().getHyperCondition(this.alte)) {
             return false;
         }
-        return (this.alte.getSkillEnabled()[5] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.hypermeter >= 24000 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy());
+        return this.alte.aggressiontimer > 80 && (this.alte.getSkillEnabled()[5] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.hypermeter >= 24000 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy());
     }
 
     @Override

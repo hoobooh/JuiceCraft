@@ -21,7 +21,7 @@ public class SoraShieldGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return (this.sora.canDoThings() && this.sora.shieldcooldown <= 0 && this.sora.isAggressive() && this.sora.getSkillEnabled()[2]) || this.sora.usingshield;
+        return (this.sora.canDoThings() && this.sora.shieldcooldown <= 0 &&  this.sora.aggressiontimer > 40 && this.sora.getSkillEnabled()[2]) || this.sora.usingshield;
     }
     @Override
     public boolean canContinueToUse(){

@@ -23,7 +23,7 @@ public class AlteShockRodGoal extends Goal {
         this.target = this.alte.getTarget();
         Item item = this.alte.getFriendWeapon().getItem();
         boolean flag = item instanceof BowItem || item instanceof SnowballItem || item instanceof CrossbowItem;
-        return this.alte.getSkillEnabled()[2] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.getSyncInt(Alte.ALTE_RODCOOLDOWN) >= 1200 && this.alte.getPose() != Pose.SLEEPING && this.target != null && !this.alte.areAnimationsBusy() && !flag;
+        return this.alte.aggressiontimer > 50 && this.alte.getSkillEnabled()[2] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.getSyncInt(Alte.ALTE_RODCOOLDOWN) >= 1200 && this.alte.getPose() != Pose.SLEEPING && this.target != null && !this.alte.areAnimationsBusy() && !flag;
     }
 
     @Override

@@ -37,7 +37,7 @@ public class AlteSparkGoal extends Goal {
         if (this.target == null) {
             return false;
         }
-        return this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.sparkcooldown <= 0 && this.alte.distanceTo(this.target) < 4 && !this.alte.areAnimationsBusy();
+        return  this.alte.aggressiontimer > 40 && this.alte.canDoThings() && this.alte.getSkillEnabled()[1] && this.alte.sparkcooldown <= 0 && this.alte.distanceTo(this.target) < 4 && !this.alte.areAnimationsBusy();
     }
 
     @Override

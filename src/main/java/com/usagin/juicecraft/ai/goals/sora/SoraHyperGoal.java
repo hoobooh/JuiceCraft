@@ -9,6 +9,7 @@ import com.usagin.juicecraft.miscentities.SoraChargeEntity;
 import com.usagin.juicecraft.particles.AlteLightningParticle;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.phys.Vec3;
 
 public class SoraHyperGoal extends Goal {
     final Sora sora;
@@ -21,7 +22,7 @@ public class SoraHyperGoal extends Goal {
     @Override
     public boolean canUse() {
         this.target = this.sora.getTarget();
-        return this.sora.getSkillEnabled()[5] && this.target != null && !this.sora.inventory.getItem(0).isEmpty() && this.sora.canDoThings() && !this.sora.areAnimationsBusy() && this.sora.isAggressive() && this.sora.chargecooldown == 0;
+        return this.sora.getSkillEnabled()[5] && this.target != null && !this.sora.inventory.getItem(0).isEmpty() && this.sora.canDoThings() && !this.sora.areAnimationsBusy() && this.sora.aggressiontimer > 80 && this.sora.chargecooldown == 0;
     }
 
     @Override
@@ -66,7 +67,7 @@ public class SoraHyperGoal extends Goal {
             float targetZ = speed * (float) Math.sin(lookangley);
             float targetY = speed * (float) Math.sin(lookanglex);
 
-            entity.setDeltaMovement(entity.getDeltaMovement().add(targetX, targetY, targetZ));
+            entity.setDeltaMovement(Vec3.ZERO.add(targetX, targetY, targetZ));
             this.sora.level().addFreshEntity(entity);
         }
     }

@@ -93,6 +93,9 @@ public class Sora extends OldWarFriend {
         }
 
     }
+    public boolean shouldShowWeapon() {
+        return !this.isUsingHyper();
+    }
     public void doBoisterousAttack(){
         int rand = this.random.nextInt(3);
         if (rand == 0) {

@@ -20,7 +20,7 @@ public class SoraBoisterousGoal extends Goal {
     }
     @Override
     public boolean canUse() {
-        return (this.sora.isAggressive() && this.sora.getSkillEnabled()[4] && !this.sora.isUsingHyper() && this.sora.canDoThings() && this.sora.boisterouscooldown <= 0 && this.sora.getPose() != Pose.SLEEPING && !this.sora.areAnimationsBusy() && this.sora.getAttackCounter() <=0) || this.sora.isBoisterous();
+        return ( this.sora.aggressiontimer > 60 && this.sora.getSkillEnabled()[4] && !this.sora.isUsingHyper() && this.sora.canDoThings() && this.sora.boisterouscooldown <= 0 && this.sora.getPose() != Pose.SLEEPING && !this.sora.areAnimationsBusy() && this.sora.getAttackCounter() <=0) || this.sora.isBoisterous();
     }
     @Override
     public boolean canContinueToUse(){

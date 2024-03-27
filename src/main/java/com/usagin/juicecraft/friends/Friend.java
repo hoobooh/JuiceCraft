@@ -165,6 +165,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public Map<Pose, EntityDimensions> POSES = ImmutableMap.<Pose, EntityDimensions>builder().put(STANDING, EntityDimensions.scalable(0.6F, 1.8F)).put(SITTING, EntityDimensions.scalable(0.6F, 1.1F)).put(Pose.SLEEPING, EntityDimensions.scalable(0.6F, 0.5F)).put(SWIMMING, EntityDimensions.scalable(0.6F, 0.9F)).build();
     public int impatientCounter = 0;
     public int runTimer = 0;
+    public int aggressiontimer = 0;
     public int animatestandingtimer = 0;
     public int skillPoints = 0;
     public int deathAnimCounter;
@@ -1727,6 +1728,11 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         //SERVERSIDE-ONLY TICKS
 
         else {
+            if(this.isAggressive()){
+                this.aggressiontimer++;
+            }else{
+                this.aggressiontimer=0;
+            }
             if(this.getSyncBoolean(FLAGFORRESET)){
                 this.setSyncBoolean(FLAGFORRESET,false);
             }

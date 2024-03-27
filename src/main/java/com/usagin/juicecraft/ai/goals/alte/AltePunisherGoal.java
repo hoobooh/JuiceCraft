@@ -43,7 +43,7 @@ public class AltePunisherGoal extends Goal {
         if (this.target == null) {
             return false;
         }
-        return this.alte.getSkillEnabled()[3] && this.alte.getSkillEnabled()[2] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.punishercooldown <= 0 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy() && !flag && this.alte.distanceTo(this.target) < 20;
+        return this.alte.aggressiontimer > 60 && this.alte.getSkillEnabled()[3] && this.alte.getSkillEnabled()[2] && !this.alte.isUsingHyper() && this.alte.canDoThings() && this.alte.punishercooldown <= 0 && this.alte.getPose() != Pose.SLEEPING && !this.alte.areAnimationsBusy() && !flag && this.alte.distanceTo(this.target) < 20;
     }
 
     @Override
