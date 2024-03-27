@@ -2,17 +2,28 @@ package com.usagin.juicecraft.miscentities;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Sora;
+import com.usagin.juicecraft.particles.AlteLightningParticle;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DirtPathBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -43,8 +54,28 @@ public class SoraChargeEntity extends LivingEntity {
         return pEntity.canBeCollidedWith() && !this.isPassengerOfSameVehicle(pEntity);
     }
     public void hurtAllTargets(){
-        AABB box = this.getBoundingBox().inflate((30F-this.lifetime)/5);
+        AABB box = this.getBoundingBox().inflate((144F-this.lifetime)/12);
         List<Entity> list = this.level().getEntities(this,box);
+        ArrayList< BlockPos> poslist = new ArrayList<>();
+
+        double p = (144D - this.lifetime)/12;
+
+        for(double x = this.getX() - p; x <= this.getX() + p; x++){
+            for(double y = this.getY() - p; y <= this.getY() + p; y++){
+                for(double z = this.getZ() - p; z <= this.getZ() + p; z++){
+                    poslist.add(new BlockPos((int) x,(int) y,(int) z));
+                }
+            }
+        }
+
+        for(BlockPos pos: poslist){
+            if(!this.level().getBlockState(pos).isAir()){
+                if(ForgeHooks.canEntityDestroy(this.level(),pos,this) && this.level().getBlockState(pos).getBlock().defaultDestroyTime() < 4 && this.level().getBlockState(pos).getBlock().getExplosionResistance() < 7){
+                    this.level().destroyBlock(pos,true);
+                }
+            }
+        }
+
         for(Entity e: list){
             if(e instanceof LivingEntity liv){
                 if(!EnemyEvaluator.shouldDoHurtTarget(this.sora,liv)){
@@ -55,7 +86,7 @@ public class SoraChargeEntity extends LivingEntity {
             float n = -4/(0.15F*a+1) + 4;
             e.hurt(this.sora.damageSources().mobAttack(this.sora), 20 * n);
         }
-        box = this.getBoundingBox().inflate((30F-this.lifetime)*2);
+        box = this.getBoundingBox().inflate((144F-this.lifetime)/6);
         list = this.level().getEntities(this,box);
         for(Entity e: list){
             if(e instanceof LivingEntity liv){

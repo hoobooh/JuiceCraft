@@ -55,18 +55,17 @@ public class SoraHyperGoal extends Goal {
             SoraChargeEntity entity = new SoraChargeEntity(EntityInit.SORA_CHARGE_ENTITY.get(),this.sora.level());
             entity.sora=this.sora;
             entity.soraid=this.sora.getId();
-            entity.lifetime= 30;
+            entity.lifetime= 120;
 
             float lookAngleX = (float) Math.atan2(this.sora.getLookAngle().y, Math.sqrt(this.sora.getLookAngle().z * this.sora.getLookAngle().z + this.sora.getLookAngle().x * this.sora.getLookAngle().x));
             float lookAngleY = (float) Math.atan2(this.sora.getLookAngle().z, this.sora.getLookAngle().x);
 
-            float speed = 1F;
+            float speed = 0.3F;
 
             float posX = (float) this.sora.getX();
             float posY = (float) this.sora.getEyeY() - 0.5F;
             float posZ = (float) this.sora.getZ();
             float originradius = 1;
-            float targetradius = 2;
 
             float originX = posX + originradius * (float) Math.cos(lookAngleY);
             float originZ = posZ + originradius * (float) Math.sin(lookAngleY);

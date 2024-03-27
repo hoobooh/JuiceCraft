@@ -56,10 +56,10 @@ public class ChargeEntityModel extends HierarchicalModel<SoraChargeEntity> {
     public ModelPart root() {
         return this.root;
     }
-    public static final AnimationDefinition def = AnimationDefinition.Builder.withLength(3F)
+    public static final AnimationDefinition def = AnimationDefinition.Builder.withLength(6F)
             .addAnimation("bone", new AnimationChannel(AnimationChannel.Targets.SCALE,
 			new Keyframe(0.0F, KeyframeAnimations.scaleVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-            new Keyframe(3F, KeyframeAnimations.scaleVec(5.0F, 5.0F, 5.0F), AnimationChannel.Interpolations.CATMULLROM)
+            new Keyframe(6F, KeyframeAnimations.scaleVec(5.0F, 5.0F, 5.0F), AnimationChannel.Interpolations.CATMULLROM)
             ))
             .build();
 }
