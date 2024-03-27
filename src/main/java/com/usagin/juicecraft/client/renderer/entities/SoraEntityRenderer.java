@@ -7,6 +7,7 @@ import com.usagin.juicecraft.client.renderer.FriendAfterImageLayer;
 import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
 import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Pose;
@@ -57,10 +58,29 @@ public class SoraEntityRenderer extends FriendRenderer<Sora, SoraEntityModel> {
         this.narrowlayer.visible = false;
         return SORA_NEUTRAL;
     }
-
+    private static final ResourceLocation CHARGE_0 = new ResourceLocation(MODID, "textures/entities/sora/spark_1.png");
+    private static final ResourceLocation CHARGE_1 = new ResourceLocation(MODID, "textures/entities/sora/spark_2.png");
+    private static final ResourceLocation CHARGE_2 = new ResourceLocation(MODID, "textures/entities/sora/spark_3.png");
+    private static final RenderType CHARGE_0_TYPE = RenderType.entityTranslucentEmissive(CHARGE_0);
+    private static final RenderType CHARGE_1_TYPE = RenderType.entityTranslucentEmissive(CHARGE_1);
+    private static final RenderType CHARGE_2_TYPE = RenderType.entityTranslucentEmissive(CHARGE_1;
     @Override
     public void render(@NotNull Sora pEntity, float pEntityYaw, float pPartialTicks, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight) {
         super.render(pEntity, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
+        if(pEntity.isUsingHyper()){
+            int n = pEntity.getSyncInt(Sora.CHARGECOUNTER);
+            if(n<=55 && n>=45){
+                int x = pEntity.tickCount%4;
+                if(x==0){
+
+                }else if(x==1){
+
+                }else if(x==2){
+
+                }
+            }
+        }
+
     }
 }
 
