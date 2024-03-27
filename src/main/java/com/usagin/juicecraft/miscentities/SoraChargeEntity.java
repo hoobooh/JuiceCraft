@@ -34,6 +34,9 @@ public class SoraChargeEntity extends LivingEntity {
         this.setDiscardFriction(true);
         this.setCustomNameVisible(false);
     }
+    public boolean shouldShowName() {
+        return false;
+    }
 
 
     public boolean canCollideWith(Entity pEntity) {
@@ -81,9 +84,6 @@ public class SoraChargeEntity extends LivingEntity {
         super.tick();
 
 
-    }
-    public @NotNull Component getDisplayName() {
-        return Component.empty();
     }
 
     @Override

@@ -124,9 +124,6 @@ public class SoraShieldEntity extends LivingEntity {
         }
 
     }
-    public @NotNull Component getDisplayName() {
-        return Component.empty();
-    }
 
     @Override
     public @NotNull HumanoidArm getMainArm() {

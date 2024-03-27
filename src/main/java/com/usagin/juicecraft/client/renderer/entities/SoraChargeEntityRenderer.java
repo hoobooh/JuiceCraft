@@ -26,7 +26,10 @@ public class SoraChargeEntityRenderer extends LivingEntityRenderer<SoraChargeEnt
     }
     public static ResourceLocation main = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/charge.png");
     public static ResourceLocation inner = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/charge_inner.png");
+    protected boolean shouldShowName(SoraChargeEntity pEntity) {
+        return false;
 
+    }
     public static ResourceLocation none = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/charge_none.png");
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull SoraChargeEntity pEntity) {

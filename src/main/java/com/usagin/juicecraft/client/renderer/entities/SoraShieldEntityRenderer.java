@@ -5,6 +5,7 @@ import com.usagin.juicecraft.JuiceCraft;
 import com.usagin.juicecraft.client.models.sora.ShieldEntityModel;
 import com.usagin.juicecraft.client.renderer.FriendEyeLayer;
 import com.usagin.juicecraft.client.renderer.FriendEyeTransparentLayer;
+import com.usagin.juicecraft.miscentities.SoraChargeEntity;
 import com.usagin.juicecraft.miscentities.SoraShieldEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -24,6 +25,10 @@ public class SoraShieldEntityRenderer extends LivingEntityRenderer<SoraShieldEnt
     public SoraShieldEntityRenderer(EntityRendererProvider.Context pContext, ShieldEntityModel pModel, float pShadowRadius) {
         super(pContext, pModel, pShadowRadius);
         this.addLayer(this.layer);
+    }
+    protected boolean shouldShowName(SoraChargeEntity pEntity) {
+        return false;
+
     }
     public static ResourceLocation main = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/shield.png");
     public static ResourceLocation none = new ResourceLocation(JuiceCraft.MODID,"textures/entities/sora/shield_none.png");
