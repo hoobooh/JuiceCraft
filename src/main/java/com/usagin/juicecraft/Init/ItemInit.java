@@ -35,6 +35,8 @@ public class ItemInit {
 
     //SPAWN EGGS
     public static final RegistryObject<Item> ALTE_SPAWN_EGG = ITEMS.register("alte_spawn_egg", () -> new ForgeSpawnEggItem(EntityInit.ALTE, ChatFormatting.LIGHT_PURPLE.getColor(), ChatFormatting.DARK_PURPLE.getColor(), new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> SORA_SPAWN_EGG = ITEMS.register("sora_spawn_egg", () -> new ForgeSpawnEggItem(EntityInit.ALTE, ChatFormatting.YELLOW.getColor(), ChatFormatting.GREEN.getColor(), new JuiceCraftItem.Properties()));
+
 
     //INGREDIENTS
     public static final RegistryObject<Item> WHITE_SEAGULL_FLUFF = ITEMS.register("white_seagull_fluff", () -> new FriendFluffItem(new JuiceCraftItem.Properties()));
@@ -54,6 +56,7 @@ public class ItemInit {
     //BLOCK ITEMS
 
     public static final RegistryObject<Item> ALTE_PLUSHIE = ITEMS.register("alte_plushie", () -> new FriendBlockItem(BlockInit.ALTE_PLUSHIE.get(),new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> SORA_PLUSHIE = ITEMS.register("sora_plushie", () -> new FriendBlockItem(BlockInit.SORA_PLUSHIE.get(),new JuiceCraftItem.Properties()));
 
     //BED ITEMS
 

@@ -11,6 +11,7 @@ import com.usagin.juicecraft.client.models.sora.ShieldEntityModel;
 import com.usagin.juicecraft.client.models.sora.SoraEntityModel;
 import com.usagin.juicecraft.client.renderer.blockrenderers.AltePlushieRenderer;
 import com.usagin.juicecraft.client.renderer.blockrenderers.FriendBedRenderer;
+import com.usagin.juicecraft.client.renderer.blockrenderers.SoraPlushieRenderer;
 import com.usagin.juicecraft.client.renderer.entities.*;
 import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.friends.Alte;
@@ -30,7 +31,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import static com.usagin.juicecraft.JuiceCraft.MODID;
-import static com.usagin.juicecraft.client.renderer.blockrenderers.PlushieRenderer.PLUSHIE;
+import static com.usagin.juicecraft.client.renderer.blockrenderers.AltePlushieRenderer.ALTE_PLUSHIE;
+import static com.usagin.juicecraft.client.renderer.blockrenderers.SoraPlushieRenderer.SORA_PLUSHIE;
 
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CommonEvents {
@@ -60,6 +62,7 @@ public class CommonEvents {
     public static void blockRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(BlockEntityInit.FRIEND_BED.get(), FriendBedRenderer::new);
         event.registerBlockEntityRenderer(BlockEntityInit.ALTE_PLUSHIE.get(), AltePlushieRenderer::new);
+        event.registerBlockEntityRenderer(BlockEntityInit.SORA_PLUSHIE.get(), SoraPlushieRenderer::new);
     }
 
     public static ModelLayerLocation FRIEND_BED_FOOT = new ModelLayerLocation(new ResourceLocation(MODID, "friend_bed_foot"), "main");
@@ -75,8 +78,8 @@ public class CommonEvents {
 
         event.registerLayerDefinition(FRIEND_BED_FOOT, FriendBedRenderer::createFootLayer);
         event.registerLayerDefinition(FRIEND_BED_HEAD, FriendBedRenderer::createHeadLayer);
-        event.registerLayerDefinition(PLUSHIE, AltePlushieRenderer::createLayer);
-
+        event.registerLayerDefinition(ALTE_PLUSHIE, AltePlushieRenderer::createLayer);
+        event.registerLayerDefinition(SORA_PLUSHIE, SoraPlushieRenderer::createLayer);
     }
 
 

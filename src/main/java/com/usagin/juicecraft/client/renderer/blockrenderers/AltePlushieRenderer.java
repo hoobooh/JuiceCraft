@@ -1,13 +1,24 @@
 package com.usagin.juicecraft.client.renderer.blockrenderers;
 
+import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+
+import static com.usagin.juicecraft.JuiceCraft.MODID;
 
 public class AltePlushieRenderer extends PlushieRenderer{
+    public static ModelLayerLocation ALTE_PLUSHIE = new ModelLayerLocation(new ResourceLocation(MODID,"alte_plushie"),"main");
+    @Override
+    public void setPlushie(BlockEntityRendererProvider.Context pContext) {
+        this.plushie=pContext.bakeLayer(ALTE_PLUSHIE);
+    }
+
     public AltePlushieRenderer(BlockEntityRendererProvider.Context pContext) {
         super(pContext);
     }
+
     public static LayerDefinition createLayer(){
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
