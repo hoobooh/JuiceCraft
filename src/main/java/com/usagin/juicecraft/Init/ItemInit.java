@@ -35,7 +35,7 @@ public class ItemInit {
 
     //SPAWN EGGS
     public static final RegistryObject<Item> ALTE_SPAWN_EGG = ITEMS.register("alte_spawn_egg", () -> new ForgeSpawnEggItem(EntityInit.ALTE, ChatFormatting.LIGHT_PURPLE.getColor(), ChatFormatting.DARK_PURPLE.getColor(), new JuiceCraftItem.Properties()));
-    public static final RegistryObject<Item> SORA_SPAWN_EGG = ITEMS.register("sora_spawn_egg", () -> new ForgeSpawnEggItem(EntityInit.ALTE, ChatFormatting.YELLOW.getColor(), ChatFormatting.GREEN.getColor(), new JuiceCraftItem.Properties()));
+    public static final RegistryObject<Item> SORA_SPAWN_EGG = ITEMS.register("sora_spawn_egg", () -> new ForgeSpawnEggItem(EntityInit.SORA, ChatFormatting.YELLOW.getColor(), ChatFormatting.GREEN.getColor(), new JuiceCraftItem.Properties()));
 
 
     //INGREDIENTS

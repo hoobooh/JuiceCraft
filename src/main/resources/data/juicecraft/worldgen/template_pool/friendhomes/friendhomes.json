@@ -10,6 +10,16 @@
       "projection": "rigid",
       "element_type": "minecraft:single_pool_element"
     }
-  }
+
+  },{
+      "weight": 1,
+      "element": {
+        "location": "juicecraft:friendhomes/sora_tent",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+
+    }
   ]
 }
