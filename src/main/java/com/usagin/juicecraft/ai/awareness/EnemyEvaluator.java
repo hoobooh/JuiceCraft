@@ -25,7 +25,7 @@ public class EnemyEvaluator {
                     return !owner.getStringUUID().equals(pFriend.getOwner().getStringUUID());
                 }
             }
-            return friend.attackplayertoo` || !entity.getStringUUID().equals(owner.getStringUUID());
+            return friend.attackplayertoo || !entity.getStringUUID().equals(owner.getStringUUID());
         }
         return true;
     }
