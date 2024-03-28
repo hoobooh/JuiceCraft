@@ -1,6 +1,8 @@
 package com.usagin.juicecraft.miscentities;
 
 import com.usagin.juicecraft.Init.ParticleInit;
+import com.usagin.juicecraft.Init.sounds.SoraSoundInit;
+import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.friends.Friend;
 import com.usagin.juicecraft.friends.Sora;
@@ -105,10 +107,8 @@ public class SoraChargeEntity extends LivingEntity {
     }
     @Override
     public void tick() {
-        if(this.lifetime==14){
-            //this.playSound(SoraSoundInit.SORA_CHARGE_ROAR.get());
-        }
         if(this.tickCount%5==0 && !this.level().isClientSide()){
+            this.playSound(SoraSoundInit.SORA_CHARGE_IDLE.get());
             double p = (144D - this.lifetime)/12;
             this.spawnParticlesInRandomSpreadAtEntity(this,(int) (p * 5),(int) (p/4),0,(ServerLevel) this.level(), ParticleInit.SORA_ENERGY_PARTICLE.get());
         }
@@ -116,6 +116,7 @@ public class SoraChargeEntity extends LivingEntity {
             this.lifetime--;
         }
         if (this.lifetime == 0) {
+            this.playSound(UniversalSoundInit.FRIEND_DEATH.get());
             this.spawnParticlesInRandomSpreadAtEntity(this,60,7,0,(ServerLevel) this.level(), ParticleInit.SORA_ENERGY_PARTICLE.get());
             this.remove(RemovalReason.DISCARDED);
         }

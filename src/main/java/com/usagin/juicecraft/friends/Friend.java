@@ -1728,6 +1728,9 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
         //SERVERSIDE-ONLY TICKS
 
         else {
+            if(this.getAttackCounter() == 1){
+                this.attackplayertoo=false;
+            }
             if(this.isAggressive()){
                 this.aggressiontimer++;
             }else{

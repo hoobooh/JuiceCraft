@@ -1,4 +1,9 @@
 {
+"sora_charge_idle": {
+    "sounds": [
+      "juicecraft:sora_charge_idle"
+    ]
+  },
   "sora_charge_burst": {
     "sounds": [
       "juicecraft:sora_charge_burst"

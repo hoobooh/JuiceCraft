@@ -18,14 +18,14 @@ public class EnemyEvaluator {
 
     public static boolean shouldDoHurtTarget(Friend friend, LivingEntity entity) {
         LivingEntity owner = friend.getOwner();
-        if (owner != null && !friend.attackplayertoo) {
+        if (owner != null) {
             if (entity instanceof TamableAnimal pFriend) {
                 if (pFriend.getOwner() != null) {
                     friend.attackplayertoo = false;
                     return !owner.getStringUUID().equals(pFriend.getOwner().getStringUUID());
                 }
             }
-            return !entity.getStringUUID().equals(owner.getStringUUID());
+            return friend.attackplayertoo` || !entity.getStringUUID().equals(owner.getStringUUID());
         }
         return true;
     }

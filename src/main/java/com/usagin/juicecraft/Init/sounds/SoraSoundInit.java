@@ -85,7 +85,7 @@ public class SoraSoundInit {
     public static final RegistryObject<SoundEvent> SORA_WIN3 = registerFriendSoundEvent("sora_win3");
     public static final RegistryObject<SoundEvent> SORA_CHARGE_BURST = registerFriendSoundEvent("sora_charge_burst");
 
-
+    public static final RegistryObject<SoundEvent> SORA_CHARGE_IDLE = registerFriendSoundEvent("sora_charge_idle");
 
 
     public static RegistryObject<SoundEvent> registerFriendSoundEvent(String name) {
