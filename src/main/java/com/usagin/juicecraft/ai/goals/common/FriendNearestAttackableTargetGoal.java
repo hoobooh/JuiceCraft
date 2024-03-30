@@ -1,7 +1,9 @@
 package com.usagin.juicecraft.ai.goals.common;
 
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
+import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Friend;
+import com.usagin.juicecraft.friends.Sora;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,6 +54,15 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
             return super.canUse();
         }
     }
+    public void doSpecialChecks(Entity e){
+        if(this.friend instanceof Alte){
+            if(e instanceof Sora){
+                if(this.friend.getSpecialDialogueEnabled()[1] == 0)     {
+                    this.friend.setSpecialDialogueEnabled(new int[]{this.friend.getSpecialDialogueEnabled()[0], 1,this.friend.getSpecialDialogueEnabled()[2]});
+                }
+            }
+        }
+    }
 
     @Override
     protected void findTarget() {
@@ -63,6 +74,9 @@ public class FriendNearestAttackableTargetGoal<T extends LivingEntity> extends N
             if (this.target == null && friend.canDoThings() && friend.getPose() != Pose.SLEEPING && !this.friend.isAttackLockedOut()) {
                 AABB tempbox = this.getTargetSearchArea(this.getFollowDistance());
                 List<Entity> entityList = this.friend.level().getEntities(this.friend, tempbox);
+                for(Entity e: entityList){
+                    this.doSpecialChecks(e);
+                }
                 if(this.friend.getViewFlower()==1){
                     this.friend.getFriendNav().setShouldMove(true);
                 }
