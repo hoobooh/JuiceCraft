@@ -424,25 +424,25 @@ public class Alte extends OldWarFriend {
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
 
-        pCompound.putInt("juicecraft.sora.hypermeter", this.hypermeter);
-        pCompound.putInt("juicecraft.sora.sparkcooldown", this.sparkcooldown);
-        pCompound.putInt("juicecraft.sora.rodcooldown", this.getSyncInt(ALTE_RODCOOLDOWN));
-        pCompound.putInt("juicecraft.sora.punishercooldown", this.punishercooldown);
-        pCompound.putInt("juicecraft.sora.selfdestructcooldown", this.selfdestructcooldown);
-        pCompound.putBoolean("juicecraft.sora.usinghyper", this.getSyncBoolean(ALTE_USINGHYPER));
+        pCompound.putInt("juicecraft.alte.hypermeter", this.hypermeter);
+        pCompound.putInt("juicecraft.alte.sparkcooldown", this.sparkcooldown);
+        pCompound.putInt("juicecraft.alte.rodcooldown", this.getSyncInt(ALTE_RODCOOLDOWN));
+        pCompound.putInt("juicecraft.alte.punishercooldown", this.punishercooldown);
+        pCompound.putInt("juicecraft.alte.selfdestructcooldown", this.selfdestructcooldown);
+        pCompound.putBoolean("juicecraft.alte.usinghyper", this.getSyncBoolean(ALTE_USINGHYPER));
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("juicecraft.sora.rodcooldown")) {
-            this.setAlteRodCooldown(pCompound.getInt("juicecraft.sora.rodcooldown"));
+        if (pCompound.contains("juicecraft.alte.rodcooldown")) {
+            this.setAlteRodCooldown(pCompound.getInt("juicecraft.alte.rodcooldown"));
         }
-        this.hypermeter = pCompound.getInt("juicecraft.sora.hypermeter");
-        this.sparkcooldown = pCompound.getInt("juicecraft.sora.sparkcooldown");
-        this.punishercooldown = pCompound.getInt("juicecraft.sora.punishercooldown");
-        this.selfdestructcooldown = pCompound.getInt("juicecraft.sora.selfdestructcooldown");
-        this.setAlteUsingHyper(pCompound.getBoolean("juicecraft.sora.usinghyper"));
+        this.hypermeter = pCompound.getInt("juicecraft.alte.hypermeter");
+        this.sparkcooldown = pCompound.getInt("juicecraft.alte.sparkcooldown");
+        this.punishercooldown = pCompound.getInt("juicecraft.alte.punishercooldown");
+        this.selfdestructcooldown = pCompound.getInt("juicecraft.alte.selfdestructcooldown");
+        this.setAlteUsingHyper(pCompound.getBoolean("juicecraft.alte.usinghyper"));
     }
 
     public void setAlteUsingHyper(boolean b) {
