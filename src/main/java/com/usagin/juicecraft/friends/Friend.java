@@ -143,7 +143,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
     public final AnimationState snowballIdleTransitionAnimState = new AnimationState();
     public final AnimationState snowballThrowAnimState = new AnimationState();
     public final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
-    public final FriendRangedCrossbowAttackGoal crossbowGoal = new FriendRangedCrossbowAttackGoal(this, 1.0D, 20);
+    public final FriendRangedCrossbowAttackGoal<Friend> crossbowGoal = new FriendRangedCrossbowAttackGoal<Friend>(this, 1.0D, 20);
     public final FriendThrowSnowballGoal snowballGoal = new FriendThrowSnowballGoal(this);
 
     public int homeX;
@@ -2025,7 +2025,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         if (pPlayer instanceof ServerPlayer serverPlayer) {
 
                             this.playVoice(this.getInteract());
-                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
+                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt (this.getId()));
 
                         }
                         return InteractionResult.SUCCESS;
@@ -2086,7 +2086,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         if (pPlayer instanceof ServerPlayer serverPlayer) {
 
                             this.playVoice(this.getInteract());
-                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
+                            serverPlayer.openMenu(new FriendMenuProvider(this),buffer -> buffer.writeVarInt (this.getId()));
 
                         }
                         return InteractionResult.SUCCESS;

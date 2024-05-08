@@ -3,13 +3,13 @@ package com.usagin.juicecraft.network;
 import com.usagin.juicecraft.JuiceCraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.SimpleChannel;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class CircleParticlePacketHandler {
-    public static final SimpleChannel INSTANCE = ChannelBuilder.named(
+    public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
             new ResourceLocation(JuiceCraft.MODID, "circleparticle")).simpleChannel();
 
     public static void register() {
@@ -21,6 +21,6 @@ public class CircleParticlePacketHandler {
     }
 
     public static void sendToClient(Object packet, Entity ent) {
-        INSTANCE.send(packet, PacketDistributor.TRACKING_ENTITY.with(ent));
+        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.TRACKING_ENTITY.with(() -> ent));
     }
 }

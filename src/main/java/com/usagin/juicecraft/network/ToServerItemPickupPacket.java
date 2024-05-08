@@ -5,10 +5,11 @@ import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
 import org.slf4j.Logger;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class ToServerItemPickupPacket {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -33,7 +34,8 @@ public class ToServerItemPickupPacket {
     }
 
     //menu should close in time in case of level change, shouldnt be any sync issues
-    public void handle(CustomPayloadEvent.Context context) {
+    public void handle(Supplier<NetworkEvent.Context> cont) {
+        NetworkEvent.Context context = cont.get();
         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
         this.friend = decodeBuffer(level, this.id);
         if (friend != null) {

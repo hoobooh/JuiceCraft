@@ -2,13 +2,15 @@ package com.usagin.juicecraft.ai.goals.common;
 
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.monster.CrossbowAttackMob;
+import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.item.CrossbowItem;
 
 
-public class FriendRangedCrossbowAttackGoal extends ShellCrossbowGoal {
+public class FriendRangedCrossbowAttackGoal<T extends Friend & RangedAttackMob & CrossbowAttackMob> extends ShellCrossbowGoal<T> {
     Friend mob;
 
-    public FriendRangedCrossbowAttackGoal(Friend pMob, double pSpeedModifier, float pAttackRadius) {
+    public FriendRangedCrossbowAttackGoal(T pMob, double pSpeedModifier, float pAttackRadius) {
         super(pMob, pSpeedModifier, pAttackRadius);
         this.mob = pMob;
     }

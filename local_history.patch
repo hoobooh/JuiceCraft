@@ -1,0 +1,675 @@
+Index: src/main/java/com/usagin/juicecraft/client/renderer/FriendMenuScreen.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/client/renderer/FriendMenuScreen.java b/src/main/java/com/usagin/juicecraft/client/renderer/FriendMenuScreen.java
+--- a/src/main/java/com/usagin/juicecraft/client/renderer/FriendMenuScreen.java	
++++ b/src/main/java/com/usagin/juicecraft/client/renderer/FriendMenuScreen.java	
+@@ -18,7 +18,6 @@
+ import net.minecraft.client.gui.GuiGraphics;
+ import net.minecraft.client.gui.components.Button;
+ import net.minecraft.client.gui.components.Tooltip;
+-import net.minecraft.client.gui.components.WidgetSprites;
+ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+Index: src/main/java/com/usagin/juicecraft/friends/Friend.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/friends/Friend.java b/src/main/java/com/usagin/juicecraft/friends/Friend.java
+--- a/src/main/java/com/usagin/juicecraft/friends/Friend.java	
++++ b/src/main/java/com/usagin/juicecraft/friends/Friend.java	
+@@ -143,7 +143,7 @@
+     public final AnimationState snowballIdleTransitionAnimState = new AnimationState();
+     public final AnimationState snowballThrowAnimState = new AnimationState();
+     public final RangedBowAttackGoal<Friend> bowGoal = new FriendRangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
+-    public final FriendRangedCrossbowAttackGoal crossbowGoal = new FriendRangedCrossbowAttackGoal(this, 1.0D, 20);
++    public final FriendRangedCrossbowAttackGoal<Friend> crossbowGoal = new FriendRangedCrossbowAttackGoal<Friend>(this, 1.0D, 20);
+     public final FriendThrowSnowballGoal snowballGoal = new FriendThrowSnowballGoal(this);
+ 
+     public int homeX;
+@@ -2025,7 +2025,7 @@
+                         if (pPlayer instanceof ServerPlayer serverPlayer) {
+ 
+                             this.playVoice(this.getInteract());
+-                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
++                            serverPlayer.openMenu(new FriendMenuProvider(this));
+ 
+                         }
+                         return InteractionResult.SUCCESS;
+Index: src/main/java/com/usagin/juicecraft/network/PlaySoundPacketHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/PlaySoundPacketHandler.java b/src/main/java/com/usagin/juicecraft/network/PlaySoundPacketHandler.java
+--- a/src/main/java/com/usagin/juicecraft/network/PlaySoundPacketHandler.java	
++++ b/src/main/java/com/usagin/juicecraft/network/PlaySoundPacketHandler.java	
+@@ -2,10 +2,10 @@
+ 
+ import com.usagin.juicecraft.JuiceCraft;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraftforge.network.ChannelBuilder;
+ import net.minecraftforge.network.NetworkDirection;
++import net.minecraftforge.network.NetworkRegistry.ChannelBuilder;
+ import net.minecraftforge.network.PacketDistributor;
+-import net.minecraftforge.network.SimpleChannel;
++import net.minecraftforge.network.simple.SimpleChannel;
+ 
+ public class PlaySoundPacketHandler {
+     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
+@@ -20,6 +20,6 @@
+     }
+ 
+     public static void sendToServer(Object packet) {
+-        INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
++        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+     }
+ }
+Index: src/main/java/com/usagin/juicecraft/network/ItemPickupPacketHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ItemPickupPacketHandler.java b/src/main/java/com/usagin/juicecraft/network/ItemPickupPacketHandler.java
+--- a/src/main/java/com/usagin/juicecraft/network/ItemPickupPacketHandler.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ItemPickupPacketHandler.java	
+@@ -2,10 +2,10 @@
+ 
+ import com.usagin.juicecraft.JuiceCraft;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraftforge.network.ChannelBuilder;
+ import net.minecraftforge.network.NetworkDirection;
++import net.minecraftforge.network.NetworkRegistry.ChannelBuilder;
+ import net.minecraftforge.network.PacketDistributor;
+-import net.minecraftforge.network.SimpleChannel;
++import net.minecraftforge.network.simple.SimpleChannel;
+ 
+ public class ItemPickupPacketHandler {
+     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
+@@ -20,6 +20,6 @@
+     }
+ 
+     public static void sendToServer(Object packet) {
+-        INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
++        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+     }
+ }
+Index: src/main/java/com/usagin/juicecraft/network/SetFarmingPacketHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/SetFarmingPacketHandler.java b/src/main/java/com/usagin/juicecraft/network/SetFarmingPacketHandler.java
+--- a/src/main/java/com/usagin/juicecraft/network/SetFarmingPacketHandler.java	
++++ b/src/main/java/com/usagin/juicecraft/network/SetFarmingPacketHandler.java	
+@@ -2,10 +2,10 @@
+ 
+ import com.usagin.juicecraft.JuiceCraft;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraftforge.network.ChannelBuilder;
+ import net.minecraftforge.network.NetworkDirection;
++import net.minecraftforge.network.NetworkRegistry.ChannelBuilder;
+ import net.minecraftforge.network.PacketDistributor;
+-import net.minecraftforge.network.SimpleChannel;
++import net.minecraftforge.network.simple.SimpleChannel;
+ 
+ public class SetFarmingPacketHandler {
+     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
+@@ -20,6 +20,6 @@
+     }
+ 
+     public static void sendToServer(Object packet) {
+-        INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
++        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+     }
+ }
+Index: src/main/java/com/usagin/juicecraft/network/ToServerPlaySoundPacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ToServerPlaySoundPacket.java b/src/main/java/com/usagin/juicecraft/network/ToServerPlaySoundPacket.java
+--- a/src/main/java/com/usagin/juicecraft/network/ToServerPlaySoundPacket.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ToServerPlaySoundPacket.java	
+@@ -4,9 +4,10 @@
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.Level;
+-import net.minecraftforge.event.network.CustomPayloadEvent;
++import net.minecraftforge.network.NetworkEvent;
+ 
+ import java.util.Objects;
++import java.util.function.Supplier;
+ 
+ public class ToServerPlaySoundPacket {
+     private final boolean set;
+@@ -30,7 +31,8 @@
+     }
+ 
+     //menu should close in time in case of level change, shouldnt be any sync issues
+-    public void handle(CustomPayloadEvent.Context context) {
++    public void handle(Supplier<NetworkEvent.Context> cont) {
++        NetworkEvent.Context context = cont.get();
+         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
+         this.friend = decodeBuffer(level, this.id);
+         if (friend != null) {
+Index: src/main/java/com/usagin/juicecraft/network/ToServerItemPickupPacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ToServerItemPickupPacket.java b/src/main/java/com/usagin/juicecraft/network/ToServerItemPickupPacket.java
+--- a/src/main/java/com/usagin/juicecraft/network/ToServerItemPickupPacket.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ToServerItemPickupPacket.java	
+@@ -5,10 +5,11 @@
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.Level;
+-import net.minecraftforge.event.network.CustomPayloadEvent;
++import net.minecraftforge.network.NetworkEvent;
+ import org.slf4j.Logger;
+ 
+ import java.util.Objects;
++import java.util.function.Supplier;
+ 
+ public class ToServerItemPickupPacket {
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -33,7 +34,8 @@
+     }
+ 
+     //menu should close in time in case of level change, shouldnt be any sync issues
+-    public void handle(CustomPayloadEvent.Context context) {
++    public void handle(Supplier<NetworkEvent.Context> cont) {
++        NetworkEvent.Context context = cont.get();
+         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
+         this.friend = decodeBuffer(level, this.id);
+         if (friend != null) {
+Index: src/main/java/com/usagin/juicecraft/network/ToServerSetFarmingPacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ToServerSetFarmingPacket.java b/src/main/java/com/usagin/juicecraft/network/ToServerSetFarmingPacket.java
+--- a/src/main/java/com/usagin/juicecraft/network/ToServerSetFarmingPacket.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ToServerSetFarmingPacket.java	
+@@ -4,9 +4,10 @@
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.Level;
+-import net.minecraftforge.event.network.CustomPayloadEvent;
++import net.minecraftforge.network.NetworkEvent;
+ 
+ import java.util.Objects;
++import java.util.function.Supplier;
+ 
+ public class ToServerSetFarmingPacket {
+     private final boolean set;
+@@ -30,7 +31,8 @@
+     }
+ 
+     //menu should close in time in case of level change, shouldnt be any sync issues
+-    public void handle(CustomPayloadEvent.Context context) {
++    public void handle(Supplier<NetworkEvent.Context> cont) {
++        NetworkEvent.Context context = cont.get();
+         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
+         this.friend = decodeBuffer(level, this.id);
+         if (friend != null) {
+Index: src/main/java/com/usagin/juicecraft/network/UpdateSkillPacketHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/UpdateSkillPacketHandler.java b/src/main/java/com/usagin/juicecraft/network/UpdateSkillPacketHandler.java
+--- a/src/main/java/com/usagin/juicecraft/network/UpdateSkillPacketHandler.java	
++++ b/src/main/java/com/usagin/juicecraft/network/UpdateSkillPacketHandler.java	
+@@ -2,10 +2,11 @@
+ 
+ import com.usagin.juicecraft.JuiceCraft;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraftforge.network.ChannelBuilder;
+ import net.minecraftforge.network.NetworkDirection;
++import net.minecraftforge.network.NetworkRegistry;
++import net.minecraftforge.network.NetworkRegistry.*;
+ import net.minecraftforge.network.PacketDistributor;
+-import net.minecraftforge.network.SimpleChannel;
++import net.minecraftforge.network.simple.SimpleChannel;
+ 
+ public class UpdateSkillPacketHandler {
+     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
+@@ -20,6 +21,6 @@
+     }
+ 
+     public static void sendToServer(Object packet) {
+-        INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
++        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+     }
+ }
+Index: src/main/java/com/usagin/juicecraft/network/SetWanderingPacketHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/SetWanderingPacketHandler.java b/src/main/java/com/usagin/juicecraft/network/SetWanderingPacketHandler.java
+--- a/src/main/java/com/usagin/juicecraft/network/SetWanderingPacketHandler.java	
++++ b/src/main/java/com/usagin/juicecraft/network/SetWanderingPacketHandler.java	
+@@ -2,11 +2,10 @@
+ 
+ import com.usagin.juicecraft.JuiceCraft;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraftforge.network.ChannelBuilder;
+ import net.minecraftforge.network.NetworkDirection;
++import net.minecraftforge.network.NetworkRegistry.ChannelBuilder;
+ import net.minecraftforge.network.PacketDistributor;
+-import net.minecraftforge.network.SimpleChannel;
+-
++import net.minecraftforge.network.simple.SimpleChannel;
+ public class SetWanderingPacketHandler {
+     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
+             new ResourceLocation(JuiceCraft.MODID, "setwandering")).simpleChannel();
+@@ -20,6 +19,6 @@
+     }
+ 
+     public static void sendToServer(Object packet) {
+-        INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
++        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+     }
+ }
+Index: src/main/java/com/usagin/juicecraft/network/ToServerUpdateSkillPacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ToServerUpdateSkillPacket.java b/src/main/java/com/usagin/juicecraft/network/ToServerUpdateSkillPacket.java
+--- a/src/main/java/com/usagin/juicecraft/network/ToServerUpdateSkillPacket.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ToServerUpdateSkillPacket.java	
+@@ -4,9 +4,10 @@
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.Level;
+-import net.minecraftforge.event.network.CustomPayloadEvent;
++import net.minecraftforge.network.NetworkEvent;
+ 
+ import java.util.Objects;
++import java.util.function.Supplier;
+ 
+ public class ToServerUpdateSkillPacket {
+     private final boolean[] enabled;
+@@ -50,7 +51,8 @@
+     }
+ 
+     //menu should close in time in case of level change, shouldnt be any sync issues
+-    public void handle(CustomPayloadEvent.Context context) {
++    public void handle(Supplier<NetworkEvent.Context> cont) {
++        NetworkEvent.Context context = cont.get();
+         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
+         this.friend = decodeBuffer(level, this.id);
+         if (this.friend != null) {
+Index: src/main/java/com/usagin/juicecraft/network/ToServerSetWanderingPacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ToServerSetWanderingPacket.java b/src/main/java/com/usagin/juicecraft/network/ToServerSetWanderingPacket.java
+--- a/src/main/java/com/usagin/juicecraft/network/ToServerSetWanderingPacket.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ToServerSetWanderingPacket.java	
+@@ -4,9 +4,10 @@
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.Level;
+-import net.minecraftforge.event.network.CustomPayloadEvent;
++import net.minecraftforge.network.NetworkEvent;
+ 
+ import java.util.Objects;
++import java.util.function.Supplier;
+ 
+ public class ToServerSetWanderingPacket {
+     private final boolean set;
+@@ -30,7 +31,8 @@
+     }
+ 
+     //menu should close in time in case of level change, shouldnt be any sync issues
+-    public void handle(CustomPayloadEvent.Context context) {
++    public void handle(Supplier<NetworkEvent.Context> cont) {
++        NetworkEvent.Context context = cont.get();
+         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
+         this.friend = decodeBuffer(level, this.id);
+         if (friend != null) {
+Index: src/main/java/com/usagin/juicecraft/network/CircleParticlePacketHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/CircleParticlePacketHandler.java b/src/main/java/com/usagin/juicecraft/network/CircleParticlePacketHandler.java
+--- a/src/main/java/com/usagin/juicecraft/network/CircleParticlePacketHandler.java	
++++ b/src/main/java/com/usagin/juicecraft/network/CircleParticlePacketHandler.java	
+@@ -3,13 +3,13 @@
+ import com.usagin.juicecraft.JuiceCraft;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.world.entity.Entity;
+-import net.minecraftforge.network.ChannelBuilder;
+ import net.minecraftforge.network.NetworkDirection;
++import net.minecraftforge.network.NetworkRegistry;
+ import net.minecraftforge.network.PacketDistributor;
+-import net.minecraftforge.network.SimpleChannel;
++import net.minecraftforge.network.simple.SimpleChannel;
+ 
+ public class CircleParticlePacketHandler {
+-    public static final SimpleChannel INSTANCE = ChannelBuilder.named(
++    public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
+             new ResourceLocation(JuiceCraft.MODID, "circleparticle")).simpleChannel();
+ 
+     public static void register() {
+@@ -21,6 +21,6 @@
+     }
+ 
+     public static void sendToClient(Object packet, Entity ent) {
+-        INSTANCE.send(packet, PacketDistributor.TRACKING_ENTITY.with(ent));
++        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.TRACKING_ENTITY.with(() -> ent));
+     }
+ }
+Index: src/main/java/com/usagin/juicecraft/network/CombatSettingsPacketHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/CombatSettingsPacketHandler.java b/src/main/java/com/usagin/juicecraft/network/CombatSettingsPacketHandler.java
+--- a/src/main/java/com/usagin/juicecraft/network/CombatSettingsPacketHandler.java	
++++ b/src/main/java/com/usagin/juicecraft/network/CombatSettingsPacketHandler.java	
+@@ -2,14 +2,14 @@
+ 
+ import com.usagin.juicecraft.JuiceCraft;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraftforge.network.ChannelBuilder;
+ import net.minecraftforge.network.NetworkDirection;
++import net.minecraftforge.network.NetworkRegistry;
+ import net.minecraftforge.network.PacketDistributor;
+-import net.minecraftforge.network.SimpleChannel;
++import net.minecraftforge.network.simple.SimpleChannel;
+ 
+ public class CombatSettingsPacketHandler {
+-    public static final SimpleChannel INSTANCE = ChannelBuilder.named(
+-            new ResourceLocation(JuiceCraft.MODID, "combatsettings")).simpleChannel();
++    public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
++            new ResourceLocation(JuiceCraft.MODID, "combatsettingsjuicecraft")).simpleChannel();
+ 
+     public static void register() {
+         INSTANCE.messageBuilder(ToServerCombatSettingsPacket.class, NetworkDirection.PLAY_TO_SERVER.ordinal())
+@@ -19,7 +19,8 @@
+                 .add();
+     }
+ 
++
+     public static void sendToServer(Object packet) {
+-        INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
++        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+     }
+ }
+Index: src/main/java/com/usagin/juicecraft/network/DialogueResultPacketHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/DialogueResultPacketHandler.java b/src/main/java/com/usagin/juicecraft/network/DialogueResultPacketHandler.java
+--- a/src/main/java/com/usagin/juicecraft/network/DialogueResultPacketHandler.java	
++++ b/src/main/java/com/usagin/juicecraft/network/DialogueResultPacketHandler.java	
+@@ -2,13 +2,13 @@
+ 
+ import com.usagin.juicecraft.JuiceCraft;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraftforge.network.ChannelBuilder;
+ import net.minecraftforge.network.NetworkDirection;
++import net.minecraftforge.network.NetworkRegistry;
+ import net.minecraftforge.network.PacketDistributor;
+-import net.minecraftforge.network.SimpleChannel;
++import net.minecraftforge.network.simple.SimpleChannel;
+ 
+ public class DialogueResultPacketHandler {
+-    public static final SimpleChannel INSTANCE = ChannelBuilder.named(
++    public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
+             new ResourceLocation(JuiceCraft.MODID, "dialogueresults")).simpleChannel();
+ 
+     public static void register() {
+@@ -20,6 +20,6 @@
+     }
+ 
+     public static void sendToServer(Object packet) {
+-        INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
++        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+     }
+ }
+Index: src/main/java/com/usagin/juicecraft/network/SpecialDialoguePacketHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/SpecialDialoguePacketHandler.java b/src/main/java/com/usagin/juicecraft/network/SpecialDialoguePacketHandler.java
+--- a/src/main/java/com/usagin/juicecraft/network/SpecialDialoguePacketHandler.java	
++++ b/src/main/java/com/usagin/juicecraft/network/SpecialDialoguePacketHandler.java	
+@@ -2,10 +2,10 @@
+ 
+ import com.usagin.juicecraft.JuiceCraft;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraftforge.network.ChannelBuilder;
+ import net.minecraftforge.network.NetworkDirection;
++import net.minecraftforge.network.NetworkRegistry.ChannelBuilder;
+ import net.minecraftforge.network.PacketDistributor;
+-import net.minecraftforge.network.SimpleChannel;
++import net.minecraftforge.network.simple.SimpleChannel;
+ 
+ public class SpecialDialoguePacketHandler {
+     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
+@@ -20,6 +20,6 @@
+     }
+ 
+     public static void sendToServer(Object packet) {
+-        INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
++        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+     }
+ }
+Index: src/main/java/com/usagin/juicecraft/network/ToClientCircleParticlePacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ToClientCircleParticlePacket.java b/src/main/java/com/usagin/juicecraft/network/ToClientCircleParticlePacket.java
+--- a/src/main/java/com/usagin/juicecraft/network/ToClientCircleParticlePacket.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ToClientCircleParticlePacket.java	
+@@ -8,9 +8,11 @@
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.level.Level;
+-import net.minecraftforge.event.network.CustomPayloadEvent;
++import net.minecraftforge.network.NetworkEvent;
+ import org.slf4j.Logger;
+ 
++import java.util.function.Supplier;
++
+ public class ToClientCircleParticlePacket {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private final double radius;
+@@ -42,8 +44,8 @@
+         pBuffer.writeDouble(this.radius);
+     }
+ 
+-    public void handle(CustomPayloadEvent.Context context) {
+-        if (context.getConnection().getPacketListener() instanceof ClientPacketListener listener) {
++    public void handle(Supplier<NetworkEvent.Context> cont) {NetworkEvent.Context context = cont.get();
++        if (context.getNetworkManager().getPacketListener() instanceof ClientPacketListener listener) {
+             Level level = listener.getLevel();
+             LivingEntity source = decodeBuffer(level, this.id);
+             if (source != null) {
+Index: src/main/java/com/usagin/juicecraft/network/ToServerCombatSettingsPacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ToServerCombatSettingsPacket.java b/src/main/java/com/usagin/juicecraft/network/ToServerCombatSettingsPacket.java
+--- a/src/main/java/com/usagin/juicecraft/network/ToServerCombatSettingsPacket.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ToServerCombatSettingsPacket.java	
+@@ -7,10 +7,11 @@
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.Level;
+-import net.minecraftforge.event.network.CustomPayloadEvent;
++import net.minecraftforge.network.NetworkEvent;
+ import org.slf4j.Logger;
+ 
+ import java.util.Objects;
++import java.util.function.Supplier;
+ 
+ public class ToServerCombatSettingsPacket {
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -35,7 +36,7 @@
+     }
+ 
+     //menu should close in time in case of level change, shouldnt be any sync issues
+-    public void handle(CustomPayloadEvent.Context context) {
++    public void handle(Supplier<NetworkEvent.Context> cont) {NetworkEvent.Context context = cont.get();
+         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
+         this.friend = decodeBuffer(level, this.id);
+         if (friend != null) {
+@@ -51,4 +52,5 @@
+     public static Friend decodeBuffer(Level level, int i) {
+         return level.getEntity(i) instanceof Friend friend ? friend : null;
+     }
++
+ }
+Index: src/main/java/com/usagin/juicecraft/network/ToServerDialogueResultPacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ToServerDialogueResultPacket.java b/src/main/java/com/usagin/juicecraft/network/ToServerDialogueResultPacket.java
+--- a/src/main/java/com/usagin/juicecraft/network/ToServerDialogueResultPacket.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ToServerDialogueResultPacket.java	
+@@ -4,9 +4,10 @@
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.Level;
+-import net.minecraftforge.event.network.CustomPayloadEvent;
++import net.minecraftforge.network.NetworkEvent;
+ 
+ import java.util.Objects;
++import java.util.function.Supplier;
+ 
+ public class ToServerDialogueResultPacket {
+     private final int normachange;
+@@ -30,7 +31,8 @@
+     }
+ 
+     //menu should close in time in case of level change, shouldnt be any sync issues
+-    public void handle(CustomPayloadEvent.Context context) {
++    public void handle(Supplier<NetworkEvent.Context> cont) {
++        NetworkEvent.Context context = cont.get();
+         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
+         this.friend = decodeBuffer(level, this.id);
+         if (friend != null) {
+Index: src/main/java/com/usagin/juicecraft/network/ToServerSpecialDialogueUpdatePacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/usagin/juicecraft/network/ToServerSpecialDialogueUpdatePacket.java b/src/main/java/com/usagin/juicecraft/network/ToServerSpecialDialogueUpdatePacket.java
+--- a/src/main/java/com/usagin/juicecraft/network/ToServerSpecialDialogueUpdatePacket.java	
++++ b/src/main/java/com/usagin/juicecraft/network/ToServerSpecialDialogueUpdatePacket.java	
+@@ -5,9 +5,10 @@
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.Level;
+-import net.minecraftforge.event.network.CustomPayloadEvent;
++import net.minecraftforge.network.NetworkEvent;
+ 
+ import java.util.Objects;
++import java.util.function.Supplier;
+ 
+ public class ToServerSpecialDialogueUpdatePacket {
+     private final int specialenabled;
+@@ -31,7 +32,8 @@
+     }
+ 
+     //menu should close in time in case of level change, shouldnt be any sync issues
+-    public void handle(CustomPayloadEvent.Context context) {
++    public void handle(Supplier<NetworkEvent.Context> cont) {
++        NetworkEvent.Context context = cont.get();
+         ServerLevel level = Objects.requireNonNull(context.getSender()).serverLevel();
+         this.friend = decodeBuffer(level, this.id);
+         if (friend != null) {
+Index: build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.gradle b/build.gradle
+--- a/build.gradle	
++++ b/build.gradle	
+@@ -129,7 +129,7 @@
+     // The "userdev" classifier will be requested and setup by ForgeGradle.
+     // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
+     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
+-    minecraft "net.minecraftforge:forge:1.20.2-48.0.47"
++    minecraft "net.minecraftforge:forge:1.20.1-47.2.30"
+ 
+     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
+     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
+Index: gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/gradle.properties b/gradle.properties
+--- a/gradle.properties	
++++ b/gradle.properties	
+@@ -7,13 +7,13 @@
+ ## Environment Properties
+ 
+ # The Minecraft version must agree with the Forge version to get SoraEntityModel valid artifact
+-minecraft_version=1.20.2
++minecraft_version=1.20.1
+ # The Minecraft version range can use any release version of Minecraft as bounds.
+ # Snapshots, pre-releases, and release candidates are not guaranteed to sort properly
+ # as they do not follow standard versioning conventions.
+ minecraft_version_range=[1.20.1,1.21)
+ # The Forge version must agree with the Minecraft version to get SoraEntityModel valid artifact
+-forge_version=48.0.47
++forge_version=47.2.30
+ # The Forge version range can use any version of Forge as bounds or match the loader version range
+ forge_version_range=[47,)
+ # The loader version range can only use the major version of Forge/FML as bounds
+@@ -35,16 +35,16 @@
+ mapping_channel=official
+ # The mapping version to query from the mapping channel.
+ # This must match the format required by the mapping channel.
+-mapping_version=1.20.2
++mapping_version=1.20.1
+ 
+ 
+ ## Mod Properties
+ 
+ # The unique mod identifier for the mod. Must be lowercase in English locale. Must fit the regex [SoraEntityModel-z][SoraEntityModel-z0-9_]{1,63}
+ # Must match the String constant located in the main mod class annotated with @Mod.
+-mod_id=examplemod
++mod_id=juicecraft
+ # The human-readable display name for the mod.
+-mod_name=Example Mod
++mod_name=JuiceCraft
+ # The license of the mod. Review your options at https://choosealicense.com/. All Rights Reserved is the default.
+ mod_license=All Rights Reserved
+ # The mod version. See https://semver.org/
+@@ -52,8 +52,8 @@
+ # The group ID for the mod. It is only important when publishing as an artifact to SoraEntityModel Maven repository.
+ # This should match the base package used for the mod sources.
+ # See https://maven.apache.org/guides/mini/guide-naming-conventions.html
+-mod_group_id=com.example.examplemod
++mod_group_id=com.usagin.juicecraft
+ # The authors of the mod. This is SoraEntityModel simple text string that is used for display purposes in the mod list.
+-mod_authors=YourNameHere, OtherNameHere
++mod_authors=Auctor
+ # The description of the mod. This is SoraEntityModel simple multiline text string that is used for display purposes in the mod list.
+ mod_description=Example mod description.\nNewline characters can be used and will be replaced properly.
+\ No newline at end of file
+diff --git a/run/logs/2024-05-08-1.log.gz b/run/logs/2024-05-08-1.log.gz
+new file mode 100644

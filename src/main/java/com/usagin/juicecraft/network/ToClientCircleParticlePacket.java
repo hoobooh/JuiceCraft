@@ -8,8 +8,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
 import org.slf4j.Logger;
+
+import java.util.function.Supplier;
 
 public class ToClientCircleParticlePacket {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -42,8 +44,8 @@ public class ToClientCircleParticlePacket {
         pBuffer.writeDouble(this.radius);
     }
 
-    public void handle(CustomPayloadEvent.Context context) {
-        if (context.getConnection().getPacketListener() instanceof ClientPacketListener listener) {
+    public void handle(Supplier<NetworkEvent.Context> cont) {NetworkEvent.Context context = cont.get();
+        if (context.getNetworkManager().getPacketListener() instanceof ClientPacketListener listener) {
             Level level = listener.getLevel();
             LivingEntity source = decodeBuffer(level, this.id);
             if (source != null) {
