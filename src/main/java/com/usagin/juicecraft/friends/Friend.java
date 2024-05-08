@@ -72,6 +72,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -407,10 +408,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     public boolean isAggressive() {
         return super.isAggressive();
-    }
-
-    protected @NotNull AABB getAttackBoundingBox() {
-        return super.getAttackBoundingBox().inflate(1.5, 0.0D, 1.5);
     }
 
     public int getFriendItemPickup() {
@@ -2025,7 +2022,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         if (pPlayer instanceof ServerPlayer serverPlayer) {
 
                             this.playVoice(this.getInteract());
-                            serverPlayer.openMenu(new FriendMenuProvider(this), buffer -> buffer.writeVarInt (this.getId()));
+                            NetworkHooks.openScreen(serverPlayer,new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
 
                         }
                         return InteractionResult.SUCCESS;
@@ -2086,7 +2083,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                         if (pPlayer instanceof ServerPlayer serverPlayer) {
 
                             this.playVoice(this.getInteract());
-                            serverPlayer.openMenu(new FriendMenuProvider(this),buffer -> buffer.writeVarInt (this.getId()));
+                            NetworkHooks.openScreen(serverPlayer,new FriendMenuProvider(this), buffer -> buffer.writeVarInt(this.getId()));
 
                         }
                         return InteractionResult.SUCCESS;

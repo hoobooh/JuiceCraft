@@ -10,7 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class UpdateSkillPacketHandler {
     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
-            new ResourceLocation(JuiceCraft.MODID, "updateskill")).simpleChannel();
+            new ResourceLocation(JuiceCraft.MODID, "updateskill")).networkProtocolVersion(() -> "1").serverAcceptedVersions(a -> true).clientAcceptedVersions(a -> true).simpleChannel();
 
     public static void register() {
         INSTANCE.messageBuilder(ToServerUpdateSkillPacket.class, NetworkDirection.PLAY_TO_SERVER.ordinal())
@@ -21,6 +21,6 @@ public class UpdateSkillPacketHandler {
     }
 
     public static void sendToServer(Object packet) {
-        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+        INSTANCE.send(PacketDistributor.SERVER.noArg(), packet);
     }
 }

@@ -9,7 +9,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class CombatSettingsPacketHandler {
     public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
-            new ResourceLocation(JuiceCraft.MODID, "combatsettingsjuicecraft")).simpleChannel();
+            new ResourceLocation(JuiceCraft.MODID, "combatsettingsjuicecraft")).networkProtocolVersion(() -> "1").serverAcceptedVersions(a -> true).clientAcceptedVersions(a -> true).simpleChannel();
 
     public static void register() {
         INSTANCE.messageBuilder(ToServerCombatSettingsPacket.class, NetworkDirection.PLAY_TO_SERVER.ordinal())
@@ -21,6 +21,6 @@ public class CombatSettingsPacketHandler {
 
 
     public static void sendToServer(Object packet) {
-        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+        INSTANCE.send(PacketDistributor.SERVER.noArg(), packet);
     }
 }

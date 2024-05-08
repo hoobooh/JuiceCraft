@@ -8,7 +8,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 public class SetWanderingPacketHandler {
     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
-            new ResourceLocation(JuiceCraft.MODID, "setwandering")).simpleChannel();
+            new ResourceLocation(JuiceCraft.MODID, "setwandering")).networkProtocolVersion(() -> "1").serverAcceptedVersions(a -> true).clientAcceptedVersions(a -> true).simpleChannel();
 
     public static void register() {
         INSTANCE.messageBuilder(ToServerSetWanderingPacket.class, NetworkDirection.PLAY_TO_SERVER.ordinal())
@@ -19,6 +19,6 @@ public class SetWanderingPacketHandler {
     }
 
     public static void sendToServer(Object packet) {
-        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+        INSTANCE.send(PacketDistributor.SERVER.noArg(), packet);
     }
 }

@@ -9,7 +9,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class DialogueResultPacketHandler {
     public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
-            new ResourceLocation(JuiceCraft.MODID, "dialogueresults")).simpleChannel();
+            new ResourceLocation(JuiceCraft.MODID, "dialogueresults")).networkProtocolVersion(() -> "1").serverAcceptedVersions(a -> true).clientAcceptedVersions(a -> true).simpleChannel();
 
     public static void register() {
         INSTANCE.messageBuilder(ToServerDialogueResultPacket.class, NetworkDirection.PLAY_TO_SERVER.ordinal())
@@ -20,6 +20,6 @@ public class DialogueResultPacketHandler {
     }
 
     public static void sendToServer(Object packet) {
-        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+        INSTANCE.send(PacketDistributor.SERVER.noArg(), packet);
     }
 }

@@ -21,7 +21,7 @@ public class FriendMenuProvider implements MenuProvider {
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.literal("");
+        return Component.empty();
     }
 
     @Nullable

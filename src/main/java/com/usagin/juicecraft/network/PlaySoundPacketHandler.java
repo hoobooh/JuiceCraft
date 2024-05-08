@@ -9,7 +9,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PlaySoundPacketHandler {
     public static final SimpleChannel INSTANCE = ChannelBuilder.named(
-            new ResourceLocation(JuiceCraft.MODID, "playsound")).simpleChannel();
+            new ResourceLocation(JuiceCraft.MODID, "playsound")).networkProtocolVersion(() -> "1").serverAcceptedVersions(a -> true).clientAcceptedVersions(a -> true).simpleChannel();
 
     public static void register() {
         INSTANCE.messageBuilder(ToServerPlaySoundPacket.class, NetworkDirection.PLAY_TO_SERVER.ordinal())
@@ -20,6 +20,6 @@ public class PlaySoundPacketHandler {
     }
 
     public static void sendToServer(Object packet) {
-        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.SERVER.noArg());
+        INSTANCE.send(PacketDistributor.SERVER.noArg(), packet);
     }
 }

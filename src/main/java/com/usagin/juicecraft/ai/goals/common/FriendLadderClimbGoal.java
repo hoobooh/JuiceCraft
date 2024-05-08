@@ -2,7 +2,9 @@ package com.usagin.juicecraft.ai.goals.common;
 
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.friends.Friend;
+import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.pathfinder.Node;
@@ -36,7 +38,9 @@ public class FriendLadderClimbGoal extends Goal {
             return false;
         } else {
             try {
-                this.path = this.friend.getNavigation().getPath().copy();
+                FriendlyByteBuf buff = new FriendlyByteBuf(Unpooled.buffer());
+                this.friend.getNavigation().getPath().writeToStream(buff);
+                this.path = Path.createFromStream(buff);
                 return !this.path.isDone() && isLadder(this.friend.getBlockX(), this.friend.getBlockY(), this.friend.getBlockZ());
             } catch (Exception e) {
                 return false;

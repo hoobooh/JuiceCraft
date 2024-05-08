@@ -10,7 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class CircleParticlePacketHandler {
     public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
-            new ResourceLocation(JuiceCraft.MODID, "circleparticle")).simpleChannel();
+            new ResourceLocation(JuiceCraft.MODID, "circleparticle")).networkProtocolVersion(() -> "1").serverAcceptedVersions(a -> true).clientAcceptedVersions(a -> true).simpleChannel();
 
     public static void register() {
         INSTANCE.messageBuilder(ToClientCircleParticlePacket.class, NetworkDirection.PLAY_TO_CLIENT.ordinal())
@@ -21,6 +21,6 @@ public class CircleParticlePacketHandler {
     }
 
     public static void sendToClient(Object packet, Entity ent) {
-        INSTANCE.send((PacketDistributor.PacketTarget) packet, PacketDistributor.TRACKING_ENTITY.with(() -> ent));
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> ent),packet);
     }
 }
