@@ -27,27 +27,27 @@ public class FriendMenuTextureLocations {
     public static final ResourceLocation CLEARSLOT = new ResourceLocation(JuiceCraft.MODID, "textures/gui/clearslot.png");
     public static final ResourceLocation LOCKED_TEXTURE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/lockedslot.png");
 
-    public static final ResourceLocation BUTTON_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/buttondefault");
-    public static final ResourceLocation BUTTON_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/buttonlocked");
+    public static final ResourceLocation BUTTON_BEFORE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/buttondefault.png");
+    public static final ResourceLocation BUTTON_AFTER = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/buttonlocked.png");
 
-    public static final ResourceLocation EXIT_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/dialogueexit");
-    public static final ResourceLocation EXIT_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/dialogueexitdown");
+    public static final ResourceLocation EXIT_BEFORE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/dialogueexit.png");
+    public static final ResourceLocation EXIT_AFTER = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/dialogueexitdown.png");
 
-    public static final ResourceLocation UPGRADE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/upgrade");
-    public static final ResourceLocation ENABLE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/enable");
-    public static final ResourceLocation DISABLE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/disable");
-    public static final ResourceLocation UPGRADE_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/upgradedown");
-    public static final ResourceLocation ENABLE_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/enabledown");
-    public static final ResourceLocation DISABLE_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/disabledown");
+    public static final ResourceLocation UPGRADE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/upgrade.png");
+    public static final ResourceLocation ENABLE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/enable.png");
+    public static final ResourceLocation DISABLE_BEFORE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/disable.png");
+    public static final ResourceLocation UPGRADE_AFTER = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/upgradedown.png");
+    public static final ResourceLocation ENABLE_AFTER = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/enabledown.png");
+    public static final ResourceLocation DISABLE_AFTER = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/disabledown.png");
 
-    public static final ResourceLocation SPEECH_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/buttonspeechenabled");
-    public static final ResourceLocation SPEECH_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/buttonspeechdisabled");
+    public static final ResourceLocation SPEECH_BEFORE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/buttonspeechenabled.png");
+    public static final ResourceLocation SPEECH_AFTER = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/buttonspeechdisabled.png");
 
-    public static final ResourceLocation SPEECH_CONNECTOR_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/buttonspeechconnectorenabled");
-    public static final ResourceLocation SPEECH_CONNECTOR_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/buttonspeechconnectordisabled");
+    public static final ResourceLocation SPEECH_CONNECTOR_BEFORE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/buttonspeechconnectorenabled.png");
+    public static final ResourceLocation SPEECH_CONNECTOR_AFTER = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/buttonspeechconnectordisabled.png");
 
-    public static final ResourceLocation PICKUP_BEFORE = new ResourceLocation(JuiceCraft.MODID, "button/itempickup");
-    public static final ResourceLocation PICKUP_AFTER = new ResourceLocation(JuiceCraft.MODID, "button/itempickupdown");
+    public static final ResourceLocation PICKUP_BEFORE = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/itempickup.png");
+    public static final ResourceLocation PICKUP_AFTER = new ResourceLocation(JuiceCraft.MODID, "textures/gui/sprites/button/itempickupdown.png");
 
 
 }

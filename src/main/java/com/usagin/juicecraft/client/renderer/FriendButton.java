@@ -30,6 +30,7 @@ public class FriendButton extends FriendImageButton {
     public FriendButton(FriendMenuScreen screen, int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, boolean b, boolean c) {
         super(pX, pY, pWidth, pHeight,0,0,0, pSprites, pWidth, pHeight, pOnPress,Component.empty());
         this.sprites = pSprites;
+        this.bordersprites=this.sprites;
         this.imperm = b;
         this.visible = c;
         this.screen=screen;
@@ -49,6 +50,7 @@ public class FriendButton extends FriendImageButton {
     public FriendButton(FriendMenuScreen screen, int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, Component pMessage) {
         super(pX, pY, pWidth, pHeight,0,0,0, pSprites, pWidth, pHeight, pOnPress,pMessage);
         this.sprites = pSprites;
+        this.bordersprites=this.sprites;
         this.screen=screen;
     }
 
@@ -74,7 +76,7 @@ public class FriendButton extends FriendImageButton {
         for (int n = 1; n < this.extendamount + 1; n++) {
             pGuiGraphics.blit(resourcelocation, this.getX(), this.getY() + n * this.height, -500, 0, 0, this.width, this.height, this.width, this.height);
             if (n != this.extendamount + 1) {
-                pGuiGraphics.blit(resourcelocation2, this.getX(), this.getY() + n * this.height - this.height / 4, -500, -500, 0, 0, this.width, this.height, this.width, this.height / 2);
+                pGuiGraphics.blit(resourcelocation2, this.getX(), this.getY() + n * this.height - this.height / 4, -500, 0, 0, this.width, this.height, this.width, this.height / 2);
             }
         }
 
