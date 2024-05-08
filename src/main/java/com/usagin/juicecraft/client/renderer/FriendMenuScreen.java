@@ -458,45 +458,45 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         super.init();
 
         //button renderer
-        this.skillButton = addRenderableWidget(new FriendButton(this.leftPos + 119, this.topPos + 7, 36, 18, buttonSprite, this::handleSkillButton, Component.translatable("juicecraft.skills")));
-        this.bagButton = addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 7, 36, 18, buttonSprite, this::handleGearButton, Component.translatable("juicecraft.gear")));
-        this.statButton = addRenderableWidget(new FriendButton(this.leftPos + 227, this.topPos + 7, 36, 18, buttonSprite, this::handleStatsButton, Component.translatable("juicecraft.stats")));
-        this.talkButton = addRenderableWidget(new FriendButton(this.leftPos + 335, this.topPos + 179, 36, 18, buttonSprite, this::handleTalkButton, Component.translatable("juicecraft.talk")));
+        this.skillButton = addRenderableWidget(new FriendButton(this,this.leftPos + 119, this.topPos + 7, 36, 18, buttonSprite, this::handleSkillButton, Component.translatable("juicecraft.skills")));
+        this.bagButton = addRenderableWidget(new FriendButton(this,this.leftPos + 173, this.topPos + 7, 36, 18, buttonSprite, this::handleGearButton, Component.translatable("juicecraft.gear")));
+        this.statButton = addRenderableWidget(new FriendButton(this,this.leftPos + 227, this.topPos + 7, 36, 18, buttonSprite, this::handleStatsButton, Component.translatable("juicecraft.stats")));
+        this.talkButton = addRenderableWidget(new FriendButton(this,this.leftPos + 335, this.topPos + 179, 36, 18, buttonSprite, this::handleTalkButton, Component.translatable("juicecraft.talk")));
         this.bagButton.setFocus(true);
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 63, 11, 10, upgradeSprite, this::doSkillOneUpgrade, true, false)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 238, this.topPos + 63, 11, 10, upgradeSprite, this::doSkillTwoUpgrade, true, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 173, this.topPos + 63, 11, 10, upgradeSprite, this::doSkillOneUpgrade, true, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 238, this.topPos + 63, 11, 10, upgradeSprite, this::doSkillTwoUpgrade, true, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 74, 27, 12, enableSprite, this::doSkillOneEnable, false, false)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 74, 27, 12, enableSprite, this::doSkillTwoEnable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 165, this.topPos + 74, 27, 12, enableSprite, this::doSkillOneEnable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 230, this.topPos + 74, 27, 12, enableSprite, this::doSkillTwoEnable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 87, 27, 12, disableSprite, this::doSkillOneDisable, false, false)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 87, 27, 12, disableSprite, this::doSkillTwoDisable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 165, this.topPos + 87, 27, 12, disableSprite, this::doSkillOneDisable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 230, this.topPos + 87, 27, 12, disableSprite, this::doSkillTwoDisable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 111, 11, 10, upgradeSprite, this::doSkillThreeUpgrade, true, false)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 238, this.topPos + 111, 11, 10, upgradeSprite, this::doSkillFourUpgrade, true, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 173, this.topPos + 111, 11, 10, upgradeSprite, this::doSkillThreeUpgrade, true, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 238, this.topPos + 111, 11, 10, upgradeSprite, this::doSkillFourUpgrade, true, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 122, 27, 12, enableSprite, this::doSkillThreeEnable, false, false)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 122, 27, 12, enableSprite, this::doSkillFourEnable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 165, this.topPos + 122, 27, 12, enableSprite, this::doSkillThreeEnable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 230, this.topPos + 122, 27, 12, enableSprite, this::doSkillFourEnable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 135, 27, 12, disableSprite, this::doSkillThreeDisable, false, false)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 135, 27, 12, disableSprite, this::doSkillFourDisable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 165, this.topPos + 135, 27, 12, disableSprite, this::doSkillThreeDisable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 230, this.topPos + 135, 27, 12, disableSprite, this::doSkillFourDisable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 173, this.topPos + 159, 11, 10, upgradeSprite, this::doSkillFiveUpgrade, true, false)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 238, this.topPos + 159, 11, 10, upgradeSprite, this::doSkillSixUpgrade, true, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 173, this.topPos + 159, 11, 10, upgradeSprite, this::doSkillFiveUpgrade, true, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 238, this.topPos + 159, 11, 10, upgradeSprite, this::doSkillSixUpgrade, true, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 170, 27, 12, enableSprite, this::doSkillFiveEnable, false, false)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 170, 27, 12, enableSprite, this::doSkillSixEnable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 165, this.topPos + 170, 27, 12, enableSprite, this::doSkillFiveEnable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 230, this.topPos + 170, 27, 12, enableSprite, this::doSkillSixEnable, false, false)));
 
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::doSkillFiveDisable, false, false)));
-        bt.add(addRenderableWidget(new FriendButton(this.leftPos + 230, this.topPos + 183, 27, 12, disableSprite, this::doSkillSixDisable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 165, this.topPos + 183, 27, 12, disableSprite, this::doSkillFiveDisable, false, false)));
+        bt.add(addRenderableWidget(new FriendButton(this,this.leftPos + 230, this.topPos + 183, 27, 12, disableSprite, this::doSkillSixDisable, false, false)));
         int xoffset = this.leftPos + this.imageWidth / 2 - 110;
 
-        this.dialogueOne = addWidget(new FriendButton(xoffset, this.topPos + 133, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueOne, true, false, ChatFormatting.BLACK.getColor(), false));
-        this.dialogueTwo = addWidget(new FriendButton(xoffset, this.topPos + 98, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueTwo, true, false, ChatFormatting.BLACK.getColor(), false));
-        this.dialogueThree = addWidget(new FriendButton(xoffset, this.topPos + 63, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueThree, true, false, ChatFormatting.BLACK.getColor(), false));
-        this.dialogueFour = addWidget(new FriendButton(xoffset, this.topPos + 28, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueFour, true, false, ChatFormatting.BLACK.getColor(), false));
-        this.exitDialogue = addRenderableWidget(new FriendButton(this.leftPos + 375, this.topPos + 13, 17, 17, exitSprite, this::exitTalkButton, true, false));
+        this.dialogueOne = addWidget(new FriendButton(this,xoffset, this.topPos + 133, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueOne, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueTwo = addWidget(new FriendButton(this,xoffset, this.topPos + 98, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueTwo, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueThree = addWidget(new FriendButton(this,xoffset, this.topPos + 63, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueThree, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.dialogueFour = addWidget(new FriendButton(this,xoffset, this.topPos + 28, 220, 15, speechSprite, speechConnectorSprite, this::handleDialogueFour, true, false, ChatFormatting.BLACK.getColor(), false));
+        this.exitDialogue = addRenderableWidget(new FriendButton(this,this.leftPos + 375, this.topPos + 13, 17, 17, exitSprite, this::exitTalkButton, true, false));
 
         this.talkBt.add(dialogueOne);
         this.talkBt.add(dialogueTwo);
@@ -505,7 +505,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.talkBt.add(exitDialogue);
         this.scrollWidget = addRenderableWidget(new FriendScrollWidget(this.leftPos + 292, this.topPos + 30, 83, 143, Component.literal(this.friend.getEventLog()), this.font, this));
 
-        this.itempickupButton = addRenderableWidget(new FriendButton(this.leftPos + 40, this.topPos + 204, 18, 18, new WidgetSprites(PICKUP_BEFORE, PICKUP_AFTER), this::doPickup, true, true));
+        this.itempickupButton = addRenderableWidget(new FriendButton(this,this.leftPos + 40, this.topPos + 204, 18, 18, new WidgetSprites(PICKUP_BEFORE, PICKUP_AFTER), this::doPickup, true, true));
         this.itempickupButton.setTooltip(Tooltip.create(Component.translatable("juicecraft.menu.itempickup" + this.friend.getFriendItemPickup())));
     }
 
@@ -888,7 +888,6 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         this.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
     }
 
-    @Override
     public void renderTransparentBackground(GuiGraphics pGuiGraphics) {
         pGuiGraphics.fillGradient(0, 0, this.width, this.height, -1000, -1072689136, -804253680);
     }

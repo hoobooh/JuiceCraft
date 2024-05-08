@@ -7,7 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +15,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.slf4j.Logger;
 
-public class FriendButton extends ImageButton {
+public class FriendButton extends FriendImageButton {
     private static final Logger LOGGER = LogUtils.getLogger();
     protected final WidgetSprites sprites;
     public boolean focus = false;
@@ -23,46 +23,35 @@ public class FriendButton extends ImageButton {
     public int extendamount = 0;
     public int color = -1;
     public boolean rendershadow = true;
+    FriendMenuScreen screen;
     protected WidgetSprites bordersprites = new WidgetSprites(FriendMenuTextureLocations.BUTTON_BEFORE, FriendMenuTextureLocations.BUTTON_AFTER);
     boolean imperm = false;
 
-    public FriendButton(int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress) {
-        super(pX, pY, pWidth, pHeight, pSprites, pOnPress);
-        this.sprites = pSprites;
-    }
-
-    public FriendButton(int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, boolean b) {
-        super(pX, pY, pWidth, pHeight, pSprites, pOnPress);
-        this.sprites = pSprites;
-        this.imperm = b;
-    }
-
-    public FriendButton(int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, boolean b, boolean c) {
-        super(pX, pY, pWidth, pHeight, pSprites, pOnPress);
+    public FriendButton(FriendMenuScreen screen, int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, boolean b, boolean c) {
+        super(pX, pY, pWidth, pHeight,0,0,0, pSprites, pWidth, pHeight, pOnPress,Component.empty());
         this.sprites = pSprites;
         this.imperm = b;
         this.visible = c;
+        this.screen=screen;
     }
 
-    public FriendButton(int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, WidgetSprites pBorderSprites, Button.OnPress pOnPress, boolean b, boolean c, int color, boolean shadow) {
-        super(pX, pY, pWidth, pHeight, pSprites, pOnPress);
+    public FriendButton(FriendMenuScreen screen, int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites,WidgetSprites pBorderSprites, Button.OnPress pOnPress, boolean b, boolean c, int color, boolean shadow) {
+        super(pX, pY, pWidth, pHeight,0,0,0, pSprites, pWidth, pHeight, pOnPress,Component.empty());
         this.sprites = pSprites;
         this.bordersprites = pBorderSprites;
         this.imperm = b;
         this.visible = c;
         this.color = color;
         this.rendershadow = shadow;
+        this.screen=screen;
     }
 
-    public FriendButton(int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, Component pMessage) {
-        super(pX, pY, pWidth, pHeight, pSprites, pOnPress, pMessage);
+    public FriendButton(FriendMenuScreen screen, int pX, int pY, int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, Component pMessage) {
+        super(pX, pY, pWidth, pHeight,0,0,0, pSprites, pWidth, pHeight, pOnPress,pMessage);
         this.sprites = pSprites;
+        this.screen=screen;
     }
 
-    public FriendButton(int pWidth, int pHeight, WidgetSprites pSprites, Button.OnPress pOnPress, Component pMessage) {
-        super(pWidth, pHeight, pSprites, pOnPress, pMessage);
-        this.sprites = pSprites;
-    }
 
     public void setFocus(boolean b) {
         this.focus = b;
@@ -78,11 +67,14 @@ public class FriendButton extends ImageButton {
             int i = getFGColor();
             this.renderString(pGuiGraphics, minecraft.font, i | Mth.ceil(this.alpha * 255.0F) << 24);
         }
-        pGuiGraphics.blitSprite(resourcelocation, this.getX(), this.getY(), -500, this.width, this.height);
+        pGuiGraphics.blit(resourcelocation, this.getX(), this.getY(), -500, 0, 0, this.width, this.height, this.width, this.height);
+
+
+
         for (int n = 1; n < this.extendamount + 1; n++) {
-            pGuiGraphics.blitSprite(resourcelocation, this.getX(), this.getY() + n * this.height, -500, this.width, this.height);
+            pGuiGraphics.blit(resourcelocation, this.getX(), this.getY() + n * this.height, -500, 0, 0, this.width, this.height, this.width, this.height);
             if (n != this.extendamount + 1) {
-                pGuiGraphics.blitSprite(resourcelocation2, this.getX(), this.getY() + n * this.height - this.height / 4, -500, this.width, this.height / 2);
+                pGuiGraphics.blit(resourcelocation2, this.getX(), this.getY() + n * this.height - this.height / 4, -500, -500, 0, 0, this.width, this.height, this.width, this.height / 2);
             }
         }
 
