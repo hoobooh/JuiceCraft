@@ -511,6 +511,17 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
     @Override
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        if (!this.skillActive) {
+            for (Button i : bt) {
+                i.visible = false;
+            }
+        }
+        if (!this.talkActive) {
+            for (Button i : talkBt) {
+                i.visible = false;
+            }
+        }
+
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         if (isValidSpot(pMouseX, pMouseY)) {
             renderTooltip(pGuiGraphics, pMouseX, pMouseY);
@@ -558,16 +569,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
                 }
             }
         }
-        if (!this.skillActive) {
-            for (Button i : bt) {
-                i.visible = false;
-            }
-        }
-        if (!this.talkActive) {
-            for (Button i : talkBt) {
-                i.visible = false;
-            }
-        }
+
     }
 
     void renderSkillMenu(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
@@ -879,15 +881,6 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
 
     }
 
-    public void renderBackground(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        if (this.getMinecraft().level != null) {
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.ScreenEvent.BackgroundRendered(this, pGuiGraphics));
-        } else {
-            this.renderDirtBackground(pGuiGraphics);
-        }
-        this.renderBg(pGuiGraphics, pPartialTick, pMouseX, pMouseY);
-    }
-
     public void renderTransparentBackground(GuiGraphics pGuiGraphics) {
         pGuiGraphics.fillGradient(0, 0, this.width, this.height, -1000, -1072689136, -804253680);
     }
@@ -979,8 +972,6 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
         renderEntityInInventoryFollowsMouse(pGuiGraphics, this.leftPos + 7, this.topPos + 30, this.leftPos + 90, this.topPos + 173, 55, 0.20F, pMouseX, pMouseY, this.friend);
         pGuiGraphics.pose().popPose();
 
-        pGuiGraphics.blit(FRIEND_THEME, this.leftPos - 19, this.topPos - 20, -1000, 0, 0, 420, 300,420, 300);
-
         //hide gear icons if there is gear there
         for (int i = 0; i < 4; i++) {
             if (!friend.inventory.getItem(i + 3).isEmpty()) { //armor slots
@@ -1012,6 +1003,7 @@ public class FriendMenuScreen extends AbstractContainerScreen<FriendMenu> {
             pGuiGraphics.blit(LOCKED_TEXTURE, this.leftPos + 49, this.topPos + 229, -1000, 0, 0, 18, 18, 18, 18);
             pGuiGraphics.blit(LOCKED_TEXTURE, this.leftPos + 67, this.topPos + 229, -1000, 0, 0, 18, 18, 18, 18);
         }
+        pGuiGraphics.blit(FRIEND_THEME, this.leftPos - 19, this.topPos - 20, -1000, 0, 0, 420, 300,420, 300);
     }
 
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
