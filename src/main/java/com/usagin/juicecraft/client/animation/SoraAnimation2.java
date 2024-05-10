@@ -995,9 +995,9 @@ public class SoraAnimation2 {
                         new Keyframe(2.75F, KeyframeAnimations.degreeVec(-30.92F, -12.0F, 22.35F), AnimationChannel.Interpolations.CATMULLROM),
                         new Keyframe(3.0F, KeyframeAnimations.degreeVec(33.2325F, -32.8927F, 37.3381F), AnimationChannel.Interpolations.CATMULLROM),
                         new Keyframe(3.25F, KeyframeAnimations.degreeVec(138.0463F, -46.5005F, -89.9683F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(3.5F, KeyframeAnimations.degreeVec(315.3611F, -59.1993F, -267.8053F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(3.75F, KeyframeAnimations.degreeVec(315.3611F, -59.1993F, -267.8053F), AnimationChannel.Interpolations.CATMULLROM),
-                        new Keyframe(4.0F, KeyframeAnimations.degreeVec(360.0F, 0.0F, -360.0F), AnimationChannel.Interpolations.CATMULLROM)
+                        new Keyframe(3.5F, KeyframeAnimations.degreeVec(121.7773F, -52.2247F, -74.3248F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(3.75F, KeyframeAnimations.degreeVec(121.7773F, -52.2247F, -74.3248F), AnimationChannel.Interpolations.CATMULLROM),
+                        new Keyframe(4.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
                 ))
                 .addAnimation("lowerarm", new AnimationChannel(AnimationChannel.Targets.ROTATION,
                         new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
