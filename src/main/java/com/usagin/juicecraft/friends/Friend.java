@@ -1702,7 +1702,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
             this.interactAnimState.animateWhen(this.canDoThings() && this.getFriendPlaceCounter() > 0, this.tickCount);
             this.viewFlowerAnimState.animateWhen(this.canDoThings() && this.getViewFlower() > 0, this.tickCount);
-            this.wetAnimState.animateWhen(this.canDoThings() && this.shakeAnimO > 0 && !this.walkAnimation.isMoving(), this.tickCount);
+            this.wetAnimState.animateWhen(this.canDoThings() && this.shakeAnimO > 0, this.tickCount);
             this.deathStartAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() != 0, this.tickCount);
             this.deathAnimState.animateWhen(this.getIsDying() && this.getDeathAnimCounter() == 0, this.tickCount);
             this.idleAnimState.animateWhen(idle() && this.idleCounter == 20 && this.patCounter == 0, this.tickCount);
@@ -1711,7 +1711,7 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
             this.snowballIdleTransitionAnimState.animateWhen(!this.snowballIdleAnimState.isStarted() && snowballIdle() && this.idleCounter > 0 && this.idleCounter < 20 && this.patCounter == 0 && !this.snowballThrowAnimState.isStarted(), this.tickCount);
 
             this.inspectAnimState.animateWhen(idle() && this.idleCounter == 20 && this.patCounter == 0 && this.animatestandingtimer > 0, this.tickCount);
-            this.patAnimState.animateWhen(this.canDoThings() && this.patCounter > 0 && !this.walkAnimation.isMoving() && !this.isDescending() && (this.idle() || this.snowballIdle()) && this.shakeAnimO == 0, this.tickCount);
+            this.patAnimState.animateWhen(this.canDoThings() && this.patCounter > 0 && !this.isDescending() && (this.idle() || this.snowballIdle()) && this.shakeAnimO == 0, this.tickCount);
             this.sitPatAnimState.animateWhen(this.getPose() == SITTING && this.patCounter != 0, this.tickCount);
             this.sitAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter == 0, this.tickCount);
             this.sitImpatientAnimState.animateWhen(this.getPose() == SITTING && this.patCounter == 0 && this.impatientCounter != 0, this.tickCount);

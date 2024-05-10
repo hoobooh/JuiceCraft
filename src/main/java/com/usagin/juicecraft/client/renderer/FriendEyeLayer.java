@@ -18,7 +18,7 @@ public class FriendEyeLayer<T extends Entity, M extends EntityModel<T>> extends 
     private static final Logger LOGGER = LogUtils.getLogger();
     public boolean visible = false;
     public ResourceLocation location;
-    public RenderType rendertype;
+    public final RenderType rendertype;
 
     public FriendEyeLayer(RenderLayerParent<T, M> pRenderer, ResourceLocation location) {
         super(pRenderer);
