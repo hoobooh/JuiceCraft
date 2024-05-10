@@ -85,8 +85,8 @@ public class SoraAnimation1 {
             ))
             .addAnimation("backhair", new AnimationChannel(AnimationChannel.Targets.ROTATION,
                     new Keyframe(0.0F, KeyframeAnimations.degreeVec(-10.17F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-                    new Keyframe(0.7917F, KeyframeAnimations.degreeVec(-8.76F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
-                    new Keyframe(1.5417F, KeyframeAnimations.degreeVec(-7.5F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
+                    new Keyframe(0.7917F, KeyframeAnimations.degreeVec(3.7234F, 0.803F, -2.3676F), AnimationChannel.Interpolations.CATMULLROM),
+                    new Keyframe(1.5417F, KeyframeAnimations.degreeVec(3.7234F, 0.803F, -2.3676F), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(3.5417F, KeyframeAnimations.degreeVec(-10.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM),
                     new Keyframe(4.0F, KeyframeAnimations.degreeVec(-10.17F, 0.0F, 0.0F), AnimationChannel.Interpolations.CATMULLROM)
             ))

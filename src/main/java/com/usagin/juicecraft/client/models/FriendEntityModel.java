@@ -226,6 +226,10 @@ public abstract class FriendEntityModel<T extends Friend> extends HierarchicalMo
 
     public void idleAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         animate(pEntity.idleAnimState, this.animations.idlegrounded(), pAgeInTicks);
+        if(pEntity.inspectAnimState.isStarted()){
+            this.parts.leftarm().resetPose();
+            this.parts.rightarm().resetPose();
+        }
         animate(pEntity.inspectAnimState, this.animations.standinginspect(), pAgeInTicks);
         animate(pEntity.idleAnimStartState, this.animations.idletransition(), pAgeInTicks);
         animate(pEntity.snowballIdleAnimState, this.animations.snowballIdle(), pAgeInTicks);
