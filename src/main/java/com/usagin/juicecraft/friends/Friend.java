@@ -3,7 +3,7 @@ package com.usagin.juicecraft.friends;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
 import com.usagin.juicecraft.Init.ItemInit;
-import com.usagin.juicecraft.Seagull;
+import com.usagin.juicecraft.enemies.Seagull;
 import com.usagin.juicecraft.ai.awareness.CombatSettings;
 import com.usagin.juicecraft.ai.awareness.EnemyEvaluator;
 import com.usagin.juicecraft.ai.awareness.FriendDefense;

@@ -1,4 +1,4 @@
-package com.usagin.juicecraft;
+package com.usagin.juicecraft.enemies;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Parrot;
