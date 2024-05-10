@@ -908,7 +908,6 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
 
     abstract public SoundEvent getHyperEquip();
 
-    public abstract SoundEvent getHyperUse();
 
     public abstract SoundEvent getRecovery();
 
@@ -1802,6 +1801,8 @@ public abstract class Friend extends FakeWolf implements ContainerListener, Menu
                     }
                 } else {
                     this.updateFriendNorma(-0.1F, 7);
+                    this.level().broadcastEntityEvent(this, (byte) 6);
+                    this.playTimedVoice(this.getAngry());
                     this.mood -= 20;
                 }
                 if (this.doFarming && this.isTame()) {

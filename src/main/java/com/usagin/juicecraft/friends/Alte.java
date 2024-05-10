@@ -348,11 +348,6 @@ public class Alte extends OldWarFriend {
     }
 
     @Override
-    public SoundEvent getHyperUse() {
-        return ALTE_HYPER_USE.get();
-    }
-
-    @Override
     public SoundEvent getRecovery() {
         int a = this.random.nextInt(4);
         return switch (a) {

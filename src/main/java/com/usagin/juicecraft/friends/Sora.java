@@ -455,10 +455,6 @@ public class Sora extends OldWarFriend {
         return SORA_HYPEREQUIP.get();
     }
 
-    @Override
-    public SoundEvent getHyperUse() {
-        return SORA_HYPERUSE.get();
-    }
 
     @Override
     public SoundEvent getRecovery() {
