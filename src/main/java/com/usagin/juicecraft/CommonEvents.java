@@ -14,6 +14,7 @@ import com.usagin.juicecraft.client.renderer.blockrenderers.FriendBedRenderer;
 import com.usagin.juicecraft.client.renderer.blockrenderers.SoraPlushieRenderer;
 import com.usagin.juicecraft.client.renderer.entities.*;
 import com.usagin.juicecraft.enemies.Harbinger;
+import com.usagin.juicecraft.enemies.Seagull;
 import com.usagin.juicecraft.friends.Alte;
 import com.usagin.juicecraft.friends.Sora;
 import com.usagin.juicecraft.miscentities.SoraChargeEntity;
@@ -44,6 +45,7 @@ public class CommonEvents {
         event.put(EntityInit.HARBINGER.get(), Harbinger.getHarbingerAttributes().build());
         event.put(EntityInit.SORA_SHIELD_ENTITY.get(), SoraShieldEntity.getShieldAttributes().build());
         event.put(EntityInit.SORA_CHARGE_ENTITY.get(), SoraChargeEntity.getChargeAttributes().build());
+        event.put(EntityInit.SEAGULL.get(), Seagull.createAttributes().build());
     }
 
     @SubscribeEvent
