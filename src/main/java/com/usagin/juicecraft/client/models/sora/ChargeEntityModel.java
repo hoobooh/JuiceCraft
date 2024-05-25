@@ -21,7 +21,7 @@ import net.minecraft.world.entity.AnimationState;
 
 public class ChargeEntityModel extends HierarchicalModel<SoraChargeEntity> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "sorashieldentity"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(JuiceCraft.MODID, "sorashieldentity"), "main");
     private final ModelPart root;
     AnimationState state = new AnimationState();
     public ChargeEntityModel(ModelPart root) {

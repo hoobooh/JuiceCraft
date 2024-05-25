@@ -7,6 +7,7 @@ package com.usagin.juicecraft.client.models.harbinger;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.usagin.juicecraft.JuiceCraft;
 import com.usagin.juicecraft.client.animation.HarbingerAnimation;
 import com.usagin.juicecraft.enemies.Harbinger;
 import com.usagin.juicecraft.particles.AlteLightningParticle;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class HarbingerModel<T extends Harbinger> extends HierarchicalModel<T> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "harbinger"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(JuiceCraft.MODID, "harbinger"), "main");
     private final ModelPart root;
 
     public record ModelParts(ModelPart head, ModelPart rightarm, ModelPart leftarm) {
