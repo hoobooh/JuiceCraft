@@ -11,6 +11,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
+import static com.usagin.juicecraft.client.animation.SeagullAnimation.*;
 import org.jetbrains.annotations.NotNull;
 
 public class SeagullEntityModel<T extends Seagull> extends HierarchicalModel<T> {

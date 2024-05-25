@@ -1,7 +1,7 @@
 package com.usagin.juicecraft.enemies;
 
 import com.usagin.juicecraft.Init.sounds.UniversalSoundInit;
-import com.usagin.juicecraft.ai.goals.seagull.JohnathonRushGoal;
+import com.usagin.juicecraft.ai.goals.seagull.JonathonRushGoal;
 import com.usagin.juicecraft.friends.Friend;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,7 +24,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomFlyingGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -55,7 +54,7 @@ public class Seagull extends Animal implements FlyingAnimal {
 
     public void registerGoals(){
         this.goalSelector.addGoal(5, new MeleeAttackGoal(this,1,false));
-        this.goalSelector.addGoal(4,new JohnathonRushGoal(this));
+        this.goalSelector.addGoal(4,new JonathonRushGoal(this));
         this.goalSelector.addGoal(6, new SeagullWanderGoal(this,1));
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
